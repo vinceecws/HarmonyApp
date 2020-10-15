@@ -9,6 +9,9 @@ const User = mongoose.model('user', userSchema, 'user')
 const Collection = mongoose.model('collection', collectionSchema, 'collection')
 const Song = mongoose.model('song', songSchema, 'song')
 
+const connection = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true})
+const db = mongoose.connection
+
 async function createUser(name, password, email, dob) { //User CRUD methods: Create
   return new User({
     name,
@@ -48,12 +51,11 @@ async function findSong(songObject) {
   return await Song.findOne(songObject)
 }
 
-(async () => {
-  const connector = mongoose.connect(connectionString)
+async function test() {
   const name = process.argv[2]
   const description = process.argv[3]
 
-  let collection = await connector
+  let collection = await connection
   .then(async () => {
     return findCollection({name: name})
   })
@@ -75,4 +77,6 @@ async function findSong(songObject) {
 
   mongoose.connection.close()
   process.exit(0)
-})() //This syntax defines and runs a function simultaneously
+} //This syntax defines and runs a function simultaneously
+
+module.exports = db
