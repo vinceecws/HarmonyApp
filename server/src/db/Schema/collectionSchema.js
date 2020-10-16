@@ -11,8 +11,12 @@ const collectionSchema = new mongoose.Schema ({
         default: ""
     },
     songList: {
-        type: [mongoose.Schema.Types.ObjectId],
+        type: [String],
         ref: "songId"
+    },
+    likes: {
+        type: Number,
+        default: 0
     }
 })
 

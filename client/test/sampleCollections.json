@@ -1,0 +1,34 @@
+[
+    {
+        "name": "the big crunch",
+        "description": "crunchy like oreo",
+        "songList": [
+
+        ],
+        "likes": 213
+    },
+    {
+        "name": "80s Music Only",
+        "description": "A collection of the golden hits in the 80s",
+        "songList": [
+
+        ],
+        "likes": 80
+    },
+    {
+        "name": "Regional At Best",
+        "description": "Tyler and Josh",
+        "songList": [
+
+        ],
+        "likes": 42
+    },
+    {
+        "name": "Korean Rap, RnB",
+        "description": "anything but K-Pop",
+        "songList": [
+
+        ],
+        "likes": 1642
+    }
+]

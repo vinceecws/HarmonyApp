@@ -1,0 +1,15 @@
+[
+    {
+        "name": "",
+        "password": "",
+        "email": "",
+        "dob": "",
+        "biography": "",
+        "privateMode": false,
+        "playlists": [],
+        "sessions": [],
+        "history": [],
+        "likedSongs": [],
+        "likedCollections": []
+    }
+]
