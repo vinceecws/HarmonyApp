@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
-let collections = JSON.parse(require('./test/sampleCollections.json'))
+let collections = require('./test/sampleCollections.json')
 
 console.log(collections)
 
