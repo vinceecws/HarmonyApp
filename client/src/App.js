@@ -3,24 +3,27 @@ import logo from './logo.svg';
 import './App.css';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
+let collections = JSON.parse(require('./test/sampleCollections.json'))
+
+console.log(collections)
+
+var formData  = new FormData();
+
+formData.append("format", "json");
+formData.append("url", "http://soundcloud.com/forss/flickermood");
+
+var html = fetch('http://soundcloud.com/oembed', {
+    method: 'POST',
+    body: formData
+}).then(function (response) {
+    return response.json();
+}).then(function (res) {
+  return res.html;
+});
+
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <div dangerouslySetInnerHTML={{__html: html}}></div>
   );
 }
 
