@@ -27,15 +27,15 @@ var html = fetch('http://soundcloud.com/oembed', {
 });
 
 function App() {
-  var Session1 = sessions[0];
+  
   return (
     <div dangerouslySetInnerHTML={{__html: html}}>
-      <header className="Session-Component">
-         <SessionSideList 
-            hostId={Session1.hostId}
-            name={Session1.name}/>
-      </header>
     </div>
+    
+      
+         
+      
+    
   );
 }
 
