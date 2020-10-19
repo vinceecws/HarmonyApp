@@ -4,8 +4,10 @@ import './App.css';
 import SessionSideList from './components/Sessions/sessionsidelist.js';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
-let collections = JSON.parse(require('./test/sampleCollections.json'))
-let sessions = JSON.parse(require('./test/sampleSessions.json'))
+
+let collections = require('./test/sampleCollections.json')
+let sessions = require('./test/sampleSessions.json')
+
 
 console.log(collections);
 console.log(sessions);
