@@ -2,6 +2,28 @@
   text-align: center;
 }
 
+.Session-Side-List {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex, inline-block;
+  text-align: left;
+  width: 350px;
+  flex-direction: column;
+  justify-content: center;
+  color: black;
+}
+
+.Session-Component {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: black;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -21,7 +43,7 @@
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: black;
 }
 
 .App-link {

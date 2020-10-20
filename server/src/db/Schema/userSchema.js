@@ -35,7 +35,15 @@ const userSchema = new mongoose.Schema({
     ref: "sessionId"
   },
   history: {
-      type: Array
+    type: Array
+  },
+  likedSongs: {
+    type: [String],
+    ref: "songId"
+  },
+  likedCollections: {
+    type: [mongoose.Schema.Types.ObjectId], //Should we allow users to like SoundCloud collections? If so, ID format needs to be reevaluated
+    ref: "collectionId"
   }
 })
 

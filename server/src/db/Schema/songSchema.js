@@ -1,6 +1,11 @@
 const mongoose = require('mongoose')
 
 const songSchema = new mongoose.Schema({
+    _id: {
+        type: String,
+        required: [true, 'Unique ID is required'],
+        ref: 'Unique ID from SoundCloud'
+    },
     title: {
         type: String,
         required: [true, 'Song title is required']
@@ -20,6 +25,10 @@ const songSchema = new mongoose.Schema({
     imageLink: {
         type: String,
         default: ""
+    },
+    likes: {
+        type: Number,
+        default: 0
     }
 })
 

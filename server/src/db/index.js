@@ -37,8 +37,9 @@ async function findCollection(collectionObject) {
   return await Collection.findOne(collectionObject)
 }
 
-async function createSong(title, artist, album, embedLink, imageLink) {
+async function createSong(_id, title, artist, album, embedLink, imageLink) {
   return new Song({
+    _id,
     title,
     artist,
     album,
@@ -51,7 +52,7 @@ async function findSong(songObject) {
   return await Song.findOne(songObject)
 }
 
-async function test() {
+async function testCreateCollection() {
   const name = process.argv[2]
   const description = process.argv[3]
 
@@ -77,6 +78,31 @@ async function test() {
 
   mongoose.connection.close()
   process.exit(0)
-} //This syntax defines and runs a function simultaneously
+} 
+
+async function testCreateSong() {
+  const _id = process.argv[2]
+  const title = process.argv[3]
+  const artist = process.argv[4]
+  const album = process.argv[5]
+  const embedLink = process.argv[6]
+
+  let song = await connection
+  .then(async () => {
+    return findSong({title: title})
+  })
+  .catch(error => {console.log(error)});
+
+  if (!song) {
+    song = await createSong(_id, title, artist, album, embedLink)
+  }
+  
+  console.log(song)
+
+  mongoose.connection.close()
+  process.exit(0)
+} 
+
+testCreateSong()
 
 module.exports = db
