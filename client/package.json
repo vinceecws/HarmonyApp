@@ -13,6 +13,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "react-strap": "0.0.1",
+    "react-ticker": "^1.2.2",
     "reactstrap": "^8.6.0"
   },
   "scripts": {

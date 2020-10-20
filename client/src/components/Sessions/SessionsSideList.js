@@ -1,23 +1,30 @@
 import React from 'react';
 import SessionEntry from './SessionEntry.js'
 
-let sessions = require('../../test/sampleSessions.json')
+let sessions = require('../../test/sampleSessions.json') //sessions json
+
 console.log(sessions);
-
-class SessionSideList extends React.Component{
-	
-    render(){
-
-    	return(
-    		<div className='list-group'>
-    			<SessionEntry
-    				hostId={sessions[0].hostId}
-    				name={sessions[0].name}
-    			/>
+/*
+<SessionEntry
+                    hostId={sessions[0].hostId}
+                    name={sessions[0].name}
+                />
                 <SessionEntry
                     hostId={sessions[1].hostId}
                     name={sessions[1].name}
                 />
+*/
+class SessionSideList extends React.Component{
+
+    render(){
+        var sessionEntries = [];
+        sessionEntries = sessions.map(item => <SessionEntry
+                    hostId={item.hostId}
+                    name={item.name}
+                /> );
+    	return(
+    		<div className='list-group'>
+    			{sessionEntries}
         	</div>
     	);
         
