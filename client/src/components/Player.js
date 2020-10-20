@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactBootstrapRangeSlider from 'react-bootstrap-range-slider';
+import {Container, Row, Col, Image, Button} from 'react-bootstrap';
+import defaultSongImage from '../graphics/default_song_image.svg';
 
 /*
 var formData  = new FormData();
@@ -24,9 +26,12 @@ class Player extends React.Component{
     }
 
     state = {
-        currentSong: this.props.currentSong,
+        currentSong: {url: null, imageUrl: null},
         playing: this.props.playing,
-
+        mute: this.props.mute,
+        volume: this.props.volume,
+        shuffle: this.props.shuffle,
+        repeat: this.props.repeat
     }
 
     seek = () => {
@@ -61,28 +66,42 @@ class Player extends React.Component{
 
     }
 
+    toggleFavorite = () => {
+    
+    }
+
     getSongImageURL = () => {
-        return this.state.currentSong.url;
+        return this.state.currentSong.imageUrl ? this.state.currentSong.imageUrl : defaultSongImage;
     }
     
     getSongURL = () => {
-        return this.state.currentSong.imageUrl;
-    }
-    
-    addSongToFavorites = () => {
-    
+        return this.state.currentSong.url;
     }
 
     render(){
         return(
-            <div>
-                <div id="player-display">
-
-                </div>
-                <div id="player-controls">
-
-                </div>
-            </div>
+            <Container>
+                <Row>
+                    <Col id="player-display">
+                        <Image src={this.getSongImageURL()} thumbnail/>
+                    </Col>
+                    <Col id="player-controls">
+                        <Row>
+                            <Col>
+                                <Row>
+                                    <Button>Play</Button>
+                                </Row>
+                                <Row>
+                                    <ReactBootstrapRangeSlider/>
+                                </Row>
+                            </Col>
+                            <Col>
+                                <ReactBootstrapRangeSlider/>
+                            </Col>
+                        </Row>
+                    </Col>
+                </Row>
+            </Container>
         )
     }
 }
