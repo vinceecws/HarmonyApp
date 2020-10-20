@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactBootstrapRangeSlider from 'react-bootstrap-range-slider';
 
 /*
 var formData  = new FormData();
@@ -17,9 +18,71 @@ var html = fetch('http://soundcloud.com/oembed', {
 */
 
 class Player extends React.Component{
+
+    constructor (props) {
+        super(props);
+    }
+
+    state = {
+        currentSong: this.props.currentSong,
+        playing: this.props.playing,
+
+    }
+
+    seek = () => {
+
+    }
+
+    nextSong = () => {
+
+    }
+
+    previousSong = () => {
+
+    }
+
+    togglePlay = () => {
+
+    }
+
+    toggleRepeat = () => {
+
+    }
+
+    toggleShuffle = () => {
+
+    }
+
+    setVolume = () => {
+
+    }
+
+    toggleMute = () => {
+
+    }
+
+    getSongImageURL = () => {
+        return this.state.currentSong.url;
+    }
+    
+    getSongURL = () => {
+        return this.state.currentSong.imageUrl;
+    }
+    
+    addSongToFavorites = () => {
+    
+    }
+
     render(){
         return(
-            null
+            <div>
+                <div id="player-display">
+
+                </div>
+                <div id="player-controls">
+
+                </div>
+            </div>
         )
     }
 }

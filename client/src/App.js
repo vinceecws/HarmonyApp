@@ -8,10 +8,10 @@ function App() {
   
   return (
     <div>
-      <Player/>
       <header className='Session-Side-List'>
         <SessionSideList/>
       </header>
+      <Player/>
     </div>
     
       
