@@ -20,3 +20,4 @@ class SessionScreen extends React.Component {
     render(){
         return null;
     }
+}
