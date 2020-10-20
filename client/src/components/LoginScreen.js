@@ -1,6 +1,6 @@
 import React from 'react';
 
-class LoginPage extends React.Component{
+class LoginScreen extends React.Component{
 
     render(){
         <div>

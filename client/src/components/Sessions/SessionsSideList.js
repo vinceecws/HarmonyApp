@@ -1,5 +1,5 @@
 import React from 'react';
-import SessionEntry from './sessionentry.js'
+import SessionEntry from './SessionEntry.js'
 
 let sessions = require('../../test/sampleSessions.json')
 console.log(sessions);
