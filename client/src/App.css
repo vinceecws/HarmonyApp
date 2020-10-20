@@ -3,11 +3,14 @@
 }
 
 .Session-Side-List {
-  text-align: center;
-  display: inline-block;
-  width: 300px;
-  height: 1000px;
-  background: white;
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex, inline-block;
+  text-align: left;
+  width: 350px;
+  flex-direction: column;
+  justify-content: center;
+  color: black;
 }
 
 .Session-Component {
