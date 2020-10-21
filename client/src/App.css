@@ -24,6 +24,11 @@
   color: black;
 }
 
+.Session-Entry-Text{
+  text-align: left;
+  align-content: flex-end;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
