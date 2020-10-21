@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactBootstrapRangeSlider from 'react-bootstrap-range-slider';
 import {Container, Row, Col, Image, Button} from 'react-bootstrap';
-import defaultSongImage from '../graphics/default_song_image.svg';
+import {icon_play_1} from '../graphics';
 
 /*
 var formData  = new FormData();
@@ -71,7 +71,7 @@ class Player extends React.Component{
     }
 
     getSongImageURL = () => {
-        return this.state.currentSong.imageUrl ? this.state.currentSong.imageUrl : defaultSongImage;
+        return this.state.currentSong.imageUrl ? this.state.currentSong.imageUrl : icon_play_1;
     }
     
     getSongURL = () => {
