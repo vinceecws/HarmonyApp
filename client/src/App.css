@@ -1,3 +1,8 @@
+@font-face {
+  font-family: BalsamiqSans;
+  src: url(./graphics/balsamiq_sans/BalsamiqSans-Regular.ttf)
+}
+
 .App {
   text-align: center;
 }
@@ -25,6 +30,7 @@
 }
 
 .Session-Entry-Text{
+  font-family: BalsamiqSans;
   text-align: left;
   align-content: flex-end;
 }
@@ -62,4 +68,96 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.left-panel {
+  width: 25% !important;
+}
+
+
+/* Music Player */
+#player-container {
+  height: 150px;
+  background-color: #505050;
+  min-width: 1700px;
+  min-height: 150px;
+}
+
+#player-display {
+  padding-top: 1%;
+  padding-left: 1%;
+}
+
+#player-song-image {
+  background: transparent !important;
+  border: none;
+  height: 120px;
+  width: 120px;
+}
+
+#player-song-title {
+  height: 100%;
+  width: 100%;
+  padding-top: 15%;
+  font-family: BalsamiqSans;
+  color: lightgray;
+}
+
+#player-controls {
+  justify-content: center;
+  align-items: center;
+}
+
+#player-volume-bar-container {
+  height: 100%;
+  padding-top: 20%;
+}
+
+.player-volume {
+  width: 180px !important;
+}
+
+#player-progress-bar-container ,#player-progress-container {
+  width: 100%;
+  justify-content: center;
+}
+
+.player-progress-bar {
+  width: 750px !important;
+}
+
+#player-controls-main-container {
+  padding: 20px 420px 0px 420px;
+}
+
+.player-control-button, #player-mute-button {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.player-control-button-icon {
+  color: white;
+  height: 45px;
+  width: 45px;
+}
+
+.player-control-button-icon-on {
+  border: 3px solid #32cd32;
+  background-color: #32cd32;
+  height: 45px;
+  width: 45px;
+}
+
+.player-control-button-icon:hover, .player-control-button-icon-on:hover, #player-mute-button-icon:hover {
+  background-color: white;
+}
+
+.player-control-button-icon:active, .player-control-button-icon-on:active, #player-mute-button-icon:active {
+  background-color: darkgray;
+}
+
+#player-mute-button-icon {
+  height: 25px;
+  width: 25px;
 }
