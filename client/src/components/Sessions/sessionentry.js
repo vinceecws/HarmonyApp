@@ -8,6 +8,7 @@ class SessionEntry extends React.Component{
 		return(
 			<div>
 				<a href={this.props.hostId} className='list-group-item list-group-item-action'>
+					<h1 className='Session-Entry-Text'>{this.props.user.name}</h1>
 					<Ticker>
 							{({ index }) => (<h1 className='Session-Entry-Text'>{this.props.name}</h1>)}
 					</Ticker>
