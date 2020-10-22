@@ -6,7 +6,7 @@ let users = require('../../test/sampleUsers.json')
 
 
 class SessionSideList extends React.Component{
-        render(){
+    render(){
         var sessionEntries = [];
         var hostUsers = [];
         sessionEntries = sessions.map(item => <SessionEntry
@@ -18,7 +18,7 @@ class SessionSideList extends React.Component{
     		<div className='list-group'>
     			{sessionEntries}
         	</div>
-    	);
+        );
         
     }
 }
