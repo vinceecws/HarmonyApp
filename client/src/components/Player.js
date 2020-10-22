@@ -140,7 +140,7 @@ class Player extends React.Component{
         return(
             <Container id="player-container" fluid>
                 <Row>
-                    <Col id="player-display"sm={2} md={2} lg={2} xl={2}>
+                    <Col id="player-display">
                         <Row>
                             <Col sm={6} md={6} lg={6} xl={6}>
                                 <Image id="player-song-image" src={this.getSongImage()} thumbnail/>
@@ -151,56 +151,39 @@ class Player extends React.Component{
                             </Col>
                         </Row>
                     </Col>
-                    <Col id="player-controls">
+                    <Col id="player-controls" sm={8} md={8} lg={8} xl={8}>
+                        <Row id="player-controls-main-container"> 
+                            <Button className="player-control-button" onClick={e => this.toggleRepeat()}>
+                                <Image className={this.getRepeatButtonIconClass()} src={this.getRepeatButtonIcon()} roundedCircle/>
+                            </Button>
+                            <Button className="player-control-button" onClick={e => this.previousSong()}>
+                                <Image className="player-control-button-icon" src={icon_previous} roundedCircle/>
+                            </Button>
+                            <Button className="player-control-button" onClick={e => this.togglePlay()}>
+                                <Image className="player-control-button-icon" src={this.getPlayButtonIcon()} roundedCircle/>
+                            </Button>
+                            <Button className="player-control-button" onClick={e => this.nextSong()}>
+                                <Image className="player-control-button-icon" src={icon_next} roundedCircle/>
+                            </Button>
+                            <Button className="player-control-button" onClick={e => this.toggleShuffle()}>
+                                <Image className={this.getShuffleButtonIconClass()} src={icon_shuffle_arrows} roundedCircle/>
+                            </Button>
+                        </Row>
+                        <Row id="player-progress-bar-container">
+                            <span className="player-progress-display">{this.getSongProgress()}</span>
+                            <RangeSlider className="player-progress-bar" variant="dark" tooltip="off" value={this.state.progress} onChange={e => this.seek(e.target.value)} min={0} max={this.state.currentSong.duration}/>
+                            <span className="player-progress-display">{this.getSongDuration()}</span>
+                        </Row>
+                    </Col>
+                    <Col id="player-volume-bar-container">
                         <Row>
-                            <Col>
-                                <Row id="player-controls-main-container" sm={5} md={5} lg={5} xl={5}>
-                                    <Col>
-                                        <Button className="player-control-button" onClick={e => this.toggleRepeat()}>
-                                            <Image className={this.getRepeatButtonIconClass()} src={this.getRepeatButtonIcon()} roundedCircle/>
-                                        </Button>
-                                    </Col>
-                                    <Col>
-                                        <Button className="player-control-button" onClick={e => this.previousSong()}>
-                                            <Image className="player-control-button-icon" src={icon_previous} roundedCircle/>
-                                        </Button>
-                                    </Col>
-                                    <Col>
-                                        <Button className="player-control-button" onClick={e => this.togglePlay()}>
-                                            <Image className="player-control-button-icon" src={this.getPlayButtonIcon()} roundedCircle/>
-                                        </Button>
-                                    </Col>
-                                    <Col>
-                                        <Button className="player-control-button" onClick={e => this.nextSong()}>
-                                            <Image className="player-control-button-icon" src={icon_next} roundedCircle/>
-                                        </Button>
-                                    </Col>
-                                    <Col>
-                                        <Button className="player-control-button" onClick={e => this.toggleShuffle()}>
-                                            <Image className={this.getShuffleButtonIconClass()} src={icon_shuffle_arrows} roundedCircle/>
-                                        </Button>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col>
-                                        <Row id="player-progress-bar-container">
-                                            <RangeSlider className="player-progress-bar" variant="dark" tooltip="off" value={this.state.progress} onChange={e => this.seek(e.target.value)} min={0} max={this.state.currentSong.duration}/>
-                                        </Row>
-                                        <Row id="player-progress-container">{this.getSongProgress() + "/" + this.getSongDuration()}</Row>
-                                    </Col>
-                                </Row>
+                            <Col m={2} md={2} lg={2} xl={2}>
+                                <Button id="player-mute-button" onClick={e => this.toggleMute()}>
+                                    <Image id="player-mute-button-icon" src={this.getMuteButtonIcon()} roundedCircle/>
+                                </Button>
                             </Col>
-                            <Col sm={3} md={3} lg={3} xl={3}>
-                                <Row id="player-volume-bar-container" sm={2} md={2} lg={2} xl={2}>
-                                    <Col m={2} md={2} lg={2} xl={2}>
-                                        <Button id="player-mute-button" onClick={e => this.toggleMute()}>
-                                            <Image id="player-mute-button-icon" src={this.getMuteButtonIcon()} roundedCircle/>
-                                        </Button>
-                                    </Col>
-                                    <Col>
-                                        <RangeSlider className="player-volume" tooltip="off" value={this.state.volume} onChange={e => this.setVolume(e.target.value)} min={0} max={100}/>
-                                    </Col>
-                                </Row>
+                            <Col>
+                                <RangeSlider className="player-volume" variant="dark" tooltip="off" value={this.state.volume} onChange={e => this.setVolume(e.target.value)} min={0} max={100}/>
                             </Col>
                         </Row>
                     </Col>

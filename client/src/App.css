@@ -8,11 +8,11 @@
 }
 
 .Session-Side-List {
+  height: 100%;
   background-color: #282c34;
-  min-height: 100vh;
   display: flex, inline-block;
   text-align: left;
-  width: 350px;
+  width: 100%;
   flex-direction: column;
   justify-content: center;
   color: black;
@@ -20,7 +20,6 @@
 
 .Session-Component {
   background-color: #282c34;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: left;
@@ -35,57 +34,53 @@
   align-content: flex-end;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+#app-container {
+  margin: 0;
+  padding: 0;
+  max-width: 100% !important;
+  height: 100vh;
+  overflow: hidden;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+#top-container {
+  height: 86%;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: black;
+#side-list-container {
+  padding: 0;
 }
 
-.App-link {
-  color: #61dafb;
+#screen-container {
+  background-color: gray;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+#bottom-container {
+  height: 14%;
 }
-
-.left-panel {
-  width: 25% !important;
-}
-
 
 /* Music Player */
 #player-container {
-  height: 150px;
+  height: 140px;
   background-color: #505050;
-  min-width: 1700px;
-  min-height: 150px;
+  min-width: 1500px;
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+}
+
+#player-container .row {
+  align-items: center;
+  width: 100%;
 }
 
 #player-display {
-  padding-top: 1%;
-  padding-left: 1%;
+  margin: auto;
+  text-align: center;
+}
+
+#player-display .row {
+  margin-left: 15px;
+  margin-right: 0;
 }
 
 #player-song-image {
@@ -98,9 +93,9 @@
 #player-song-title {
   height: 100%;
   width: 100%;
-  padding-top: 15%;
   font-family: BalsamiqSans;
   color: lightgray;
+  text-align: left;
 }
 
 #player-controls {
@@ -110,24 +105,29 @@
 
 #player-volume-bar-container {
   height: 100%;
-  padding-top: 20%;
 }
 
 .player-volume {
   width: 180px !important;
 }
 
-#player-progress-bar-container ,#player-progress-container {
+#player-progress-bar-container {
   width: 100%;
   justify-content: center;
+  align-items: center;
 }
 
 .player-progress-bar {
   width: 750px !important;
 }
 
+.player-progress-display {
+  padding: 10px;
+}
+
 #player-controls-main-container {
-  padding: 20px 420px 0px 420px;
+  align-items: center;
+  justify-content: center;
 }
 
 .player-control-button, #player-mute-button {
@@ -161,3 +161,5 @@
   height: 25px;
   width: 25px;
 }
+
+/* Home Screen */
