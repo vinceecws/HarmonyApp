@@ -4,7 +4,9 @@
 
 .Session-Side-List {
   background-color: #282c34;
-  min-height: 100vh;
+  height : 75%;
+  padding-bottom: 25%;
+  
   display: flex, inline-block;
   text-align: left;
   width: 350px;
@@ -26,10 +28,12 @@
 
 .Session-Entry-Text{
   text-align: left;
-  align-content: center;
+  align-content: left;
   overflow: hidden;
   white-space: nowrap;
+  font-size: calc(10px + 2vmin);
   text-overflow: ellipsis;
+  text-indent: 1em;
 }
 
 .container.show .innerBox {

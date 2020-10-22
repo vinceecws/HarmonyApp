@@ -8,9 +8,9 @@ function App() {
   
   return (
     <div>
-      <header className='Session-Side-List'>
+      <div className='Session-Side-List'>
         <SessionSideList/>
-      </header>
+      </div>
       <Player/>
     </div>
     
