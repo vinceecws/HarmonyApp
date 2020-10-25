@@ -3,6 +3,12 @@
   src: url(./graphics/balsamiq_sans/BalsamiqSans-Regular.ttf)
 }
 
+body, html {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
 .App {
   text-align: center;
 }
@@ -43,119 +49,201 @@
   display: block;
 }
 
+#root {
+  width: 100vw;
+  height: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
 #app-container {
+  max-width: 100% !important;
+  min-width: 800px;
+  height: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
-  max-width: 100% !important;
-  height: 100vh;
-  overflow: hidden;
 }
 
 #top-container {
-  height: 86%;
+  min-height: 600px;
+  height: calc(100% - 120px);
+  margin: 0;
 }
 
 #side-list-container {
   padding: 0;
+  width: 225px;
+  min-width: 225px;
 }
 
 #screen-container {
   background-color: gray;
+  padding: 0;
+  width: 575px;
+  min-width: 575px;
 }
 
 #bottom-container {
-  height: 14%;
+  min-height: 120px;
+  height: 120px;
+  margin: 0;
 }
 
 /* Music Player */
 #player-container {
-  height: 140px;
+  height: 120px;
   background-color: #505050;
-  min-width: 1500px;
-  min-height: 140px;
+  width: 100%;
+  min-height: 120px;
   display: flex;
   align-items: center;
+  padding: 0;
 }
 
 #player-container .row {
   align-items: center;
   width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+#player-container .col {
+  padding: 0;
 }
 
 #player-display {
-  margin: auto;
+  margin: 0;
+  width: 240px;
+  min-width: 240px;
+  max-width: 240px;
+  height: 100%;
   text-align: center;
 }
 
-#player-display .row {
-  margin-left: 15px;
-  margin-right: 0;
+#player-song-image-container {
+  height: 120px;
+  width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #player-song-image {
   background: transparent !important;
   border: none;
-  height: 120px;
-  width: 120px;
+  height: 100px;
+  width: 100px;
 }
 
 #player-song-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   height: 100%;
-  width: 100%;
+  width: 120px;
   font-family: BalsamiqSans;
   color: lightgray;
   text-align: left;
+  overflow: hidden;
+}
+
+#player-song-title div {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+#player-song-title div:hover {
+  text-overflow: clip;
+  animation: marquee 5s linear 1;
+}
+
+@keyframes marquee {
+  0%   { transform: translate(0, 0); }
+  50%  { 
+    transform: translate(-100%, 0);
+  }
+  50.01% {
+    transform: translate(100%, 0);
+  }
+  100% { transform: translate(0%, 0); }
 }
 
 #player-controls {
+  padding: 0;
+  width: calc((100% - 240px - 200px));
+  height: 100%;
   justify-content: center;
   align-items: center;
 }
 
-#player-volume-bar-container {
+#player-volume-container {
+  width: 200px;
+  min-width: 200px;
+  max-width: 200px;
   height: 100%;
 }
 
-.player-volume {
-  width: 180px !important;
+#player-volume-container .row {
+  justify-content: left;
+}
+
+#player-controls-main-container {
+  height: 60% !important;
+  align-items: center;
+  justify-content: center;
 }
 
 #player-progress-bar-container {
-  width: 100%;
+  height: 40% !important;
   justify-content: center;
   align-items: center;
 }
 
-.player-progress-bar {
-  width: 750px !important;
+#player-progress-bar-container span {
+  display: inline-block !important;
+  min-width: 250px;
+  width: 70% !important;
 }
 
 .player-progress-display {
   padding: 10px;
 }
 
-#player-controls-main-container {
-  align-items: center;
-  justify-content: center;
-}
-
-.player-control-button, #player-mute-button {
+.player-control-button {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
 }
 
+#player-mute-button {
+  padding: 0;
+}
+
+#player-volume-bar-container {
+  padding: 12px !important;
+  min-width: 130px;
+}
+
+#player-volume-bar-container span {
+  display: inline-block !important;
+  width: 100%;
+}
+
 .player-control-button-icon {
   color: white;
-  height: 45px;
-  width: 45px;
+  height: 35px;
+  width: 35px;
 }
 
 .player-control-button-icon-on {
   border: 3px solid #32cd32;
   background-color: #32cd32;
-  height: 45px;
-  width: 45px;
+  height: 35px;
+  width: 35px;
 }
 
 .player-control-button-icon:hover, .player-control-button-icon-on:hover, #player-mute-button-icon:hover {

@@ -136,22 +136,27 @@ class Player extends React.Component{
         return false;
     }
 
+    getSlidableTitle = (e) => {
+        console.log(e)
+        console.log("HELLO")
+    }
+
     render(){
         return(
             <Container id="player-container" fluid>
                 <Row>
                     <Col id="player-display">
                         <Row>
-                            <Col sm={6} md={6} lg={6} xl={6}>
+                            <Col id="player-song-image-container">
                                 <Image id="player-song-image" src={this.getSongImage()} thumbnail/>
                             </Col>
                             <Col id="player-song-title">
-                                <Row>{this.getSongName()}</Row>
-                                <Row>{this.getArtist()}</Row>
+                                <div>{this.getSongName()}</div>
+                                <div>{this.getArtist()}</div>
                             </Col>
                         </Row>
                     </Col>
-                    <Col id="player-controls" sm={8} md={8} lg={8} xl={8}>
+                    <Col id="player-controls">
                         <Row id="player-controls-main-container"> 
                             <Button className="player-control-button" onClick={e => this.toggleRepeat()}>
                                 <Image className={this.getRepeatButtonIconClass()} src={this.getRepeatButtonIcon()} roundedCircle/>
@@ -170,21 +175,19 @@ class Player extends React.Component{
                             </Button>
                         </Row>
                         <Row id="player-progress-bar-container">
-                            <span className="player-progress-display">{this.getSongProgress()}</span>
+                            <div className="player-progress-display">{this.getSongProgress()}</div>
                             <RangeSlider className="player-progress-bar" variant="dark" tooltip="off" value={this.state.progress} onChange={e => this.seek(e.target.value)} min={0} max={this.state.currentSong.duration}/>
-                            <span className="player-progress-display">{this.getSongDuration()}</span>
+                            <div className="player-progress-display">{this.getSongDuration()}</div>
                         </Row>
                     </Col>
-                    <Col id="player-volume-bar-container">
+                    <Col id="player-volume-container">
                         <Row>
-                            <Col m={2} md={2} lg={2} xl={2}>
-                                <Button id="player-mute-button" onClick={e => this.toggleMute()}>
-                                    <Image id="player-mute-button-icon" src={this.getMuteButtonIcon()} roundedCircle/>
-                                </Button>
-                            </Col>
-                            <Col>
-                                <RangeSlider className="player-volume" variant="dark" tooltip="off" value={this.state.volume} onChange={e => this.setVolume(e.target.value)} min={0} max={100}/>
-                            </Col>
+                            <Button id="player-mute-button" className="player-control-button" onClick={e => this.toggleMute()}>
+                                <Image id="player-mute-button-icon" src={this.getMuteButtonIcon()} roundedCircle/>
+                            </Button>
+                            <div id="player-volume-bar-container">
+                                <RangeSlider className="player-volume-bar" variant="dark" tooltip="off" value={this.state.volume} onChange={e => this.setVolume(e.target.value)} min={0} max={100}/>
+                            </div>
                         </Row>
                     </Col>
                 </Row>
