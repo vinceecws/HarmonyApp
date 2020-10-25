@@ -15,7 +15,7 @@ class SessionSideList extends React.Component{
                     user={users.find(user => user.Id === item.hostId)}
                 /> );
     	return(
-    		<div className='list-group'>
+    		<div className='list-group list-group-session'>
     			{sessionEntries}
         	</div>
         );
