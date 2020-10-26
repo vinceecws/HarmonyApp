@@ -1,7 +1,7 @@
 import React from 'react';
 import RangeSlider from 'react-bootstrap-range-slider';
 import { Container, Row, Col, Image, Button } from 'react-bootstrap';
-import { icon_play_2, icon_pause_3, icon_music_album_3, icon_previous, icon_next, icon_repeat_3, icon_repeat_1, icon_shuffle_arrows, icon_volume_up_1, icon_no_sound} from '../graphics';
+import { icon_play_2, icon_pause_3, icon_music_album_3, icon_previous, icon_next, icon_repeat_3, icon_repeat_1, icon_shuffle_arrows, icon_volume_up_1, icon_no_sound, icon_like } from '../graphics';
 import { repeatStates } from '../const'
 
 /*
@@ -27,7 +27,7 @@ class Player extends React.Component{
     }
 
     state = {
-        currentSong: {id: 'abcd1234', url: null, imageUrl: null, duration: 100, name: "Saturday Nights", artist: "Khalid"},
+        currentSong: {id: 'abcd1234', url: null, imageUrl: null, duration: 100, name: "Saturday Nights", artist: "Khalid", favorited: false},
         playing: false,
         progress: 0,
         volume: 50,
@@ -80,8 +80,14 @@ class Player extends React.Component{
         })
     }
 
+    /*
+        In practice, there will not be a favorited state, 
+        and toggleFavorite will simply add/remove the song to/from the user's favorite songs list
+    */
     toggleFavorite = () => {
-        
+        this.setState({
+            favorited: !this.state.favorited
+        })
     }
 
     getSongProgress = () => {
@@ -132,13 +138,16 @@ class Player extends React.Component{
         return this.state.mute ? icon_no_sound : icon_volume_up_1;
     }
 
-    getFavorite = () => {
-        return false;
+    getFavoriteButtonIconClass = () => {
+        return this.getFavorite() ? 'player-song-favorite-button-icon-on' : 'player-song-favorite-button-icon'
     }
 
-    getSlidableTitle = (e) => {
-        console.log(e)
-        console.log("HELLO")
+    /*
+        In practice, there will not be a favorited state, 
+        and getFavorite will simply check if the song is in the user's favorite songs list
+    */
+    getFavorite = () => {
+        return this.state.favorited;
     }
 
     render(){
@@ -153,6 +162,9 @@ class Player extends React.Component{
                             <Col id="player-song-title">
                                 <div>{this.getSongName()}</div>
                                 <div>{this.getArtist()}</div>
+                                <Button id="player-song-favorite-button">
+                                    <Image className={this.getFavoriteButtonIconClass()} src={icon_like} onClick={e => this.toggleFavorite()} roundedCircle/>
+                                </Button>
                             </Col>
                         </Row>
                     </Col>
