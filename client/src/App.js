@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import Player from './components/Player.js'
 import HomeScreen from './components/HomeScreen.js'
+import SettingsScreen from './components/SettingsScreen.js'
 import SessionSideList from './components/Sessions/SessionsSideList.js';
 import { Container, Row, Col } from 'react-bootstrap';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
@@ -21,7 +22,7 @@ function App() {
             </header>
           </Col>
           <Col id="screen-container">
-            <HomeScreen/>
+            <SettingsScreen/>
           </Col>
         </Row>
         <Row id="bottom-container">
