@@ -1,6 +1,6 @@
 [
     {
-        "title": "Feel For It",
+        "name": "Feel For It",
         "artist": "MoMA Ready",
         "album": "Feel For It",
         "embedLink": "https://soundcloud.com/moma_ready/feel-for-it",
@@ -8,7 +8,7 @@
         "likes": 23
     },
     {
-        "title": "För alla namn vi inte får använda (Europa Europa Theme)",
+        "name": "För alla namn vi inte får använda (Europa Europa Theme)",
         "artist": "The Knife",
         "album": "",
         "embedLink": "https://soundcloud.com/theknife/foer-alla-namn-vi-inte-far",
@@ -16,7 +16,7 @@
         "likes": 110
     },
     {
-        "title": "Menestra",
+        "name": "Menestra",
         "artist": "Dengue Dengue Dengue",
         "album": "Menestra",
         "embedLink": "https://soundcloud.com/dengue/menestra",
@@ -24,7 +24,7 @@
         "likes": 101
     },
     {
-        "title": "Com Truise - False Ascendancy",
+        "name": "Com Truise - False Ascendancy",
         "artist": "ghostly",
         "album": "False Ascendancy",
         "embedLink": "https://soundcloud.com/ghostly/com-truise-false-ascendancy",
@@ -32,7 +32,7 @@
         "likes": 36
     },
     {
-        "title": "Play Odds",
+        "name": "Play Odds",
         "artist": "Golin",
         "album": "Play Odds",
         "embedLink": "https://soundcloud.com/5_lin/play-odds",
@@ -40,7 +40,7 @@
         "likes": 6
     },
     {
-        "title": "Logic1000 - Blossom",
+        "name": "Logic1000 - Blossom",
         "artist": "Logic1000",
         "album": "",
         "embedLink": "https://soundcloud.com/logic1000/logic1000-blossom-1",
@@ -48,7 +48,7 @@
         "likes": 73
     },
     {
-        "title": "BICEP | APRICOTS",
+        "name": "BICEP | APRICOTS",
         "artist": "BICEP",
         "album": "",
         "embedLink": "https://soundcloud.com/feelmybicep/bicep-apricots",
@@ -56,7 +56,7 @@
         "likes": 44
     },
     {
-        "title": "Heathered Pearls - Salvaged Copper (feat. Terrence Dixon)",
+        "name": "Heathered Pearls - Salvaged Copper (feat. Terrence Dixon)",
         "artist": "ghostly",
         "album": "",
         "embedLink": "https://soundcloud.com/ghostly/heathered-pearls-salvaged-copper",
@@ -64,7 +64,7 @@
         "likes": 75
     },
     {
-        "title": "Glitch Bitch",
+        "name": "Glitch Bitch",
         "artist": "Loraine James",
         "album": "Glitch Bitch",
         "embedLink": "https://soundcloud.com/lorainejames-music/glitch-bitch-1",
@@ -72,7 +72,7 @@
         "likes": 90
     },
     {
-        "title": "Siren",
+        "name": "Siren",
         "artist": "Tourist",
         "album": "Siren",
         "embedLink": "https://soundcloud.com/touristmusic/siren",

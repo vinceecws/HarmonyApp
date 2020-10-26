@@ -80,10 +80,13 @@ body, html {
 }
 
 #screen-container {
-  background-color: gray;
+  background-color: #171717;
   padding: 0;
-  width: 575px;
+  width: 100%;
   min-width: 575px;
+  height: 100%;
+  overflow-x: hidden !important;
+  overflow-y: scroll;
 }
 
 #bottom-container {
@@ -92,7 +95,7 @@ body, html {
   margin: 0;
 }
 
-/* Music Player */
+/* Player */
 #player-container {
   height: 120px;
   background-color: #505050;
@@ -157,7 +160,7 @@ body, html {
 }
 
 #player-song-title div:hover {
-  text-overflow: clip;
+  overflow: visible;
   animation: marquee 5s linear 1;
 }
 
@@ -280,3 +283,58 @@ body, html {
 }
 
 /* Home Screen */
+#home-screen-container {
+  padding: 30px;
+}
+
+.home-screen-category-container {
+  width: 100%;
+  padding: 10px;
+}
+
+.home-screen-category-name {
+  padding: 5px;
+  font-family: BalsamiqSans;
+  color: gray;
+  font-size: 30px;
+}
+
+.home-screen-category-list {
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-wrap: nowrap !important;
+}
+
+.home-screen-category-list-item {
+  flex: 0 0 auto !important;
+  height: 220px;
+  width: 200px;
+  background-color: gray !important;
+}
+
+.home-screen-category-list-item-img {
+  height: 160px;
+  width: 160px;
+  background-color: gray;
+}
+
+.home-screen-category-list-item-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: whitesmoke;
+  font-family: BalsamiqSans;
+  overflow: hidden;
+}
+
+.home-screen-category-list-item-footer div{
+  width: 180px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap
+}
+
+.home-screen-category-list-item-footer div:hover {
+  overflow: visible;
+  animation: marquee 5s linear 1;
+}

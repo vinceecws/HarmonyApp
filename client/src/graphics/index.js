@@ -1,6 +1,6 @@
-/* This file is strictly intended for graphics imports*/
+/* This file is strictly intended for graphics exports*/
 
-/* music_player_pack imports*/
+/* music_player_pack exports*/
 export const icon_music_1 = require('./music_player_pack/001-music.svg')
 export const icon_play_1 = require('./music_player_pack/002-play.svg')
 export const icon_pause_1 = require('./music_player_pack/003-pause.svg')

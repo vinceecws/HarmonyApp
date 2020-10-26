@@ -22,10 +22,6 @@ var html = fetch('http://soundcloud.com/oembed', {
 
 class Player extends React.Component{
 
-    constructor (props) {
-        super(props);
-    }
-
     state = {
         currentSong: {id: 'abcd1234', url: null, imageUrl: null, duration: 100, name: "Saturday Nights", artist: "Khalid", favorited: false},
         playing: false,
