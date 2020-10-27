@@ -1,13 +1,24 @@
+@font-face {
+  font-family: BalsamiqSans;
+  src: url(./graphics/balsamiq_sans/BalsamiqSans-Regular.ttf)
+}
+
+body, html {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
 .App {
   text-align: center;
 }
 
 .Session-Side-List {
+  height: 100%;
   background-color: #282c34;
-  min-height: 100vh;
   display: flex, inline-block;
   text-align: left;
-  width: 350px;
+  width: 100%;
   flex-direction: column;
   justify-content: center;
   color: black;
@@ -15,7 +26,6 @@
 
 .Session-Component {
   background-color: #282c34;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: left;
@@ -25,41 +35,306 @@
 }
 
 .Session-Entry-Text{
+  font-family: BalsamiqSans;
   text-align: left;
-  align-content: flex-end;
+  align-content: left;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: calc(10px + 2vmin);
+  text-overflow: ellipsis;
+  text-indent: 1em;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.container.show .innerBox {
+  display: block;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+#root {
+  width: 100vw;
+  height: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+#app-container {
+  max-width: 100% !important;
+  min-width: 800px;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#top-container {
+  min-height: 600px;
+  height: calc(100% - 120px);
+  margin: 0;
+}
+
+#side-list-container {
+  padding: 0;
+  width: 225px;
+  min-width: 225px;
+}
+
+#screen-container {
+  background-color: #171717;
+  padding: 0;
+  width: 100%;
+  min-width: 575px;
+  height: 100%;
+  overflow-x: hidden !important;
+  overflow-y: scroll;
+}
+
+#bottom-container {
+  min-height: 120px;
+  height: 120px;
+  margin: 0;
+}
+
+/* Player */
+#player-container {
+  height: 120px;
+  background-color: #505050;
+  width: 100%;
+  min-height: 120px;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  padding: 0;
+}
+
+#player-container .row {
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+#player-container .col {
+  padding: 0;
+}
+
+#player-display {
+  margin: 0;
+  width: 240px;
+  min-width: 240px;
+  max-width: 240px;
+  height: 100%;
+  text-align: center;
+}
+
+#player-song-image-container {
+  height: 120px;
+  width: 120px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: black;
 }
 
-.App-link {
-  color: #61dafb;
+#player-song-image {
+  background: transparent !important;
+  border: none;
+  height: 100px;
+  width: 100px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+#player-song-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  width: 120px;
+  font-family: BalsamiqSans;
+  color: lightgray;
+  text-align: left;
+  overflow: hidden;
+}
+
+#player-song-title div {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+#player-song-title div:hover {
+  overflow: visible;
+  animation: marquee 5s linear 1;
+}
+
+@keyframes marquee {
+  0%   { transform: translate(0, 0); }
+  50%  { 
+    transform: translate(-100%, 0);
   }
-  to {
-    transform: rotate(360deg);
+  50.01% {
+    transform: translate(100%, 0);
   }
+  100% { transform: translate(0%, 0); }
+}
+
+#player-controls {
+  padding: 0;
+  width: calc((100% - 240px - 200px));
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+#player-volume-container {
+  width: 200px;
+  min-width: 200px;
+  max-width: 200px;
+  height: 100%;
+}
+
+#player-volume-container .row {
+  justify-content: left;
+}
+
+#player-controls-main-container {
+  height: 60% !important;
+  align-items: center;
+  justify-content: center;
+}
+
+#player-progress-bar-container {
+  height: 40% !important;
+  justify-content: center;
+  align-items: center;
+}
+
+#player-progress-bar-container span {
+  display: inline-block !important;
+  min-width: 250px;
+  width: 70% !important;
+}
+
+.player-progress-display {
+  padding: 10px;
+}
+
+#player-song-favorite-button {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  position: absolute;
+  bottom: 6px;
+  right: 0;
+  cursor: default;
+}
+
+.player-control-button {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+#player-mute-button {
+  padding: 0;
+}
+
+#player-volume-bar-container {
+  padding: 12px !important;
+  min-width: 130px;
+}
+
+#player-volume-bar-container span {
+  display: inline-block !important;
+  width: 100%;
+}
+
+.player-song-favorite-button-icon {
+  height: 25px;
+  width: 25px;
+}
+
+.player-song-favorite-button-icon-on {
+  background-color: lightgray;
+  height: 25px;
+  width: 25px;
+}
+
+.player-control-button-icon {
+  height: 35px;
+  width: 35px;
+}
+
+.player-control-button-icon-on {
+  border: 3px solid #32cd32;
+  background-color: #32cd32;
+  height: 35px;
+  width: 35px;
+}
+
+.player-control-button-icon:hover, .player-control-button-icon-on:hover, #player-mute-button-icon:hover {
+  background-color: white;
+}
+
+.player-control-button-icon:active, .player-control-button-icon-on:active, #player-mute-button-icon:active {
+  background-color: darkgray;
+}
+
+#player-mute-button-icon {
+  height: 25px;
+  width: 25px;
+}
+
+/* Home Screen */
+#home-screen-container {
+  padding: 30px;
+}
+
+.home-screen-category-container {
+  width: 100%;
+  padding: 10px;
+}
+
+.home-screen-category-name {
+  padding: 5px;
+  font-family: BalsamiqSans;
+  color: gray;
+  font-size: 30px;
+}
+
+.home-screen-category-list {
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-wrap: nowrap !important;
+}
+
+.home-screen-category-list-item {
+  flex: 0 0 auto !important;
+  height: 220px;
+  width: 200px;
+  background-color: gray !important;
+}
+
+.home-screen-category-list-item-img {
+  height: 160px;
+  width: 160px;
+  background-color: gray;
+}
+
+.home-screen-category-list-item-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: whitesmoke;
+  font-family: BalsamiqSans;
+  overflow: hidden;
+}
+
+.home-screen-category-list-item-footer div{
+  width: 180px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap
+}
+
+.home-screen-category-list-item-footer div:hover {
+  overflow: visible;
+  animation: marquee 5s linear 1;
 }
