@@ -7,11 +7,7 @@ class TabScreen extends React.Component{
         this.state = {
             currentScreen: 0
         }
-        
     }
-
-    
-
 
     onPressHomeTab = () =>{
         this.setState({currentScreen: 0});
