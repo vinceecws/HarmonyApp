@@ -3,6 +3,11 @@
   src: url(./graphics/balsamiq_sans/BalsamiqSans-Regular.ttf)
 }
 
+.super-title {
+  font-family: BalsamiqSans;
+  font-size: xx-large;
+}
+
 .title {
   font-family: BalsamiqSans;
   font-size: x-large;
@@ -28,6 +33,15 @@
 
 .color-harmony {
   color: #00e400;
+}
+
+.visible {
+  visibility: visible;
+}
+
+.collapsed {
+  visibility: collapse;
+  display: none !important;
 }
 
 body, html {
@@ -187,6 +201,8 @@ body, html {
 #player-song-title div:hover {
   overflow: visible;
   animation: marquee 5s linear 1;
+  text-decoration: underline;
+  cursor: default;
 }
 
 @keyframes marquee {
@@ -319,8 +335,6 @@ body, html {
 
 .home-screen-category-name {
   padding: 10px 5px 10px 5px;
-  font-family: BalsamiqSans;
-  color: gray;
   font-size: 30px;
 }
 
@@ -332,7 +346,7 @@ body, html {
 
 .home-screen-category-list-item {
   flex: 0 0 auto !important;
-  height: 220px;
+  height: 240px;
   width: 200px;
   background-color: gray !important;
 }
@@ -344,11 +358,9 @@ body, html {
 }
 
 .home-screen-category-list-item-footer {
-  display: flex;
+  display: block;
   justify-content: center;
   align-items: center;
-  color: whitesmoke;
-  font-family: BalsamiqSans;
   overflow: hidden;
 }
 
@@ -362,11 +374,42 @@ body, html {
 .home-screen-category-list-item-footer div:hover {
   overflow: visible;
   animation: marquee 5s linear 1;
+  text-decoration: underline;
+  cursor: default;
 }
 
 /* Search Screen */
-.search-screen-history {
+.search-screen-container {
 
+}
+
+/* Search Box */
+.search-screen-search-box-container {
+  border: 1px solid #303030;
+  border-radius: 5px;;
+}
+
+.search-screen-search-box {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.search-screen-search-box-clear-button {
+  right: 10px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.search-screen-search-box-clear-button-icon {
+  height: 20px;
+  width: 20px;
+}
+
+/* History */
+.search-screen-history-title {
+  padding: 10px 0px 0px 20px;
 }
 
 .search-screen-history-item {
@@ -400,13 +443,7 @@ body, html {
   padding: 10px 10px 10px 20px;
 }
 
-.search-screen-history-item-display-name {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.search-screen-history-item-display-creator {
+.search-screen-history-item-display-container div {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -424,4 +461,55 @@ body, html {
 .search-screen-history-item-remove-button-icon {
   height: 20px;
   width: 20px;
+}
+
+/* Results */
+.search-screen-results-category-container {
+  width: 100%;
+  padding: 10px;
+}
+
+.search-screen-results-category-name {
+  padding: 10px 5px 0px 25px;
+  font-size: 30px;
+  border-bottom: 1px solid #303030;
+  margin-bottom: 15px;
+}
+
+.search-screen-results-category-list {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-left: 20px;
+}
+
+.search-screen-results-category-list-item {
+  flex: 0 0 auto !important;
+  height: 190px;
+  width: 150px;
+  background-color: gray !important;
+  margin-bottom: 20px !important;
+}
+
+.search-screen-results-category-list-item-img {
+  height: 120px;
+  width: 120px;
+  background-color: gray;
+}
+
+.search-screen-results-category-list-item-footer {
+  display: block;
+  overflow: hidden;
+}
+
+.search-screen-results-category-list-item-footer div{
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.search-screen-results-category-list-item-footer div:hover {
+  overflow: visible;
+  animation: marquee 3s linear 1;
+  text-decoration: underline;
+  cursor: default;
 }

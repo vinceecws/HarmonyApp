@@ -18,7 +18,7 @@ String.prototype.capitalize = function() {
 
 ReactDOM.render(
   <React.StrictMode>
-    <TabScreen/>
+    <App/>
   </React.StrictMode>,
   document.getElementById('root')
 );

@@ -53,3 +53,4 @@ export const icon_playlist_3 = require('./music_player_pack/049-playlist.svg')
 export const icon_favorite_2 = require('./music_player_pack/050-favorite.svg')
 
 export const delete_cross_white = require('./delete-cross-white.svg')
+export const delete_button_white = require('./delete-button-white.svg')
