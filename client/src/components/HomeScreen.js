@@ -1,11 +1,6 @@
 import React from 'react';
-import { Container, Row, Col, CardDeck, Card } from 'react-bootstrap';
-import * as icons from '../test'
-
-let sessions = require('../test/sampleSessions.json')
-let collections = require('../test/sampleCollections.json')
-let songs = require('../test/sampleSongs.json')
-let users = require('../test/sampleUsers.json')
+import { CardDeck, Card } from 'react-bootstrap';
+import { genSampleImage, genSampleSuggestions } from '../test/genSamples'
 
 class HomeScreen extends React.Component {
 
@@ -15,29 +10,14 @@ class HomeScreen extends React.Component {
         and the array of suggested Objects
     */
     getSuggestions = () => {
-        return [
-            {
-                categoryName: "Your Top Hosts",
-                suggestions: users
-            }, 
-            {
-                categoryName: "Recently Streamed",
-                suggestions: sessions
-            },
-            {
-                categoryName: "Recommended For You",
-                suggestions: collections
-            },
-            {
-                categoryName: "Listen Again",
-                suggestions: songs
-            }
-        ]
+        return genSampleSuggestions()
     }
 
-    getObjImage = (obj) => {
-        let keys = Object.keys(icons);
-        return icons[keys[keys.length * Math.random() << 0]];
+    /*
+        In practice, fetchImage will fetch the song's image from the given URL
+    */
+    fetchImage = () => {
+        return genSampleImage()
     } 
   
     render() {
@@ -48,7 +28,7 @@ class HomeScreen extends React.Component {
                 {
                     category.suggestions.map(obj => 
                         <Card className="home-screen-category-list-item">
-                            <Card.Img className="home-screen-category-list-item-img" src={this.getObjImage(obj)}/>
+                            <Card.Img className="home-screen-category-list-item-img" src={this.fetchImage(obj)}/>
                             <Card.Footer className="home-screen-category-list-item-footer">
                                 <div>{obj.name}</div>
                             </Card.Footer>

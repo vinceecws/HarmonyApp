@@ -12,6 +12,10 @@ import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+String.prototype.capitalize = function() {
+  return this[0].toUpperCase() + this.substr(1)
+}
+
 ReactDOM.render(
   <React.StrictMode>
     <App/>

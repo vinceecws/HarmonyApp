@@ -3,6 +3,33 @@
   src: url(./graphics/balsamiq_sans/BalsamiqSans-Regular.ttf)
 }
 
+.title {
+  font-family: BalsamiqSans;
+  font-size: x-large;
+}
+
+.subtitle {
+  font-family: BalsamiqSans;
+  font-size: large;
+}
+
+.body-text {
+  font-family: BalsamiqSans;
+  font-size: medium;
+}
+
+.color-contrasted {
+  color: lightgray;
+}
+
+.color-accented {
+  color: whitesmoke;
+}
+
+.color-harmony {
+  color: #00e400;
+}
+
 body, html {
   height: 100%;
   width: 100%;
@@ -147,8 +174,6 @@ body, html {
   justify-content: center;
   height: 100%;
   width: 120px;
-  font-family: BalsamiqSans;
-  color: lightgray;
   text-align: left;
   overflow: hidden;
 }
@@ -293,7 +318,7 @@ body, html {
 }
 
 .home-screen-category-name {
-  padding: 5px;
+  padding: 10px 5px 10px 5px;
   font-family: BalsamiqSans;
   color: gray;
   font-size: 30px;
@@ -337,4 +362,66 @@ body, html {
 .home-screen-category-list-item-footer div:hover {
   overflow: visible;
   animation: marquee 5s linear 1;
+}
+
+/* Search Screen */
+.search-screen-history {
+
+}
+
+.search-screen-history-item {
+  height: 150px;
+  background-color: #171717 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.search-screen-history-item:hover {
+  background-color: darkgray !important;
+}
+
+.search-screen-history-item-type {
+
+}
+
+.search-screen-history-item-container {
+  display: flex;
+  padding: 10px;
+  justify-content: left;
+}
+
+.search-screen-history-item-display-image {
+  height: 60px;
+  width: 60px;
+}
+
+.search-screen-history-item-display-container {
+  padding: 10px 10px 10px 20px;
+}
+
+.search-screen-history-item-display-name {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.search-screen-history-item-display-creator {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.search-screen-history-item-remove-button {
+  position: absolute;
+  right: 50px;
+  bottom: 35%;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.search-screen-history-item-remove-button-icon {
+  height: 20px;
+  width: 20px;
 }

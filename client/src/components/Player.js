@@ -156,8 +156,8 @@ class Player extends React.Component{
                                 <Image id="player-song-image" src={this.getSongImage()} thumbnail/>
                             </Col>
                             <Col id="player-song-title">
-                                <div>{this.getSongName()}</div>
-                                <div>{this.getArtist()}</div>
+                                <div className="body-text color-contrasted">{this.getSongName()}</div>
+                                <div className="body-text color-contrasted">{this.getArtist()}</div>
                                 <Button id="player-song-favorite-button">
                                     <Image className={this.getFavoriteButtonIconClass()} src={icon_like} onClick={e => this.toggleFavorite()} roundedCircle/>
                                 </Button>
