@@ -33,12 +33,20 @@ class SearchScreen extends React.Component {
         })
     }
 
-    removeHistory = (e) => {
+    removeHistory = (e, index) => {
         e.stopPropagation()
+        var newHistory = this.reindexArray(this.state.history.filter(ele => ele.index != index))
+        this.setState({
+            history: newHistory
+        })
     }
 
-    reindexHistory = () => {
-
+    reindexArray = (array) => {
+        array = JSON.parse(JSON.stringify(array))
+        for (var i = 0; i < array.length; i++) {
+            array[i].index = i
+        }
+        return array
     }
 
     fetchHistory = () => {
@@ -65,6 +73,7 @@ class SearchScreen extends React.Component {
     }
 
     render() {
+        console.log(this.state.history)
         return(
             <div className="search-screen-container">
                 <InputGroup className="search-screen-search-box-container">
@@ -95,7 +104,7 @@ class SearchScreen extends React.Component {
                                             <div className="body-text color-accented">{obj.creator}</div>
                                         </div>
                                     </div>
-                                    <Button className="search-screen-history-item-remove-button" onClick={e => this.removeHistory(e)}>
+                                    <Button className="search-screen-history-item-remove-button" onClick={e => this.removeHistory(e, obj.index)}>
                                         <Image className="search-screen-history-item-remove-button-icon" src={delete_cross_white}/>
                                     </Button>
                                 </ListGroup.Item>
