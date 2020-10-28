@@ -13,12 +13,12 @@ class SearchScreen extends React.Component {
         }
     }
 
-    goToItem = (e) => {
-        
-    }
-
     isSearchBoxEmpty = () => {
         return this.state.query.trim() === ""
+    }
+
+    handleGoToItem = (e) => {
+        
     }
 
     handleClearSearchBox = () => {
@@ -33,7 +33,7 @@ class SearchScreen extends React.Component {
         })
     }
 
-    removeHistory = (e, index) => {
+    handleRemoveHistory = (e, index) => {
         e.stopPropagation()
         var newHistory = this.reindexArray(this.state.history.filter(ele => ele.index != index))
         this.setState({
@@ -104,7 +104,7 @@ class SearchScreen extends React.Component {
                                             <div className="body-text color-accented">{obj.creator}</div>
                                         </div>
                                     </div>
-                                    <Button className="search-screen-history-item-remove-button" onClick={e => this.removeHistory(e, obj.index)}>
+                                    <Button className="search-screen-history-item-remove-button" onClick={e => this.handleRemoveHistory(e, obj.index)}>
                                         <Image className="search-screen-history-item-remove-button-icon" src={delete_cross_white}/>
                                     </Button>
                                 </ListGroup.Item>

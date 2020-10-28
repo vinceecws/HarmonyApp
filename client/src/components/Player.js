@@ -32,45 +32,45 @@ class Player extends React.Component{
         repeat: repeatStates.OFF
     }
 
-    seek = (value) => {
+    handleSeek = (value) => {
         this.setState({
             progress: value
         })
     }
 
-    nextSong = () => {
+    handleNextSong = () => {
 
     }
 
-    previousSong = () => {
+    handlePreviousSong = () => {
 
     }
 
-    togglePlay = () => {
+    handleTogglePlay = () => {
         this.setState({
             playing: !this.state.playing
         })
     }
 
-    toggleRepeat = () => {
+    handleToggleRepeat = () => {
         this.setState({
             repeat: this.state.repeat === repeatStates.QUEUE ? repeatStates.OFF : this.state.repeat + 1
         })
     }
 
-    toggleShuffle = () => {
+    handleToggleShuffle = () => {
         this.setState({
             shuffle: !this.state.shuffle
         })
     }
 
-    setVolume = (value) => {
+    handleSetVolume = (value) => {
         this.setState({
             volume: value
         })
     }
 
-    toggleMute = () => {
+    handleToggleMute = () => {
         this.setState({
             mute: !this.state.mute
         })
@@ -80,7 +80,7 @@ class Player extends React.Component{
         In practice, there will not be a favorited state, 
         and toggleFavorite will simply add/remove the song to/from the user's favorite songs list
     */
-    toggleFavorite = () => {
+    handleToggleFavorite = () => {
         this.setState({
             favorited: !this.state.favorited
         })
@@ -159,42 +159,42 @@ class Player extends React.Component{
                                 <div className="body-text color-contrasted">{this.getSongName()}</div>
                                 <div className="body-text color-contrasted">{this.getArtist()}</div>
                                 <Button id="player-song-favorite-button">
-                                    <Image className={this.getFavoriteButtonIconClass()} src={icon_like} onClick={e => this.toggleFavorite()} roundedCircle/>
+                                    <Image className={this.getFavoriteButtonIconClass()} src={icon_like} onClick={e => this.handleToggleFavorite()} roundedCircle/>
                                 </Button>
                             </Col>
                         </Row>
                     </Col>
                     <Col id="player-controls">
                         <Row id="player-controls-main-container"> 
-                            <Button className="player-control-button" onClick={e => this.toggleRepeat()}>
+                            <Button className="player-control-button" onClick={e => this.handleToggleRepeat()}>
                                 <Image className={this.getRepeatButtonIconClass()} src={this.getRepeatButtonIcon()} roundedCircle/>
                             </Button>
-                            <Button className="player-control-button" onClick={e => this.previousSong()}>
+                            <Button className="player-control-button" onClick={e => this.handlePreviousSong()}>
                                 <Image className="player-control-button-icon" src={icon_previous} roundedCircle/>
                             </Button>
-                            <Button className="player-control-button" onClick={e => this.togglePlay()}>
+                            <Button className="player-control-button" onClick={e => this.handleTogglePlay()}>
                                 <Image className="player-control-button-icon" src={this.getPlayButtonIcon()} roundedCircle/>
                             </Button>
-                            <Button className="player-control-button" onClick={e => this.nextSong()}>
+                            <Button className="player-control-button" onClick={e => this.handleNextSong()}>
                                 <Image className="player-control-button-icon" src={icon_next} roundedCircle/>
                             </Button>
-                            <Button className="player-control-button" onClick={e => this.toggleShuffle()}>
+                            <Button className="player-control-button" onClick={e => this.handleToggleShuffle()}>
                                 <Image className={this.getShuffleButtonIconClass()} src={icon_shuffle_arrows} roundedCircle/>
                             </Button>
                         </Row>
                         <Row id="player-progress-bar-container">
                             <div className="player-progress-display">{this.getSongProgress()}</div>
-                            <RangeSlider className="player-progress-bar" variant="dark" tooltip="off" value={this.state.progress} onChange={e => this.seek(e.target.value)} min={0} max={this.state.currentSong.duration}/>
+                            <RangeSlider className="player-progress-bar" variant="dark" tooltip="off" value={this.state.progress} onChange={e => this.handleSeek(e.target.value)} min={0} max={this.state.currentSong.duration}/>
                             <div className="player-progress-display">{this.getSongDuration()}</div>
                         </Row>
                     </Col>
                     <Col id="player-volume-container">
                         <Row>
-                            <Button id="player-mute-button" className="player-control-button" onClick={e => this.toggleMute()}>
+                            <Button id="player-mute-button" className="player-control-button" onClick={e => this.handleToggleMute()}>
                                 <Image id="player-mute-button-icon" src={this.getMuteButtonIcon()} roundedCircle/>
                             </Button>
                             <div id="player-volume-bar-container">
-                                <RangeSlider className="player-volume-bar" variant="dark" tooltip="off" value={this.state.volume} onChange={e => this.setVolume(e.target.value)} min={0} max={100}/>
+                                <RangeSlider className="player-volume-bar" variant="dark" tooltip="off" value={this.state.volume} onChange={e => this.handleSetVolume(e.target.value)} min={0} max={100}/>
                             </div>
                         </Row>
                     </Col>
