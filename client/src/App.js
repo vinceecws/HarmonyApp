@@ -19,7 +19,7 @@ function App() {
             </header>
           </Col>
           <Col id="screen-container">
-            <SearchScreen/>
+            <HomeScreen/>
           </Col>
         </Row>
         <Row id="bottom-container">

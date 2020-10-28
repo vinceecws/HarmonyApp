@@ -73,7 +73,6 @@ class SearchScreen extends React.Component {
     }
 
     render() {
-        console.log(this.state.history)
         return(
             <div className="search-screen-container">
                 <InputGroup className="search-screen-search-box-container">

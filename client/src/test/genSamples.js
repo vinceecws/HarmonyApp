@@ -1,4 +1,5 @@
 import * as icons from '../test'
+const _ = require('lodash');
 let sessions = require('./sampleSessions.json')
 let collections = require('./sampleCollections.json')
 let songs = require('./sampleSongs.json')
@@ -67,19 +68,19 @@ export function genSampleSuggestions () {
     return [
         {
             categoryName: "Your Top Hosts",
-            suggestions: sampleDatabase.users
+            suggestions: JSON.parse(JSON.stringify(sampleDatabase.users))
         }, 
         {
             categoryName: "Recently Streamed",
-            suggestions: sampleDatabase.sessions
+            suggestions: JSON.parse(JSON.stringify(sampleDatabase.sessions))
         },
         {
             categoryName: "Recommended For You",
-            suggestions: sampleDatabase.collections
+            suggestions: JSON.parse(JSON.stringify(sampleDatabase.collections))
         },
         {
             categoryName: "Listen Again",
-            suggestions: sampleDatabase.songs
+            suggestions: JSON.parse(JSON.stringify(sampleDatabase.songs))
         }
     ]
 }
@@ -89,6 +90,7 @@ export function genSampleImage () {
     return icons[keys[keys.length * Math.random() << 0]];
 }
 
+/* Will get stuck in an infinite loop if numItems > number of elements actually in the sample database */
 export function genSampleHistory (numItems) {
     let sampleDatabaseCopy = JSON.parse(JSON.stringify(sampleDatabase))
     let categorykeys = Object.keys(sampleDatabaseCopy);
@@ -108,22 +110,38 @@ export function genSampleHistory (numItems) {
 }
 
 export function genSampleResults (query) {
+
+    var sampleDatabaseCopy = JSON.parse(JSON.stringify(sampleDatabase))
+
     return [
         {   
             categoryName: "Sessions",
-            results: sampleDatabase.sessions.filter(item => item.name.toLowerCase().includes(query) || item.hostName.toLowerCase().includes(query))
+            results: sampleDatabaseCopy.sessions.filter(item => item.name.toLowerCase().includes(query) || item.hostName.toLowerCase().includes(query))
         },
         {
             categoryName: "Collections",
-            results: sampleDatabase.collections.filter(item => item.name.toLowerCase().includes(query) || item.user.toLowerCase().includes(query))
+            results: sampleDatabaseCopy.collections.filter(item => item.name.toLowerCase().includes(query) || item.user.toLowerCase().includes(query))
         },
         {
             categoryName: "Songs",
-            results: sampleDatabase.songs.filter(item => item.name.toLowerCase().includes(query) || item.artist.toLowerCase().includes(query))
+            results: sampleDatabaseCopy.songs.filter(item => item.name.toLowerCase().includes(query) || item.artist.toLowerCase().includes(query))
         },
         {
             categoryName: "Users",
-            results: sampleDatabase.users.filter(item => item.name.toLowerCase().includes(query))
+            results: sampleDatabaseCopy.users.filter(item => item.name.toLowerCase().includes(query))
         }
     ]
+}
+
+export function genSampleQueue () {
+    var songsCopy = _.cloneDeep(sampleDatabase.songs)
+    
+    /* Fisher-Yates shuffle from https://medium.com/@nitinpatel_20236/how-to-shuffle-correctly-shuffle-an-array-in-javascript-15ea3f84bfb */
+    for (let i = songsCopy.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * i)
+        const temp = songsCopy[i]
+        songsCopy[i] = songsCopy[j]
+        songsCopy[j] = temp
+      }
+    return songsCopy
 }

@@ -3,6 +3,9 @@ import RangeSlider from 'react-bootstrap-range-slider';
 import { Container, Row, Col, Image, Button } from 'react-bootstrap';
 import { icon_play_2, icon_pause_3, icon_music_album_3, icon_previous, icon_next, icon_repeat_3, icon_repeat_1, icon_shuffle_arrows, icon_volume_up_1, icon_no_sound, icon_like } from '../graphics';
 import { repeatStates } from '../const'
+import { genSampleQueue } from '../test/genSamples'
+
+const _ = require('lodash');
 
 /*
 var formData  = new FormData();
@@ -22,14 +25,22 @@ var html = fetch('http://soundcloud.com/oembed', {
 
 class Player extends React.Component{
 
-    state = {
-        currentSong: {id: 'abcd1234', url: null, imageUrl: null, duration: 100, name: "Saturday Nights", artist: "Khalid", favorited: false},
-        playing: false,
-        progress: 0,
-        volume: 50,
-        mute: false,
-        shuffle: false,
-        repeat: repeatStates.OFF
+    constructor(props) {
+        super(props)
+        var queue = this.fetchQueue()
+        var currentSong = queue.shift()
+        this.state = {
+            currentSong: currentSong,
+            favorited: currentSong.favorited,
+            pastQueue: [],
+            futureQueue: queue,
+            playing: false,
+            progress: 0,
+            volume: 50,
+            mute: false,
+            shuffle: false,
+            repeat: repeatStates.OFF
+        }
     }
 
     handleSeek = (value) => {
@@ -39,11 +50,43 @@ class Player extends React.Component{
     }
 
     handleNextSong = () => {
-
+        if (this.state.futureQueue.length > 0) {
+            var futureQueue = _.cloneDeep(this.state.futureQueue)
+            var currentSong = futureQueue.shift()
+            var pastQueue = _.cloneDeep(this.state.pastQueue)
+            pastQueue.push(this.state.currentSong)
+            this.setState({
+                currentSong: currentSong,
+                pastQueue: pastQueue,
+                futureQueue: futureQueue
+            })
+        }
+        else if (this.state.repeat === repeatStates.QUEUE) { //Get one song at a time from pastQueue
+            var pastQueue = _.cloneDeep(this.state.pastQueue)
+            var currentSong = pastQueue.shift()
+            pastQueue.push(this.state.currentSong)
+            this.setState({
+                currentSong: currentSong,
+                pastQueue: pastQueue,
+            })
+        }
     }
 
     handlePreviousSong = () => {
-
+        if (this.state.progress > 5) {
+            this.handleSeek(0)
+        }
+        else if(this.state.pastQueue.length > 0) {
+            var pastQueue = _.cloneDeep(this.state.pastQueue)
+            var currentSong = pastQueue.pop()
+            var futureQueue = _.cloneDeep(this.state.futureQueue)
+            futureQueue.unshift(this.state.currentSong)
+            this.setState({
+                currentSong: currentSong,
+                pastQueue: pastQueue,
+                futureQueue: futureQueue
+            })
+        }
     }
 
     handleTogglePlay = () => {
@@ -99,7 +142,7 @@ class Player extends React.Component{
     }
 
     getSongImage = () => {
-        return this.state.currentSong.imageUrl ? this.state.currentSong.imageUrl : icon_music_album_3;
+        return this.state.currentSong.image;
     }
     
     getSongURL = () => {
@@ -146,7 +189,14 @@ class Player extends React.Component{
         return this.state.favorited;
     }
 
+    fetchQueue = () => {
+        return genSampleQueue()
+    }
+
     render(){
+        console.log(this.state.futureQueue)
+        console.log(this.state.currentSong)
+        console.log(this.state.pastQueue)
         return(
             <Container id="player-container" fluid>
                 <Row>
