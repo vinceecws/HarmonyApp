@@ -1,19 +1,28 @@
 import React from 'react';
-import {icon_profile_image} from '../graphics';
+import Calendar from 'react-calendar'
+import {icon_profile_image, icon_calendar} from '../graphics';
+
 
 class SettingsScreen extends React.Component{
 	constructor (props) {
         super(props);
     }
     state = {
-        user : {image: null}
+        user : {image: null, date: new Date()}
+
     }
 	getUserImage = () => {
         return this.state.user.image ? this.state.user.image : icon_profile_image;
     }
+    getBirthday = () =>{
+    	return this.state.user.date ? this.state.user.date : new Date();
+    }
+    onChange =() =>{
+    	this.setState(this.state.user.date);
+	}
 	render(){
         return (
-        		<div style={{fontFamily: 'BalsamiqSans',resize:'both'}}>
+        		<div style={{fontFamily: 'BalsamiqSans', display:'inline'}}>
         			<div className='row'>
         				<div className='col-sm-2'>
         					<div style={{color: 'white', fontSize:'40px', 
@@ -21,25 +30,45 @@ class SettingsScreen extends React.Component{
         										Settings
         					</div>
         					<div id='container' style={{position:'relative'}}>
-        						<img id="user-profile-image" src={this.getUserImage()} style={{width: '150px', border: '3px solid',
+        						<img id="user-profile-image" src={this.getUserImage()} style={{width: '200px', border: '3px solid',
         																					   backgroundColor: 'white'}}/>
         						
         						
-        						<input type='submit' value='Edit' style={{marginTop: '110px', position: 'absolute', 
-        																	  marginLeft:'-100px', boxShadow: '3px 3px'}}/>
+        						<input type='submit' value='Edit' style={{marginTop: '155px', position: 'absolute', 
+        																	  marginLeft:'-122px', boxShadow: '3px 3px'}}/>
         						
         					</div>
         				</div>
         				<div className='col-sm-10' style={{display:'inline-block'}}>
-        					<div id='container' style={{marginTop: '5%', border: '3px solid', padding:'1em', backgroundColor: '#C0C0C0'}}>
+        					<div id='container' style={{marginTop: '5%', border: '3px solid', height:'80vh', padding:'1em',backgroundSize:'100%', backgroundColor: '#C0C0C0'}}>
         						<form>
-                                    <textarea rows='7' cols='30' style={{resize: 'none'}}/>
-                                    <input type='submit' value='Edit' style={{marginTop: '150px', position: 'absolute', 
+        							<div>
+        								<textarea rows='7' cols='30' style={{resize: 'none'}}/>
+
+                                    	<input type='submit' value='Edit' style={{marginTop: '150px', position: 'absolute', 
         																	  marginLeft:'-60px', boxShadow: '3px 3px'}}/>
-        							<div style={{ marginLeft:'400px', marginTop:'-50px'}}>
-        								<label for='Birthday'style={{display:'block'}}>Birthday</label>
-	        							<input type='text' name='Birthday' placeholder='10/10/1997' style={{display:'block'}}/>
-	        						</div>
+        								<div style={{position:'relative', marginLeft:'380px', marginTop:'-65px'}}>
+	        								<label for='Birthday'style={{display:'block'}}>Birthday</label>
+	        								<div style ={{display:'flex'}}>
+	        									<input type='text' name='Birthday' placeholder='10/10/1997' style={{display:'block'}}/>
+	        									<button>
+	        										<img id="calendar" src={icon_calendar} style={{width:'25px', marginLeft:'5px', display:'inline-block'}}/>
+
+	        									</button>
+		        								
+		        									
+
+        									</div>
+	        							</div>
+	        							
+
+        							</div>
+        							<div style = {{ marginLeft:'85%', position:'relative', top:'-175px' }}>
+	        								<input type="checkbox" id="customSwitch1" className='checkbox'/>
+	        								<label for='customSwitch1' className='switch'></label>
+	        								<label style={{position:'relative',bottom:'12px', left:'15px'}}>Private Mode</label>
+        							</div>
+        							
         							<div style = {{display: 'flex' }}>
 	        							<div style = {{ marginTop: '2%'}}>
 	        								<label for='Username' style={{display:'block'}}>Username</label>
@@ -51,19 +80,16 @@ class SettingsScreen extends React.Component{
 	        								<input type='password' name='Password' placeholder='Password' style={{display:'block'}}/>
 	        							</div>
         							</div>
-        							<div style = {{display: 'flex' }}>
-	        							<div style = {{ marginTop: '-75px'}}>
+        							<div style = {{ marginTop: '-50px'}}>
 	        								<label for='Email' style={{display:'block'}}>Email</label>
 	        								<input type='text' name='Email' placeholder='Email' style={{marginBottom: '50px', bottom:'-50px', display:'block'}}/>
 	        								
-	        							</div>
-	        							
-        							</div>
-        								
-        							
-        							
+	        						</div>
+        							<input type='submit' value='Submit Changes' style={{bottom: '10%', position: 'absolute', 
+        																	  marginLeft:'80%', boxShadow: '3px 3px'}}/>
         							
                                 </form>
+                                
         					</div>
         				</div>
         			</div>

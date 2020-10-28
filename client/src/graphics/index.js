@@ -55,3 +55,4 @@ export const icon_favorite_2 = require('./music_player_pack/050-favorite.svg')
 /* user_pack imports*/
 
 export const icon_profile_image = require('./user_pack/001-profile image.svg')
+export const icon_calendar = require('./user_pack/002-calendar.svg')
