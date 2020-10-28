@@ -8,7 +8,12 @@ class SettingsScreen extends React.Component{
         super(props);
     }
     state = {
-        user : {image: null, date: new Date()}
+        user : {image: null, 
+        		date: new Date(),
+        		username: "",
+        		password: "",
+        		email: "",
+        		privateMode: false}
 
     }
 	getUserImage = () => {
@@ -16,6 +21,18 @@ class SettingsScreen extends React.Component{
     }
     getBirthday = () =>{
     	return this.state.user.date ? this.state.user.date : new Date();
+    }
+    getUsername = () => {
+        return this.state.user.username ? this.state.user.username : "No name";
+    }
+    getPassword = () =>{
+    	return this.state.user.password ? this.state.user.password : "No password";
+    }
+    getEmail = () =>{
+    	return this.state.user.email ? this.state.user.email : "No email";
+    }
+    getPrivateMode = () =>{
+    	return this.state.user.prvateMode;
     }
     onChange =() =>{
     	this.setState(this.state.user.date);
