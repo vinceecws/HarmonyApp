@@ -90,15 +90,18 @@ export function genSampleImage () {
 }
 
 export function genSampleHistory (numItems) {
-    let categorykeys = Object.keys(sampleDatabase);
+    let sampleDatabaseCopy = JSON.parse(JSON.stringify(sampleDatabase))
+    let categorykeys = Object.keys(sampleDatabaseCopy);
     let sampleHistory = []
-    for (var i = 0; i < numItems; i++) {
+    var i = 0
+    while (sampleHistory.length < numItems){
         var categoryName = categorykeys[categorykeys.length * Math.random() << 0]
-        var category = sampleDatabase[categoryName]
-        var keys = Object.keys(category)
-        var history = category[keys[keys.length * Math.random() << 0]]
-        history.index = i
-        sampleHistory.push(history)
+        if (sampleDatabaseCopy[categoryName].length > 0){
+            var history = sampleDatabaseCopy[categoryName].pop()
+            history.index = i
+            sampleHistory.push(history)
+            i++
+        }
     }
 
     return sampleHistory

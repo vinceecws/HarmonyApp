@@ -1,6 +1,6 @@
 import React from 'react';
 import { CardDeck, Card } from 'react-bootstrap';
-import { genSampleImage, genSampleSuggestions } from '../test/genSamples'
+import { genSampleSuggestions } from '../test/genSamples'
 
 class HomeScreen extends React.Component {
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import { ListGroup, Image, Button, CardDeck, Card, InputGroup, FormControl } from 'react-bootstrap'
-import { genSampleImage, genSampleHistory, genSampleResults } from '../test/genSamples'
+import { genSampleHistory, genSampleResults } from '../test/genSamples'
 import { delete_cross_white, delete_button_white } from '../graphics'
 
 class SearchScreen extends React.Component {
