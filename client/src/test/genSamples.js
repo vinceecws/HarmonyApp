@@ -87,7 +87,7 @@ export function genSampleSuggestions () {
 
 export function genSampleImage () {
     let keys = Object.keys(icons);
-    return icons[keys[keys.length * Math.random() << 0]];
+    return icons[keys[Math.floor(Math.random() * (keys.length - 1))]];
 }
 
 /* Will get stuck in an infinite loop if numItems > number of elements actually in the sample database */

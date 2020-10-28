@@ -4,24 +4,10 @@ import { Container, Row, Col, Image, Button } from 'react-bootstrap';
 import { icon_play_2, icon_pause_3, icon_music_album_3, icon_previous, icon_next, icon_repeat_3, icon_repeat_1, icon_shuffle_arrows, icon_volume_up_1, icon_no_sound, icon_like } from '../graphics';
 import { repeatStates } from '../const'
 import { genSampleQueue } from '../test/genSamples'
-
+import { song_001_khalid_saturday_nights } from '../test'
+const SC = require('soundcloud')
 const _ = require('lodash');
 
-/*
-var formData  = new FormData();
-
-formData.append("format", "json");
-formData.append("url", "http://soundcloud.com/forss/flickermood");
-
-var html = fetch('http://soundcloud.com/oembed', {
-    method: 'POST',
-    body: formData
-}).then(function (response) {
-    return response.json();
-}).then(function (res) {
-  return res.html;
-});
-*/
 
 class Player extends React.Component{
 
@@ -29,31 +15,48 @@ class Player extends React.Component{
         super(props)
         var queue = this.fetchQueue()
         var currentSong = queue.shift()
+        currentSong.url = song_001_khalid_saturday_nights
+        this.fetchAudio(currentSong.url)
+        this.audio.volume = 0.5
         this.state = {
             currentSong: currentSong,
             favorited: currentSong.favorited,
+            paused: this.audio.paused,
+            volume: this.audio.volume * 100,
+            muted: this.audio.muted,
+            duration: this.audio.duration,
+            currentTime: this.audio.currentTime,
             pastQueue: [],
             futureQueue: queue,
-            playing: false,
-            progress: 0,
-            volume: 50,
-            mute: false,
             shuffle: false,
             repeat: repeatStates.OFF
         }
     }
 
     handleSeek = (value) => {
+        if(value < this.state.duration) {
+            this.audio.currentTime = value
+            this.setState({
+                currentTime: value
+            })
+        }
+        else { //Play next song
+
+        }
+    }
+
+    handleMoveSlider = (value) => {
         this.setState({
-            progress: value
+            currentTime: value
         })
     }
 
     handleNextSong = () => {
+        var futureQueue, currentSong, pastQueue
         if (this.state.futureQueue.length > 0) {
-            var futureQueue = _.cloneDeep(this.state.futureQueue)
-            var currentSong = futureQueue.shift()
-            var pastQueue = _.cloneDeep(this.state.pastQueue)
+            futureQueue = _.cloneDeep(this.state.futureQueue)
+            currentSong = futureQueue.shift()
+            pastQueue = _.cloneDeep(this.state.pastQueue)
             pastQueue.push(this.state.currentSong)
             this.setState({
                 currentSong: currentSong,
@@ -62,8 +65,8 @@ class Player extends React.Component{
             })
         }
         else if (this.state.repeat === repeatStates.QUEUE) { //Get one song at a time from pastQueue
-            var pastQueue = _.cloneDeep(this.state.pastQueue)
-            var currentSong = pastQueue.shift()
+            pastQueue = _.cloneDeep(this.state.pastQueue)
+            currentSong = pastQueue.shift()
             pastQueue.push(this.state.currentSong)
             this.setState({
                 currentSong: currentSong,
@@ -73,7 +76,7 @@ class Player extends React.Component{
     }
 
     handlePreviousSong = () => {
-        if (this.state.progress > 5) {
+        if (this.state.currentTime > 5) {
             this.handleSeek(0)
         }
         else if(this.state.pastQueue.length > 0) {
@@ -90,9 +93,18 @@ class Player extends React.Component{
     }
 
     handleTogglePlay = () => {
-        this.setState({
-            playing: !this.state.playing
-        })
+        if (this.audio.paused) {
+            this.audio.play()
+            this.setState({
+                paused: false
+            })
+        }
+        else {
+            this.audio.pause()
+            this.setState({
+                paused: true
+            })
+        }
     }
 
     handleToggleRepeat = () => {
@@ -108,15 +120,25 @@ class Player extends React.Component{
     }
 
     handleSetVolume = (value) => {
+        this.audio.volume = value / 100
         this.setState({
             volume: value
         })
     }
 
     handleToggleMute = () => {
-        this.setState({
-            mute: !this.state.mute
-        })
+        if (this.audio.muted) {
+            this.audio.muted = false
+            this.setState({
+                muted: false
+            })
+        }
+        else {
+            this.audio.muted = true
+            this.setState({
+                muted: true
+            })
+        }
     }
 
     /*
@@ -130,23 +152,19 @@ class Player extends React.Component{
     }
 
     getSongProgress = () => {
-        var sec = this.state.progress % 60
-        var min = Math.floor(this.state.progress / 60)
+        var sec = parseInt(this.state.currentTime) % 60
+        var min = parseInt(this.state.currentTime / 60)
         return min + ":" + String(sec).padStart(2, '0');
     }
 
     getSongDuration = () => {
-        var sec = this.state.currentSong.duration % 60
-        var min = Math.floor(this.state.currentSong.duration / 60)
+        var sec = parseInt(this.state.duration % 60)
+        var min = parseInt(this.state.duration / 60)
         return min + ":" + String(sec).padStart(2, '0');
     }
 
     getSongImage = () => {
         return this.state.currentSong.image;
-    }
-    
-    getSongURL = () => {
-        return this.state.currentSong.url;
     }
 
     getSongName = () => {
@@ -158,7 +176,7 @@ class Player extends React.Component{
     }
 
     getPlayButtonIcon = () => {
-        return this.state.playing ? icon_pause_3 : icon_play_2; 
+        return this.state.paused ? icon_play_2 : icon_pause_3;
     }
 
     getRepeatButtonIcon = () => {
@@ -174,7 +192,7 @@ class Player extends React.Component{
     }
 
     getMuteButtonIcon = () => {
-        return this.state.mute ? icon_no_sound : icon_volume_up_1;
+        return this.state.muted ? icon_no_sound : icon_volume_up_1;
     }
 
     getFavoriteButtonIconClass = () => {
@@ -193,10 +211,28 @@ class Player extends React.Component{
         return genSampleQueue()
     }
 
+    fetchAudio = (url) => {
+        // SC.initialize({
+        //     client_id: 'BhajJqlWZTSFOvRxDm5ayVT1DQaJoybO'
+        // });
+          
+        // // stream track id 293
+        // SC.resolve('https://soundcloud.com/dengue/menestra')
+
+        this.audio = new Audio(url)
+        this.audio.ontimeupdate = (e) => {
+            this.setState({
+                currentTime: this.audio.currentTime
+            })
+        }
+        this.audio.onloadedmetadata = (e) => {
+            this.setState({
+                duration: this.audio.duration
+            })
+        }
+    }
+
     render(){
-        console.log(this.state.futureQueue)
-        console.log(this.state.currentSong)
-        console.log(this.state.pastQueue)
         return(
             <Container id="player-container" fluid>
                 <Row>
@@ -233,9 +269,9 @@ class Player extends React.Component{
                             </Button>
                         </Row>
                         <Row id="player-progress-bar-container">
-                            <div className="player-progress-display">{this.getSongProgress()}</div>
-                            <RangeSlider className="player-progress-bar" variant="dark" tooltip="off" value={this.state.progress} onChange={e => this.handleSeek(e.target.value)} min={0} max={this.state.currentSong.duration}/>
-                            <div className="player-progress-display">{this.getSongDuration()}</div>
+                            <div className="player-progress-display body-text">{this.getSongProgress()}</div>
+                            <RangeSlider className="player-progress-bar" variant="dark" tooltip="off" value={this.state.currentTime} onChange={e => this.handleMoveSlider(e.target.value)} onAfterChange={e => this.handleSeek(e.target.value)} min={0} max={this.state.duration}/>
+                            <div className="player-progress-display body-text">{this.getSongDuration()}</div>
                         </Row>
                     </Col>
                     <Col id="player-volume-container">

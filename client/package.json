@@ -18,7 +18,8 @@
     "react-scripts": "3.4.3",
     "react-strap": "0.0.1",
     "react-ticker": "^1.2.2",
-    "reactstrap": "^8.6.0"
+    "reactstrap": "^8.6.0",
+    "soundcloud": "^3.3.2"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -255,6 +255,7 @@ body, html {
 
 .player-progress-display {
   padding: 10px;
+  width: 50px;
 }
 
 #player-song-favorite-button {

@@ -35,7 +35,7 @@ class SearchScreen extends React.Component {
 
     handleRemoveHistory = (e, index) => {
         e.stopPropagation()
-        var newHistory = this.reindexArray(this.state.history.filter(ele => ele.index != index))
+        var newHistory = this.reindexArray(this.state.history.filter(ele => ele.index !== index))
         this.setState({
             history: newHistory
         })
