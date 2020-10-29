@@ -145,3 +145,9 @@ export function genSampleQueue () {
       }
     return songsCopy
 }
+
+export function genSampleSessions () {
+    var sessionsCopy = _.cloneDeep(sampleDatabase.sessions)
+
+    return sessionsCopy
+}
