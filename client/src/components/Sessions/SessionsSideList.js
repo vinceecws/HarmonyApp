@@ -13,11 +13,13 @@ class SessionSideList extends React.Component{
 
 
     render(){
-        var sessionEntries = this.fetchSessions().map(item => <SessionEntry
-                    hostId={item.hostId}
-                    name={item.name}
-                    user={users.find(user => user.Id === item.hostId)}
-                    image={item.image}
+        var sessionEntries = this.fetchSessions().sort((session1, session2) => session2.streams - session1.streams)
+                            .map(session => <SessionEntry
+                    hostId={session.hostId}
+                    hostName={session.hostName}
+                    name={session.name}
+                    image={session.image}
+                    streams={session.streams}
                 /> );
     	return(
     		<div className='list-group list-group-session'>

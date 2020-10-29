@@ -31,9 +31,9 @@ class HomeScreen extends React.Component {
                                 category.suggestions.map(obj => 
                                     <Card className="home-screen-category-list-item">
                                         <Card.Img className="home-screen-category-list-item-img" src={obj.image}/>
-                                        <Card.Footer className="home-screen-category-list-item-footer body-text color-accented">
-                                            <div className="subtitle color-accented">{obj.name}</div>
-                                            <div className="body-text color-accented">{obj.creator}</div>
+                                        <Card.Footer className="home-screen-category-list-item-footer">
+                                            <div className="subtitle">{obj.name}</div>
+                                            <div className="body-text">{obj.creator}</div>
                                         </Card.Footer>
                                     </Card>
                                     )

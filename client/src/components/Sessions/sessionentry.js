@@ -17,8 +17,21 @@ class SessionEntry extends React.Component{
 		});
 	}
 
+	getStreamCount = () => {
+		var count = this.props.streams
+		if (count < 1000) {
+			return count
+		}
+		else if (count < 1000000) {
+			return Math.floor(count/1000) + "k"
+		}
+		else {
+			return Math.floor(count/1000000) + "m"
+		}
+	}
+
 	getListenerCountIconClass = () => {
-		return this.state.showTicker ? "session-entry-listener-count-icon-on" : "session-entry-listener-count-icon"
+		return this.state.showTicker ? "session-entry-stream-count-icon-on" : "session-entry-stream-count-icon"
 	}
 
 	render(){
@@ -40,12 +53,12 @@ class SessionEntry extends React.Component{
 							<Image className="session-entry-image" src={this.props.image}/>
 						</Col>
 						<Col className="session-entry-text-container">
-							<h1 className='Session-Entry-Text body-text color-accented'>{this.props.user.name}</h1>
+							<h1 className='Session-Entry-Text body-text color-accented'>{this.props.hostName}</h1>
 							{entry}
 						</Col>
-						<Col className="session-entry-listener-count-container">
+						<Col className="session-entry-stream-count-container">
 							<Image className={this.getListenerCountIconClass()} src={icon_music_1} roundedCircle/>
-							<div className="body-text color-accented">{10}</div>
+							<div className="session-entry-stream-count-text tiny-text color-accented">{this.getStreamCount()}</div>
 						</Col>
 					</Row>
 				</a>

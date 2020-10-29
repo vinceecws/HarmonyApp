@@ -21,7 +21,7 @@ function App() {
             </header>
           </Col>
           <Col id="screen-container">
-            <ProfileScreen/>
+            <SearchScreen/>
           </Col>
         </Row>
         <Row id="bottom-container">

@@ -94,7 +94,7 @@ class SearchScreen extends React.Component {
                     <ListGroup>
                         {
                             this.state.history.map(obj => 
-                                <ListGroup.Item className="search-screen-history-item" onClick={e => this.goToItem(e)} action>
+                                <ListGroup.Item className="search-screen-history-item" onClick={e => this.handleGoToItem(e)} action>
                                     <div className="search-screen-history-item-type title color-contrasted">{obj.type.capitalize()}</div>
                                     <div className="search-screen-history-item-container">
                                         <Image className="search-screen-history-item-display-image" src={obj.image}/>

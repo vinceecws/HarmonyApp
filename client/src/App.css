@@ -23,6 +23,11 @@
   font-size: medium;
 }
 
+.tiny-text {
+  font-family: BalsamiqSans;
+  font-size: small;
+}
+
 .color-contrasted {
   color: lightgray;
 }
@@ -60,8 +65,8 @@ body, html {
 
 .Session-Side-List {
   height: 100%;
+  overflow-y: scroll;
   background-color: #282c34;
-  display: flex, inline-block;
   text-align: left;
   width: 100%;
   flex-direction: column;
@@ -119,50 +124,26 @@ body, html {
   width: 30px;
 }
 
-.session-entry-listener-count-container {
+.session-entry-stream-count-container {
 
 }
 
-.session-entry-listener-count-icon {
+.session-entry-stream-count-text {
+  padding-top: 5px;
+}
+
+.session-entry-stream-count-icon {
   height: 20px;
   width: 20px;
   padding: 0;
 }
 
-.session-entry-listener-count-icon-on {
+.session-entry-stream-count-icon-on {
   background-color: white;
   height: 20px;
   width: 20px;
 }
 
-
-/*Profile Screen*/
-
-.song-entry-profile{
-  width:150px;
-  height:150px;
-}
-
-.card-entry-profile{
-  overflow-x: auto;
-  overflow-y: hidden;
-  flex-wrap: nowrap !important;
-}
-.small-icon-profile{
-  width:20px;
-  heigh:20px;
-}
-
-.card-song-name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 20px;
-  white-space: nowrap;
-  
-  display: block;
-  line-height: 1em; 
-  max-height: 2em;
-}
 
 /*Settings Screen*/
 
@@ -229,6 +210,8 @@ body, html {
 }
 
 #side-list-container {
+  height: 100%;
+  overflow: hidden;
   padding: 0;
   width: 240px;
   min-width: 240px;
@@ -462,19 +445,21 @@ body, html {
 }
 
 .home-screen-category-list-item {
+  padding: 10px;
   flex: 0 0 auto !important;
   height: 240px;
   width: 200px;
-  background-color: gray !important;
+  background-color: whitesmoke !important;
 }
 
 .home-screen-category-list-item-img {
-  height: 160px;
-  width: 160px;
-  background-color: gray;
+  height: 150px;
+  width: 150px;
+  background-color: whitesmoke !important;
 }
 
 .home-screen-category-list-item-footer {
+  background-color: transparent !important;
   display: block;
   justify-content: center;
   align-items: center;
@@ -482,22 +467,34 @@ body, html {
 }
 
 .home-screen-category-list-item-footer div{
-  width: 180px;
-  text-overflow: ellipsis;
+  margin: auto;
   overflow: hidden;
-  white-space: nowrap
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: fit-content;
+  max-width: 130px;
+  display: block;
+  line-height: 1em; 
+  max-height: 2em;
+  border-bottom: 1px solid transparent;
+  padding: 3px;
 }
 
 .home-screen-category-list-item-footer div:hover {
-  overflow: visible;
-  animation: marquee 5s linear 1;
-  text-decoration: underline;
-  cursor: default;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: fit-content;
+  display: block;
+  line-height: 1em; 
+  max-height: 2em;
+  border-bottom: 1px solid black;
+  cursor: pointer;
 }
 
 /* Search Screen */
 .search-screen-container {
-
+  padding: 15px;
 }
 
 /* Search Box */
@@ -526,7 +523,7 @@ body, html {
 
 /* History */
 .search-screen-history-title {
-  padding: 10px 0px 0px 20px;
+  padding: 10px 0px 0px 10px;
 }
 
 .search-screen-history-item {
@@ -629,4 +626,93 @@ body, html {
   animation: marquee 3s linear 1;
   text-decoration: underline;
   cursor: default;
+}
+
+/* Profile Screen */
+#profile-screen-top-container {
+  margin: 0px 10px 0px 10px;
+  border-bottom: 1px solid black;
+}
+
+#profile-screen-username {
+  font-family: BalsamiqSans;
+  font-size: 40px;
+}
+
+#profile-screen-biography {
+
+}
+
+#profile-screen-summary {
+  position: absolute;
+  bottom: 10px;
+  left: 30px;
+}
+
+#profile-screen-summary-text {
+
+}
+
+#profile-screen-bottom-container {
+  padding: 20px;
+}
+
+.profile-screen-category-container {
+  
+}
+
+.profile-screen-category-item-card {
+  max-height: 280px;
+  min-height: 280px !important;
+  height: 280px;
+  max-width: 220px;
+  min-width: 220px !important;
+  width: 220px;
+  padding: 10px;
+  background-color: whitesmoke !important;
+}
+
+.profile-screen-category-item-card-image {
+  width: 120px;
+  height: 120px;
+}
+
+.profile-screen-category-item-card-text-container{
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-wrap: nowrap !important;
+}
+
+.profile-screen-category-item-card-likes {
+  padding-top: 8px;
+}
+
+.profile-screen-category-item-card-likes-icon, .profile-screen-category-item-card-streams-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.profile-screen-category-item-card-name, .profile-screen-category-item-card-creator {
+  margin: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: fit-content;
+  max-width: 160px;
+  display: block;
+  line-height: 1em; 
+  max-height: 2em;
+  border-bottom: 1px solid transparent;
+}
+
+.profile-screen-category-item-card-name:hover, .profile-screen-category-item-card-creator:hover {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: fit-content;
+  display: block;
+  line-height: 1em; 
+  max-height: 2em;
+  border-bottom: 1px solid black;
+  cursor: pointer;
 }
