@@ -26,7 +26,7 @@ class ProfileScreen extends React.Component{
     render(){
     	var testUser = users.find(user => user.name === 'Vincenzo');
     	return(
-	        <div style={{fontFamily: 'BalsamiqSans'}}>
+	        <div style={{fontFamily: 'BalsamiqSans', padding:'1em'}}>
 	        	<div className='row'>
         			<div className='col-sm-1.3' style={{display:'flex', padding:'1em'}}>
         				

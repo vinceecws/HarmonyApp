@@ -182,7 +182,6 @@ body, html {
   min-height: 600px;
   height: calc(100% - 120px);
   margin: 0;
-  overflow-y: scroll;
 }
 
 #side-list-container {
