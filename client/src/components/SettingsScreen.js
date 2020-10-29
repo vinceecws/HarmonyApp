@@ -6,16 +6,17 @@ import {icon_profile_image, icon_calendar} from '../graphics';
 class SettingsScreen extends React.Component{
 	constructor (props) {
         super(props);
-    }
-    state = {
-        user : {image: null, 
-        		date: new Date(),
-        		username: "",
-        		password: "",
-        		email: "",
-        		privateMode: false}
+        this.state = {
+						user : {image: null, 
+						dob: new Date(),
+						username: "",
+						password: "",
+						email: "",
+						privateMode: false}
 
+    				}
     }
+    
 	getUserImage = () => {
         return this.state.user.image ? this.state.user.image : icon_profile_image;
     }
@@ -111,7 +112,7 @@ class SettingsScreen extends React.Component{
         				</div>
         			</div>
         		</div>
-        	)
+        	);
     }
 
 }

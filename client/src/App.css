@@ -45,6 +45,35 @@
   color: white;
   
 }
+/*Profile Screen*/
+
+.song-entry-profile{
+  width:150px;
+  height:150px;
+}
+
+.card-entry-profile{
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-wrap: nowrap !important;
+}
+.small-icon-profile{
+  width:20px;
+  heigh:20px;
+}
+
+.card-song-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 20px;
+  white-space: nowrap;
+  
+  display: block;
+  line-height: 1em; 
+  max-height: 2em;
+}
+
+/*Settings Screen*/
 
 .switch {    
   position : relative ;   
@@ -77,6 +106,8 @@
   background-color: #7983ff;
 }
 
+/*General*/
+
 .container.show .innerBox {
   display: block;
 }
@@ -91,6 +122,8 @@
 
 #top-container {
   height: 86%;
+  max-width: 100vw !important;
+  overflow-y: scroll;
 }
 
 #side-list-container {
@@ -99,6 +132,8 @@
 
 #screen-container {
   background-color: #383838;
+  
+
 }
 
 #bottom-container {
