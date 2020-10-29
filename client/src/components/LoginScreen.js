@@ -42,6 +42,7 @@ class LoginScreen extends React.Component{
                         {/* Modal Content */}
                         <div className="modal-content">
                             <div className="modal-header">
+                                <h3>Sign-Up</h3>
                                 <button type="button" className="close" data-dismiss="modal">&times;</button>
                             </div>
                             <div className="modal-body">

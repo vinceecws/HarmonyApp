@@ -10,6 +10,7 @@
         "playlists": [
             {
                 "name": "the big crunch",
+                "user": "pewds",
                 "description": "crunchy like oreo",
                 "songList": [
                     {
@@ -41,6 +42,7 @@
             },
             {
                 "name": "80s Music Only",
+                "user": "HopefulUndertones",
                 "description": "A collection of the golden hits in the 80s",
                 "songList": [
                     {
@@ -110,6 +112,7 @@
         "likedCollections": [
             {
                 "name": "Korean Rap, RnB",
+                "user": "coffeeovertea",
                 "description": "anything but K-Pop",
                 "songList": [
                     {
@@ -182,6 +185,7 @@
         "playlists": [
             {
                 "name": "the big crunch",
+                "user": "pewds",
                 "description": "crunchy like oreo",
                 "songList": [
                     {
@@ -213,6 +217,7 @@
             },
             {
                 "name": "80s Music Only",
+                "user": "HopefulUndertones",
                 "description": "A collection of the golden hits in the 80s",
                 "songList": [
                     {
@@ -282,6 +287,7 @@
         "likedCollections": [
             {
                 "name": "Korean Rap, RnB",
+                "user": "coffeeovertea",
                 "description": "anything but K-Pop",
                 "songList": [
                     {

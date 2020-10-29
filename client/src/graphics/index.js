@@ -1,6 +1,6 @@
-/* This file is strictly intended for graphics imports*/
+/* This file is strictly intended for graphics exports*/
 
-/* music_player_pack imports*/
+/* music_player_pack exports*/
 export const icon_music_1 = require('./music_player_pack/001-music.svg')
 export const icon_play_1 = require('./music_player_pack/002-play.svg')
 export const icon_pause_1 = require('./music_player_pack/003-pause.svg')
@@ -58,3 +58,5 @@ export const icon_profile_image = require('./user_pack/001-profile image.svg')
 export const icon_calendar = require('./user_pack/002-calendar.svg')
 export const icon_album = require('./user_pack/003-music-album.svg')
 export const icon_song = require('./user_pack/004-song.svg')
+export const delete_cross_white = require('./delete-cross-white.svg')
+export const delete_button_white = require('./delete-button-white.svg')
