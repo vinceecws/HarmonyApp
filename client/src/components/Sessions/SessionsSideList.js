@@ -7,6 +7,10 @@ let users = require('../../test/sampleUsers.json')
 
 class SessionSideList extends React.Component{
     
+    handleGoToItem = () => {
+
+    }
+    
     fetchSessions = () => {
         return genSampleSessions()
     }

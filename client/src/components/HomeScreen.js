@@ -4,6 +4,14 @@ import { genSampleSuggestions } from '../test/genSamples'
 
 class HomeScreen extends React.Component {
 
+    handleGoToItem = () => {
+
+    }
+
+    handlePlayItem = () => {
+        
+    }
+
     /*
         In practice, fetchSuggestions returns a dynamically generated array of suggestions
         where each suggestion is an object that contains the category name of the suggestion

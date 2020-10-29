@@ -33,6 +33,10 @@ class Player extends React.Component{
         }
     }
 
+    handleGoToItem = (e) => {
+        
+    }
+
     handleSeek = (value) => {
         if(value < this.state.duration) {
             this.audio.currentTime = value

@@ -21,6 +21,10 @@ class SearchScreen extends React.Component {
         
     }
 
+    handlePlayItem = (e) => {
+        
+    }
+
     handleClearSearchBox = () => {
         this.setState({
             query: ""
