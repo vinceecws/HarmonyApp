@@ -23,7 +23,6 @@ class ProfileScreen extends React.Component{
 	}
 
     render(){
-		console.log(this.state.user)
     	return(
 	        <div style={{fontFamily: 'BalsamiqSans', padding:'1em'}}>
 	        	<div id='profile-screen-top-container' className='row'>
