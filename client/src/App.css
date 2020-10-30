@@ -448,6 +448,8 @@ body, html {
   width: 120px;
   text-align: left;
   overflow: hidden;
+  color: lightgrey;
+  font-family: BalsamiqSans;
 }
 
 #player-song-title div {

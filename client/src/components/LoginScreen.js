@@ -1,8 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom'
+import {icon_speak_2, icon_speak_1, icon_radio, icon_album, icon_disc_1, icon_disc_2, icon_music_album_1, icon_music_album_2, icon_sound_mixer_1, icon_sound_mixer_2} from '../graphics'
 
 class LoginScreen extends React.Component{
 
+    constructor(props){
+        super(props)
+    }
 
     onPressContinueGuest = () => {}
 
@@ -17,7 +21,9 @@ class LoginScreen extends React.Component{
                                                width: '100vw', minWidth: '100vw'}}>
                 <div className='row' style={{marginLeft: '20%'}}>
                     <div className='col' style={{marginTop: '60px'}}>
-                        <div>REPLACE WITH LOGO IMAGE</div>
+                        <div>
+                            <img style={{maxHeight: '280px'}} src={icon_music_album_1}></img>
+                        </div>
                     </div>
                     <div className='col' style={{marginTop: '60px', marginLeft: '10%'}}>
 
@@ -34,10 +40,23 @@ class LoginScreen extends React.Component{
                     </div>
                 </div>
 
-                <div className='row' style={{marginLeft: '35%'}}>
-                    <h1>Listen Together</h1>
-                    <div style={{border: '5px solid black', borderRadius: '10px', padding: '10px 20px',
-                                 transform: 'translate(-240px,80px)'}}>REPLACE WITH IMAGES</div>
+                <div className='row' style={{minWidth: '100vw', marginTop: '3%'}}>
+                    <div className='row' style={{marginLeft: '40%'}}>
+                        <h1>Listen Together</h1>
+                    </div>
+                    <div className='row' style={{marginTop: '2%', marginLeft: '25%'}}>
+                    <div style={{display: 'flex', justifyContent: 'center', padding: '10px 20px'}}>
+                        <img style={{maxHeight: '80px', marginRight: '5%'}} src={icon_disc_2}></img>
+                        <img style={{maxHeight: '80px', marginRight: '5%'}} src={icon_music_album_2}></img>
+                        <img style={{maxHeight: '80px', marginRight: '5%'}} src={icon_speak_1}></img>
+                        <img style={{maxHeight: '80px', marginRight: '5%'}} src={icon_radio}></img>
+                        <img style={{maxHeight: '80px', marginRight: '5%'}} src={icon_album}></img>
+                        <img style={{maxHeight: '80px', marginRight: '5%'}} src={icon_sound_mixer_1}></img>
+                        <img style={{maxHeight: '80px', marginRight: '5%'}} src={icon_disc_1}></img>
+                        <img style={{maxHeight: '80px', marginRight: '5%'}} src={icon_speak_2}></img>
+                        <img style={{maxHeight: '80px', marginRight: '5%'}} src={icon_sound_mixer_2}></img>
+                    </div>
+                    </div>
                 </div>
 
                 {/* Modal */}
