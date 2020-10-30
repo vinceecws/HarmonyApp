@@ -4,6 +4,14 @@ import { genSampleSuggestions } from '../test/genSamples'
 
 class HomeScreen extends React.Component {
 
+    handleGoToItem = () => {
+
+    }
+
+    handlePlayItem = () => {
+        
+    }
+
     /*
         In practice, fetchSuggestions returns a dynamically generated array of suggestions
         where each suggestion is an object that contains the category name of the suggestion
@@ -30,10 +38,18 @@ class HomeScreen extends React.Component {
                             {
                                 category.suggestions.map(obj => 
                                     <Card className="home-screen-category-list-item">
+                                        {obj.type == "user" && obj.live == true ? 
+                                                <Card.Text className="home-screen-category-list-item-live-indicator tiny-text color-accented">LIVE</Card.Text> :
+                                                <div></div>
+                                        }
                                         <Card.Img className="home-screen-category-list-item-img" src={obj.image}/>
-                                        <Card.Footer className="home-screen-category-list-item-footer body-text color-accented">
-                                            <div className="subtitle color-accented">{obj.name}</div>
-                                            <div className="body-text color-accented">{obj.creator}</div>
+                                        <Card.Footer className="home-screen-category-list-item-footer">
+                                            <div className="subtitle">{obj.name}</div>
+                                            <div className="body-text">{obj.creator}</div>
+                                            {obj.type == "user" && obj.live == true ? 
+                                                    <div className="body-text">{obj.sessions[0].name}</div> :
+                                                    <div></div>
+                                            }
                                         </Card.Footer>
                                     </Card>
                                     )

@@ -1,5 +1,6 @@
 import React from 'react'
 import { ListGroup, Image, Button, CardDeck, Card, InputGroup, FormControl } from 'react-bootstrap'
+import Ticker from 'react-ticker';
 import { genSampleHistory, genSampleResults } from '../test/genSamples'
 import { delete_cross_white, delete_button_white } from '../graphics'
 
@@ -18,6 +19,10 @@ class SearchScreen extends React.Component {
     }
 
     handleGoToItem = (e) => {
+        
+    }
+
+    handlePlayItem = (e) => {
         
     }
 
@@ -50,7 +55,7 @@ class SearchScreen extends React.Component {
     }
 
     fetchHistory = () => {
-        return genSampleHistory(10)
+        return this.props.history
     }
 
     fetchResults = (query) => {
@@ -78,7 +83,7 @@ class SearchScreen extends React.Component {
                 <InputGroup className="search-screen-search-box-container">
                     <FormControl 
                         className="search-screen-search-box body-text" 
-                        placeholder="Search songs, collections and more"
+                        placeholder="Search sessions, collections and more"
                         value={this.state.query} 
                         onChange={e => this.handleSearchQueryChange(e)}/>
                     <InputGroup.Append>
@@ -94,7 +99,7 @@ class SearchScreen extends React.Component {
                     <ListGroup>
                         {
                             this.state.history.map(obj => 
-                                <ListGroup.Item className="search-screen-history-item" onClick={e => this.goToItem(e)} action>
+                                <ListGroup.Item className="search-screen-history-item" onClick={e => this.handleGoToItem(e)} action>
                                     <div className="search-screen-history-item-type title color-contrasted">{obj.type.capitalize()}</div>
                                     <div className="search-screen-history-item-container">
                                         <Image className="search-screen-history-item-display-image" src={obj.image}/>
@@ -119,10 +124,22 @@ class SearchScreen extends React.Component {
                                 {
                                     category.results.map(obj => 
                                         <Card className="search-screen-results-category-list-item">
+                                            {obj.type == "session" && obj.live == true ? 
+                                                <Card.Text className="search-screen-results-list-item-live-indicator tiny-text color-accented">LIVE</Card.Text> :
+                                                <div></div>
+                                            }
+                                            {obj.type == "user" && obj.live == true ? 
+                                                <Card.Text className="search-screen-results-list-item-streaming-indicator tiny-text color-accented">STREAMING NOW</Card.Text> :
+                                                <div></div>
+                                            }
                                             <Card.Img className="search-screen-results-category-list-item-img" src={obj.image}/>
                                             <Card.Footer className="search-screen-results-category-list-item-footer">
                                                 <div className="subtitle color-accented">{obj.name}</div>
                                                 <div className="body-text color-accented">{obj.creator}</div>
+                                                {obj.type == "user" && obj.live == true ? 
+                                                    <Card.Text className="body-text color-accented">{obj.sessions[0].name}</Card.Text> :
+                                                    <div></div>
+                                                }
                                             </Card.Footer>
                                         </Card>
                                         )

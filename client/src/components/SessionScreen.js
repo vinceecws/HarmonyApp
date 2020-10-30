@@ -106,5 +106,4 @@ class SessionScreen extends React.Component {
     }
 }
 
-
 export default SessionScreen;

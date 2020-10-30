@@ -47,16 +47,37 @@ function initImage(category) {
 function initData(category, categoryName) {
     var initFunctions = [initType, initCreator, initImage]
     for (var i = 0; i < initFunctions.length; i++) {
-        category = initFunctions[i](category, categoryName)
+        category = initFunctions[i](_.cloneDeep(category), categoryName)
     }
     return category
 }
 
 let sampleDatabase = {
-    sessions: initData(sessions, "session"),
-    collections: initData(collections, "collection"),
+    sessions: initData(sessions.map(session => {
+        session.initialQueue = initData(session.initialQueue, "song")
+        return session
+    }), "session"),
+    collections: initData(collections.map(collection => {
+        collection.songList = initData(collection.songList, "song")
+        return collection
+    }), "collection"),
     songs: initData(songs, "song"),
-    users: initData(users, "user")
+    users: initData(users.map(user => {
+        user.playlists = initData(user.playlists.map(playlist => {
+            playlist.songList = initData(playlist.songList, "song")
+            return playlist
+        }), "collection")
+        user.likedSongs = initData(user.likedSongs, "song")
+        user.likedCollections = initData(user.likedCollections.map(collection => {
+            collection.songList = initData(collection.songList, "song")
+            return collection
+        }))
+        user.sessions = initData(user.sessions.map(session => {
+            session.initialQueue = initData(session.initialQueue, "song")
+            return session
+        }), "session")
+        return user
+    }), "user")
 }
 
 
@@ -144,4 +165,17 @@ export function genSampleQueue () {
         songsCopy[j] = temp
       }
     return songsCopy
+}
+
+export function genSampleSessions () {
+    var sessionsCopy = _.cloneDeep(sampleDatabase.sessions)
+    return sessionsCopy
+}
+
+export function genSampleUsers () {
+    var usersCopy = _.cloneDeep(sampleDatabase.users).map(user => {
+        user.history = genSampleHistory(10)
+        return user
+    })
+    return usersCopy
 }
