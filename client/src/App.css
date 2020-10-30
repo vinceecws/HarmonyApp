@@ -338,3 +338,16 @@ body, html {
   overflow: visible;
   animation: marquee 5s linear 1;
 }
+
+.collection-page-text {
+  font-family: BalsamiqSans;
+  color: whitesmoke;
+}
+
+ul li:nth-child(odd) {
+  background: #505050;
+}
+
+ul li:nth-child(even) {
+  background: grey;
+}

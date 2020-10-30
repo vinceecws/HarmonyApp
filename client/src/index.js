@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import LoginScreen from './components/LoginScreen.js'
 import TabScreen from './components/TabScreen.js'
+import CollectionScreen from './components/CollectionScreen.js'
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import '../node_modules/bootstrap/js/dist/modal.js';
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
@@ -14,7 +15,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 ReactDOM.render(
   <React.StrictMode>
-    <TabScreen/>
+    <App/>
   </React.StrictMode>,
   document.getElementById('root')
 );
