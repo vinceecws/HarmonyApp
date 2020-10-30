@@ -101,7 +101,7 @@ class CollectionScreen extends React.Component{
                     {this.collection.songList.map((e, i) => 
                         <li style={{minWidth: '90vw'}}>
                             <div style={{display: 'flex', alignItems: 'center'}}>
-                                <div id='player-song-title' style={{display: 'inline-block', marginLeft: '15px', marginRight: '3%', width: '27%'}}><div>{e.title}</div></div>
+                                <div id='player-song-title' style={{display: 'inline-block', marginLeft: '15px', marginRight: '2.5%', width: '27%'}}><div>{e.title}</div></div>
                                 <div id='player-song-title' style={{display: 'inline-block', width: '20%', marginRight: '2%'}}><div>{e.artist}</div></div>
                                 <div className='collection-page-text' style={{display: 'inline-block', marginRight: '10.5%'}}>10/30/2020</div>
                                 <div className='collection-page-text' style={{display: 'inline-block', marginRight: '5%'}}>4:44</div>
