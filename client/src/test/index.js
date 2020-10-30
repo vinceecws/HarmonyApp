@@ -110,3 +110,5 @@ export const arcd_047_rotation = require('./arcade_pack/047-rotation.svg')
 export const arcd_048_dart = require('./arcade_pack/048-dart.svg')
 export const arcd_049_lottery_game = require('./arcade_pack/049-lottery game.svg')
 export const arcd_050_table_football = require('./arcade_pack/050-table football.svg')
+
+export const song_001_khalid_saturday_nights = require('./Saturday Nights - Khalid.mp3')

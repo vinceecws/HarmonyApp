@@ -7,11 +7,17 @@ import TabScreen from './components/TabScreen.js'
 import CollectionScreen from './components/CollectionScreen.js'
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import '../node_modules/bootstrap/js/dist/modal.js';
+import '../node_modules/bootstrap/dist/js/bootstrap.js';
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 
 
 import * as serviceWorker from './serviceWorker';
-import 'bootstrap/dist/css/bootstrap.min.css';
+
+
+
+String.prototype.capitalize = function() {
+  return this[0].toUpperCase() + this.substr(1)
+}
 
 ReactDOM.render(
   <React.StrictMode>

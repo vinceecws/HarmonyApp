@@ -1,37 +1,53 @@
 import React from 'react';
+
+
+import MainApp from './components/MainApp.js'
+import LoginScreen from './components/LoginScreen.js'
+
+import { Container } from 'react-bootstrap';
+
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+
 import './App.css';
-import Player from './components/Player.js'
-import HomeScreen from './components/HomeScreen.js'
-import SessionSideList from './components/Sessions/SessionsSideList.js';
-import CollectionScreen from './components/CollectionScreen.js';
-import { Container, Row, Col } from 'react-bootstrap';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { genSampleUsers } from './test/genSamples.js'
+
+class App extends React.Component {
+
+  constructor(props) {
+    super(props)
+    var user = genSampleUsers()[0]
+    this.state = {
+      auth: user.Id,
+      user: user
+    }
+  }
+
+  handleLogOut() {
+    this.setState({
+      auth: null,
+    })
+  }
+
+  handleAuthenticate(auth) {
+    this.setState({
+      auth: auth
+    })
+  }
 
 
-function App() {
-  
-  return (
-    
-      
-         
-      
-    <Container id="app-container">
-        <Row id="top-container">
-          <Col id="side-list-container" sm={2} md={2} lg={2} xl={2}>
-            <header className='Session-Side-List'>
-              <SessionSideList/>
-            </header>
-          </Col>
-          <Col id="screen-container">
-            <CollectionScreen/>
-          </Col>
-        </Row>
-        <Row id="bottom-container">
-          <Player/>
-        </Row>
-    </Container>
+  render() {
+    return (
+      <Container id="app-container">
+        <Router>
+          <Switch>
+            <Route path={['/login']} render={(props) => <LoginScreen {...props} auth={this.state.auth} handleAuthenticate={this.handleAuthenticate}/>} />
+            <Route path={['/', '/main']} render={(props) => <MainApp {...props} auth={this.state.auth} user={this.state.user} handleLogOut={this.handleLogOut.bind(this)}/>} />
+          </Switch>
+        </Router>
+      </Container>
+    );
+  }
 
-  );
 }
 
 export default App;

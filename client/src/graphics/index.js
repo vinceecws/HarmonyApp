@@ -51,3 +51,12 @@ export const icon_favorite_1 = require('./music_player_pack/047-favorite.svg')
 export const icon_delete_2 = require('./music_player_pack/048-delete.svg')
 export const icon_playlist_3 = require('./music_player_pack/049-playlist.svg')
 export const icon_favorite_2 = require('./music_player_pack/050-favorite.svg')
+
+/* user_pack imports*/
+
+export const icon_profile_image = require('./user_pack/001-profile image.svg')
+export const icon_calendar = require('./user_pack/002-calendar.svg')
+export const icon_album = require('./user_pack/003-music-album.svg')
+export const icon_song = require('./user_pack/004-song.svg')
+export const delete_cross_white = require('./delete-cross-white.svg')
+export const delete_button_white = require('./delete-button-white.svg')

@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Link } from 'react-router-dom'
 
 class LoginScreen extends React.Component{
 
@@ -7,6 +7,10 @@ class LoginScreen extends React.Component{
     onPressContinueGuest = () => {}
 
     render(){
+        if (this.props.auth !== null) {
+            this.props.history.push('/main/home')
+        }
+        console.log("LOGIN")
         return (
             <div className='container' style={{backgroundColor: 'lightgreen', 
                                                height: '100vh', minHeight: '100vh',
@@ -24,9 +28,9 @@ class LoginScreen extends React.Component{
                             <input type='submit' value='Log-in' style={{marginTop:'20px', boxShadow: '3px 3px'}}/>
                         </form>
                         <button className="btn btn-link" style={{marginTop: '10px'}} data-toggle='modal' data-target='#registrationModal'>Or create an account</button><br/>
-                        <button style={{marginTop: '20px', boxShadow: '3px 3px', 
+                        <Link to="/main" style={{marginTop: '20px', boxShadow: '3px 3px', 
                                         backgroundColor: 'cornsilk', fontSize: '20px',
-                                        padding: '10px 15px'}} onClick={this.onPressContinueGuest}>Continue As Guest</button>
+                                        padding: '10px 15px'}}>Continue As Guest</Link>
                     </div>
                 </div>
 
