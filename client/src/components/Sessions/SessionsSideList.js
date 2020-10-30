@@ -6,6 +6,7 @@ let users = require('../../test/sampleUsers.json')
 
 
 class SessionSideList extends React.Component{
+    
     render(){
         var sessionEntries = [];
         var hostUsers = [];

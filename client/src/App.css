@@ -31,6 +31,14 @@
   color: whitesmoke;
 }
 
+.bg-color-contrasted {
+  background-color: #505050;
+}
+
+.bg-color-accented {
+  background-color: whitesmoke;
+}
+
 .color-harmony {
   color: #00e400;
 }
@@ -78,7 +86,14 @@ body, html {
  
 }
 
+/* Session Screen */
 
+.session-title-text{
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  flex-wrap: nowrap !important;
+}
 
 .Session-Entry-Text{
   font-family: BalsamiqSans;
@@ -91,6 +106,27 @@ body, html {
   text-indent: 1em;
   color: white;
   
+}
+.list-group-sessionScreen{
+  height: 100%;
+  max-width: 98%;
+  overflow:scroll;
+  overflow-x: hidden;
+}
+
+.list-group-sessionScreen :nth-child(even) .list-group-item  {
+  background-color: #505050;
+  color: white;
+  overflow: hidden;
+  
+  white-space: nowrap;
+}
+.list-group-sessionScreen :nth-child(odd) .list-group-item  {
+  background-color: black;
+  color: white;
+  overflow: hidden;
+  
+  white-space: nowrap;
 }
 /*Profile Screen*/
 

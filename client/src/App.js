@@ -3,6 +3,7 @@ import Player from './components/Player.js'
 import HomeScreen from './components/HomeScreen.js'
 import SettingsScreen from './components/SettingsScreen.js'
 import SearchScreen from './components/SearchScreen.js'
+import SessionScreen from './components/SessionScreen.js'
 import SessionSideList from './components/Sessions/SessionsSideList.js';
 import ProfileScreen from './components/ProfileScreen.js';
 import { Container, Row, Col } from 'react-bootstrap';
@@ -21,7 +22,7 @@ function App() {
             </header>
           </Col>
           <Col id="screen-container">
-            <SettingsScreen/>
+            <SessionScreen/>
           </Col>
         </Row>
         <Row id="bottom-container">
