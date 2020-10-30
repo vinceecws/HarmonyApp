@@ -52,29 +52,27 @@ class SessionScreen extends React.Component {
         	<div style={{fontFamily: 'BalsamiqSans', marginLeft:'15px', height:'100%'}}>
         		<div className='row' style={{height:'100%'}}>
         			<div className='col-sm-8' style={{height:'100%'}}>
-	        			<div className='row' style={{height:'140px', border: '3px solid black', borderRadius: '25px'}}>
-	        				<div className='col' style={{maxWidth:'35%'}}>
-	        					<img src={icon_profile_image} style={{backgroundColor:'white',display: 'block', marginLeft: 'auto',
-  																		marginRight: 'auto', marginTop:'5px', height:'120px',
+	        			<div className='row' style={{height:'22%', border: '3px solid black', borderRadius: '25px'}}>
+	        				<div className='col' style={{maxWidth:'35%', height:'100%', padding:'1em'}}>
+	        					<img src={icon_profile_image} style={{backgroundColor:'white',display: 'block', margin: 'auto', height:'90%',
 	        									 border: '3px solid black'}}/>
 	        				</div>
-	        				<div className='col' style={{maxWidth:'50%', minWidth:'50%',color:'white'}}>
+	        				<div className='col' style={{maxWidth:'50%', minWidth:'50%', padding:'1em', color:'white'}}>
 	        					<div className='title session-title-text'>
 	        						{this.state.name}
 
 	        					</div>
-	        					<div className='body-text' style={{marginTop:'30px'}}>
+	        					<div className='body-text' style={{marginTop:'30px', margin: 'auto'}}>
 	        						{this.state.host.name}
 	        					</div>
 	        				</div>
-	        				<div className='col' style={{maxWidth:'25%', textAlign: 'right', minWidth:'10%',color:'white', float:'right'}}>
-	        					<div className='body-text'>LIVE<img src={icon_radio} style={{width:'30px', marginLeft: 'auto',
-  																		marginRight: 'auto'}}/></div>
+	        				<div className='col' style={{maxWidth:'25%', textAlign: 'right', padding:'1em', minWidth:'10%',color:'white',  float:'right'}}>
+	        					<div className='body-text'>LIVE<img src={icon_radio} style={{width:'30px'}}/></div>
 	        					{this.state.startTime}
 
 	        				</div>
 	        			</div>
-	        			<div className='row bg-color-contrasted' style={{height:'calc(100% - 40px - 140px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
+	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
 	        				<ChatFeed actionLog={this.state.actionLog} />
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
