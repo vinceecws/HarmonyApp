@@ -173,6 +173,9 @@ export function genSampleSessions () {
 }
 
 export function genSampleUsers () {
-    var usersCopy = _.cloneDeep(sampleDatabase.users)
+    var usersCopy = _.cloneDeep(sampleDatabase.users).map(user => {
+        user.history = genSampleHistory(10)
+        return user
+    })
     return usersCopy
 }

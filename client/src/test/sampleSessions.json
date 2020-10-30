@@ -8,6 +8,7 @@
         "endTime": 9900,
         "streams": 3308,
         "likes": 780,
+        "live": false,
         "initialQueue": [
             {
                 "title": "Feel For It",
@@ -158,6 +159,7 @@
         "endTime": 9900,
         "streams": 39801,
         "likes": 6591,
+        "live": true,
         "initialQueue": [
             {
                 "title": "Feel For It",
@@ -308,6 +310,7 @@
         "endTime": 9900,
         "streams": 1033,
         "likes": 452,
+        "live": true,
         "initialQueue": [],
         "actionLog": []
     },
@@ -320,6 +323,7 @@
         "endTime": 9900,
         "streams": 90939,
         "likes": 28593,
+        "live": true,
         "initialQueue": [],
         "actionLog": []
     },
@@ -332,6 +336,7 @@
         "endTime": 9900,
         "streams": 13499,
         "likes": 6061,
+        "live": true,
         "initialQueue": [],
         "actionLog": []
     },
@@ -344,6 +349,7 @@
         "endTime": 9900,
         "streams": 37890,
         "likes": 5692,
+        "live": true,
         "initialQueue": [],
         "actionLog": []
     },
@@ -356,6 +362,7 @@
         "endTime": 9900,
         "streams": 5442,
         "likes": 3090,
+        "live": true,
         "initialQueue": [],
         "actionLog": []
     },
@@ -368,6 +375,7 @@
         "endTime": 9900,
         "streams": 101693,
         "likes": 45021,
+        "live": true,
         "initialQueue": [],
         "actionLog": []
     },
@@ -380,6 +388,7 @@
         "endTime": 9900,
         "streams": 8481,
         "likes": 3200,
+        "live": true,
         "initialQueue": [],
         "actionLog": []
     },
@@ -392,6 +401,7 @@
         "endTime": 9900,
         "streams": 29821,
         "likes": 8899,
+        "live": true,
         "initialQueue": [],
         "actionLog": []
     },
@@ -404,6 +414,7 @@
         "endTime": 9900,
         "streams": 32489,
         "likes": 10091,
+        "live": true,
         "initialQueue": [],
         "actionLog": []
     }

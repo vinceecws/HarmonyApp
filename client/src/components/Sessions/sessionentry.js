@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Ticker from 'react-ticker';
 import { Row, Col, Image } from 'react-bootstrap'
 import { icon_music_1 } from '../../graphics'
+import { Link } from 'react-router-dom'
 
 
 
@@ -46,7 +47,7 @@ class SessionEntry extends React.Component{
 			entry = <h1 className='Session-Entry-Text body-text color-accented'>{this.props.name}</h1>;
 		}
 		return(
-			<div onMouseEnter={this.handleEntryToggle} onMouseLeave={this.handleEntryToggle}>
+			<Link className="session-entry-container" to={"/main/session/" + this.props.id} onMouseEnter={this.handleEntryToggle} onMouseLeave={this.handleEntryToggle}>
 				<a href={this.props.hostId} className='list-group-item list-group-item-action'>
 					<Row className="session-entry-row-container">
 						<Col className="session-entry-image-container">
@@ -62,7 +63,7 @@ class SessionEntry extends React.Component{
 						</Col>
 					</Row>
 				</a>
-			</div>
+			</Link>
 		);
 	}
 }

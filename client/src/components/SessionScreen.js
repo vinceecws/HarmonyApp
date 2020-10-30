@@ -21,3 +21,5 @@ class SessionScreen extends React.Component {
         return null;
     }
 }
+
+export default SessionScreen;

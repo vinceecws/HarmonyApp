@@ -16,3 +16,5 @@ class CollectionScreen extends React.Component{
         )
     }
 }
+
+export default CollectionScreen;

@@ -38,10 +38,18 @@ class HomeScreen extends React.Component {
                             {
                                 category.suggestions.map(obj => 
                                     <Card className="home-screen-category-list-item">
+                                        {obj.type == "user" && obj.live == true ? 
+                                                <Card.Text className="home-screen-category-list-item-live-indicator tiny-text color-accented">LIVE</Card.Text> :
+                                                <div></div>
+                                        }
                                         <Card.Img className="home-screen-category-list-item-img" src={obj.image}/>
                                         <Card.Footer className="home-screen-category-list-item-footer">
                                             <div className="subtitle">{obj.name}</div>
                                             <div className="body-text">{obj.creator}</div>
+                                            {obj.type == "user" && obj.live == true ? 
+                                                    <div className="body-text">{obj.sessions[0].name}</div> :
+                                                    <div></div>
+                                            }
                                         </Card.Footer>
                                     </Card>
                                     )

@@ -7,6 +7,7 @@
         "dob": "03/13/1997",
         "biography": "guy in space",
         "privateMode": false,
+        "live": false,
         "playlists": [
             {
                 "name": "it's alright actually",
@@ -333,6 +334,7 @@
         "dob": "01/01/2001",
         "biography": "chilled cow eats grass produces milk for cereal for breakfast for kids relax with chill lo-fi music",
         "privateMode": false,
+        "live": true,
         "playlists": [
             {
                 "name": "study music",

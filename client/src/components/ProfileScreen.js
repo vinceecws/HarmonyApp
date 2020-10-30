@@ -1,6 +1,5 @@
 import React from 'react';
 import {icon_profile_image, icon_like, icon_music_1} from '../graphics';
-import { genSampleUsers } from '../test/genSamples.js'
 
 let users = require('../test/sampleUsers.json')
 
@@ -10,7 +9,7 @@ class ProfileScreen extends React.Component{
 	constructor(props){
 		super(props);
 		this.state = {
-			user: this.fetchUser()
+			user: this.props.user
 		}
 
 	}
@@ -19,7 +18,7 @@ class ProfileScreen extends React.Component{
 	}
 
 	fetchUser = () => {
-		return genSampleUsers()[1]
+		return this.props.user
 	}
 
     render(){

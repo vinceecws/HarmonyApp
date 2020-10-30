@@ -3,6 +3,29 @@
   src: url(./graphics/balsamiq_sans/BalsamiqSans-Regular.ttf)
 }
 
+@keyframes pulsing-live-color {
+  0% {
+    background-color: rgb(255, 0, 0);
+  }
+  50% {
+    background-color: rgb(204, 0, 0);
+  }
+  100% {
+    background-color: rgb(255, 0, 0);
+  }
+}
+
+@keyframes marquee {
+  0%   { transform: translate(0, 0); }
+  50%  { 
+    transform: translate(-100%, 0);
+  }
+  50.01% {
+    transform: translate(100%, 0);
+  }
+  100% { transform: translate(0%, 0); }
+}
+
 .super-title {
   font-family: BalsamiqSans;
   font-size: xx-large;
@@ -98,6 +121,10 @@ body, html {
   text-overflow: ellipsis;
   color: white;
   
+}
+
+.session-entry-container, .session-entry-container:hover {
+  text-decoration: none;
 }
 
 .session-entry-row-container {
@@ -202,10 +229,20 @@ body, html {
   padding: 0;
 }
 
-#top-container {
+#main-app-container {
+  width: 100%;
+  height: 100%;
+}
 
-  min-height: 600px;
-  height: calc(100% - 120px);
+#top-container {
+  background-color: #505050;
+  min-height: 50px;
+  margin: 0;
+}
+
+#mid-container {
+  min-height: 550px;
+  height: calc(100% - 120px - 50px);
   margin: 0;
 }
 
@@ -233,6 +270,87 @@ body, html {
   min-height: 120px;
   height: 120px;
   margin: 0;
+}
+
+/* TabComponent */
+#tab-component-container {
+  width: 100%;
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+#tab-component-nav-container {
+  padding: 0px 10px 0px 10px;
+  background-color: #505050;
+}
+
+.tab-component-link-container {
+
+}
+
+#tab-component-login-button, #tab-component-login-button:hover {
+  position: absolute;
+  right: 20px;
+  top: 10px;
+  text-decoration: none;
+}
+
+#tab-component-account-link-container {
+  position: absolute;
+  right: 0px;
+}
+
+#tab-component-account-link-button {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+#tab-component-account-link-image {
+  height: 40px;
+  width: 40px;
+}
+
+#tab-component-account-link-dropdown-button {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+#tab-component-account-link-container .dropdown-menu {
+  background-color: #505050 !important;
+}
+
+#tab-component-account-link-container .dropdown-item {
+  background-color: #505050 !important;
+}
+
+#tab-component-account-link-container .dropdown-item a {
+  font-family: BalsamiqSans;
+  color: whitesmoke;
+}
+
+#tab-component-account-link-container .dropdown-item:hover {
+  background-color: gray !important;
+}
+
+#tab-component-account-link-container .dropdown-item a:hover {
+  text-decoration: none;
+}
+
+.tab-component-link {
+  padding: 0 !important;
+  margin: 5px 15px 5px 15px !important;
+  border-bottom: solid 1px transparent;
+}
+
+.tab-component-link:hover {
+  color: lightgray;
+  border-bottom: solid 1px black;
+}
+
+.tab-component-link-selected {
+  border-bottom: solid 1px black;
 }
 
 /* Player */
@@ -302,17 +420,6 @@ body, html {
   animation: marquee 5s linear 1;
   text-decoration: underline;
   cursor: default;
-}
-
-@keyframes marquee {
-  0%   { transform: translate(0, 0); }
-  50%  { 
-    transform: translate(-100%, 0);
-  }
-  50.01% {
-    transform: translate(100%, 0);
-  }
-  100% { transform: translate(0%, 0); }
 }
 
 #player-controls {
@@ -450,6 +557,21 @@ body, html {
   height: 240px;
   width: 200px;
   background-color: whitesmoke !important;
+}
+
+.home-screen-category-list-item-live-indicator {
+  background-color: rgb(255, 0, 0);
+  animation-name: pulsing-live-color;
+  animation-duration: 0.75s;
+  animation-iteration-count: infinite;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 3px 8px 3px 8px;
+  border-radius: 10%;
+  border: solid 2px black;
+  margin: auto;
+  cursor: pointer;
 }
 
 .home-screen-category-list-item-img {
@@ -602,6 +724,32 @@ body, html {
   width: 150px;
   background-color: gray !important;
   margin-bottom: 20px !important;
+}
+
+.search-screen-results-list-item-live-indicator {
+  background-color: rgb(255, 0, 0);
+  animation-name: pulsing-live-color;
+  animation-duration: 0.75s;
+  animation-iteration-count: infinite;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 3px 8px 3px 8px;
+  border-radius: 10%;
+  border: solid 2px black;
+  margin: auto;
+  cursor: pointer;
+}
+
+.search-screen-results-list-item-streaming-indicator {
+  text-align: center;
+  background-color: black;
+  position: absolute;
+  top: 8px;
+  width: 100%;
+  border-top: solid 1px white;
+  border-bottom: solid 1px white;
+  cursor: pointer;
 }
 
 .search-screen-results-category-list-item-img {
