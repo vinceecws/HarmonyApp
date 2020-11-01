@@ -17,11 +17,9 @@ class App extends React.Component {
     super(props)
     var user = genSampleUsers()[0]
     this.state = {
-<<<<<<< HEAD
-      auth: user.Id,
-=======
+
       auth: user.Id,   //null
->>>>>>> 7e21ead4186a027069d4a6179480f0cb1594a3f5
+
       user: user
     }
   }
