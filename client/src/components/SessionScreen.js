@@ -2,21 +2,7 @@ import React from 'react';
 import {icon_profile_image, icon_radio, icon_song, icon_like} from '../graphics';
 import ChatFeed from './Chat/ChatFeed.js';
 import Queue from './Queues/Queue.js';
-/*
-var formData  = new FormData();
 
-formData.append("format", "json");
-formData.append("url", "http://soundcloud.com/forss/flickermood");
-
-var html = fetch('http://soundcloud.com/oembed', {
-    method: 'POST',
-    body: formData
-}).then(function (response) {
-    return response.json();
-}).then(function (res) {
-  return res.html;
-});
-*/
 let sessions = require('../test/sampleSessions.json')
 let users = require('../test/sampleUsers.json')
 
@@ -47,7 +33,7 @@ class SessionScreen extends React.Component {
 	}
 	//replace icon with the associated user profile image
     render(){
-    	this.state.host = this.getSessionHost();
+
         return(
         	<div style={{fontFamily: 'BalsamiqSans', marginLeft:'15px', height:'100%'}}>
         		<div className='row' style={{height:'100%'}}>

@@ -134,24 +134,11 @@ export function genSampleResults (query) {
 
     var sampleDatabaseCopy = JSON.parse(JSON.stringify(sampleDatabase))
 
-    return [
-        {   
-            categoryName: "Sessions",
-            results: sampleDatabaseCopy.sessions.filter(item => item.name.toLowerCase().includes(query) || item.hostName.toLowerCase().includes(query))
-        },
-        {
-            categoryName: "Collections",
-            results: sampleDatabaseCopy.collections.filter(item => item.name.toLowerCase().includes(query) || item.user.toLowerCase().includes(query))
-        },
-        {
-            categoryName: "Songs",
-            results: sampleDatabaseCopy.songs.filter(item => item.name.toLowerCase().includes(query) || item.artist.toLowerCase().includes(query))
-        },
-        {
-            categoryName: "Users",
-            results: sampleDatabaseCopy.users.filter(item => item.name.toLowerCase().includes(query))
+    return {
+            sessions: sampleDatabaseCopy.sessions.filter(item => item.name.toLowerCase().includes(query) || item.hostName.toLowerCase().includes(query)),
+            collections: sampleDatabaseCopy.collections.filter(item => item.name.toLowerCase().includes(query) || item.user.toLowerCase().includes(query)),
+            users: sampleDatabaseCopy.users.filter(item => item.name.toLowerCase().includes(query))
         }
-    ]
 }
 
 export function genSampleQueue () {

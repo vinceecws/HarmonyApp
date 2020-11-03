@@ -4,13 +4,16 @@ import Ticker from 'react-ticker';
 import { genSampleHistory, genSampleResults } from '../test/genSamples'
 import { delete_cross_white, delete_button_white } from '../graphics'
 
+const _ = require('lodash');
+
 class SearchScreen extends React.Component {
 
     constructor(props) {
         super(props)
         this.state = {
             query: "",
-            history: this.fetchHistory()
+            history: this.fetchHistory(),
+            res: {}
         }
     }
 
@@ -28,14 +31,17 @@ class SearchScreen extends React.Component {
 
     handleClearSearchBox = () => {
         this.setState({
-            query: ""
+            query: "",
+            res: {}
         })
     }
 
     handleSearchQueryChange = (e) => {
         this.setState({
-            query: e.target.value
+            query: e.target.value,
+            res: {}
         })
+        this.fetchResults(e.target.value)
     }
 
     handleRemoveHistory = (e, index) => {
@@ -59,7 +65,19 @@ class SearchScreen extends React.Component {
     }
 
     fetchResults = (query) => {
-        return genSampleResults(query.toLowerCase())
+        if (query.trim() !== "") {
+            this.props.queryVideos(query).then(res => {
+                var newRes = _.cloneDeep(this.state.res)
+                newRes.songs = res
+                console.log(newRes)
+                this.setState({
+                    res: newRes
+                })
+            })
+            this.setState({
+                res: genSampleResults(query.toLowerCase())
+            })
+        }
     }
 
     /*
@@ -78,6 +96,8 @@ class SearchScreen extends React.Component {
     }
 
     render() {
+        console.log("STATE RES")
+        console.log(Object.keys(this.state.res))
         return(
             <div className="search-screen-container">
                 <InputGroup className="search-screen-search-box-container">
@@ -117,12 +137,12 @@ class SearchScreen extends React.Component {
                     </ListGroup>
                 </div>
                 <div className={this.getResultsClass()}>
-                    {this.fetchResults(this.state.query).map(category => category.results !== undefined && category.results.length > 0 ?
+                    {Object.keys(this.state.res).map(category => this.state.res[category] !== undefined && this.state.res[category].length > 0 ?
                         <div className="search-screen-results-category-container">
-                            <div className="search-screen-results-category-name title color-contrasted">{category.categoryName}</div>
+                            <div className="search-screen-results-category-name title color-contrasted">{category.capitalize()}</div>
                             <CardDeck className="search-screen-results-category-list">
                                 {
-                                    category.results.map(obj => 
+                                    this.state.res[category].map(obj => 
                                         <Card className="search-screen-results-category-list-item">
                                             {obj.type == "session" && obj.live == true ? 
                                                 <Card.Text className="search-screen-results-list-item-live-indicator tiny-text color-accented">LIVE</Card.Text> :

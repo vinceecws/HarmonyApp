@@ -26,6 +26,10 @@ const userSchema = new mongoose.Schema({
       type: Boolean,
       default: false
   },
+  live: {
+    type: Boolean,
+    default: false
+  },
   playlists: { 
     type: [mongoose.Schema.Types.ObjectId],
     ref: "collectionId"

@@ -5,7 +5,6 @@ import { icon_play_2, icon_pause_3, icon_music_album_3, icon_previous, icon_next
 import { repeatStates } from '../const'
 import { genSampleQueue } from '../test/genSamples'
 import { song_001_khalid_saturday_nights } from '../test'
-const SC = require('soundcloud')
 const _ = require('lodash');
 
 
@@ -13,24 +12,50 @@ class Player extends React.Component{
 
     constructor(props) {
         super(props)
-        var queue = this.fetchQueue()
-        var currentSong = queue.shift()
-        currentSong.url = song_001_khalid_saturday_nights
-        this.fetchAudio(currentSong.url)
-        this.audio.volume = 0.5
-        this.state = {
-            currentSong: currentSong,
-            favorited: currentSong.favorited,
-            paused: this.audio.paused,
-            volume: this.audio.volume * 100,
-            muted: this.audio.muted,
-            duration: this.audio.duration,
-            currentTime: this.audio.currentTime,
-            pastQueue: [],
-            futureQueue: queue,
-            shuffle: false,
-            repeat: repeatStates.OFF
+        if (this.props.playerReady) {
+            console.log("READY")
+            this.initPlayer()
+            var queue = this.fetchQueue()
+            var currentSong = queue.shift()
+            this.state = {
+                currentSong: currentSong,
+                favorited: currentSong.favorited,
+                paused: this.props.isPaused(),
+                volume: this.props.getVolume(),
+                muted: this.props.isMuted(),
+                duration: this.props.getDuration(),
+                currentTime: this.props.getCurrentTime(),
+                pastQueue: [],
+                futureQueue: queue,
+                shuffle: false,
+                repeat: repeatStates.OFF
+            }
         }
+        else {
+            console.log("NOT READY")
+            var queue = this.fetchQueue()
+            var currentSong = queue.shift()
+            currentSong.url = song_001_khalid_saturday_nights
+            this.fetchAudio(currentSong.url)
+            this.audio.volume = 0.5
+            this.state = {
+                currentSong: currentSong,
+                favorited: currentSong.favorited,
+                paused: this.audio.paused,
+                volume: this.audio.volume * 100,
+                muted: this.audio.muted,
+                duration: this.audio.duration,
+                currentTime: this.audio.currentTime,
+                pastQueue: [],
+                futureQueue: queue,
+                shuffle: false,
+                repeat: repeatStates.OFF
+            }
+        }
+    }
+
+    initPlayer = () => {
+
     }
 
     handleGoToItem = (e) => {
@@ -216,19 +241,8 @@ class Player extends React.Component{
     }
 
     fetchAudio = (url) => {
-        // SC.initialize({
-        //     client_id: 'BhajJqlWZTSFOvRxDm5ayVT1DQaJoybO'
-        // });
-          
-        // // stream track id 293
-        // SC.resolve('https://soundcloud.com/dengue/menestra')
 
         this.audio = new Audio(url)
-        this.audio.ontimeupdate = (e) => {
-            this.setState({
-                currentTime: this.audio.currentTime
-            })
-        }
         this.audio.onloadedmetadata = (e) => {
             this.setState({
                 duration: this.audio.duration

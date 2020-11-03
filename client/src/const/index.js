@@ -1,3 +1,15 @@
+export const youtube_data_api_src = "https://apis.google.com/js/api.js"
+export const youtube_iframe_api_src = 'https://www.youtube.com/iframe_api'
+export const youtube_data_api_discovery_doc = "https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest"
+export const youtube_data_api_oauth_scope = "https://www.googleapis.com/auth/youtube"
+
+/*
+    Probably a good idea to move these to server.js for security purposes
+*/
+export const youtube_data_api_key = 'AIzaSyD2baf28I9I_FGcSCKay1GARnAMghlcQW0'
+export const google_oauth2_client_id = '1062386445238-hpt4garm04t6lfcn82brmbic5gng7u8i.apps.googleusercontent.com'
+export const google_oauth2_client_secret = 'tCbLxNT116LjzTJdALkzvDfb'
+
 /*
     The 7 screens of the app
 */
