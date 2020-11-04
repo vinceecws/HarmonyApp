@@ -1,8 +1,9 @@
 import React from 'react'
-import { ListGroup, Image, Button, CardDeck, Card, InputGroup, FormControl } from 'react-bootstrap'
-import Ticker from 'react-ticker';
-import { genSampleHistory, genSampleResults } from '../test/genSamples'
+import { ListGroup, Image, Button, CardDeck, Card, InputGroup, FormControl, Dropdown } from 'react-bootstrap'
+import { genSampleResults } from '../test/genSamples'
 import { delete_cross_white, delete_button_white } from '../graphics'
+
+import SuggestionsAPI from '../api/SuggestionsAPI'
 
 const _ = require('lodash');
 
@@ -10,15 +11,25 @@ class SearchScreen extends React.Component {
 
     constructor(props) {
         super(props)
+        this.suggestions = new SuggestionsAPI()
         this.state = {
             query: "",
             history: this.fetchHistory(),
+            suggestions: [],
             res: {}
         }
     }
 
     isSearchBoxEmpty = () => {
         return this.state.query.trim() === ""
+    }
+
+    isResultsEmpty = () => {
+        return Object.keys(this.state.res).length === 0
+    }
+
+    isSuggestionsEmpty = () => {
+        return this.state.suggestions.length === 0
     }
 
     handleGoToItem = (e) => {
@@ -41,7 +52,31 @@ class SearchScreen extends React.Component {
             query: e.target.value,
             res: {}
         })
-        this.fetchResults(e.target.value)
+        this.suggestions.query(e.target.value, this.handleUpdateSuggestions)
+    }
+
+    handleSearchQueryKeydown = (e) => {
+        if (e.keyCode) {
+            this.setState({
+                suggestions: []
+            })
+            this.fetchResults(this.state.query)
+        }
+    }
+
+    handleUpdateSuggestions = (suggestions) => {
+        this.setState({
+            suggestions: suggestions
+        })
+    }
+
+    handleSelectSuggestion = (key, e) => {
+        var query = this.state.suggestions[parseInt(key)]
+        this.setState({
+            query: query,
+            suggestions: []
+        })
+        this.fetchResults(query)
     }
 
     handleRemoveHistory = (e, index) => {
@@ -86,6 +121,10 @@ class SearchScreen extends React.Component {
         
     }
 
+    getShowSuggestions = () => {
+        return this.isSuggestionsEmpty() ? false : true
+    }
+
     getHistoryClass = () => {
         return this.isSearchBoxEmpty() ? "search-screen-history visible" : "search-screen-history collapsed"
     }
@@ -96,19 +135,29 @@ class SearchScreen extends React.Component {
 
     render() {
         return(
-            <div className="search-screen-container">
-                <InputGroup className="search-screen-search-box-container">
-                    <FormControl 
-                        className="search-screen-search-box body-text" 
-                        placeholder="Search sessions, collections and more"
-                        value={this.state.query} 
-                        onChange={e => this.handleSearchQueryChange(e)}/>
-                    <InputGroup.Append>
-                        <Button className="search-screen-search-box-clear-button" onClick={e => this.handleClearSearchBox(e)}>
-                            <Image className="search-screen-search-box-clear-button-icon" src={delete_button_white}/>
-                        </Button>
-                    </InputGroup.Append>
-                </InputGroup>
+            <div className="search-screen-container">   
+                <div className="search-screen-search-box-group-container">
+                    <InputGroup className="search-screen-search-box-container">
+                        <FormControl 
+                            className="search-screen-search-box body-text" 
+                            placeholder="Search sessions, collections and more"
+                            value={this.state.query} 
+                            onChange={e => this.handleSearchQueryChange(e)}
+                            onKeyDown={e => this.handleSearchQueryKeydown(e)}/>
+                        <InputGroup.Append>
+                            <Button className="search-screen-search-box-clear-button" onClick={e => this.handleClearSearchBox(e)}>
+                                <Image className="search-screen-search-box-clear-button-icon" src={delete_button_white}/>
+                            </Button>
+                        </InputGroup.Append>
+                    </InputGroup> 
+                    <Dropdown.Menu id="search-screen-search-box-suggestions-dropdown" menuRole="menu" show={this.getShowSuggestions()}>
+                        {
+                            this.state.suggestions.map((suggestion, ind) => 
+                                <Dropdown.Item eventKey={String(ind)} onSelect={(key, e) => this.handleSelectSuggestion(key, e)}>{suggestion}</Dropdown.Item>
+                            )
+                        }
+                    </Dropdown.Menu>
+                </div>
                 <div className={this.getHistoryClass()}>
                     <div className="search-screen-history-title super-title color-accented">
                         Your Recent History
@@ -141,11 +190,11 @@ class SearchScreen extends React.Component {
                                 {
                                     this.state.res[category].map(obj => 
                                         <Card className="search-screen-results-category-list-item">
-                                            {obj.type == "session" && obj.live == true ? 
+                                            {obj.type === "session" && obj.live === true ? 
                                                 <Card.Text className="search-screen-results-list-item-live-indicator tiny-text color-accented">LIVE</Card.Text> :
                                                 <div></div>
                                             }
-                                            {obj.type == "user" && obj.live == true ? 
+                                            {obj.type === "user" && obj.live === true ? 
                                                 <Card.Text className="search-screen-results-list-item-streaming-indicator tiny-text color-accented">STREAMING NOW</Card.Text> :
                                                 <div></div>
                                             }
@@ -153,7 +202,7 @@ class SearchScreen extends React.Component {
                                             <Card.Footer className="search-screen-results-category-list-item-footer">
                                                 <div className="subtitle color-accented">{obj.name}</div>
                                                 <div className="body-text color-accented">{obj.creator}</div>
-                                                {obj.type == "user" && obj.live == true ? 
+                                                {obj.type === "user" && obj.live === true ? 
                                                     <Card.Text className="body-text color-accented">{obj.sessions[0].name}</Card.Text> :
                                                     <div></div>
                                                 }

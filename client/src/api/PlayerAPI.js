@@ -22,7 +22,7 @@ class PlayerAPI {
                     onStateChange: this.onPlayerStateChange.bind(this)
                 }
             })
-        }).bind(this)
+        })
     }
 
     onPlayerReady = (e) => {

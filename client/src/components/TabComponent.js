@@ -1,7 +1,6 @@
 import React from 'react';
 import AccountLink from './AccountLink.js'
 import { NavLink } from 'react-router-dom'
-import { screens } from '../const'
 
 class TabComponent extends React.Component{
     constructor(props){
