@@ -69,7 +69,6 @@ class SearchScreen extends React.Component {
             this.props.queryVideos(query).then(res => {
                 var newRes = _.cloneDeep(this.state.res)
                 newRes.songs = res
-                console.log(newRes)
                 this.setState({
                     res: newRes
                 })
@@ -96,8 +95,6 @@ class SearchScreen extends React.Component {
     }
 
     render() {
-        console.log("STATE RES")
-        console.log(Object.keys(this.state.res))
         return(
             <div className="search-screen-container">
                 <InputGroup className="search-screen-search-box-container">
