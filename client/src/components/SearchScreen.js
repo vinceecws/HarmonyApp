@@ -56,7 +56,7 @@ class SearchScreen extends React.Component {
     }
 
     handleSearchQueryKeydown = (e) => {
-        if (e.keyCode) {
+        if (e.keyCode === 13) {
             this.setState({
                 suggestions: []
             })
