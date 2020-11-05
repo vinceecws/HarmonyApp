@@ -1,7 +1,7 @@
 import React from 'react'
-import { ListGroup, Image, Button, CardDeck, Card, InputGroup, FormControl, Dropdown } from 'react-bootstrap'
+import { ListGroup, Image, Button, CardDeck, Card, InputGroup, FormControl, Dropdown, OverlayTrigger } from 'react-bootstrap'
 import { genSampleResults } from '../test/genSamples'
-import { delete_cross_white, delete_button_white } from '../graphics'
+import { delete_cross_white, delete_button_white, icon_play_2 } from '../graphics'
 
 import SuggestionsAPI from '../api/SuggestionsAPI'
 
@@ -115,13 +115,6 @@ class SearchScreen extends React.Component {
         }
     }
 
-    /*
-        In practice, this will fetch the song's image from the given URL
-    */
-    fetchImage = () => {
-        
-    }
-
     getShowSuggestions = () => {
         return this.isSuggestionsEmpty() ? false : true
     }
@@ -151,7 +144,7 @@ class SearchScreen extends React.Component {
                             </Button>
                         </InputGroup.Append>
                     </InputGroup> 
-                    <Dropdown.Menu id="search-screen-search-box-suggestions-dropdown" menuRole="menu" show={this.getShowSuggestions()}>
+                    <Dropdown.Menu id="search-screen-search-box-suggestions-dropdown" show={this.getShowSuggestions()}>
                         {
                             this.state.suggestions.map((suggestion, ind) => 
                                 <Dropdown.Item eventKey={String(ind)} onSelect={(key, e) => this.handleSelectSuggestion(key, e)}>{suggestion}</Dropdown.Item>
@@ -199,7 +192,18 @@ class SearchScreen extends React.Component {
                                                 <Card.Text className="search-screen-results-list-item-streaming-indicator tiny-text color-accented">STREAMING NOW</Card.Text> :
                                                 <div></div>
                                             }
-                                            <Card.Img className="search-screen-results-category-list-item-img" src={obj.image}/>
+                                            {
+                                                obj.type === "song" ? 
+                                                    <div className="search-screen-results-category-list-item-img-overlay-trigger">
+                                                        <div className="search-screen-results-category-list-item-img-overlay-container">
+                                                            <Button className="search-screen-results-category-list-item-img-overlay-play-button">
+                                                                <Image className="search-screen-results-category-list-item-img-overlay-play-button-icon" src={icon_play_2}/>
+                                                            </Button>
+                                                        </div>
+                                                        <Card.Img className="search-screen-results-category-list-item-img" src={obj.image} />
+                                                    </div> :
+                                                    <Card.Img className="search-screen-results-category-list-item-img" src={obj.image} />
+                                            }
                                             <Card.Footer className="search-screen-results-category-list-item-footer">
                                                 <div className="subtitle color-accented">{obj.name}</div>
                                                 <div className="body-text color-accented">{obj.creator}</div>

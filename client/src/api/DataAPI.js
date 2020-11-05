@@ -30,6 +30,7 @@ class DataAPI {
                 if (snippet) {
                     return {
                         id: obj.id,
+                        type: "song",
                         name: obj.snippet.title,
                         creatorId: obj.snippet.channelId,
                         creator: obj.snippet.channelTitle,
@@ -80,6 +81,7 @@ class DataAPI {
     constructVideoResultObj = (obj) => {
         return {
             id: obj.id.videoId,
+            type: "song",
             name: obj.snippet.title,
             creatorId: obj.snippet.channelId,
             creator: obj.snippet.channelTitle,

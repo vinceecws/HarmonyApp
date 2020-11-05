@@ -79,6 +79,10 @@
   visibility: visible;
 }
 
+.hidden {
+  visibility: hidden;
+}
+
 .collapsed {
   visibility: collapse;
   display: none !important;
@@ -831,6 +835,39 @@ body, html {
   height: 120px;
   width: 120px;
   background-color: gray;
+}
+
+.search-screen-results-category-list-item-img-overlay-container {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 1000;
+  display: flex;
+  background-color: white;
+  opacity: 0.5;
+  height: 120px;
+  width: 100%;
+  justify-content: center;
+  visibility: hidden;
+}
+
+.search-screen-results-category-list-item-img-overlay-container:hover {
+  visibility: visible;
+}
+
+.search-screen-results-category-list-item-img-overlay-trigger {
+
+}
+
+.search-screen-results-category-list-item-img-overlay-play-button {
+  color: white;
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+
+.search-screen-results-category-list-item-img-overlay-play-button-icon {
+  height: 80px;
+  width: 80px;
 }
 
 .search-screen-results-category-list-item-footer {
