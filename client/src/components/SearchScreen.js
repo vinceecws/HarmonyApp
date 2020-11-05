@@ -43,7 +43,8 @@ class SearchScreen extends React.Component {
     handleClearSearchBox = () => {
         this.setState({
             query: "",
-            res: {}
+            suggestions: [],
+            res: {},
         })
     }
 
