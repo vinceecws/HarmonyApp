@@ -1,5 +1,6 @@
 import React from 'react';
 import DataAPI from '../api/DataAPI'
+import PlayerAPI from '../api/PlayerAPI'
 
 import TabComponent from './TabComponent.js'
 import Player from './Player.js'
@@ -26,6 +27,12 @@ class MainApp extends React.Component {
             dataAPIReady: false,
         }
 
+        this.playerAPI = new PlayerAPI(() => {
+            this.setState({
+                playerAPIReady: true
+            })
+        })
+
         this.dataAPI = new DataAPI(() => {
             this.setState({
                 dataAPIReady: true
@@ -45,6 +52,13 @@ class MainApp extends React.Component {
         return false
     }
 
+    initPlayerAPI = (id) => {
+        console.log("CALLED")
+        this.playerAPI.initIFrameAPI(id)
+    }
+
+    
+
     render() {
         return(
             <div id="main-app-container">
@@ -60,7 +74,7 @@ class MainApp extends React.Component {
                     <Col id="screen-container">
                         <Switch>
                             <Route path={['/main/session', '/main/session/:sessionId']} render={(props) => <SessionScreen {...props} auth={this.props.auth} queue={this.queue}/>} />
-                            <Route path='/main/search' render={(props) => <SearchScreen {...props} auth={this.props.auth} history={this.props.user.history} dataAPIReady={this.state.dataAPIReady} queryVideos={this.dataAPI.queryVideos} />} />
+                            <Route path='/main/search' render={(props) => <SearchScreen {...props} auth={this.props.auth} history={this.props.user.history} dataAPIReady={this.state.dataAPIReady} dataAPI={this.dataAPI} playerAPI={this.playerAPI} initPlayerAPI={this.initPlayerAPI}/>} />
                             <Route path='/main/profile/:userId' render={(props) => <ProfileScreen {...props} auth={this.props.auth} user={this.props.user} />} />
                             <Route path='/main/collection/:collectionId' render={(props) => <CollectionScreen {...props} auth={this.props.auth} />} />
                             <Route path='/main/collection' render={(props) => <CollectionScreen {...props} auth={this.props.auth} />} />
@@ -71,9 +85,18 @@ class MainApp extends React.Component {
                     </Col>
                 </Row>
                 <Row id="bottom-container">
-                    <div id="yt-player"></div>
+                    {/* <iframe id="yt-player"
+                            src="http://www.youtube.com/embed/esh8mNoPxGE?enablejsapi=1" //Load dummy video to enable API methods
+                            allow="autoplay"
+                            type="text/html" 
+                            width="0" 
+                            height="0"
+                            frameborder="0">
+                    </iframe> */}
+                    <div id='yt-player'></div>
                     <Player 
                         queue={this.queue}
+                        playerAPI={this.playerAPI}
                         isFavorited={this.isFavorited}                   
                     />
                 </Row>

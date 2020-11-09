@@ -36,8 +36,13 @@ class SearchScreen extends React.Component {
         
     }
 
-    handlePlayItem = (e) => {
-        
+    handlePlayItem = (id, e) => {
+        if (this.props.playerAPI.isPlayerInit() === false) { //Initialize on first use
+            this.props.initPlayerAPI(id)
+        }
+        else {
+            this.props.playerAPI.loadVideoById(id)
+        }
     }
 
     handleClearSearchBox = () => {
@@ -102,7 +107,7 @@ class SearchScreen extends React.Component {
 
     fetchResults = (query) => {
         if (query.trim() !== "") {
-            this.props.queryVideos(query).then(res => {
+            this.props.dataAPI.queryVideos(query).then(res => {
                 var newRes = _.cloneDeep(this.state.res)
                 newRes.songs = res
                 this.setState({
@@ -196,7 +201,7 @@ class SearchScreen extends React.Component {
                                                 obj.type === "song" ? 
                                                     <div className="search-screen-results-category-list-item-img-overlay-trigger">
                                                         <div className="search-screen-results-category-list-item-img-overlay-container">
-                                                            <Button className="search-screen-results-category-list-item-img-overlay-play-button">
+                                                            <Button className="search-screen-results-category-list-item-img-overlay-play-button" onClick={this.handlePlayItem.bind(this, obj.id)}>
                                                                 <Image className="search-screen-results-category-list-item-img-overlay-play-button-icon" src={icon_play_2}/>
                                                             </Button>
                                                         </div>
