@@ -103,6 +103,4 @@ async function testCreateSong() {
   process.exit(0)
 } 
 
-testCreateSong()
-
 module.exports = db
