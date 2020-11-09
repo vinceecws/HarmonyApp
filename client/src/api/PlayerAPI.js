@@ -27,7 +27,6 @@ class PlayerAPI {
 
     initIFrameAPI = (id) => {
         if (this.player == null) {
-            console.log("CALLED")
             loadScript(youtube_iframe_api_src)
             window.onYouTubeIframeAPIReady = (() => {
                 this.player = new window.YT.Player('yt-player', {

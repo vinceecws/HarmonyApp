@@ -19,6 +19,7 @@ class Player extends React.Component{
     componentDidMount = () => {
         setInterval(() => {
             this.setState({
+                currentSong: this.props.queue.getCurrentSong(),
                 currentTime: this.props.playerAPI.getCurrentTime() 
             })
         }, 1000)

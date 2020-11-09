@@ -55,6 +55,15 @@ class Queue {
         Queue Actions
     */
 
+    /*
+        setCurrentSong should only be used when the user performs an action on the queue
+        that would result in restarting an entirely new queue, followed by playing a new song.
+        Thus, setCurrentSong is typically called right after/in conjunction with clearFutureQueue
+    */
+    setCurrentSong = (song) => {
+        this._currentSong = song
+    }
+
     nextSong = () => {
         if (this._repeat === repeatStates.SONG) {
             return

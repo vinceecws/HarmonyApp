@@ -37,12 +37,7 @@ class SearchScreen extends React.Component {
     }
 
     handlePlayItem = (id, e) => {
-        if (this.props.playerAPI.isPlayerInit() === false) { //Initialize on first use
-            this.props.initPlayerAPI(id)
-        }
-        else {
-            this.props.playerAPI.loadVideoById(id)
-        }
+        this.props.playVideo(id)
     }
 
     handleClearSearchBox = () => {
@@ -107,7 +102,7 @@ class SearchScreen extends React.Component {
 
     fetchResults = (query) => {
         if (query.trim() !== "") {
-            this.props.dataAPI.queryVideos(query).then(res => {
+            this.props.queryVideos(query).then(res => {
                 var newRes = _.cloneDeep(this.state.res)
                 newRes.songs = res
                 this.setState({
