@@ -1,4 +1,4 @@
-import { youtube_data_api_src, youtube_data_api_key, google_oauth2_client_id, google_oauth2_client_secret, youtube_data_api_discovery_doc, youtube_data_api_oauth_scope } from '../const'
+import { youtube_data_api_src, youtube_data_api_key, google_oauth2_client_id, youtube_data_api_discovery_doc } from '../const'
 
 const loadScript = require('load-script2')
 
