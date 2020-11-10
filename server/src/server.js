@@ -78,6 +78,8 @@ authRouter.get('/logout', function(req, res) {
     res.redirect('/');
 });
 
+app.use(passportCallbacks.isLoggedIn)
+
 app.use('/auth', authRouter)
 app.use('/main', mainRouter)
 

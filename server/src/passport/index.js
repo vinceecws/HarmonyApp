@@ -67,13 +67,17 @@ exports.localSignUp = function(req, username, password, done) {
     Middleware to check if user is authenticated
     Use to restrict access against certain features
     e.g. Viewing account settings, home screen suggestions, search screen history
+
+    Middleware functions called after can check if a request is authenticated
+    using res.locals.authenticated
 */
 exports.isLoggedIn = function(req, res, next) {
 
-    if (req.isAuthenticated())
-        return next()
-
-    switch(req.originalUrl) {
-        //Handle different calls conditionally for guest users here
+    if (req.isAuthenticated()) {
+        res.locals.authenticated = false
     }
+    else {
+        res.locals.authenticated = true
+    }
+    next()
 }
