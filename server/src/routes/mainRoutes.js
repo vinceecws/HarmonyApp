@@ -1,4 +1,4 @@
-const User = require('../db/index.js')
+const User = require('../db').User
 const express = require("express")
 
 mainRouter = express.Router()
