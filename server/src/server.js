@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const passportCallbacks = require('./passport')
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
@@ -18,7 +20,6 @@ const MongoStore = require('connect-mongo')(session);
 /*
     Express.js configurations
 */
-
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -27,11 +28,7 @@ app.use(session({
     store: new MongoStore({ 
         mongooseConnection: db
     }),
-    secret: ['295f1ed04984e77c336a3580c2ea1127ca89d1e658d1dd56be3be55cf0a95111',
-    'cab33e57cdee3c516d0a47af34bdc47153daeffd6adab3293b88d0e61e603fde',
-    '797e1f304f31b746836b99165ca281cee10612965cfdb8b65fb075c795c1aeb4',
-    '3674c67d7cbb473b06f7b14bc22926b2a210b7586bcb14566513295f2d808a5c'
-    ], //In practice, secrets should be stored out of codebase
+    secret: process.env.MONGO_STORE_SESSION_SECRET.split(' '),
     resave: false, //Prevents sessions from being saved, if unmodified
     saveUninitialized: false, //Prevents sessions from being saved, if nothing is stored
     cookie: { 
