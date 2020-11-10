@@ -1,23 +1,24 @@
-const passportCallbacks = require('./passport/index.js')
-const passport = require("passport")
-const express = require("express")
-const GoogleStrategy = require("passport-google-oauth20").Strategy
+const passportCallbacks = require('./passport')
+const passport = require('passport')
+const GoogleStrategy = require('passport-google-oauth20').Strategy
 const LocalStrategy = require('passport-local').Strategy
 
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
+const express = require("express")
 const app = express()
 const session = require("express-session")
-const db = require('./db')
+const db = require('./db').db
 const apiPort = 4000
 
-const router = express.Router()
+const mainRouter = require('./routes/mainRoutes.js')
 const MongoStore = require('connect-mongo')(session);
 
 /*
     Express.js configurations
 */
+
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -58,22 +59,27 @@ passport.deserializeUser(passportCallbacks.deserialize)
     Express.js routes
 */
 
-router.post('/login', passport.authenticate('local-login', {
+authRouter = express.Router()
+
+authRouter.post('/login', passport.authenticate('local-login', {
     successRedirect : '/main',
     failureRedirect : '/login',
     failureFlash : false
 }))
 
-router.post('/login/register', passport.authenticate('local-signup', {
+authRouter.post('/signup', passport.authenticate('local-signup', {
     successRedirect : '/main',
-    failureRedirect : '/login/register',
+    failureRedirect : '/signup',
     failureFlash : false
 }))
 
-router.get('/logout', function(req, res) {
+authRouter.get('/logout', function(req, res) {
     req.logout();
     res.redirect('/');
 });
+
+app.use('/auth', authRouter)
+app.use('/main', mainRouter)
 
 db.on('error', console.error.bind(console, "Error connecting to MongoDB Atlas Database:"))
 

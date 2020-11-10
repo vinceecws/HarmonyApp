@@ -103,4 +103,9 @@ async function testCreateSong() {
   process.exit(0)
 } 
 
-module.exports = db
+module.exports = {
+  db: db,
+  User: User,
+  Collection: Collection,
+  Song: Song
+}
