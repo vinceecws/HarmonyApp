@@ -1,5 +1,6 @@
 import React from 'react';
-import { screens } from '../const'
+import DataAPI from '../api/DataAPI'
+
 import TabComponent from './TabComponent.js'
 import Player from './Player.js'
 import SessionSideList from './Sessions/SessionsSideList.js'
@@ -13,9 +14,36 @@ import CollectionScreen from './CollectionScreen.js'
 import LoginScreen from './LoginScreen.js'
 
 import { Row, Col } from 'react-bootstrap';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
+import Queue from './Queues/Queue';
 
 class MainApp extends React.Component {
+
+    constructor(props) {
+        super(props)
+        this.queue = new Queue()
+        this.state = {
+            dataAPIReady: false,
+        }
+
+        this.dataAPI = new DataAPI(() => {
+            this.setState({
+                dataAPIReady: true
+            })
+        })
+    }
+
+    isFavorited = () => {
+        return false
+    }
+
+    getShuffle = () => {
+        return false
+    }
+
+    getRepeat = () => {
+        return false
+    }
 
     render() {
         return(
@@ -31,8 +59,8 @@ class MainApp extends React.Component {
                     </Col>
                     <Col id="screen-container">
                         <Switch>
-                            <Route path={['/main/session', '/main/session/:sessionId']} render={(props) => <SessionScreen {...props} auth={this.props.auth} />} />
-                            <Route path='/main/search' render={(props) => <SearchScreen {...props} auth={this.props.auth} history={this.props.user.history} />} />
+                            <Route path={['/main/session', '/main/session/:sessionId']} render={(props) => <SessionScreen {...props} auth={this.props.auth} queue={this.queue}/>} />
+                            <Route path='/main/search' render={(props) => <SearchScreen {...props} auth={this.props.auth} history={this.props.user.history} dataAPIReady={this.state.dataAPIReady} queryVideos={this.dataAPI.queryVideos} />} />
                             <Route path='/main/profile/:userId' render={(props) => <ProfileScreen {...props} auth={this.props.auth} user={this.props.user} />} />
                             <Route path='/main/collection/:collectionId' render={(props) => <CollectionScreen {...props} auth={this.props.auth} />} />
                             <Route path='/main/collection' render={(props) => <CollectionScreen {...props} auth={this.props.auth} />} />
@@ -43,7 +71,11 @@ class MainApp extends React.Component {
                     </Col>
                 </Row>
                 <Row id="bottom-container">
-                    <Player/>
+                    <div id="yt-player"></div>
+                    <Player 
+                        queue={this.queue}
+                        isFavorited={this.isFavorited}                   
+                    />
                 </Row>
             </div>
         )

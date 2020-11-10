@@ -99,7 +99,7 @@ class CollectionScreen extends React.Component{
                 <div className='row'>
                     <ul style={{listStyleType: 'none', padding: '0', border: '2px solid black'}}>
                     {this.collection.songList.map((e, i) => 
-                        <li style={{minWidth: '90vw'}}>
+                        <li className="collection-page-rows" style={{minWidth: '90vw'}}>
                             <div style={{display: 'flex', alignItems: 'center'}}>
                                 <div id='player-song-title' style={{display: 'inline-block', marginLeft: '15px', marginRight: '2.5%', width: '27%'}}><div>{e.title}</div></div>
                                 <div id='player-song-title' style={{display: 'inline-block', width: '20%', marginRight: '2%'}}><div>{e.artist}</div></div>

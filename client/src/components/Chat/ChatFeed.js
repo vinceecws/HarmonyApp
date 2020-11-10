@@ -2,10 +2,6 @@ import React from 'react';
 
 
 class ChatFeed extends React.Component{
-	constructor(props){
-		super(props);
-		
-	}
 	
     render(){
         var ChatEntries = this.props.actionLog; //in the future sort these out for message actions

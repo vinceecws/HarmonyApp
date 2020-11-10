@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Ticker from 'react-ticker';
 import { Row, Col, Image } from 'react-bootstrap'
 import { icon_music_1 } from '../../graphics'

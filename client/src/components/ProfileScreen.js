@@ -1,8 +1,6 @@
 import React from 'react';
 import {icon_profile_image, icon_like, icon_music_1} from '../graphics';
 
-let users = require('../test/sampleUsers.json')
-
 class ProfileScreen extends React.Component{
 
 

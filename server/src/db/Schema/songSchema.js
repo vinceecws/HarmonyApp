@@ -6,9 +6,9 @@ const songSchema = new mongoose.Schema({
         required: [true, 'Unique ID is required'],
         ref: 'Unique ID from SoundCloud'
     },
-    title: {
+    name: {
         type: String,
-        required: [true, 'Song title is required']
+        required: [true, 'Song name is required']
     },
     artist: {
         type: [String],

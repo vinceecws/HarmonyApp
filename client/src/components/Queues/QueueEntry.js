@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 class QueueEntry extends React.Component{
 	constructor(props){
@@ -9,7 +9,6 @@ class QueueEntry extends React.Component{
 	handleEntryToggle = () => this.setState({showTicker : !this.state.showTicker});
 	render(){
 
-		const showTicker = this.state.showTicker;
 		let entry = <div>{this.props.title} -- {this.props.artist } &nbsp;&nbsp;&nbsp;</div>;
 		return(
 			<div onMouseEnter={this.handleEntryToggle} onMouseLeave={this.handleEntryToggle}>

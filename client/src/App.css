@@ -79,6 +79,10 @@
   visibility: visible;
 }
 
+.hidden {
+  visibility: hidden;
+}
+
 .collapsed {
   visibility: collapse;
   display: none !important;
@@ -395,6 +399,12 @@ body, html {
 }
 
 /* Player */
+#yt-player {
+  visibility: hidden !important;
+  width: 0px !important;
+  height: 0px !important;
+}
+
 #player-container {
   height: 120px;
   background-color: #505050;
@@ -663,6 +673,11 @@ body, html {
 }
 
 /* Search Box */
+.search-screen-search-box-group-container {
+  width: 100%;
+  position: relative;
+}
+
 .search-screen-search-box-container {
   border: 1px solid #303030;
   border-radius: 5px;;
@@ -684,6 +699,27 @@ body, html {
 .search-screen-search-box-clear-button-icon {
   height: 20px;
   width: 20px;
+}
+
+#search-screen-search-box-suggestions-dropdown {
+  width: 100%;
+  min-width: 0 !important;
+  top: auto !important;
+  background-color: #505050 !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+#search-screen-search-box-suggestions-dropdown .dropdown-item {
+  color: whitesmoke;
+}
+
+#search-screen-search-box-suggestions-dropdown .dropdown-item:hover {
+  background-color: gray !important;
+}
+
+#search-screen-search-box-suggestions-dropdown .dropdown-item a:hover {
+  text-decoration: none;
 }
 
 /* History */
@@ -801,6 +837,39 @@ body, html {
   background-color: gray;
 }
 
+.search-screen-results-category-list-item-img-overlay-container {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 1000;
+  display: flex;
+  background-color: white;
+  opacity: 0.5;
+  height: 120px;
+  width: 100%;
+  justify-content: center;
+  visibility: hidden;
+}
+
+.search-screen-results-category-list-item-img-overlay-container:hover {
+  visibility: visible;
+}
+
+.search-screen-results-category-list-item-img-overlay-trigger {
+
+}
+
+.search-screen-results-category-list-item-img-overlay-play-button {
+  color: white;
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+
+.search-screen-results-category-list-item-img-overlay-play-button-icon {
+  height: 80px;
+  width: 80px;
+}
+
 .search-screen-results-category-list-item-footer {
   display: block;
   overflow: hidden;
@@ -824,11 +893,11 @@ body, html {
   color: whitesmoke;
 }
 
-ul li:nth-child(odd) {
+.collection-page-rows:nth-child(odd) {
   background: #505050;
 }
 
-ul li:nth-child(even) {
+.collection-page-rows:nth-child(even) {
   background: grey;
 }
 

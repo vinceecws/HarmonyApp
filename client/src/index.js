@@ -2,9 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import LoginScreen from './components/LoginScreen.js'
-import TabScreen from './components/TabScreen.js'
-import CollectionScreen from './components/CollectionScreen.js'
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import '../node_modules/bootstrap/js/dist/modal.js';
 import '../node_modules/bootstrap/dist/js/bootstrap.js';
@@ -20,10 +17,14 @@ String.prototype.capitalize = function() {
 }
 
 ReactDOM.render(
+
   <React.StrictMode>
+	<script src="/__/firebase/8.0.0/firebase-app.js"></script>
+	<script src="/__/firebase/init.js"></script>
     <App/>
   </React.StrictMode>,
   document.getElementById('root')
+
 );
 
 // If you want your app to work offline and load faster, you can change

@@ -2,8 +2,6 @@ import React from 'react';
 import SessionEntry from './sessionentry.js'
 import { genSampleSessions } from '../../test/genSamples.js'
 
-let users = require('../../test/sampleUsers.json')
-
 
 class SessionSideList extends React.Component{
     

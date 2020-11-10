@@ -3,11 +3,7 @@ import { Link } from 'react-router-dom'
 import {icon_speak_2, icon_speak_1, icon_radio, icon_album, icon_disc_1, icon_disc_2, icon_music_album_1, icon_music_album_2, icon_sound_mixer_1, icon_sound_mixer_2} from '../graphics'
 
 class LoginScreen extends React.Component{
-
-    constructor(props){
-        super(props)
-    }
-
+    
     onPressContinueGuest = () => {}
 
     render(){
