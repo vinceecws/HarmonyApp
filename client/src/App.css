@@ -848,7 +848,7 @@ body, html {
   height: 120px;
   width: 100%;
   justify-content: center;
-  visibility: hidden;
+  visibility: visible;
 }
 
 .search-screen-results-category-list-item-img-overlay-container:hover {

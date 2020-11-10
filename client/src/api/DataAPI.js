@@ -1,4 +1,4 @@
-import { youtube_data_api_src, youtube_data_api_key, google_oauth2_client_id, google_oauth2_client_secret, youtube_data_api_discovery_doc, youtube_data_api_oauth_scope } from '../const'
+import { youtube_data_api_src, youtube_data_api_key, google_oauth2_client_id, youtube_data_api_discovery_doc } from '../const'
 
 const loadScript = require('load-script2')
 
@@ -34,11 +34,11 @@ class DataAPI {
                         name: obj.snippet.title,
                         creatorId: obj.snippet.channelId,
                         creator: obj.snippet.channelTitle,
-                        image: obj.snippet.thumbnails.default.url,
-                        image_high: obj.snippet.thumbnails.high.url,
-                        image_maxres: obj.snippet.thumbnails.maxres.url,
-                        image_med: obj.snippet.thumbnails.medium.url,
-                        image_std: obj.snippet.thumbnails.standard.url,
+                        image: obj.snippet.thumbnails.default ? obj.snippet.thumbnails.default.url : null,
+                        image_high: obj.snippet.thumbnails.high ? obj.snippet.thumbnails.high.url : null,
+                        image_maxres: obj.snippet.thumbnails.maxres ? obj.snippet.thumbnails.maxres.url : null,
+                        image_med: obj.snippet.thumbnails.medium ? obj.snippet.thumbnails.medium.url : null,
+                        image_std: obj.snippet.thumbnails.standard ? obj.snippet.thumbnails.standard.url: null,
                         duration: Date.parse(obj.contentDetails.duration)
                     }
                 } 
@@ -64,7 +64,7 @@ class DataAPI {
                 ],
                 eventType: "completed",
                 maxResults: 25,
-                order: "relevance",
+                order: "viewCount",
                 q: query,
                 type: "video",
                 videoCategoryId: "10"

@@ -1,5 +1,6 @@
 import React from 'react';
 import DataAPI from '../api/DataAPI'
+import PlayerAPI from '../api/PlayerAPI'
 
 import TabComponent from './TabComponent.js'
 import Player from './Player.js'
@@ -24,7 +25,14 @@ class MainApp extends React.Component {
         this.queue = new Queue()
         this.state = {
             dataAPIReady: false,
+            playerAPIReady: false
         }
+
+        this.playerAPI = new PlayerAPI(() => {
+            this.setState({
+                playerAPIReady: true
+            })
+        })
 
         this.dataAPI = new DataAPI(() => {
             this.setState({
@@ -37,12 +45,42 @@ class MainApp extends React.Component {
         return false
     }
 
-    getShuffle = () => {
-        return false
+    initPlayerAPI = (id) => {
+        this.playerAPI.initIFrameAPI(id)
     }
 
-    getRepeat = () => {
-        return false
+    /*
+        PlayerAPI methods
+    */
+
+    /*
+        playVideo is used to clear the current queue and playing the
+        desired song 
+    */
+    playVideo = (id) => {
+        this.fetchVideoById(id, true).then((song) => {
+            this.queue.clearFutureQueue()
+            this.queue.setCurrentSong(song)
+        })
+
+        if (this.playerAPI.isPlayerInit() === false) { //Initialize on first use
+            this.initPlayerAPI(id)
+        }
+        else {
+            this.playerAPI.loadVideoById(id)
+        }
+    }
+
+    /*
+        DataAPI methods
+    */
+
+    queryVideos = (query) => {
+        return this.dataAPI.queryVideos(query)
+    }
+    
+    fetchVideoById = (id, snippet=false) => {
+        return this.dataAPI.fetchVideoById(id, snippet)
     }
 
     render() {
@@ -60,7 +98,7 @@ class MainApp extends React.Component {
                     <Col id="screen-container">
                         <Switch>
                             <Route path={['/main/session', '/main/session/:sessionId']} render={(props) => <SessionScreen {...props} auth={this.props.auth} queue={this.queue}/>} />
-                            <Route path='/main/search' render={(props) => <SearchScreen {...props} auth={this.props.auth} history={this.props.user.history} dataAPIReady={this.state.dataAPIReady} queryVideos={this.dataAPI.queryVideos} />} />
+                            <Route path='/main/search' render={(props) => <SearchScreen {...props} auth={this.props.auth} history={this.props.user.history} queryVideos={this.queryVideos} playVideo={this.playVideo}/>} />
                             <Route path='/main/profile/:userId' render={(props) => <ProfileScreen {...props} auth={this.props.auth} user={this.props.user} />} />
                             <Route path='/main/collection/:collectionId' render={(props) => <CollectionScreen {...props} auth={this.props.auth} />} />
                             <Route path='/main/collection' render={(props) => <CollectionScreen {...props} auth={this.props.auth} />} />
@@ -71,9 +109,10 @@ class MainApp extends React.Component {
                     </Col>
                 </Row>
                 <Row id="bottom-container">
-                    <div id="yt-player"></div>
+                    <div id='yt-player'></div>
                     <Player 
                         queue={this.queue}
+                        playerAPI={this.playerAPI}
                         isFavorited={this.isFavorited}                   
                     />
                 </Row>

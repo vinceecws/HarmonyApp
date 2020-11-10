@@ -1,6 +1,7 @@
 import React from 'react';
 import { CardDeck, Card } from 'react-bootstrap';
 import { genSampleSuggestions } from '../test/genSamples'
+import axios from 'axios';
 
 class HomeScreen extends React.Component {
 
@@ -18,7 +19,17 @@ class HomeScreen extends React.Component {
         and the array of suggested Objects
     */
     fetchSuggestions = () => {
+        
         return genSampleSuggestions()
+    }
+    getHomeInfo = () => {
+        return axios.get('http://localhost:4000/main/home')
+            .then(response => {
+                console.log(response)
+            })
+            .catch(function (error){
+                console.log(error);
+            });
     }
 
     /*
@@ -29,6 +40,7 @@ class HomeScreen extends React.Component {
     } 
   
     render() {
+        this.getHomeInfo();
         return(
             <div id="home-screen-container">
                 {this.fetchSuggestions().map(category => category.suggestions !== undefined && category.suggestions.length > 0 ?

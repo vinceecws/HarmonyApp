@@ -36,8 +36,8 @@ class SearchScreen extends React.Component {
         
     }
 
-    handlePlayItem = (e) => {
-        
+    handlePlayItem = (id, e) => {
+        this.props.playVideo(id)
     }
 
     handleClearSearchBox = () => {
@@ -196,7 +196,7 @@ class SearchScreen extends React.Component {
                                                 obj.type === "song" ? 
                                                     <div className="search-screen-results-category-list-item-img-overlay-trigger">
                                                         <div className="search-screen-results-category-list-item-img-overlay-container">
-                                                            <Button className="search-screen-results-category-list-item-img-overlay-play-button">
+                                                            <Button className="search-screen-results-category-list-item-img-overlay-play-button" onClick={this.handlePlayItem.bind(this, obj.id)}>
                                                                 <Image className="search-screen-results-category-list-item-img-overlay-play-button-icon" src={icon_play_2}/>
                                                             </Button>
                                                         </div>

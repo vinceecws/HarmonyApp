@@ -4,29 +4,23 @@ import { Container, Row, Col, Image, Button } from 'react-bootstrap';
 import { icon_play_2, icon_pause_3, icon_previous, icon_next, icon_repeat_3, icon_repeat_1, icon_shuffle_arrows, icon_volume_up_1, icon_no_sound, icon_like } from '../graphics';
 import { repeatStates } from '../const'
 
-import PlayerAPI from '../api/PlayerAPI'
-
 
 class Player extends React.Component{
 
     constructor(props) {
         super(props)
-        this.playerAPI = new PlayerAPI(() => {
-            this.setState({
-                playerReady: true
-            })
-        })
 
         this.state = {
             currentSong: this.props.queue.getCurrentSong(),
-            currentTime: this.playerAPI.getCurrentTime()
+            currentTime: this.props.playerAPI.getCurrentTime()
         }
     }
 
     componentDidMount = () => {
         setInterval(() => {
             this.setState({
-                currentTime: this.playerAPI.getCurrentTime() 
+                currentSong: this.props.queue.getCurrentSong(),
+                currentTime: this.props.playerAPI.getCurrentTime() 
             })
         }, 1000)
     }
@@ -36,7 +30,7 @@ class Player extends React.Component{
     }
 
     handleSeek = (value) => {
-        this.playerAPI.seekTo(value)
+        this.props.playerAPI.seekTo(value)
     }
 
     handleMoveSlider = (value) => {
@@ -46,20 +40,20 @@ class Player extends React.Component{
     }
 
     handleTogglePlay = () => {
-        if (this.playerAPI.isPaused()) {
-            this.playerAPI.playVideo()
+        if (this.props.playerAPI.isPaused()) {
+            this.props.playerAPI.playVideo()
         }
         else {
-            this.playerAPI.pauseVideo()
+            this.props.playerAPI.pauseVideo()
         }
     }
 
     handleToggleMute = () => {
-        if (this.playerAPI.isMuted()) {
-            this.playerAPI.unMute()
+        if (this.props.playerAPI.isMuted()) {
+            this.props.playerAPI.unMute()
         }
         else {
-            this.playerAPI.mute()
+            this.props.playerAPI.mute()
         }
     }
 
@@ -78,8 +72,8 @@ class Player extends React.Component{
     }
 
     getSongDuration = () => {
-        var sec = parseInt(this.playerAPI.getDuration() % 60)
-        var min = parseInt(this.playerAPI.getDuration() / 60)
+        var sec = parseInt(this.props.playerAPI.getDuration() % 60)
+        var min = parseInt(this.props.playerAPI.getDuration() / 60)
         return min + ":" + String(sec).padStart(2, '0');
     }
 
@@ -96,7 +90,7 @@ class Player extends React.Component{
     }
 
     getPlayButtonIcon = () => {
-        return this.playerAPI.isPaused() ? icon_play_2 : icon_pause_3;
+        return this.props.playerAPI.isPaused() ? icon_play_2 : icon_pause_3;
     }
 
     getRepeatButtonIcon = () => {
@@ -112,7 +106,7 @@ class Player extends React.Component{
     }
 
     getMuteButtonIcon = () => {
-        return this.playerAPI.isMuted() ? icon_no_sound : icon_volume_up_1;
+        return this.props.playerAPI.isMuted() ? icon_no_sound : icon_volume_up_1;
     }
 
     getFavoriteButtonIconClass = () => {
@@ -157,7 +151,7 @@ class Player extends React.Component{
                         </Row>
                         <Row id="player-progress-bar-container">
                             <div className="player-progress-display body-text">{this.getSongProgress()}</div>
-                            <RangeSlider className="player-progress-bar" variant="dark" tooltip="off" value={this.state.currentTime} onChange={e => this.handleMoveSlider(e.target.value)} onAfterChange={e => this.handleSeek(e.target.value)} min={0} max={this.playerAPI.getDuration()}/>
+                            <RangeSlider className="player-progress-bar" variant="dark" tooltip="off" value={this.state.currentTime} onChange={e => this.handleMoveSlider(e.target.value)} onAfterChange={e => this.handleSeek(e.target.value)} min={0} max={this.props.playerAPI.getDuration()}/>
                             <div className="player-progress-display body-text">{this.getSongDuration()}</div>
                         </Row>
                     </Col>
@@ -167,7 +161,7 @@ class Player extends React.Component{
                                 <Image id="player-mute-button-icon" src={this.getMuteButtonIcon()} roundedCircle/>
                             </Button>
                             <div id="player-volume-bar-container">
-                                <RangeSlider className="player-volume-bar" variant="dark" tooltip="off" value={this.playerAPI.getVolume()} onChange={e => this.playerAPI.setVolume(e.target.value)} min={0} max={100}/>
+                                <RangeSlider className="player-volume-bar" variant="dark" tooltip="off" value={this.props.playerAPI.getVolume()} onChange={e => this.props.playerAPI.setVolume(e.target.value)} min={0} max={100}/>
                             </div>
                         </Row>
                     </Col>

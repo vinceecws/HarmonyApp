@@ -1,30 +1,24 @@
 const mongoose = require('mongoose')
-const collectionSchema = require('./collectionSchema')
+const bcrypt = require('bcrypt')
 
 const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Username is required']
+  local: {
+    username: String,
+    password: String
   },
-  password: {
-    type: String,
-    required: [true, 'Password is required']
-  },
-  email: {
-      type: String,
-      required: [true, 'Email is required']
-  },
-  dob: {
-      type: Date,
-      required: [true, 'Date of birth is required']
+  google: {
+    id: String,
+    token: String,
+    email: String,
+    name: String
   },
   biography: {
-      type: String,
-      default: ""
+    type: String,
+    default: ""
   },
   privateMode: {
-      type: Boolean,
-      default: false
+    type: Boolean,
+    default: false
   },
   live: {
     type: Boolean,
@@ -43,12 +37,28 @@ const userSchema = new mongoose.Schema({
   },
   likedSongs: {
     type: [String],
-    ref: "songId"
+    ref: "YouTube VideoId"
   },
   likedCollections: {
-    type: [mongoose.Schema.Types.ObjectId], //Should we allow users to like SoundCloud collections? If so, ID format needs to be reevaluated
+    type: [mongoose.Schema.Types.ObjectId],
     ref: "collectionId"
   }
 })
+
+userSchema.methods.authenticateLocal = function(username, password) {
+  return this.local.username === username && bcrypt.compareSync(password, this.local.password);
+}
+
+userSchema.methods.hashPassword = function(password) {
+  return bcrypt.hashSync(password, 4);
+}
+
+userSchema.pre('save', function(next) {
+  if (this.local.password) {
+    this.local.password = bcrypt.hashSync(this.local.password, 4);
+  }
+  next();
+});
+
 
 module.exports = userSchema
