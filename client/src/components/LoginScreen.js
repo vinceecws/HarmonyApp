@@ -58,14 +58,15 @@ class LoginScreen extends React.Component{
                 </div>
 
                 {/* Modal */}
-                <Route path={this.props.match.url + '/signup'} render={() => { return(
-                    <div id="registrationModal">
+                <Route path={this.props.match.url + '/signup'} render={() => { 
+                    return(
+                        <div id="registrationModal" style={{position: 'relative', transform: 'translate(0, -120%)'}}>
                         <div className="modal-dialog">
                             {/* Modal Content */}
                             <div className="modal-content">
                                 <div className="modal-header">
                                     <h3>Sign-Up</h3>
-                                    <button type="button" className="close" data-dismiss="modal">&times;</button>
+                                    <button type="button" className="close" data-dismiss="modal" onClick={data => this.props.history.goBack()}>&times;</button>
                                 </div>
                                 <div className="modal-body">
                                     <p>Enter Your Account Information:</p>
@@ -79,7 +80,7 @@ class LoginScreen extends React.Component{
                                     </form>
                                 </div>
                                 <div className="modal-footer">
-                                    <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                                    <button type="button" className="btn btn-default" data-dismiss="modal" onClick={data => this.props.history.goBack()}>Close</button>
                                 </div>
                             </div>
                         </div>
