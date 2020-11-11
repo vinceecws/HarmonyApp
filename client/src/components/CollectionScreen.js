@@ -8,6 +8,7 @@ class CollectionScreen extends React.Component{
     constructor(props){
         super(props)
         this.user = null;
+        //(AXIOS) this.collection = this.getCollection();
         this.collection = sampleCollections[1];
         this.state = {
             favoritedSongs: [false],
@@ -38,7 +39,23 @@ class CollectionScreen extends React.Component{
     favoritedSong = (song) => {
         return this.state.favorited;
     }
-
+    /*(AXIOS)
+    getCollection = () => {
+        var collectionReturn = false;
+        var findCollection = function(status,data){
+            if(status == 200){
+                console.log(status);
+                console.log(data);
+                this.setState({
+                    loading: false,
+                    collectionReturn: data
+                });
+            }
+        }
+        this.props.axiosWrapper.axiosGet('/main/collection/:id', findCollection);
+        return collectionReturn;
+    }
+    */
 
     render(){
         return (
