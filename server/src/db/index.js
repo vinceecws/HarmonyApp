@@ -4,38 +4,121 @@ const mongoose = require('mongoose')
 const userSchema = require('./Schema/userSchema.js')
 const collectionSchema = require('./Schema/collectionSchema.js')
 const songSchema = require('./Schema/songSchema.js')
+const sessionSchema = require('./Schema/sessionSchema.js')
 
 const User = mongoose.model('user', userSchema, 'user')
 const Collection = mongoose.model('collection', collectionSchema, 'collection')
 const Song = mongoose.model('song', songSchema, 'song')
+const Session = mongoose.model('session', sessionSchema, 'session')
 
-const connection = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true})
+const connection = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})
 const db = mongoose.connection
 
-async function createUser(name, password, email, dob) { //User CRUD methods: Create
-  return new User({
-    name,
-    password,
-    email,
-    dob
-  }).save()
+
+exports.createUser = async function(name, password, email, dob) { //User CRUD methods: Create
+  let newUser = await new User({
+    local: name, password, email, dob
+  }).save().catch(error => console.log(error));
+  console.log('New user: ', newUser);
+  db.close();
+  return newUser;
 }
 
-async function findUser(userObject) { //User CRUD methods: Retrieve
-  return await User.findOne(userObject)
+exports.getUser = async function(userObject) { //User CRUD methods: Retrieve
+  let user = await connection.then(async () => {
+    return await User.findOne(userObject)
+  }).catch(error => {console.log(error)});
+  console.log(user);
+  db.close();
+  return user;
 }
 
-async function createCollection(name, description, songList) {
-  return new Collection({
+exports.createCollection = async function(name, description, songList) {
+  let collection = await new Collection({
     name,
     description,
     songList
-  }).save()
+  }).save().catch(error => console.log(error));;
+  console.log('New collection: ', collection, collection.description);
+  db.close();
+  return collection;
 }
 
-async function findCollection(collectionObject) {
-  return await Collection.findOne(collectionObject)
+//createCollection('the bigger crunch', 'crunchy like oreo');
+
+exports.getCollection = async function(collectionObject){
+  console.log('get collection');
+  let collection = await connection.then(async () => {
+    return await Collection.findOne(collectionObject);
+  }).catch(error => console.log(error));
+  //console.log(collection);
+  db.close();
+  return collection;
 }
+ 
+
+exports.updateCollection = async function(collectionObject, updateFieldsObject){
+  console.log('update collection');
+  let collection = await connection.then(async () => {
+    return await Collection.findOneAndUpdate(collectionObject, updateFieldsObject, {new: true});
+  }).catch(error => console.log(error));
+  console.log(collection);
+  db.close();
+}
+
+//updateCollection({'_id': '5faaa7f7f098b317d81e5585'}, {name: 'the bigger crunch'});
+
+exports.deleteCollection = async function(collectionObject){
+  console.log('delete collection')
+  let collection = await connection.then(async () => {
+    return await Collection.findOneAndRemove(collectionObject);
+  }).catch(error => console.log(error));
+  console.log(collection);
+  db.close();
+}
+
+//deleteCollection({name: 'the bigger crunch'});
+
+exports.deleteCollection = async function(hostId, name, startTime, endTime, streams, likes, initialQueue, actionLog){
+  let session = await new Session({
+    hostid, 
+    name, 
+    startTime, 
+    endTime, 
+    streams, 
+    likes, 
+    initialQueue, 
+    actionLog
+  }).save().catch(error => {console.log(error)});
+  console.log(session);
+  db.close();
+  console.log('connection closed');
+  return session;
+}
+
+//createSession('hello', 'shipping tools', 12);
+
+exports.getSession = async function(sessionObject){
+  console.log('Get session');
+  let session = await connection.then(async () => {
+    return await Session.findOne(sessionObject);
+  }).catch(error => {console.log(error)});
+  console.log(session);
+  db.close();
+  return session;
+}
+
+exports.deleteSession = async function(sessionObject){
+  console.log('Delete session');
+  let session = await connection.then(async () => {
+    return await Session.findOneAndRemove(sessionObject);
+  }).catch(error => {console.log(error)});
+  db.close();
+  console.log(session);
+}
+
+//async function 
+
 
 async function createSong(_id, title, artist, album, embedLink, imageLink) {
   return new Song({
@@ -45,63 +128,12 @@ async function createSong(_id, title, artist, album, embedLink, imageLink) {
     album,
     embedLink,
     imageLink
-  }).save()
+  }).save();
 }
 
 async function findSong(songObject) { 
   return await Song.findOne(songObject)
 }
-
-async function testCreateCollection() {
-  const name = process.argv[2]
-  const description = process.argv[3]
-
-  let collection = await connection
-  .then(async () => {
-    return findCollection({name: name})
-  })
-  .catch(error => {console.log(error)});
-
-  if (!collection) {
-    collection = await createCollection(name, description)
-  }
-
-  collection = await findCollection({name: name})
-  song = await findSong({title: "Holding On To You"})
-  collection.songList.push(song.id)
-  song = await findSong({title: "Saturday Nights"})
-  collection.songList.push(song.id)
-  await collection.save()
-
-  collection = await findCollection({name: name})
-  console.log(collection)
-
-  mongoose.connection.close()
-  process.exit(0)
-} 
-
-async function testCreateSong() {
-  const _id = process.argv[2]
-  const title = process.argv[3]
-  const artist = process.argv[4]
-  const album = process.argv[5]
-  const embedLink = process.argv[6]
-
-  let song = await connection
-  .then(async () => {
-    return findSong({title: title})
-  })
-  .catch(error => {console.log(error)});
-
-  if (!song) {
-    song = await createSong(_id, title, artist, album, embedLink)
-  }
-  
-  console.log(song)
-
-  mongoose.connection.close()
-  process.exit(0)
-} 
 
 module.exports = {
   db: db,

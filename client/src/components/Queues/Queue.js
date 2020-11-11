@@ -104,6 +104,7 @@ class Queue {
 
     addSongToFutureQueue = (song) => {
         this._futureQueue.push(song)
+        console.log(this._futureQueue)
     }
 
     removeSongFromFutureQueue = (index) => {

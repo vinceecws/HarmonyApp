@@ -48,7 +48,7 @@ class SessionEntry extends React.Component{
 		}
 		return(
 			<Link className="session-entry-container" to={"/main/session/" + this.props.id} onMouseEnter={this.handleEntryToggle} onMouseLeave={this.handleEntryToggle}>
-				<a href={this.props.hostId} className='list-group-item list-group-item-action'>
+				<div className='list-group-item list-group-item-action'>
 					<Row className="session-entry-row-container">
 						<Col className="session-entry-image-container">
 							<Image className="session-entry-image" src={this.props.image}/>
@@ -62,7 +62,7 @@ class SessionEntry extends React.Component{
 							<div className="session-entry-stream-count-text tiny-text color-accented">{this.getStreamCount()}</div>
 						</Col>
 					</Row>
-				</a>
+				</div>
 			</Link>
 		);
 	}

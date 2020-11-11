@@ -39,9 +39,40 @@ class Player extends React.Component{
         })
     }
 
+    handleNextSong = () => {
+        this.props.queue.nextSong()
+        var currentSong = this.props.queue.getCurrentSong()
+        if (currentSong != null) {
+            this.props.playerAPI.loadVideoById(currentSong.id)
+        }
+    }
+
+    handlePreviousSong = () => {
+        this.props.queue.previousSong()
+        var currentSong = this.props.queue.getCurrentSong()
+        if (currentSong != null) {
+            this.props.playerAPI.loadVideoById(currentSong.id)
+        }
+    }
+
     handleTogglePlay = () => {
         if (this.props.playerAPI.isPaused()) {
-            this.props.playerAPI.playVideo()
+            if (this.props.queue.getCurrentSong().id == null) {
+                this.props.queue.nextSong()
+
+                var currentSong = this.props.queue.getCurrentSong()
+                if (currentSong != null) {
+                    if (this.props.playerAPI.isPlayerInit() === false) { //Initialize on first use
+                        this.props.initPlayerAPI(currentSong.id)
+                    }
+                    else {
+                        this.props.playerAPI.loadVideoById(currentSong.id)
+                    }
+                }
+            }
+            else {
+                this.props.playerAPI.playVideo()
+            }
         }
         else {
             this.props.playerAPI.pauseVideo()
@@ -136,13 +167,13 @@ class Player extends React.Component{
                             <Button className="player-control-button" onClick={e => this.props.queue.toggleRepeat()}>
                                 <Image className={this.getRepeatButtonIconClass()} src={this.getRepeatButtonIcon()} roundedCircle/>
                             </Button>
-                            <Button className="player-control-button" onClick={e => this.props.queue.previousSong()}>
+                            <Button className="player-control-button" onClick={e => this.handlePreviousSong()}>
                                 <Image className="player-control-button-icon" src={icon_previous} roundedCircle/>
                             </Button>
                             <Button className="player-control-button" onClick={e => this.handleTogglePlay()}>
                                 <Image className="player-control-button-icon" src={this.getPlayButtonIcon()} roundedCircle/>
                             </Button>
-                            <Button className="player-control-button" onClick={e => this.props.queue.nextSong()}>
+                            <Button className="player-control-button" onClick={e => this.handleNextSong()}>
                                 <Image className="player-control-button-icon" src={icon_next} roundedCircle/>
                             </Button>
                             <Button className="player-control-button" onClick={e => this.props.queue.toggleShuffle()}>

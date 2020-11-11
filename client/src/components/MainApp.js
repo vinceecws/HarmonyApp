@@ -98,7 +98,7 @@ class MainApp extends React.Component {
                     <Col id="screen-container">
                         <Switch>
                             <Route path={['/main/session', '/main/session/:sessionId']} render={(props) => <SessionScreen {...props} auth={this.props.auth} queue={this.queue}/>} />
-                            <Route path='/main/search' render={(props) => <SearchScreen {...props} auth={this.props.auth} history={this.props.user.history} queryVideos={this.queryVideos} playVideo={this.playVideo}/>} />
+                            <Route path='/main/search' render={(props) => <SearchScreen {...props} auth={this.props.auth} history={this.props.user.history} queryVideos={this.queryVideos} playVideo={this.playVideo} queue={this.queue}/>} />
                             <Route path='/main/profile/:userId' render={(props) => <ProfileScreen {...props} auth={this.props.auth} user={this.props.user} />} />
                             <Route path='/main/collection/:collectionId' render={(props) => <CollectionScreen {...props} auth={this.props.auth} />} />
                             <Route path='/main/collection' render={(props) => <CollectionScreen {...props} auth={this.props.auth} />} />
@@ -111,6 +111,7 @@ class MainApp extends React.Component {
                 <Row id="bottom-container">
                     <div id='yt-player'></div>
                     <Player 
+                        initPlayerAPI={this.initPlayerAPI}
                         queue={this.queue}
                         playerAPI={this.playerAPI}
                         isFavorited={this.isFavorited}                   
