@@ -201,6 +201,8 @@ mainRouter.post('/session/endSession/:id', async (req, res) => {
 
 
 
+
+
 app.use(passportCallbacks.isLoggedIn)
 
 app.use('/', authRouter)
