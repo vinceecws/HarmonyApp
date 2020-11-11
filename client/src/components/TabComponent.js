@@ -22,6 +22,9 @@ class TabComponent extends React.Component{
                         <NavLink href='#' className='nav-link tab-component-link title color-accented' activeClassName='nav-link tab-component-link-selected' to="/main/session">Session</NavLink>
                     </li>
                     <li className='nav-item tab-component-link-container'>
+                        <NavLink href='#' className='nav-link tab-component-link title color-accented' activeClassName='nav-link tab-component-link-selected' to="/main/collection">Collection</NavLink>
+                    </li>
+                    <li className='nav-item tab-component-link-container'>
                         <NavLink href='#' className='nav-link tab-component-link title color-accented' activeClassName='nav-link tab-component-link-selected' to="/main/search">Search</NavLink>
                     </li>
                 </ul>

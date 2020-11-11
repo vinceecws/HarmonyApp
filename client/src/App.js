@@ -16,6 +16,7 @@ class App extends React.Component {
 
   constructor(props) {
     super(props)
+    this.axiosWrapper = new AxiosWrapper()
     var user = genSampleUsers()[0]
     this.state = {
 
@@ -23,7 +24,7 @@ class App extends React.Component {
 
       user: user,
     }
-    this.axiosWrapper = new AxiosWrapper()
+    
   }
   
 

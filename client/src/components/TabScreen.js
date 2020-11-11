@@ -16,10 +16,14 @@ class TabScreen extends React.Component{
     onPressSessionTab = () =>{
         this.setState({currentScreen: 1});
     }
-
-    onPressSearchTab = () =>{
+    onPressCollectionTab = () =>{
         this.setState({currentScreen: 2});
     }
+
+    onPressSearchTab = () =>{
+        this.setState({currentScreen: 3});
+    }
+
 
     render(){
         return(
@@ -30,6 +34,9 @@ class TabScreen extends React.Component{
                     </li>
                     <li className='nav-item'>
                         <a href='#' className='nav-link' onClick={this.onPressSessionTab}>Session</a>
+                    </li>
+                    <li className='nav-item'>
+                        <a href='#' className='nav-link' onClick={this.onPressCollectionTab}>Collection</a>
                     </li>
                     <li className='nav-item'>
                         <a href='#' className='nav-link' onClick={this.onPressSearchTab}>Search</a>
