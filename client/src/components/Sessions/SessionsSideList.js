@@ -19,7 +19,8 @@ class SessionSideList extends React.Component{
     render(){
         var sessionEntries = this.fetchSessions().sort((session1, session2) => session2.streams - session1.streams)
                             .filter(session => session.live ? true : false)
-                            .map(session => <SessionEntry
+                            .map((session, ind) => <SessionEntry
+                    key={ind}
                     id={session.id}
                     hostId={session.hostId}
                     hostName={session.hostName}

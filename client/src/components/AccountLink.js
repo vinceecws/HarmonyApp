@@ -15,14 +15,14 @@ class AccountLink extends React.Component {
                     </Button>
                     <Dropdown.Toggle split id="tab-component-account-link-dropdown-button" />
                     <Dropdown.Menu id="tab-component-account-link-dropdown-menu">
-                        <Dropdown.Item>
-                            <Link to={"/main/profile/" + this.props.id}>Profile</Link>
+                        <Dropdown.Item as={Link} to={"/main/profile/" + this.props.id}>
+                            Profile
                         </Dropdown.Item>
-                        <Dropdown.Item>
-                            <Link to={"/main/settings"}>Settings</Link>
+                        <Dropdown.Item as={Link} to={"/main/settings"}>
+                            Settings
                         </Dropdown.Item>
-                        <Dropdown.Item>
-                            <Link to={"/login"} onClick={this.props.handleLogOut}>Log Out</Link>
+                        <Dropdown.Item as={Link} to={"/login"} onClick={this.props.handleLogOut}>
+                            Log Out
                         </Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
