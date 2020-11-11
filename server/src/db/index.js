@@ -15,9 +15,18 @@ const connection = mongoose.connect(connectionString, {useNewUrlParser: true, us
 const db = mongoose.connection
 
 
-exports.createUser = async function(name, password, email, dob) { //User CRUD methods: Create
+exports.createUserLocal = async function(name, password) { //User CRUD methods: Create
   let newUser = await new User({
-    local: name, password, email, dob
+    local: {name, password}
+  }).save().catch(error => console.log(error));
+  console.log('New user: ', newUser);
+  db.close();
+  return newUser;
+}
+
+exports.createUserGoogle = async function(id, token, email, name){
+  let newUser = await new User({
+    google: {id, token, email, name}
   }).save().catch(error => console.log(error));
   console.log('New user: ', newUser);
   db.close();

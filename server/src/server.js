@@ -13,6 +13,7 @@ const app = express()
 const session = require("express-session")
 const db = require('./db').db
 const apiPort = 4000
+const mongooseQuery = require('./db');
 
 const mainRouter = require('./routes/mainRoutes.js')
 const MongoStore = require('connect-mongo')(session);
@@ -73,6 +74,41 @@ authRouter.get('/logout', function(req, res) {
     req.logout();
     res.redirect('/login');
 });
+
+
+mainRouter.get('/profile/:id', async (req, res) => {
+    let id = req.user;
+    if (id = null){
+        res.status(404).send();
+    }
+    else{
+        let user = await mongooseQuery.getUser(req.body);
+        res.json(user);
+    }
+});
+
+mainRouter.post('/profile/createCollection/:name', async (req, res) => {
+    let newCollection = await mongooseQuery.createCollection(req.body);
+    res.json(newCollection);
+});
+
+mainRouter.get('/collection/:id', async (req, res) => {
+    let collection = await mongooseQuery.getCollection(req.body._id)
+        .catch(err => {res.sendStatus(404)});
+    res.json(collection);
+})
+
+mainRouter.post('/collection/updateCollection/:id', async (req, res) => {
+    let updatedCollection = 
+        await mongooseQuery.updateCollection(req.body._id, req.body.updated)
+                            .catch(err => {res.sendStatus(404);});
+    res.json(updatedCollection);
+});
+
+mainRouter.get('/session/:id', async (req, res) => {
+
+});
+
 
 app.use(passportCallbacks.isLoggedIn)
 
