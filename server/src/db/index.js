@@ -88,7 +88,7 @@ exports.deleteCollection = async function(collectionObject){
 
 //deleteCollection({name: 'the bigger crunch'});
 
-exports.deleteCollection = async function(hostId, name, startTime, endTime, streams, likes, initialQueue, actionLog){
+exports.createSession = async function(hostId, name, startTime, endTime, streams, likes, live, initialQueue, actionLog){
   let session = await new Session({
     hostid, 
     name, 
@@ -96,6 +96,7 @@ exports.deleteCollection = async function(hostId, name, startTime, endTime, stre
     endTime, 
     streams, 
     likes, 
+    live,
     initialQueue, 
     actionLog
   }).save().catch(error => {console.log(error)});
@@ -112,6 +113,16 @@ exports.getSession = async function(sessionObject){
   let session = await connection.then(async () => {
     return await Session.findOne(sessionObject);
   }).catch(error => {console.log(error)});
+  console.log(session);
+  db.close();
+  return session;
+}
+
+exports.updateSession = async function(sessionID, updateObject){
+  console.log('Update session');
+  let session = await connection.then(async () => {
+    return await Session.findOneAndUpdate({'_id': sessionID}, updateObject, {new: true});
+  });
   console.log(session);
   db.close();
   return session;
