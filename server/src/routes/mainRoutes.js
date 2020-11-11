@@ -1,19 +1,7 @@
-const User = require('../db').User
 const express = require("express")
 const mongooseQuery = require('../db');
 
 mainRouter = express.Router()
-
-mainRouter.route('/home').get(function(req, res) {
-	User.find(function(err, users){
-		if (err){
-			console.log(err);
-		} else {
-			
-			res.send("Obtained Users");
-		}
-	});
-});
 
 mainRouter.get('/profile/:id', async (req, res) => {
     let id = req.params.id;
