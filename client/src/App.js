@@ -16,11 +16,12 @@ class App extends React.Component {
 
   constructor(props) {
     super(props)
+    this.axiosWrapper = new AxiosWrapper()
     this.state = {
       auth: false,
       user: null
     }
-    this.axiosWrapper = new AxiosWrapper()
+    
   }
   
 
