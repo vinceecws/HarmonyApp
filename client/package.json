@@ -6,7 +6,9 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "axios": "^0.21.0",
     "bootstrap": "^4.5.3",
+    "dotenv": "^8.2.0",
     "jquery": "^3.5.1",
     "load-script2": "^2.0.6",
     "lodash": "^4.17.20",
@@ -19,9 +21,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "react-strap": "0.0.1",
-    "react-ticker": "^1.2.2",
-    "reactstrap": "^8.6.0",
-    "soundcloud": "^3.3.2"
+    "react-ticker": "^1.2.2"
   },
   "scripts": {
     "start": "react-scripts start",

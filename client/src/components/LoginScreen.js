@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom'
+import { Link, Route } from 'react-router-dom'
 import {icon_speak_2, icon_speak_1, icon_radio, icon_album, icon_disc_1, icon_disc_2, icon_music_album_1, icon_music_album_2, icon_sound_mixer_1, icon_sound_mixer_2} from '../graphics'
 
 class LoginScreen extends React.Component{
@@ -10,7 +10,6 @@ class LoginScreen extends React.Component{
         if (this.props.auth !== null) {
             this.props.history.push('/main/home')
         }
-        console.log("LOGIN")
         return (
             <div className='container' style={{backgroundColor: 'lightgreen', 
                                                height: '100vh', minHeight: '100vh',
@@ -29,7 +28,10 @@ class LoginScreen extends React.Component{
                             <input type='text' name='password' placeholder='Password'/> <br/>
                             <input type='submit' value='Log-in' style={{marginTop:'20px', boxShadow: '3px 3px'}}/>
                         </form>
-                        <button className="btn btn-link" style={{marginTop: '10px'}} data-toggle='modal' data-target='#registrationModal'>Or create an account</button><br/>
+                        {}
+                        <Link to={this.props.match.url + '/signup'}>
+                            <button className="btn btn-link" style={{marginTop: '10px'}} data-toggle='modal' data-target='#registrationModal'>Or create an account</button><br/>
+                        </Link>
                         <Link to="/main" style={{marginTop: '20px', boxShadow: '3px 3px', 
                                         backgroundColor: 'cornsilk', fontSize: '20px',
                                         padding: '10px 15px'}}>Continue As Guest</Link>
@@ -56,32 +58,33 @@ class LoginScreen extends React.Component{
                 </div>
 
                 {/* Modal */}
-                <div id="registrationModal" className="modal fade" role="dialog">
-                    <div className="modal-dialog">
-                        {/* Modal Content */}
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h3>Sign-Up</h3>
-                                <button type="button" className="close" data-dismiss="modal">&times;</button>
-                            </div>
-                            <div className="modal-body">
-                                <p>Enter Your Account Information:</p>
-                                <form>
-                                    <input type='text' name='username' placeholder='Username' style={{marginBottom: '5px'}}/><br/>
-                                    <input type='text' name='password' placeholder='Password' style={{marginBottom: '5px'}}/> <br/>
-                                    <input type='text' name='confirmPwd' placeholder='Confirm Password' style={{marginBottom: '5px'}}/> <br/>
-                                    <input type='text' name='email' placeholder='Email' style={{marginBottom: '5px'}}/> <br/>
-                                    <input type='text' name='confirmEml' placeholder='Confirm Email'/> <br/>
-                                    <input type='submit' value='Sign Up' style={{marginTop:'20px', boxShadow: '3px 3px'}}/>
-                                </form>
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                <Route path={this.props.match.url + '/signup'} render={() => { return(
+                    <div id="registrationModal">
+                        <div className="modal-dialog">
+                            {/* Modal Content */}
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h3>Sign-Up</h3>
+                                    <button type="button" className="close" data-dismiss="modal">&times;</button>
+                                </div>
+                                <div className="modal-body">
+                                    <p>Enter Your Account Information:</p>
+                                    <form>
+                                        <input type='text' name='username' placeholder='Username' style={{marginBottom: '5px'}}/><br/>
+                                        <input type='text' name='password' placeholder='Password' style={{marginBottom: '5px'}}/> <br/>
+                                        <input type='text' name='confirmPwd' placeholder='Confirm Password' style={{marginBottom: '5px'}}/> <br/>
+                                        <input type='text' name='email' placeholder='Email' style={{marginBottom: '5px'}}/> <br/>
+                                        <input type='text' name='confirmEml' placeholder='Confirm Email'/> <br/>
+                                        <input type='submit' value='Sign Up' style={{marginTop:'20px', boxShadow: '3px 3px'}}/>
+                                    </form>
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
+                )}}/>
             </div>
         )
     }
