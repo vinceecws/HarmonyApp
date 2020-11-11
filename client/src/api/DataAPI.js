@@ -66,7 +66,8 @@ class DataAPI {
                 order: "viewCount",
                 q: query,
                 type: "video",
-                videoCategoryId: "10"
+                videoCategoryId: "10",
+                videoSyndicated: true
             }).then((response) => {
                 return response.result.items.map(res => this.constructVideoResultObj(res))
             }, (err) => {
