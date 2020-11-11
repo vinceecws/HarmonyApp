@@ -14,7 +14,7 @@ exports.deserialize = function(req, id, done) {
 
 exports.localLogIn = function(req, username, password, done) {
     User.findOne({
-        username: username
+        'local.username': username
     }, function(err, user) {
 
         if (err) {
@@ -39,7 +39,7 @@ exports.localLogIn = function(req, username, password, done) {
 
 exports.localSignUp = function(req, username, password, done) {
     User.findOne({
-        username: username
+        'local.username': username
     }, function(err, user) {
 
         if (err) {
@@ -58,8 +58,13 @@ exports.localSignUp = function(req, username, password, done) {
                 password: password
             }
         })
-
-        return done(null, user)
+        user.save(function(err) {
+            if (err) {
+                return done(err)
+            }
+            return done(null, user)
+        })
+        
      })
 }
 

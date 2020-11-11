@@ -46,19 +46,18 @@ const userSchema = new mongoose.Schema({
 })
 
 userSchema.methods.authenticateLocal = function(username, password) {
-  return this.local.username === username && bcrypt.compareSync(password, this.local.password);
+  return this.local.username === username && bcrypt.compareSync(password, this.local.password)
 }
 
 userSchema.methods.hashPassword = function(password) {
-  return bcrypt.hashSync(password, 4);
+  return bcrypt.hashSync(password, 4)
 }
 
 userSchema.pre('save', function(next) {
   if (this.local.password) {
-    this.local.password = bcrypt.hashSync(this.local.password, 4);
+    this.local.password = bcrypt.hashSync(this.local.password, 4)
   }
-  next();
-});
-
+  next()
+})
 
 module.exports = userSchema

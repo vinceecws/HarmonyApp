@@ -16,26 +16,25 @@ class App extends React.Component {
 
   constructor(props) {
     super(props)
-    var user = genSampleUsers()[0]
     this.state = {
-
-      auth: user.Id,   //null
-
-      user: user,
+      auth: false,
+      user: null
     }
     this.axiosWrapper = new AxiosWrapper()
   }
   
 
-  handleLogOut() {
+  handleLogOut = () => {
     this.setState({
-      auth: null,
+      auth: false,
+      user: null
     })
   }
 
-  handleAuthenticate(auth) {
+  handleAuthenticate = (user) => {
     this.setState({
-      auth: auth
+      auth: true,
+      user: user
     })
   }
 
@@ -45,8 +44,8 @@ class App extends React.Component {
       <Container id="app-container">
         <Router>
           <Switch>
-            <Route path={['/login']} render={(props) => <LoginScreen {...props} auth={this.state.auth} handleAuthenticate={this.handleAuthenticate} axiosWrapper = {this.axiosWrapper}/>} />
-            <Route path={['/', '/main']} render={(props) => <MainApp {...props} auth={this.state.auth} user={this.state.user} handleLogOut={this.handleLogOut.bind(this)} axiosWrapper = {this.axiosWrapper}/>} />
+            <Route path={['/login']} render={(props) => <LoginScreen {...props} auth={this.state.auth} handleAuthenticate={this.handleAuthenticate} axiosWrapper={this.axiosWrapper}/>} />
+            <Route path={['/', '/main']} render={(props) => <MainApp {...props} auth={this.state.auth} user={this.state.user} handleLogOut={this.handleLogOut} axiosWrapper={this.axiosWrapper}/>} />
           </Switch>
         </Router>
       </Container>

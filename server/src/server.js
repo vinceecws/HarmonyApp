@@ -15,14 +15,14 @@ const db = require('./db').db
 const apiPort = 4000
 
 const mainRouter = require('./routes/mainRoutes.js')
-const MongoStore = require('connect-mongo')(session);
+const MongoStore = require('connect-mongo')(session)
 /*
     Express.js configurations
 */
 app.use(cors())
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
+app.use(cookieParser())
 app.use(session({
     store: new MongoStore({ 
         mongooseConnection: db
@@ -34,19 +34,19 @@ app.use(session({
         secure: true 
     } 
 }))
-app.use(passport.initialize());
-app.use(passport.session());
+app.use(passport.initialize())
+app.use(passport.session())
 
 /*
     Passport.js configurations
 */
 passport.use('local-login', new LocalStrategy({
     passReqToCallback : true
-}, passportCallbacks.localLogIn));
+}, passportCallbacks.localLogIn))
 
 passport.use('local-signup', new LocalStrategy({
     passReqToCallback : true
-}, passportCallbacks.localSignUp));
+}, passportCallbacks.localSignUp))
 
 passport.serializeUser(passportCallbacks.serialize)
 passport.deserializeUser(passportCallbacks.deserialize)
@@ -57,21 +57,85 @@ passport.deserializeUser(passportCallbacks.deserialize)
 
 authRouter = express.Router()
 
-authRouter.post('/login', passport.authenticate('local-login', {
-    successRedirect : '/main',
-    failureRedirect : '/login',
-    failureFlash : false
-}))
+authRouter.post('/login', function(req, res, next) {
+    passport.authenticate('local-login', function(err, user, info) {
+        if (err) {
+            return next(err)
+        }
 
-authRouter.post('/login/signup', passport.authenticate('local-signup', {
-    successRedirect : '/main',
-    failureRedirect : '/login/signup',
-    failureFlash : false
-}))
+        if (!user) {
+            return res.send({
+                error: {
+                    name: "JsonWebTokenError",
+                    message: "Invalid credentials"
+                },
+                message: "Invalid credentials",
+                statusCode: 401,
+                data: {
+                    user: null
+                },
+                success: false
+            })
+        }
+
+        req.login(user, function(err) {
+            if (err) {
+                return next(err)
+            }
+
+            return res.send({
+                message: "Authorization success",
+                statusCode: 200,
+                data: {
+                    user: user
+                },
+                success: true
+            })
+        })
+    })(req, res, next)
+})
+
+authRouter.post('/login/signup', function(req, res, next) {
+    passport.authenticate('local-signup', function(err, user, info) {
+        if (err) {
+            return next(err)
+        }
+
+        if (!user) {
+            return res.send({
+                error: {
+                    name: "JsonWebTokenError",
+                    message: "Username is taken"
+                },
+                message: "Username is taken",
+                statusCode: 401,
+                data: {
+                    user: null
+                },
+                success: false
+            })
+        }
+
+        req.login(user, function(err) {
+            if (err) {
+                return next(err)
+            }
+
+            return res.send({
+                message: "Sign-up success",
+                statusCode: 200,
+                data: {
+                    user: user
+                },
+                success: true
+            })
+        })
+    })(req, res, next)
+})
 
 authRouter.get('/logout', function(req, res) {
     req.logout();
-    res.redirect('/login');
+    res.redirect('/login')
 });
 
 app.use(passportCallbacks.isLoggedIn)

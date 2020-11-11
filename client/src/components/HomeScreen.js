@@ -36,14 +36,9 @@ class HomeScreen extends React.Component {
       
       return this.props.axiosWrapper.axiosGet('/main/home', this.handleLoad);
     }
-    /*
-        In practice, fetchImage will fetch the song's image from the given URL
-    */
-    fetchImage = () => {
-        
-    } 
-    handleLoad = (status,data) =>{
-        if(status == 200){
+
+    handleLoad = (status, data) =>{
+        if (status == 200){
             console.log(status);
             console.log(data);
             this.setState({
