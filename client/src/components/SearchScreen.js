@@ -1,7 +1,7 @@
 import React from 'react'
-import { ListGroup, Image, Button, CardDeck, Card, InputGroup, FormControl, Dropdown, OverlayTrigger } from 'react-bootstrap'
+import { ListGroup, Image, Button, CardDeck, Card, InputGroup, FormControl, Dropdown, ButtonGroup } from 'react-bootstrap'
 import { genSampleResults } from '../test/genSamples'
-import { delete_cross_white, delete_button_white, icon_play_2 } from '../graphics'
+import { delete_cross_white, delete_button_white, icon_play_2, menu_button_white } from '../graphics'
 
 import SuggestionsAPI from '../api/SuggestionsAPI'
 
@@ -147,7 +147,7 @@ class SearchScreen extends React.Component {
                     <Dropdown.Menu id="search-screen-search-box-suggestions-dropdown" show={this.getShowSuggestions()}>
                         {
                             this.state.suggestions.map((suggestion, ind) => 
-                                <Dropdown.Item eventKey={String(ind)} onSelect={(key, e) => this.handleSelectSuggestion(key, e)}>{suggestion}</Dropdown.Item>
+                                <Dropdown.Item eventKey={String(ind)} key={ind} onSelect={(key, e) => this.handleSelectSuggestion(key, e)}>{suggestion}</Dropdown.Item>
                             )
                         }
                     </Dropdown.Menu>
@@ -158,8 +158,8 @@ class SearchScreen extends React.Component {
                     </div>
                     <ListGroup>
                         {
-                            this.state.history.map(obj => 
-                                <ListGroup.Item className="search-screen-history-item" onClick={e => this.handleGoToItem(e)} action>
+                            this.state.history.map((obj, ind) => 
+                                <ListGroup.Item className="search-screen-history-item" key={ind} onClick={e => this.handleGoToItem(e)} action>
                                     <div className="search-screen-history-item-type title color-contrasted">{obj.type.capitalize()}</div>
                                     <div className="search-screen-history-item-container">
                                         <Image className="search-screen-history-item-display-image" src={obj.image}/>
@@ -168,22 +168,22 @@ class SearchScreen extends React.Component {
                                             <div className="body-text color-accented">{obj.creator}</div>
                                         </div>
                                     </div>
-                                    <Button className="search-screen-history-item-remove-button" onClick={e => this.handleRemoveHistory(e, obj.index)}>
+                                    <div className="search-screen-history-item-remove-button" onClick={e => this.handleRemoveHistory(e, obj.index)}>
                                         <Image className="search-screen-history-item-remove-button-icon" src={delete_cross_white}/>
-                                    </Button>
+                                    </div>
                                 </ListGroup.Item>
                                 )
                         }
                     </ListGroup>
                 </div>
                 <div className={this.getResultsClass()}>
-                    {Object.keys(this.state.res).map(category => this.state.res[category] !== undefined && this.state.res[category].length > 0 ?
-                        <div className="search-screen-results-category-container">
+                    {Object.keys(this.state.res).map((category, cat_ind) => this.state.res[category] !== undefined && this.state.res[category].length > 0 ?
+                        <div className="search-screen-results-category-container" key={cat_ind}>
                             <div className="search-screen-results-category-name title color-contrasted">{category.capitalize()}</div>
                             <CardDeck className="search-screen-results-category-list">
                                 {
-                                    this.state.res[category].map(obj => 
-                                        <Card className="search-screen-results-category-list-item">
+                                    this.state.res[category].map((obj, item_ind) => 
+                                        <Card className="search-screen-results-category-list-item" key={item_ind}>
                                             {obj.type === "session" && obj.live === true ? 
                                                 <Card.Text className="search-screen-results-list-item-live-indicator tiny-text color-accented">LIVE</Card.Text> :
                                                 <div></div>
@@ -196,6 +196,28 @@ class SearchScreen extends React.Component {
                                                 obj.type === "song" ? 
                                                     <div className="search-screen-results-category-list-item-img-overlay-trigger">
                                                         <div className="search-screen-results-category-list-item-img-overlay-container">
+                                                            <Dropdown className="search-screen-results-category-list-item-img-overlay-dropdown" as={ButtonGroup}>
+                                                                <Dropdown.Toggle split className="search-screen-results-category-list-item-img-overlay-dropdown-button no-caret">
+                                                                    <Image className="search-screen-results-category-list-item-img-overlay-dropdown-button-icon" src={menu_button_white} />
+                                                                </Dropdown.Toggle>
+                                                                <Dropdown.Menu className="search-screen-results-category-list-item-img-overlay-dropdown-menu">
+                                                                    <Dropdown.Item>
+                                                                        <Button onClick={this.props.queue.addSongToFutureQueue.bind(this, obj)}>
+                                                                            Add To Queue
+                                                                        </Button>
+                                                                    </Dropdown.Item>
+                                                                    <Dropdown.Item>
+                                                                        <Button>
+                                                                            Add To Collection
+                                                                        </Button>
+                                                                    </Dropdown.Item>
+                                                                    <Dropdown.Item>
+                                                                        <Button>
+                                                                            Save To Favorites
+                                                                        </Button>
+                                                                    </Dropdown.Item>
+                                                                </Dropdown.Menu>
+                                                            </Dropdown>
                                                             <Button className="search-screen-results-category-list-item-img-overlay-play-button" onClick={this.handlePlayItem.bind(this, obj.id)}>
                                                                 <Image className="search-screen-results-category-list-item-img-overlay-play-button-icon" src={icon_play_2}/>
                                                             </Button>

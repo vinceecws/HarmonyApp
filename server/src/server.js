@@ -65,20 +65,20 @@ authRouter.post('/login', passport.authenticate('local-login', {
     failureFlash : false
 }))
 
-authRouter.post('/signup', passport.authenticate('local-signup', {
+authRouter.post('/login/signup', passport.authenticate('local-signup', {
     successRedirect : '/main',
-    failureRedirect : '/signup',
+    failureRedirect : '/login/signup',
     failureFlash : false
 }))
 
 authRouter.get('/logout', function(req, res) {
     req.logout();
-    res.redirect('/');
+    res.redirect('/login');
 });
 
 app.use(passportCallbacks.isLoggedIn)
 
-app.use('/auth', authRouter)
+app.use('/', authRouter)
 app.use('/main', mainRouter)
 
 db.on('error', console.error.bind(console, "Error connecting to MongoDB Atlas Database:"))
