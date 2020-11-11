@@ -1,15 +1,15 @@
 import React from 'react';
-
+import axios from 'axios';
 
 import MainApp from './components/MainApp.js'
 import LoginScreen from './components/LoginScreen.js'
-
 import { Container } from 'react-bootstrap';
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
 import './App.css';
 import { genSampleUsers } from './test/genSamples.js'
+axios.defaults.baseURL = 'http://localhost:4000'
 
 class App extends React.Component {
 
@@ -20,9 +20,10 @@ class App extends React.Component {
 
       auth: user.Id,   //null
 
-      user: user
+      user: user,
     }
   }
+  
 
   handleLogOut() {
     this.setState({
