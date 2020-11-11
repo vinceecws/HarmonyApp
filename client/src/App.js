@@ -9,6 +9,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
 import './App.css';
 import { genSampleUsers } from './test/genSamples.js'
+import AxiosWrapper from './components/axiosWrapper/axiosWrapper.js'
 axios.defaults.baseURL = 'http://localhost:4000'
 
 class App extends React.Component {
@@ -22,6 +23,7 @@ class App extends React.Component {
 
       user: user,
     }
+    this.axiosWrapper = new AxiosWrapper()
   }
   
 
@@ -43,8 +45,8 @@ class App extends React.Component {
       <Container id="app-container">
         <Router>
           <Switch>
-            <Route path={['/login']} render={(props) => <LoginScreen {...props} auth={this.state.auth} handleAuthenticate={this.handleAuthenticate}/>} />
-            <Route path={['/', '/main']} render={(props) => <MainApp {...props} auth={this.state.auth} user={this.state.user} handleLogOut={this.handleLogOut.bind(this)}/>} />
+            <Route path={['/login']} render={(props) => <LoginScreen {...props} auth={this.state.auth} handleAuthenticate={this.handleAuthenticate} axiosWrapper = {this.axiosWrapper}/>} />
+            <Route path={['/', '/main']} render={(props) => <MainApp {...props} auth={this.state.auth} user={this.state.user} handleLogOut={this.handleLogOut.bind(this)} axiosWrapper = {this.axiosWrapper}/>} />
           </Switch>
         </Router>
       </Container>

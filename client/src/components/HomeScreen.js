@@ -2,8 +2,8 @@ import React from 'react';
 import { CardDeck, Card } from 'react-bootstrap';
 import { genSampleSuggestions } from '../test/genSamples'
 import axios from 'axios';
-import {axiosGet, axiosPost} from './axiosWrapper/axiosWrapper.js';
 import Spinner from './Spinner';
+
 
 class HomeScreen extends React.Component {
     constructor(props){
@@ -34,7 +34,7 @@ class HomeScreen extends React.Component {
     }
     getHomeInfo = () => {
       
-      return axiosGet('/main/home', this.handleLoad);
+      return this.props.axiosWrapper.axiosGet('/main/home', this.handleLoad);
     }
     /*
         In practice, fetchImage will fetch the song's image from the given URL

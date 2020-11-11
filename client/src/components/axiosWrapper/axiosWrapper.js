@@ -2,8 +2,8 @@ import React from 'react';
 import axios from 'axios';
 
 
-
-export function axiosGet(path, callback){
+class AxiosWrapper {
+	axiosGet(path, callback){
 		return axios.get(path)
         .then(response => {
         	if(callback){
@@ -15,7 +15,7 @@ export function axiosGet(path, callback){
             console.log(error);
         });
 	}
-export function axiosPost(path, payload, callback){
+	axiosPost=(path, payload, callback)=>{
 		return axios.post(path, payload)
         .then(response => {
         	if(callback){
@@ -27,6 +27,10 @@ export function axiosPost(path, payload, callback){
             console.log(error);
         });
 	}
+}
+
+export default AxiosWrapper;
+
 	
 
 
