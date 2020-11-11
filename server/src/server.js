@@ -15,6 +15,7 @@ const apiPort = 4000
 const mainRouter = require('./routes/mainRoutes.js')
 const MongoStore = require('connect-mongo')(session);
 
+const mongooseCallbacks = require('./db')
 /*
     Express.js configurations
 */

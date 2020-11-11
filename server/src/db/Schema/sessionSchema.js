@@ -13,32 +13,32 @@ const sessionSchema = new mongoose.Schema({
     },
     startTime: {
         type: Number,
-        require: true,
+        //required: true,
         ref: "Start timestamp with server time"
     },
     endTime: {
         type: Number,
-        require: true,
+        //required: true,
         ref: "End timestamp with server time"
     },
     streams: {
         type: Number,
-        require: true,
+        //required: true,
         ref: "Stream count"
     },
     likes: {
         type: Number,
-        require: true,
+        //required: true,
         ref: "Like count"
     },
     initialQueue: {
         type: [String],
-        require: true,
+        //required: true,
         ref: "Initial song queue where each entry is the unique Song ID from SoundCloud"
     },
     actionLog: {
         type: [String],
-        require: true,
+        //required: true,
         ref: ""
     }
 })
