@@ -6,6 +6,11 @@ const sessionSchema = new mongoose.Schema({
         required: [true, 'Unique ID is required'],
         ref: "Unique user ID"
     },
+    hostName: {
+        type: String,
+        required: [true, 'Unique ID matches to a hostname'],
+        ref: ""
+    },
     name: {
         type: String,
         required: [true, "Session must have a name"],
@@ -31,6 +36,11 @@ const sessionSchema = new mongoose.Schema({
         //required: true,
         ref: "Like count"
     },
+    live: {
+        type: Boolean,
+        required: [true, "A session must be live in order to be displayed in the sideList"],
+        ref: ""
+    },
     initialQueue: {
         type: [String],
         //required: true,
@@ -41,6 +51,7 @@ const sessionSchema = new mongoose.Schema({
         //required: true,
         ref: ""
     }
+    
 })
 
 module.exports = sessionSchema
