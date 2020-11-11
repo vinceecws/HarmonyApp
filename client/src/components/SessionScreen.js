@@ -2,7 +2,9 @@ import React from 'react';
 import { icon_profile_image, icon_radio } from '../graphics';
 import ChatFeed from './Chat/ChatFeed.js';
 import QueueComponent from './Queues/QueueComponent.js';
+import Spinner from './Spinner';
 
+//(AXIOS) remove these once front to back works
 let sessions = require('../test/sampleSessions.json')
 let users = require('../test/sampleUsers.json')
 
@@ -12,30 +14,50 @@ class SessionScreen extends React.Component {
 		super(props);
 		this.getSession();
 		this.state = {
-			
-			id:this.session.id,
+			//(AXIOS)replace loading:true
+			loading:false,
+			id:this.session._id,
 			hostId:this.session.hostId,
 			name : this.session.name ,
 			startTime : this.session.startTime ,
 			endTime : this.session.endTime,
 			initialQueue: this.session.initialQueue,
 			actionLog : this.session.actionLog,
-			host : this.getSessionHost()
+			host: this.getSessionHost()
+			//(AXIOS)REPLACE HOST with hostName : this.session.hostName;
+			
 		}
+		
 	}
 	// the session Id is passed as a prop when a user clicks on a session to view it.
 	getSession=() => {
 		var session = sessions.find(session => this.props.id === session.id);
-		this.session = session === undefined ? sessions[0] : session;	
+		this.session = session === undefined ? sessions[0] : session;
+		
+		/*(AXIOS)var findSession = function(status,data){
+			if(status == 200){
+	            console.log(status);
+	            console.log(data);
+	            this.setState({
+	                loading: false,
+	                session: data
+	            });
+            }
+        }
+		this.props.axiosWrapper.axiosGet('/main/session/:id', findSession);*/
 	}
+	//(AXIOS)Not needed when axiosGet returns session.hostName
 	getSessionHost = () => {
 		return users.find(user=>this.session.hostId === user.Id);
+
 	}
 	//replace icon with the associated user profile image
     render(){
+    	let renderContainer = false
 
-        return(
-        	<div style={{fontFamily: 'BalsamiqSans', marginLeft:'15px', height:'100%'}}>
+    	if(!this.state.loading){
+    		renderContainer = 
+    			<div style={{fontFamily: 'BalsamiqSans', marginLeft:'15px', height:'100%'}}>
         		<div className='row' style={{height:'100%'}}>
         			<div className='col-sm-8' style={{height:'100%'}}>
 	        			<div className='row' style={{height:'22%', border: '3px solid black', borderRadius: '25px'}}>
@@ -84,8 +106,12 @@ class SessionScreen extends React.Component {
         		
         	</div>
 
-
-
+    	}
+    	else{
+    		renderContainer = <Spinner/>
+    	}
+        return(
+        	renderContainer
         	);
     }
 }

@@ -9,13 +9,13 @@ class AccountLink extends React.Component {
             return (
                 <Dropdown id="tab-component-account-link-container" as={ButtonGroup}>
                     <Button id="tab-component-account-link-button">
-                        <Link to={"/main/profile/" + this.props.id}>
-                            <Image id="tab-component-account-link-image" src={this.props.image} />
+                        <Link to={"/main/profile/" + this.props.user.id}>
+                            <Image id="tab-component-account-link-image" src={this.props.user.image} />
                         </Link>
                     </Button>
                     <Dropdown.Toggle split id="tab-component-account-link-dropdown-button" />
                     <Dropdown.Menu id="tab-component-account-link-dropdown-menu">
-                        <Dropdown.Item as={Link} to={"/main/profile/" + this.props.id}>
+                        <Dropdown.Item as={Link} to={"/main/profile/" + this.props.user.id}>
                             Profile
                         </Dropdown.Item>
                         <Dropdown.Item as={Link} to={"/main/settings"}>

@@ -28,7 +28,7 @@ class TabComponent extends React.Component{
                         <NavLink href='#' className='nav-link tab-component-link title color-accented' activeClassName='nav-link tab-component-link-selected' to="/main/search">Search</NavLink>
                     </li>
                 </ul>
-                <AccountLink auth={this.props.auth} id={this.props.user.Id} image={this.props.user.image} handleLogOut={this.props.handleLogOut}/>
+                <AccountLink auth={this.props.auth} user={this.props.user} handleLogOut={this.props.handleLogOut}/>
             </div>
         )
     }

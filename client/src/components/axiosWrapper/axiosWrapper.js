@@ -3,7 +3,7 @@ import axios from 'axios';
 
 
 class AxiosWrapper {
-	axiosGet(path, callback){
+	axiosGet(path, callback) {
 		return axios.get(path)
         .then(response => {
         	if(callback){
@@ -15,7 +15,7 @@ class AxiosWrapper {
             console.log(error);
         });
 	}
-	axiosPost=(path, payload, callback)=>{
+	axiosPost(path, payload, callback) {
 		return axios.post(path, payload)
         .then(response => {
         	if(callback){

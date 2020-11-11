@@ -3,11 +3,120 @@ import { Link, Route } from 'react-router-dom'
 import {icon_speak_2, icon_speak_1, icon_radio, icon_album, icon_disc_1, icon_disc_2, icon_music_album_1, icon_music_album_2, icon_sound_mixer_1, icon_sound_mixer_2} from '../graphics'
 
 class LoginScreen extends React.Component{
-    
-    onPressContinueGuest = () => {}
+
+    state = {
+        signup_username: "",
+        signup_password: "",
+        signup_confirm_password: "",
+        login_username: "",
+        login_password: "",
+    }
+
+    clearLoginCredentials = () => {
+        this.setState({
+            login_username: "",
+            login_password: ""
+        })
+    }
+
+    clearSignUpCredentials = () => {
+        this.setState({
+            signup_username: "",
+            signup_password: "",
+            signup_confirm_password: ""
+        })
+    }
+
+    handleCloseSignUpModal = () => {
+        this.clearSignUpCredentials()
+        this.props.history.goBack()
+    }
+
+    handleLoginUsernameChange = (e) => {
+        this.setState({
+            login_username: e.target.value
+        })
+    }
+
+    handleLoginPasswordChange = (e) => {
+        this.setState({
+            login_password: e.target.value
+        })
+    }
+
+    handleSignUpUsernameChange = (e) => {
+        this.setState({
+            signup_username: e.target.value
+        })
+    }
+
+    handleSignUpPasswordChange = (e) => {
+        this.setState({
+            signup_password: e.target.value
+        })
+    }
+
+    handleSignUpConfirmPasswordChange = (e) => {
+        this.setState({
+            signup_confirm_password: e.target.value
+        })
+    }
+
+    handleSignup = (e) => {
+        if (this.state.signup_username.trim() === "" || this.state.signup_password.trim() === "" || this.state.signup_confirm_password === ""){
+            //Handle empty username, password or confirm password here
+            console.log("Username, password and confirm password must not be empty")
+            return
+        }
+
+        if (this.state.signup_password !== this.state.signup_confirm_password) {
+            //Handle inconsistent password here
+            console.log("Password must be the same as confirm password")
+            return
+        }
+
+        this.props.axiosWrapper.axiosPost('/login/signup', {
+            username: this.state.signup_username,
+            password: this.state.signup_password
+        }, (function(res, data) {
+            if (data.success) {
+                this.props.handleAuthenticate(data.data.user)
+                this.clearSignUpCredentials()
+                this.props.history.push("/main/home")
+            }
+            else {
+                // Handle username taken prompting here
+                console.log(data.message)
+            }
+        }).bind(this))
+    }
+
+    handleLogin = (e) => {
+        if (this.state.login_username.trim() === "" || this.state.login_password.trim() === ""){
+            //Handle empty username or password here
+            console.log("Username and password must not be empty")
+            return
+        }
+
+        this.props.axiosWrapper.axiosPost('/login', {
+            username: this.state.login_username,
+            password: this.state.login_password
+        }, (function(res, data) {
+            console.log(data)
+            if (data.success) {
+                this.props.handleAuthenticate(data.data.user)
+                this.clearLoginCredentials()
+                this.props.history.push("/main/home")
+            }
+            else {
+                // Handle invalid username/password prompting here
+                console.log(data.message)
+            }
+        }).bind(this))
+    }
 
     render(){
-        if (this.props.auth !== null) {
+        if (this.props.auth) {
             this.props.history.push('/main/home')
         }
         return (
@@ -23,11 +132,11 @@ class LoginScreen extends React.Component{
                     <div className='col' style={{marginTop: '60px', marginLeft: '10%'}}>
 
                         <h2 style={{marginBottom: '20px'}}>Log-in</h2>
-                        <form>
-                            <input type='text' name='username' placeholder='Username' style={{marginBottom: '5px'}}/><br/>
-                            <input type='text' name='password' placeholder='Password'/> <br/>
-                            <input type='submit' value='Log-in' style={{marginTop:'20px', boxShadow: '3px 3px'}}/>
-                        </form>
+                        <div>
+                            <input type='text' name='username' placeholder='Username' style={{marginBottom: '5px'}} onChange={this.handleLoginUsernameChange} value={this.state.login_username}/><br/>
+                            <input type='text' name='password' placeholder='Password' onChange={this.handleLoginPasswordChange} value={this.state.login_password}/> <br/>
+                            <button style={{marginTop:'20px', boxShadow: '3px 3px'}} onClick={e => this.handleLogin(e)}>Log-In</button>
+                        </div>
                         {}
                         <Link to={this.props.match.url + '/signup'}>
                             <button className="btn btn-link" style={{marginTop: '10px'}} data-toggle='modal' data-target='#registrationModal'>Or create an account</button><br/>
@@ -66,18 +175,16 @@ class LoginScreen extends React.Component{
                             <div className="modal-content">
                                 <div className="modal-header">
                                     <h3>Sign-Up</h3>
-                                    <button type="button" className="close" data-dismiss="modal" onClick={data => this.props.history.goBack()}>&times;</button>
+                                    <button type="button" className="close" data-dismiss="modal" onClick={data => this.handleCloseSignUpModal(data)}>&times;</button>
                                 </div>
                                 <div className="modal-body">
                                     <p>Enter Your Account Information:</p>
-                                    <form>
-                                        <input type='text' name='username' placeholder='Username' style={{marginBottom: '5px'}}/><br/>
-                                        <input type='text' name='password' placeholder='Password' style={{marginBottom: '5px'}}/> <br/>
-                                        <input type='text' name='confirmPwd' placeholder='Confirm Password' style={{marginBottom: '5px'}}/> <br/>
-                                        <input type='text' name='email' placeholder='Email' style={{marginBottom: '5px'}}/> <br/>
-                                        <input type='text' name='confirmEml' placeholder='Confirm Email'/> <br/>
-                                        <input type='submit' value='Sign Up' style={{marginTop:'20px', boxShadow: '3px 3px'}}/>
-                                    </form>
+                                    <div onSubmit={e => this.handleSignup(e)}>
+                                        <input type='text' name='username' placeholder='Username' style={{marginBottom: '5px'}} onChange={this.handleSignUpUsernameChange} value={this.state.signup_username}/><br/>
+                                        <input type='text' name='password' placeholder='Password' style={{marginBottom: '5px'}} onChange={this.handleSignUpPasswordChange} value={this.state.signup_password}/> <br/>
+                                        <input type='text' name='confirmPwd' placeholder='Confirm Password' style={{marginBottom: '5px'}} onChange={this.handleSignUpConfirmPasswordChange} value={this.state.signup_confirm_password}/> <br/>
+                                        <button style={{marginTop:'20px', boxShadow: '3px 3px'}} onClick={e => this.handleSignup(e)}>Sign Up</button>
+                                    </div>
                                 </div>
                                 <div className="modal-footer">
                                     <button type="button" className="btn btn-default" data-dismiss="modal" onClick={data => this.props.history.goBack()}>Close</button>
