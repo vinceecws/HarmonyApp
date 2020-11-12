@@ -6,6 +6,10 @@ const collectionSchema = new mongoose.Schema ({
         type: String,
         required: [true, 'Collection name is required']
     },
+    ownerId:{
+        type:String,
+        default: ""
+    }
     description: {
         type: String,
         default: ""
