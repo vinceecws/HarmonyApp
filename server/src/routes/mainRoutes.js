@@ -46,19 +46,21 @@ mainRouter.get('/profile/:id', async (req, res) => {
         })
     }
     else{
-        let user = await mongooseQuery.getUser({'_id': req.params.id});
-<<<<<<< HEAD
-        return res.json(user);
-=======
+		let user = await mongooseQuery.getUser({'_id': req.params.id});
+		let fetchedUser = {username: user.google.name === undefined ? user.local.username : user.google.name,
+								Id: user._id, biography: user.biography,
+								privateMode: user.privateMode, live: user.live,
+								playlists: user.playlists, sessions: user.sessions,
+								history: user.history, likedSongs: user.likedSongs,
+								likedCollections: user.likedCollections}
         return res.status(200).json({
             message: "Fetch success",
             statusCode: 200,
             data: {
-                user: user
+                user: fetchedUser
             },
             success: true
         })
->>>>>>> 0f182ea6a13bbc718d44c935b06df8981081d54f
     }
 });
 
@@ -140,8 +142,11 @@ mainRouter.get('/search/query=:search', async (req, res) => {
 		let filteredUsers = [];
 
 		for (let s of sessionMatches){
-			if (s.hostName !== thisUser.local.username){
+			if (thisUser.google.name === undefined && s.hostName !== thisUser.local.username){
 				filteredSessions.push(s);
+			}
+			else if (s.hostName !== thisUser.google.name){
+					filteredSessions.push(s);
 			}
 		}
 		for (let p of thisUser.playlists){
@@ -152,8 +157,14 @@ mainRouter.get('/search/query=:search', async (req, res) => {
 			}
 		}
 		for (let u of userMatches){
-			if (u.local.username !== thisUser.local.username){
-				filteredUsers.push(u);
+			if (thisUser._id !== u._id){
+				let fetchedUser = {username: u.google.name === undefined ? u.local.username : u.google.name,
+					Id: u._id, biography: u.biography,
+					privateMode: u.privateMode, live: u.live,
+					playlists: u.playlists, sessions: u.sessions,
+					history: u.history, likedSongs: u.likedSongs,
+					likedCollections: u.likedCollections}
+				filteredUsers.push(fetchedUser);
 			} 
 		}
 		return res.json({sessions: filteredSessions, collections: filteredCollections,
