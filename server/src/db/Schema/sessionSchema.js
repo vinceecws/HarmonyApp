@@ -42,12 +42,12 @@ const sessionSchema = new mongoose.Schema({
         ref: ""
     },
     initialQueue: {
-        type: [String],
+        type: [mongoose.Schema.Types.ObjectId],
         //required: true,
         ref: "Initial song queue where each entry is the unique Song ID from SoundCloud"
     },
     actionLog: {
-        type: [String],
+        type: [mongoose.Schema.Types.ObjectId],
         //required: true,
         ref: ""
     }

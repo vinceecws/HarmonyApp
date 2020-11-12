@@ -65,15 +65,63 @@ mainRouter.get('/profile/:id', async (req, res) => {
 });
 
 mainRouter.post('/profile/createCollection/:name', async (req, res) => {
-    let newCollection = await mongooseQuery.createCollection({name: req.params.name});
-    return res.json(newCollection);
+	let name = req.params.name;
+	if(name == null){
+		return res.status(404).json({
+            error: {
+                name: "JsonWebTokenError",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+	}
+	else{
+		let newCollection = await mongooseQuery.createCollection({name: req.params.name});
+		return res.status(200).json({
+			message: "Post success",
+			statusCode: 200,
+			data: {
+				collection: newCollection
+			},
+			success:true
+		})
+	}
+    
 });
 
 
 mainRouter.get('/collection/:id', async (req, res) => {
-    let collection = await mongooseQuery.getCollection({'_id': req.params.id})
-        .catch(err => {res.sendStatus(404)});
-    return res.json(collection);
+    let id = req.params.id;
+    if (id == null){
+        return res.status(404).json({
+            error: {
+                name: "JsonWebTokenError",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
+    else{
+		let collection = await mongooseQuery.getCollection({'_id': req.params.id});
+        return res.status(200).json({
+            message: "Fetch success",
+            statusCode: 200,
+            data: {
+                collection: collection
+            },
+            success: true
+        })
+    }
 });
 
 mainRouter.get('/home', async (req, res) => {
@@ -81,17 +129,59 @@ mainRouter.get('/home', async (req, res) => {
 });
 
 mainRouter.post('/collection/delete/:id', async (req, res) => {
-    await mongooseQuery.deleteCollection({'_id': req.params.id})
-                        .catch(err => {res.sendStatus(404)});
-    res.send('Collection deleted');
-})
+	let id = req.params.id;
+	if(id == null){
+		return res.status(404).json({
+            error: {
+                name: "JsonWebTokenError",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+	}
+	else{
+		await mongooseQuery.deleteCollection({'_id': req.params.id});
+		return res.status(200).json({
+			message: "Collection deleted",
+			statusCode: 200,
+			success:true
+		})
+	}
+    
+});
 
 mainRouter.post('/collection/updateCollection/:id', async (req, res) => {
-    let updatedCollection = 
-        await mongooseQuery.updateCollection(req.params.id, req.body)
-                            .catch(err => {res.sendStatus(404);});
-    //res.json(updatedCollection);
-    res.send('Collection Updated');
+	let id = req.params.id;
+	if(id == null){
+		return res.status(404).json({
+            error: {
+                name: "JsonWebTokenError",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+	}
+	else{
+		let updateCollection = await mongooseQuery.updateCollection(req.params.id, req.body);
+		return res.status(200).json({
+			message: "Collection updated",
+			statusCode: 200,
+			data: {
+				collection: updateCollection
+			},
+			success:true
+		})
+	}
 });
 
 mainRouter.post('/session/newSession', async (req, res) => {
@@ -99,9 +189,15 @@ mainRouter.post('/session/newSession', async (req, res) => {
         await mongooseQuery.createSession(req.body.hostId, req.body.hostName,
             req.body.name, req.body.startTime, req.body.endTime, 0, 0, 
             req.body.live, req.body.initialQueue, req.actionLog)
-            .catch(err => {res.sendStatus(404);});
-    return res.json(newSession);
-})
+    return res.status(200).json({
+			message: "Collection updated",
+			statusCode: 200,
+			data: {
+				session: newSession
+			},
+			success:true
+		})
+});
 
 mainRouter.get('/session/:id', async (req, res) => {
     let id = req.params.id;
@@ -114,7 +210,7 @@ mainRouter.get('/session/:id', async (req, res) => {
             message: "Not found",
             statusCode: 404,
             data: {
-                sessions: null
+                session: null
             },
             success: false
         })
@@ -125,26 +221,73 @@ mainRouter.get('/session/:id', async (req, res) => {
             message: "Fetch success",
             statusCode: 200,
             data: {
-               session: session
+            	session: session
             },
             success: true
         })
-        console.log(session.initialQueue[0]);
+        
     }
 
 });
 
 
 mainRouter.post('/session/endSession/:id', async (req, res) => {
-    let session = await mongooseQuery.updateSession(req.params.id)
-                                    .catch(err => {res.sendStatus(404)});
-    return res.send('Session Saved');
+    let id = req.params.id;
+    if (id == null){
+        return res.status(404).json({
+            error: {
+                name: "JsonWebTokenError",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                session: null
+            },
+            success: false
+        })
+    }
+    else{
+        let session = await mongooseQuery.updateSession(req.params.id);
+        return res.status(200).json({
+            message: "Session Ended",
+            statusCode: 200,
+            success: true
+        })
+        
+    }
+
 });
 
 mainRouter.post('/search/createCollection/:name', async (req, res) => {
-	let newCollection = await mongooseQuery.createCollection({name: req.params.name})
-									.catch(err => res.sendStatus(404));
-    return res.json(newCollection);
+    let name= req.params.name;
+    if (name == null){
+        return res.status(404).json({
+            error: {
+                name: "JsonWebTokenError",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
+    else{
+        let newCollection = await mongooseQuery.createCollection({name: req.params.name});
+        return res.status(200).json({
+            message: "Session Ended",
+            statusCode: 200,
+            data:{
+            	collection: newCollection
+            },
+            success: true
+        })
+        
+    }
+
 });
 
 mainRouter.get('/search/query=:search', async (req, res) => {
