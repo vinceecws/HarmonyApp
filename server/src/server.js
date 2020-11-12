@@ -64,7 +64,7 @@ authRouter.post('/login', function(req, res, next) {
         }
 
         if (!user) {
-            return res.send({
+            return res.status(401).json({
                 error: {
                     name: "JsonWebTokenError",
                     message: "Invalid credentials"
@@ -83,7 +83,7 @@ authRouter.post('/login', function(req, res, next) {
                 return next(err)
             }
 
-            return res.send({
+            return res.status(200).json({
                 message: "Authorization success",
                 statusCode: 200,
                 data: {
@@ -102,7 +102,7 @@ authRouter.post('/login/signup', function(req, res, next) {
         }
 
         if (!user) {
-            return res.send({
+            return res.status(401).json({
                 error: {
                     name: "JsonWebTokenError",
                     message: "Username is taken"
@@ -121,7 +121,7 @@ authRouter.post('/login/signup', function(req, res, next) {
                 return next(err)
             }
 
-            return res.send({
+            return res.status(200).json({
                 message: "Sign-up success",
                 statusCode: 200,
                 data: {

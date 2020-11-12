@@ -1,5 +1,4 @@
 import React from 'react';
-import Calendar from 'react-calendar'
 import {icon_profile_image, icon_calendar} from '../graphics';
 
 

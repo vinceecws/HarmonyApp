@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom'
 import { Dropdown, ButtonGroup, Image, Button } from 'react-bootstrap'
+import { icon_profile_image } from '../graphics';
 
 class AccountLink extends React.Component {
 
@@ -10,7 +11,7 @@ class AccountLink extends React.Component {
                 <Dropdown id="tab-component-account-link-container" as={ButtonGroup}>
                     <Button id="tab-component-account-link-button">
                         <Link to={"/main/profile/" + this.props.user.id}>
-                            <Image id="tab-component-account-link-image" src={this.props.user.image} />
+                            <Image id="tab-component-account-link-image" src={this.props.user.image ? this.props.user.image : icon_profile_image} />
                         </Link>
                     </Button>
                     <Dropdown.Toggle split id="tab-component-account-link-dropdown-button" />

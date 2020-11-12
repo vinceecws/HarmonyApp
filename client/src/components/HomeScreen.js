@@ -1,7 +1,6 @@
 import React from 'react';
 import { CardDeck, Card } from 'react-bootstrap';
 import { genSampleSuggestions } from '../test/genSamples'
-import axios from 'axios';
 import Spinner from './Spinner';
 
 
@@ -38,7 +37,7 @@ class HomeScreen extends React.Component {
     }
 
     handleLoad = (status, data) =>{
-        if (status == 200){
+        if (status === 200){
             console.log(status);
             console.log(data);
             this.setState({

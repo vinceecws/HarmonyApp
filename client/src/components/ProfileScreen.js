@@ -1,4 +1,5 @@
 import React from 'react';
+import Spinner from './Spinner';
 import {icon_profile_image, icon_like, icon_music_1} from '../graphics';
 
 class ProfileScreen extends React.Component{
@@ -7,7 +8,9 @@ class ProfileScreen extends React.Component{
 	constructor(props){
 		super(props);
 		this.state = {
-			user: this.props.user
+			user: this.props.user,
+			loading: true,
+			profileUser: null
 		}
 
 	}
@@ -16,7 +19,9 @@ class ProfileScreen extends React.Component{
 	}
 
 	fetchUser = () => {
-		return this.props.user
+		this.props.axiosWrapper.axiosGet('/profile/' + this.props.userId, (function(res, data) {
+
+		}).bind(this))
 	}
 
     render(){
