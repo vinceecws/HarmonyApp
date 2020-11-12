@@ -2,54 +2,39 @@ const mongoose = require('mongoose')
 
 const sessionSchema = new mongoose.Schema({
     hostId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: [true, 'Unique ID is required'],
-        ref: "Unique user ID"
+        ref: "User"
     },
     hostName: {
         type: String,
-        required: [true, 'Unique ID matches to a hostname'],
-        ref: ""
+        required: [true, 'Unique ID matches to a hostname']
     },
     name: {
         type: String,
-        required: [true, "Session must have a name"],
-        ref: ""
+        required: [true, "Session must have a name"]
     },
     startTime: {
-        type: Number,
-        //required: true,
-        ref: "Start timestamp with server time"
+        type: Number
     },
     endTime: {
-        type: Number,
-        //required: true,
-        ref: "End timestamp with server time"
+        type: Number
     },
     streams: {
-        type: Number,
-        //required: true,
-        ref: "Stream count"
+        type: Number
     },
     likes: {
-        type: Number,
-        //required: true,
-        ref: "Like count"
+        type: Number
     },
     live: {
         type: Boolean,
-        required: [true, "A session must be live in order to be displayed in the sideList"],
-        ref: ""
+        required: [true, "A session must be live in order to be displayed in the sideList"]
     },
     initialQueue: {
-        type: [String],
-        //required: true,
-        ref: "Initial song queue where each entry is the unique Song ID from SoundCloud"
+        type: [String]
     },
     actionLog: {
-        type: [String],
-        //required: true,
-        ref: ""
+        type: [String]
     }
     
 })
