@@ -17,10 +17,11 @@ exports.createUserLocal = async function(name, password) { //User CRUD methods: 
   let newUser = await new User({
     local: {name, password}
   }).save().catch(error => console.log(error));
-  console.log('New user: ', newUser);
-  
+  console.log('New user: ', newUser, newUser.google.id === undefined);
   return newUser;
 }
+
+//exports.createUserLocal('tim', 'ow');
 
 exports.createUserGoogle = async function(id, token, email, name){
   let newUser = await new User({
@@ -46,12 +47,11 @@ exports.createCollection = async function(name, description, songList) {
     description,
     songList
   }).save().catch(error => console.log(error));;
-  console.log('New collection: ', collection, collection.description);
-  
+  console.log('New collection: ', collection, collection.songList, collection.likes);
   return collection;
 }
 
-//createCollection('the bigger crunch', 'crunchy like oreo');
+//exports.createCollection('the bigger crunch', 'crunchy like oreo');
 
 exports.getCollection = async function(collectionObject){
   console.log('get collection');

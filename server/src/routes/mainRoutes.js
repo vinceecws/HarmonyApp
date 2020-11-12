@@ -46,12 +46,18 @@ mainRouter.get('/profile/:id', async (req, res) => {
         })
     }
     else{
-        let user = await mongooseQuery.getUser({'_id': req.params.id});
+		let user = await mongooseQuery.getUser({'_id': req.params.id});
+		let fetchedUser = {username: user.google.name === undefined ? user.local.username : user.google.name,
+								Id: user._id, biography: user.biography,
+								privateMode: user.privateMode, live: user.live,
+								playlists: user.playlists, sessions: user.sessions,
+								history: user.history, likedSongs: user.likedSongs,
+								likedCollections: user.likedCollections}
         return res.status(200).json({
             message: "Fetch success",
             statusCode: 200,
             data: {
-                user: user
+                user: fetchedUser
             },
             success: true
         })
@@ -60,14 +66,14 @@ mainRouter.get('/profile/:id', async (req, res) => {
 
 mainRouter.post('/profile/createCollection/:name', async (req, res) => {
     let newCollection = await mongooseQuery.createCollection({name: req.params.name});
-    res.json(newCollection);
+    return res.json(newCollection);
 });
 
 
 mainRouter.get('/collection/:id', async (req, res) => {
     let collection = await mongooseQuery.getCollection({'_id': req.params.id})
         .catch(err => {res.sendStatus(404)});
-    res.json(collection);
+    return res.json(collection);
 });
 
 mainRouter.get('/home', async (req, res) => {
@@ -94,7 +100,7 @@ mainRouter.post('/session/newSession', async (req, res) => {
             req.body.name, req.body.startTime, req.body.endTime, 0, 0, 
             req.body.live, req.body.initialQueue, req.actionLog)
             .catch(err => {res.sendStatus(404);});
-    res.json(newSession);
+    return res.json(newSession);
 })
 
 mainRouter.get('/session/:id', async (req, res) => {
@@ -132,13 +138,13 @@ mainRouter.get('/session/:id', async (req, res) => {
 mainRouter.post('/session/endSession/:id', async (req, res) => {
     let session = await mongooseQuery.updateSession(req.params.id)
                                     .catch(err => {res.sendStatus(404)});
-    res.send('Session Saved');
+    return res.send('Session Saved');
 });
 
 mainRouter.post('/search/createCollection/:name', async (req, res) => {
 	let newCollection = await mongooseQuery.createCollection({name: req.params.name})
 									.catch(err => res.sendStatus(404));
-    res.json(newCollection);
+    return res.json(newCollection);
 });
 
 mainRouter.get('/search/query=:search', async (req, res) => {
@@ -149,7 +155,7 @@ mainRouter.get('/search/query=:search', async (req, res) => {
 	let userMatches = await mongooseQuery.getUsersFromQuery(req.params.search)
 									.catch(err => res.sendStatus(404));	
 	if (req.user == null){
-		res.json({session: sessionMatches, 
+		return res.json({session: sessionMatches, 
 					collections: collectionMatches,
 					users: userMathces});
 	}
@@ -161,8 +167,11 @@ mainRouter.get('/search/query=:search', async (req, res) => {
 		let filteredUsers = [];
 
 		for (let s of sessionMatches){
-			if (s.hostName !== thisUser.local.username){
+			if (thisUser.google.name === undefined && s.hostName !== thisUser.local.username){
 				filteredSessions.push(s);
+			}
+			else if (s.hostName !== thisUser.google.name){
+					filteredSessions.push(s);
 			}
 		}
 		for (let p of thisUser.playlists){
@@ -173,11 +182,17 @@ mainRouter.get('/search/query=:search', async (req, res) => {
 			}
 		}
 		for (let u of userMatches){
-			if (u.local.username !== thisUser.local.username){
-				filteredUsers.push(u);
+			if (thisUser._id !== u._id){
+				let fetchedUser = {username: u.google.name === undefined ? u.local.username : u.google.name,
+					Id: u._id, biography: u.biography,
+					privateMode: u.privateMode, live: u.live,
+					playlists: u.playlists, sessions: u.sessions,
+					history: u.history, likedSongs: u.likedSongs,
+					likedCollections: u.likedCollections}
+				filteredUsers.push(fetchedUser);
 			} 
 		}
-		res.json({sessions: filteredSessions, collections: filteredCollections,
+		return res.json({sessions: filteredSessions, collections: filteredCollections,
 					users: filteredUsers});
 	}				
 });
