@@ -68,9 +68,9 @@ mainRouter.post('/search/createCollection/:name', async (req, res) => {
     res.json(newCollection);
 });
 
-mainRouter.post('/search/saveToFavorites/:id', async (req, res) => {
-
-})
+mainRouter.post('/search/query=:search', async (req, res) => {
+	
+});
 
 
 
