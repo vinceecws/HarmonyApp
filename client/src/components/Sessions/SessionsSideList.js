@@ -20,8 +20,6 @@ class SessionSideList extends React.Component{
     
     fetchSessions = () => {
         this.props.axiosWrapper.axiosGet('/main/', (function(res, data) {
-            console.log(res)
-            console.log(data.data.sessions.sessions)
             if (data.success) {
                 this.setState({
                     loading: false,
