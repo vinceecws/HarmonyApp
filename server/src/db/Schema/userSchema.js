@@ -26,22 +26,21 @@ const userSchema = new mongoose.Schema({
   },
   playlists: { 
     type: [mongoose.Schema.Types.ObjectId],
-    ref: "collectionId"
+    ref: "Collection"
   },
   sessions: {
     type: [mongoose.Schema.Types.ObjectId],
-    ref: "sessionId"
+    ref: "Session"
   },
   history: {
     type: Array
   },
   likedSongs: {
-    type: [String],
-    ref: "YouTube VideoId"
+    type: [String]
   },
   likedCollections: {
     type: [mongoose.Schema.Types.ObjectId],
-    ref: "collectionId"
+    ref: "Collection"
   }
 })
 

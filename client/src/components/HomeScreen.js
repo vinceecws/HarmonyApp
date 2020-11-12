@@ -53,13 +53,13 @@ class HomeScreen extends React.Component {
         if (!this.state.loading){
             renderContainer = 
                 <div id="home-screen-container">
-                    {this.fetchSuggestions().map(category => category.suggestions !== undefined && category.suggestions.length > 0 ?
-                        <div className="home-screen-category-container">
+                    {this.fetchSuggestions().map((category, cat_ind) => category.suggestions !== undefined && category.suggestions.length > 0 ?
+                        <div className="home-screen-category-container" key={cat_ind}>
                             <div className="home-screen-category-name title color-contrasted">{category.categoryName}</div>
                             <CardDeck className="home-screen-category-list">
                                 {
-                                    category.suggestions.map(obj => 
-                                        <Card className="home-screen-category-list-item">
+                                    category.suggestions.map((obj, item_ind) => 
+                                        <Card className="home-screen-category-list-item" key={item_ind}>
                                             {obj.type === "user" && obj.live === true ? 
                                                     <Card.Text className="home-screen-category-list-item-live-indicator tiny-text color-accented">LIVE</Card.Text> :
                                                     <div></div>

@@ -376,8 +376,8 @@ body, html {
   background-color: gray !important;
 }
 
-#tab-component-account-link-container .dropdown-item a:hover {
-  text-decoration: none;
+#tab-component-account-link-container a:hover {
+  text-decoration: none !important;
 }
 
 .tab-component-link {

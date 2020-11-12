@@ -62,6 +62,7 @@ class ProfileScreen extends React.Component{
 					profileUser: data.data.user,
 					loading: false
 				})
+				console.log(this.profileUser);
 			}
 		}).bind(this))
 	}
@@ -157,7 +158,7 @@ class ProfileScreen extends React.Component{
 										)
 								}
 								{
-									this.state.user._id === this.state.profileUser.Id ? //Viewing own profile
+									this.state.user._id === this.state.profileUser._id ? //Viewing own profile
 									<div className='card profile-screen-category-item-card' onClick={this.showCreateCollectionModal}>
 										<img className="card-img-top profile-screen-category-item-card-image" src={plus_button}/>
 									</div> :

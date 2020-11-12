@@ -108,8 +108,29 @@ module.exports = function(passport) {
     })
 
     authRouter.get('/logout', function(req, res) {
-        req.logout();
-        res.redirect('/login')
+        req.logout()
+        req.session.destroy(function(err) {
+            if (err) {
+                return res.status(400).json({
+                    error: {
+                        name: "JsonWebTokenError",
+                        message: "Invalid logout action"
+                    },
+                    message: "Invalid logout action",
+                    statusCode: 400,
+                    data: {},
+                    success: false
+                })
+            }
+            else {
+                return res.status(200).json({
+                    message: "Logout success",
+                    statusCode: 200,
+                    data: {},
+                    success: true
+                })
+            }
+        })
     });
     return authRouter
 }

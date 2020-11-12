@@ -11,8 +11,7 @@ const collectionSchema = new mongoose.Schema ({
         default: ""
     },
     songList: {
-        type: [String],
-        ref: "songId"
+        type: [String]
     },
     likes: {
         type: Number,

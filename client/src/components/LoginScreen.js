@@ -151,7 +151,7 @@ class LoginScreen extends React.Component{
                             <button style={{marginTop:'20px', boxShadow: '3px 3px'}} onClick={e => this.handleLogin(e)}>Log-In</button>
                         </div>
                         {}
-                        <Link to={this.props.match.url + '/signup'}>
+                        <Link to={'/login/signup'}>
                             <button className="btn btn-link" style={{marginTop: '10px'}} data-toggle='modal' data-target='#registrationModal'>Or create an account</button><br/>
                         </Link>
                         <Link to="/main" style={{marginTop: '20px', boxShadow: '3px 3px', 
@@ -180,7 +180,7 @@ class LoginScreen extends React.Component{
                 </div>
 
                 {/* Modal */}
-                <Route path={this.props.match.url + '/signup'} render={() => { 
+                <Route path={'/login/signup'} render={() => { 
                     return(
                     <div id="registrationModal" style={{position: 'relative', transform: 'translate(0, -120%)'}}>
                         <div className="modal-dialog">
