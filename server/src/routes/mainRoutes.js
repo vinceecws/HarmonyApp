@@ -50,7 +50,7 @@ mainRouter.post('/collection/updateCollection/:id', async (req, res) => {
 
 mainRouter.post('/session/newSession', async (req, res) => {
     let newSession = 
-        await mongooseQuery.createSession(req.body.hostId, 
+        await mongooseQuery.createSession(req.body.hostId, req.body.hostName,
             req.body.name, req.body.startTime, req.body.endTime, 0, 0, 
             req.body.live, req.body.initialQueue, req.actionLog)
             .catch(err => {res.sendStatus(404);});
@@ -72,12 +72,49 @@ mainRouter.post('/session/endSession/:id', async (req, res) => {
 
 mainRouter.post('/search/createCollection/:name', async (req, res) => {
 	let newCollection = await mongooseQuery.createCollection({name: req.params.name})
-									.catch(err => res.send(err));
+									.catch(err => res.sendStatus(404));
     res.json(newCollection);
 });
 
-mainRouter.post('/search/query=:search', async (req, res) => {
-	
+mainRouter.get('/search/query=:search', async (req, res) => {
+	let sessionMatches = await mongooseQuery.getSessionsFromQuery(req.params.search)
+									.catch(err => res.sendStatus(404));
+	let collectionMatches = await mongooseQuery.getCollectionsFromQuery(req.params.search)
+									.catch(err => res.sendStatus(404));	
+	let userMatches = await mongooseQuery.getUsersFromQuery(req.params.search)
+									.catch(err => res.sendStatus(404));	
+	if (req.user == null){
+		res.json({session: sessionMatches, 
+					collections: collectionMatches,
+					users: userMathces});
+	}
+	else {
+		let thisUser = await mongooseQuery.getUser({'_id': req.user})
+							.catch(err => {console.log('User not found')});
+		let filteredSessions = [];
+		let filteredCollections = [];
+		let filteredUsers = [];
+
+		for (let s of sessionMatches){
+			if (s.hostName !== thisUser.local.username){
+				filteredSessions.push(s);
+			}
+		}
+		for (let p of thisUser.playlists){
+			for (let c of collectionMatches){
+				if (c._id !== p._id){
+					filteredCollections.push(c);
+				}
+			}
+		}
+		for (let u of userMatches){
+			if (u.local.username !== thisUser.local.username){
+				filteredUsers.push(u);
+			} 
+		}
+		res.json({sessions: filteredSessions, collections: filteredCollections,
+					users: filteredUsers});
+	}				
 });
 
 

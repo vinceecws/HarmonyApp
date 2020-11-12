@@ -88,9 +88,10 @@ exports.deleteCollection = async function(collectionObject){
 
 //deleteCollection({name: 'the bigger crunch'});
 
-exports.createSession = async function(hostId, name, startTime, endTime, streams, likes, live, initialQueue, actionLog){
+exports.createSession = async function(hostId, hostName, name, startTime, endTime, streams, likes, live, initialQueue, actionLog){
   let session = await new Session({
     hostid, 
+    hostName,
     name, 
     startTime, 
     endTime, 
@@ -149,26 +150,26 @@ exports.deleteSession = async function(sessionObject){
 }
 
 
-
 exports.getColletionsFromQuery = async function(query){
   console.log('Get collections from search query');
   let collections = await connection.then(async () => {
-    return await Collection.find({name: query}).sort({likes: 1})
-                      .catch(err => console.log(err));
-  });
-  db.close();
+    return await Collection.find({name: query}).sort({likes: 1});
+  }).catch(err => console.log(err));
   return collections;
 }
 
 exports.getUsersFromQuery = async function(query){
   let users = await connection.then(async () => {
-    return await User.find({local: {username: query}}).catch(err => console.log(err));
-  })
-  db.close();
+    return await User.find({'local.username': query});
+  }).catch(err => console.log(err));
   return users;
 }
 
 exports.getSessionsFromQuery = async function(query){
+  let sessions = await connection.then(async () => {
+    return await Session.find({name: query});
+  }).catch(error => {console.log(error)});
+  return sessions;
 }
 
 //async function 
