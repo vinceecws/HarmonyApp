@@ -56,6 +56,7 @@ class ProfileScreen extends React.Component{
 					profileUser: data.data.user,
 					loading: false
 				})
+				console.log(this.profileUser);
 			}
 		}).bind(this))
 	}

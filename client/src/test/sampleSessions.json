@@ -159,6 +159,133 @@
         "likes": 6591,
         "live": true,
         "initialQueue": [
+           
+            {
+                "title": "Com Truise - False Ascendancy",
+                "artist": "ghostly",
+                "album": "False Ascendancy",
+                "embedLink": "https://soundcloud.com/ghostly/com-truise-false-ascendancy",
+                "imageLink": "",
+                "likes": 36
+            },
+            {
+                "title": "Play Odds",
+                "artist": "Golin",
+                "album": "Play Odds",
+                "embedLink": "https://soundcloud.com/5_lin/play-odds",
+                "imageLink": "",
+                "likes": 6
+            },
+            {
+                "title": "Logic1000 - Blossom",
+                "artist": "Logic1000",
+                "album": "",
+                "embedLink": "https://soundcloud.com/logic1000/logic1000-blossom-1",
+                "imageLink": "",
+                "likes": 73
+            },
+            {
+                "title": "BICEP | APRICOTS",
+                "artist": "BICEP",
+                "album": "",
+                "embedLink": "https://soundcloud.com/feelmybicep/bicep-apricots",
+                "imageLink": "",
+                "likes": 44
+            },
+             {
+                "title": "Feel For It",
+                "artist": "MoMA Ready",
+                "album": "Feel For It",
+                "embedLink": "https://soundcloud.com/moma_ready/feel-for-it",
+                "imageLink": "",
+                "likes": 23
+            },
+            {
+                "title": "För alla namn vi inte får använda (Europa Europa Theme)",
+                "artist": "The Knife",
+                "album": "",
+                "embedLink": "https://soundcloud.com/theknife/foer-alla-namn-vi-inte-far",
+                "imageLink": "",
+                "likes": 110
+            },
+            {
+                "title": "Menestra",
+                "artist": "Dengue Dengue Dengue",
+                "album": "Menestra",
+                "embedLink": "https://soundcloud.com/dengue/menestra",
+                "imageLink": "",
+                "likes": 101
+            }
+        ],
+        "actionLog": [
+            {
+                "type": "message",
+                "object": {
+                    "username": "poods",
+                    "message": "snake gang pew pew ^_________^",
+                    "timestamp": "1999"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "N00bNooBnoobs",
+                    "message": "big whale?",
+                    "timestamp": "2500"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "ramenKing",
+                    "message": "^________________________________^",
+                    "timestamp": "2510"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "contourYooFace",
+                    "message": "now small whale",
+                    "timestamp": "2555"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "Liz",
+                    "message": "^____________^",
+                    "timestamp": "2559"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "hopefulundertones",
+                    "message": "lmao",
+                    "timestamp": "5006"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "localanastasia",
+                    "message": "host pls add some more Tiesto songs to the queue",
+                    "timestamp": "7972"
+                }
+            }
+        ]
+    },
+    {
+        "hostId": "203jdinmms999Jma",
+        "hostName": "MOMA",
+        "name": "The HOTTEST House Music",
+        "startTime": 1900,
+        "endTime": 9900,
+        "streams": 1033,
+        "likes": 452,
+        "live": true,
+        "initialQueue": [
             {
                 "title": "Feel For It",
                 "artist": "MoMA Ready",
@@ -300,18 +427,6 @@
         ]
     },
     {
-        "hostId": "203jdinmms999Jma",
-        "hostName": "MOMA",
-        "name": "The HOTTEST House Music",
-        "startTime": 1900,
-        "endTime": 9900,
-        "streams": 1033,
-        "likes": 452,
-        "live": true,
-        "initialQueue": [],
-        "actionLog": []
-    },
-    {
         "hostId": "d09wjed01jndwn",
         "hostName": "local_anastasia",
         "name": "Indie music insipired by TØP",
@@ -320,8 +435,114 @@
         "streams": 90939,
         "likes": 28593,
         "live": true,
-        "initialQueue": [],
-        "actionLog": []
+        "initialQueue": [
+            {
+                "title": "Feel For It",
+                "artist": "MoMA Ready",
+                "album": "Feel For It",
+                "embedLink": "https://soundcloud.com/moma_ready/feel-for-it",
+                "imageLink": "",
+                "likes": 23
+            },
+            {
+                "title": "Logic1000 - Blossom",
+                "artist": "Logic1000",
+                "album": "",
+                "embedLink": "https://soundcloud.com/logic1000/logic1000-blossom-1",
+                "imageLink": "",
+                "likes": 73
+            },
+            {
+                "title": "BICEP | APRICOTS",
+                "artist": "BICEP",
+                "album": "",
+                "embedLink": "https://soundcloud.com/feelmybicep/bicep-apricots",
+                "imageLink": "",
+                "likes": 44
+            },
+            {
+                "title": "Heathered Pearls - Salvaged Copper (feat. Terrence Dixon)",
+                "artist": "ghostly",
+                "album": "",
+                "embedLink": "https://soundcloud.com/ghostly/heathered-pearls-salvaged-copper",
+                "imageLink": "",
+                "likes": 75
+            },
+            {
+                "title": "Glitch Bitch",
+                "artist": "Loraine James",
+                "album": "Glitch Bitch",
+                "embedLink": "https://soundcloud.com/lorainejames-music/glitch-bitch-1",
+                "imageLink": "",
+                "likes": 90
+            },
+            {
+                "title": "Siren",
+                "artist": "Tourist",
+                "album": "Siren",
+                "embedLink": "https://soundcloud.com/touristmusic/siren",
+                "imageLink": "",
+                "likes": 19
+            }
+        ],
+        "actionLog": [
+            {
+                "type": "message",
+                "object": {
+                    "username": "poods",
+                    "message": "snake gang pew pew ^_________^",
+                    "timestamp": "1999"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "N00bNooBnoobs",
+                    "message": "big whale?",
+                    "timestamp": "2500"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "ramenKing",
+                    "message": "^________________________________^",
+                    "timestamp": "2510"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "contourYooFace",
+                    "message": "now small whale",
+                    "timestamp": "2555"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "Liz",
+                    "message": "^____________^",
+                    "timestamp": "2559"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "hopefulundertones",
+                    "message": "lmao",
+                    "timestamp": "5006"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "localanastasia",
+                    "message": "host pls add some more Tiesto songs to the queue",
+                    "timestamp": "7972"
+                }
+            }
+        ]
     },
     {
         "hostId": "d0192390j3rn2j",
@@ -332,8 +553,146 @@
         "streams": 13499,
         "likes": 6061,
         "live": true,
-        "initialQueue": [],
-        "actionLog": []
+        "initialQueue": [
+            {
+                "title": "Feel For It",
+                "artist": "MoMA Ready",
+                "album": "Feel For It",
+                "embedLink": "https://soundcloud.com/moma_ready/feel-for-it",
+                "imageLink": "",
+                "likes": 23
+            },
+            {
+                "title": "För alla namn vi inte får använda (Europa Europa Theme)",
+                "artist": "The Knife",
+                "album": "",
+                "embedLink": "https://soundcloud.com/theknife/foer-alla-namn-vi-inte-far",
+                "imageLink": "",
+                "likes": 110
+            },
+            {
+                "title": "Menestra",
+                "artist": "Dengue Dengue Dengue",
+                "album": "Menestra",
+                "embedLink": "https://soundcloud.com/dengue/menestra",
+                "imageLink": "",
+                "likes": 101
+            },
+            {
+                "title": "Com Truise - False Ascendancy",
+                "artist": "ghostly",
+                "album": "False Ascendancy",
+                "embedLink": "https://soundcloud.com/ghostly/com-truise-false-ascendancy",
+                "imageLink": "",
+                "likes": 36
+            },
+            {
+                "title": "Play Odds",
+                "artist": "Golin",
+                "album": "Play Odds",
+                "embedLink": "https://soundcloud.com/5_lin/play-odds",
+                "imageLink": "",
+                "likes": 6
+            },
+            {
+                "title": "Logic1000 - Blossom",
+                "artist": "Logic1000",
+                "album": "",
+                "embedLink": "https://soundcloud.com/logic1000/logic1000-blossom-1",
+                "imageLink": "",
+                "likes": 73
+            },
+            {
+                "title": "BICEP | APRICOTS",
+                "artist": "BICEP",
+                "album": "",
+                "embedLink": "https://soundcloud.com/feelmybicep/bicep-apricots",
+                "imageLink": "",
+                "likes": 44
+            },
+            {
+                "title": "Heathered Pearls - Salvaged Copper (feat. Terrence Dixon)",
+                "artist": "ghostly",
+                "album": "",
+                "embedLink": "https://soundcloud.com/ghostly/heathered-pearls-salvaged-copper",
+                "imageLink": "",
+                "likes": 75
+            },
+            {
+                "title": "Glitch Bitch",
+                "artist": "Loraine James",
+                "album": "Glitch Bitch",
+                "embedLink": "https://soundcloud.com/lorainejames-music/glitch-bitch-1",
+                "imageLink": "",
+                "likes": 90
+            },
+            {
+                "title": "Siren",
+                "artist": "Tourist",
+                "album": "Siren",
+                "embedLink": "https://soundcloud.com/touristmusic/siren",
+                "imageLink": "",
+                "likes": 19
+            }
+        ],
+        "actionLog": [
+            {
+                "type": "message",
+                "object": {
+                    "username": "poods",
+                    "message": "snake gang pew pew ^_________^",
+                    "timestamp": "1999"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "N00bNooBnoobs",
+                    "message": "big whale?",
+                    "timestamp": "2500"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "ramenKing",
+                    "message": "^________________________________^",
+                    "timestamp": "2510"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "contourYooFace",
+                    "message": "now small whale",
+                    "timestamp": "2555"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "Liz",
+                    "message": "^____________^",
+                    "timestamp": "2559"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "hopefulundertones",
+                    "message": "lmao",
+                    "timestamp": "5006"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "localanastasia",
+                    "message": "host pls add some more Tiesto songs to the queue",
+                    "timestamp": "7972"
+                }
+            }
+        ]
     },
     {
         "hostId": "d23jd902j3dn01io",
@@ -344,8 +703,114 @@
         "streams": 37890,
         "likes": 5692,
         "live": true,
-        "initialQueue": [],
-        "actionLog": []
+        "initialQueue": [
+            {
+                "title": "Glitch Bitch",
+                "artist": "Loraine James",
+                "album": "Glitch Bitch",
+                "embedLink": "https://soundcloud.com/lorainejames-music/glitch-bitch-1",
+                "imageLink": "",
+                "likes": 90
+            },
+            {
+                "title": "Siren",
+                "artist": "Tourist",
+                "album": "Siren",
+                "embedLink": "https://soundcloud.com/touristmusic/siren",
+                "imageLink": "",
+                "likes": 19
+            },
+            {
+                "title": "Play Odds",
+                "artist": "Golin",
+                "album": "Play Odds",
+                "embedLink": "https://soundcloud.com/5_lin/play-odds",
+                "imageLink": "",
+                "likes": 6
+            },
+            {
+                "title": "Logic1000 - Blossom",
+                "artist": "Logic1000",
+                "album": "",
+                "embedLink": "https://soundcloud.com/logic1000/logic1000-blossom-1",
+                "imageLink": "",
+                "likes": 73
+            },
+            {
+                "title": "BICEP | APRICOTS",
+                "artist": "BICEP",
+                "album": "",
+                "embedLink": "https://soundcloud.com/feelmybicep/bicep-apricots",
+                "imageLink": "",
+                "likes": 44
+            },
+            {
+                "title": "Heathered Pearls - Salvaged Copper (feat. Terrence Dixon)",
+                "artist": "ghostly",
+                "album": "",
+                "embedLink": "https://soundcloud.com/ghostly/heathered-pearls-salvaged-copper",
+                "imageLink": "",
+                "likes": 75
+            }
+        ],
+        "actionLog": [
+            {
+                "type": "message",
+                "object": {
+                    "username": "poods",
+                    "message": "snake gang pew pew ^_________^",
+                    "timestamp": "1999"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "N00bNooBnoobs",
+                    "message": "big whale?",
+                    "timestamp": "2500"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "ramenKing",
+                    "message": "^________________________________^",
+                    "timestamp": "2510"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "contourYooFace",
+                    "message": "now small whale",
+                    "timestamp": "2555"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "Liz",
+                    "message": "^____________^",
+                    "timestamp": "2559"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "hopefulundertones",
+                    "message": "lmao",
+                    "timestamp": "5006"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "localanastasia",
+                    "message": "host pls add some more Tiesto songs to the queue",
+                    "timestamp": "7972"
+                }
+            }
+        ]
     },
     {
         "hostId": "d2390dionwocn",
@@ -356,8 +821,122 @@
         "streams": 5442,
         "likes": 3090,
         "live": true,
-        "initialQueue": [],
-        "actionLog": []
+        "initialQueue": [
+            {
+                "title": "Feel For It",
+                "artist": "MoMA Ready",
+                "album": "Feel For It",
+                "embedLink": "https://soundcloud.com/moma_ready/feel-for-it",
+                "imageLink": "",
+                "likes": 23
+            },
+            {
+                "title": "För alla namn vi inte får använda (Europa Europa Theme)",
+                "artist": "The Knife",
+                "album": "",
+                "embedLink": "https://soundcloud.com/theknife/foer-alla-namn-vi-inte-far",
+                "imageLink": "",
+                "likes": 110
+            },
+            {
+                "title": "Logic1000 - Blossom",
+                "artist": "Logic1000",
+                "album": "",
+                "embedLink": "https://soundcloud.com/logic1000/logic1000-blossom-1",
+                "imageLink": "",
+                "likes": 73
+            },
+            {
+                "title": "BICEP | APRICOTS",
+                "artist": "BICEP",
+                "album": "",
+                "embedLink": "https://soundcloud.com/feelmybicep/bicep-apricots",
+                "imageLink": "",
+                "likes": 44
+            },
+            {
+                "title": "Heathered Pearls - Salvaged Copper (feat. Terrence Dixon)",
+                "artist": "ghostly",
+                "album": "",
+                "embedLink": "https://soundcloud.com/ghostly/heathered-pearls-salvaged-copper",
+                "imageLink": "",
+                "likes": 75
+            },
+            {
+                "title": "Glitch Bitch",
+                "artist": "Loraine James",
+                "album": "Glitch Bitch",
+                "embedLink": "https://soundcloud.com/lorainejames-music/glitch-bitch-1",
+                "imageLink": "",
+                "likes": 90
+            },
+            {
+                "title": "Siren",
+                "artist": "Tourist",
+                "album": "Siren",
+                "embedLink": "https://soundcloud.com/touristmusic/siren",
+                "imageLink": "",
+                "likes": 19
+            }
+        ],
+        "actionLog": [
+            {
+                "type": "message",
+                "object": {
+                    "username": "poods",
+                    "message": "snake gang pew pew ^_________^",
+                    "timestamp": "1999"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "N00bNooBnoobs",
+                    "message": "big whale?",
+                    "timestamp": "2500"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "ramenKing",
+                    "message": "^________________________________^",
+                    "timestamp": "2510"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "contourYooFace",
+                    "message": "now small whale",
+                    "timestamp": "2555"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "Liz",
+                    "message": "^____________^",
+                    "timestamp": "2559"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "hopefulundertones",
+                    "message": "lmao",
+                    "timestamp": "5006"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "localanastasia",
+                    "message": "host pls add some more Tiesto songs to the queue",
+                    "timestamp": "7972"
+                }
+            }
+        ]
     },
     {
         "hostId": "0923jd3nwcjd920",
@@ -368,8 +947,122 @@
         "streams": 101693,
         "likes": 45021,
         "live": true,
-        "initialQueue": [],
-        "actionLog": []
+        "initialQueue": [
+            {
+                "title": "Feel For It",
+                "artist": "MoMA Ready",
+                "album": "Feel For It",
+                "embedLink": "https://soundcloud.com/moma_ready/feel-for-it",
+                "imageLink": "",
+                "likes": 23
+            },
+            {
+                "title": "För alla namn vi inte får använda (Europa Europa Theme)",
+                "artist": "The Knife",
+                "album": "",
+                "embedLink": "https://soundcloud.com/theknife/foer-alla-namn-vi-inte-far",
+                "imageLink": "",
+                "likes": 110
+            },
+            {
+                "title": "Com Truise - False Ascendancy",
+                "artist": "ghostly",
+                "album": "False Ascendancy",
+                "embedLink": "https://soundcloud.com/ghostly/com-truise-false-ascendancy",
+                "imageLink": "",
+                "likes": 36
+            },
+            {
+                "title": "Play Odds",
+                "artist": "Golin",
+                "album": "Play Odds",
+                "embedLink": "https://soundcloud.com/5_lin/play-odds",
+                "imageLink": "",
+                "likes": 6
+            },
+            {
+                "title": "Heathered Pearls - Salvaged Copper (feat. Terrence Dixon)",
+                "artist": "ghostly",
+                "album": "",
+                "embedLink": "https://soundcloud.com/ghostly/heathered-pearls-salvaged-copper",
+                "imageLink": "",
+                "likes": 75
+            },
+            {
+                "title": "Glitch Bitch",
+                "artist": "Loraine James",
+                "album": "Glitch Bitch",
+                "embedLink": "https://soundcloud.com/lorainejames-music/glitch-bitch-1",
+                "imageLink": "",
+                "likes": 90
+            },
+            {
+                "title": "Siren",
+                "artist": "Tourist",
+                "album": "Siren",
+                "embedLink": "https://soundcloud.com/touristmusic/siren",
+                "imageLink": "",
+                "likes": 19
+            }
+        ],
+        "actionLog": [
+            {
+                "type": "message",
+                "object": {
+                    "username": "poods",
+                    "message": "snake gang pew pew ^_________^",
+                    "timestamp": "1999"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "N00bNooBnoobs",
+                    "message": "big whale?",
+                    "timestamp": "2500"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "ramenKing",
+                    "message": "^________________________________^",
+                    "timestamp": "2510"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "contourYooFace",
+                    "message": "now small whale",
+                    "timestamp": "2555"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "Liz",
+                    "message": "^____________^",
+                    "timestamp": "2559"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "hopefulundertones",
+                    "message": "lmao",
+                    "timestamp": "5006"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "localanastasia",
+                    "message": "host pls add some more Tiesto songs to the queue",
+                    "timestamp": "7972"
+                }
+            }
+        ]
     },
     {
         "hostId": "238hjd92jiodncwoie",
@@ -380,8 +1073,106 @@
         "streams": 8481,
         "likes": 3200,
         "live": true,
-        "initialQueue": [],
-        "actionLog": []
+        "initialQueue": [
+            {
+                "title": "Logic1000 - Blossom",
+                "artist": "Logic1000",
+                "album": "",
+                "embedLink": "https://soundcloud.com/logic1000/logic1000-blossom-1",
+                "imageLink": "",
+                "likes": 73
+            },
+            {
+                "title": "BICEP | APRICOTS",
+                "artist": "BICEP",
+                "album": "",
+                "embedLink": "https://soundcloud.com/feelmybicep/bicep-apricots",
+                "imageLink": "",
+                "likes": 44
+            },
+            {
+                "title": "Heathered Pearls - Salvaged Copper (feat. Terrence Dixon)",
+                "artist": "ghostly",
+                "album": "",
+                "embedLink": "https://soundcloud.com/ghostly/heathered-pearls-salvaged-copper",
+                "imageLink": "",
+                "likes": 75
+            },
+            {
+                "title": "Glitch Bitch",
+                "artist": "Loraine James",
+                "album": "Glitch Bitch",
+                "embedLink": "https://soundcloud.com/lorainejames-music/glitch-bitch-1",
+                "imageLink": "",
+                "likes": 90
+            },
+            {
+                "title": "Siren",
+                "artist": "Tourist",
+                "album": "Siren",
+                "embedLink": "https://soundcloud.com/touristmusic/siren",
+                "imageLink": "",
+                "likes": 19
+            }
+        ],
+        "actionLog": [
+            {
+                "type": "message",
+                "object": {
+                    "username": "poods",
+                    "message": "snake gang pew pew ^_________^",
+                    "timestamp": "1999"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "N00bNooBnoobs",
+                    "message": "big whale?",
+                    "timestamp": "2500"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "ramenKing",
+                    "message": "^________________________________^",
+                    "timestamp": "2510"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "contourYooFace",
+                    "message": "now small whale",
+                    "timestamp": "2555"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "Liz",
+                    "message": "^____________^",
+                    "timestamp": "2559"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "hopefulundertones",
+                    "message": "lmao",
+                    "timestamp": "5006"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "localanastasia",
+                    "message": "host pls add some more Tiesto songs to the queue",
+                    "timestamp": "7972"
+                }
+            }
+        ]
     },
     {
         "hostId": "238dh203ndijnw",
@@ -392,8 +1183,107 @@
         "streams": 29821,
         "likes": 8899,
         "live": true,
-        "initialQueue": [],
-        "actionLog": []
+        "initialQueue": [
+            {
+                "title": "Feel For It",
+                "artist": "MoMA Ready",
+                "album": "Feel For It",
+                "embedLink": "https://soundcloud.com/moma_ready/feel-for-it",
+                "imageLink": "",
+                "likes": 23
+            },
+            {
+                "title": "För alla namn vi inte får använda (Europa Europa Theme)",
+                "artist": "The Knife",
+                "album": "",
+                "embedLink": "https://soundcloud.com/theknife/foer-alla-namn-vi-inte-far",
+                "imageLink": "",
+                "likes": 110
+            },
+            {
+                "title": "Menestra",
+                "artist": "Dengue Dengue Dengue",
+                "album": "Menestra",
+                "embedLink": "https://soundcloud.com/dengue/menestra",
+                "imageLink": "",
+                "likes": 101
+            },
+            {
+                "title": "Com Truise - False Ascendancy",
+                "artist": "ghostly",
+                "album": "False Ascendancy",
+                "embedLink": "https://soundcloud.com/ghostly/com-truise-false-ascendancy",
+                "imageLink": "",
+                "likes": 36
+            },
+            {
+                "title": "Play Odds",
+                "artist": "Golin",
+                "album": "Play Odds",
+                "embedLink": "https://soundcloud.com/5_lin/play-odds",
+                "imageLink": "",
+                "likes": 6
+            }
+            
+        ],
+        "actionLog": [
+            {
+                "type": "message",
+                "object": {
+                    "username": "poods",
+                    "message": "snake gang pew pew ^_________^",
+                    "timestamp": "1999"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "N00bNooBnoobs",
+                    "message": "big whale?",
+                    "timestamp": "2500"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "ramenKing",
+                    "message": "^________________________________^",
+                    "timestamp": "2510"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "contourYooFace",
+                    "message": "now small whale",
+                    "timestamp": "2555"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "Liz",
+                    "message": "^____________^",
+                    "timestamp": "2559"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "hopefulundertones",
+                    "message": "lmao",
+                    "timestamp": "5006"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "localanastasia",
+                    "message": "host pls add some more Tiesto songs to the queue",
+                    "timestamp": "7972"
+                }
+            }
+        ]
     },
     {
         "hostId": "2093j09j409n0",
@@ -404,7 +1294,146 @@
         "streams": 32489,
         "likes": 10091,
         "live": true,
-        "initialQueue": [],
-        "actionLog": []
+        "initialQueue": [
+            {
+                "title": "Feel For It",
+                "artist": "MoMA Ready",
+                "album": "Feel For It",
+                "embedLink": "https://soundcloud.com/moma_ready/feel-for-it",
+                "imageLink": "",
+                "likes": 23
+            },
+            {
+                "title": "För alla namn vi inte får använda (Europa Europa Theme)",
+                "artist": "The Knife",
+                "album": "",
+                "embedLink": "https://soundcloud.com/theknife/foer-alla-namn-vi-inte-far",
+                "imageLink": "",
+                "likes": 110
+            },
+            {
+                "title": "Menestra",
+                "artist": "Dengue Dengue Dengue",
+                "album": "Menestra",
+                "embedLink": "https://soundcloud.com/dengue/menestra",
+                "imageLink": "",
+                "likes": 101
+            },
+             {
+                "title": "BICEP | APRICOTS",
+                "artist": "BICEP",
+                "album": "",
+                "embedLink": "https://soundcloud.com/feelmybicep/bicep-apricots",
+                "imageLink": "",
+                "likes": 44
+            },
+            {
+                "title": "Heathered Pearls - Salvaged Copper (feat. Terrence Dixon)",
+                "artist": "ghostly",
+                "album": "",
+                "embedLink": "https://soundcloud.com/ghostly/heathered-pearls-salvaged-copper",
+                "imageLink": "",
+                "likes": 75
+            },
+            {
+                "title": "Glitch Bitch",
+                "artist": "Loraine James",
+                "album": "Glitch Bitch",
+                "embedLink": "https://soundcloud.com/lorainejames-music/glitch-bitch-1",
+                "imageLink": "",
+                "likes": 90
+            },
+            {
+                "title": "Com Truise - False Ascendancy",
+                "artist": "ghostly",
+                "album": "False Ascendancy",
+                "embedLink": "https://soundcloud.com/ghostly/com-truise-false-ascendancy",
+                "imageLink": "",
+                "likes": 36
+            },
+            {
+                "title": "Play Odds",
+                "artist": "Golin",
+                "album": "Play Odds",
+                "embedLink": "https://soundcloud.com/5_lin/play-odds",
+                "imageLink": "",
+                "likes": 6
+            },
+            {
+                "title": "Logic1000 - Blossom",
+                "artist": "Logic1000",
+                "album": "",
+                "embedLink": "https://soundcloud.com/logic1000/logic1000-blossom-1",
+                "imageLink": "",
+                "likes": 73
+            },
+           
+            {
+                "title": "Siren",
+                "artist": "Tourist",
+                "album": "Siren",
+                "embedLink": "https://soundcloud.com/touristmusic/siren",
+                "imageLink": "",
+                "likes": 19
+            }
+        ],
+        "actionLog": [
+            {
+                "type": "message",
+                "object": {
+                    "username": "poods",
+                    "message": "snake gang pew pew ^_________^",
+                    "timestamp": "1999"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "N00bNooBnoobs",
+                    "message": "big whale?",
+                    "timestamp": "2500"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "ramenKing",
+                    "message": "^________________________________^",
+                    "timestamp": "2510"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "contourYooFace",
+                    "message": "now small whale",
+                    "timestamp": "2555"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "Liz",
+                    "message": "^____________^",
+                    "timestamp": "2559"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "hopefulundertones",
+                    "message": "lmao",
+                    "timestamp": "5006"
+                }
+            },
+            {
+                "type": "message",
+                "object": {
+                    "username": "localanastasia",
+                    "message": "host pls add some more Tiesto songs to the queue",
+                    "timestamp": "7972"
+                }
+            }
+        ]
     }
 ]

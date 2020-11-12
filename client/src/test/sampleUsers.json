@@ -1,8 +1,13 @@
 [
     {
-        "name": "Vincenzo",
-        "Id": "w0nm98DSNwnadJh7aoj",
-        "password": "999vincey000",
+        "local":[
+            {
+               "name": "Vincenzo",
+               "password": "999vincey000" 
+            }
+            
+        ],
+        "google":[{}],
         "email": "vince-nZ-0@noo.com",
         "dob": "03/13/1997",
         "biography": "guy in space",
@@ -327,9 +332,14 @@
         ]
     },
     {
-        "name": "ChilledCow",
-        "Id": "9sad8qweq8as9dasd9",
-        "password": "coweatsgrass",
+        "local":[
+            {
+               "name": "ChilledCow",
+               "password": "coweatsgrass"
+            }
+            
+        ],
+        "google":[{}],
         "email": "chilled@cow.com",
         "dob": "01/01/2001",
         "biography": "chilled cow eats grass produces milk for cereal for breakfast for kids relax with chill lo-fi music",
