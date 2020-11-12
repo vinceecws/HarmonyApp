@@ -8,7 +8,7 @@ class HomeScreen extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            loading: true
+            loading: false
         }
         this.getHomeInfo();
     }
@@ -35,7 +35,7 @@ class HomeScreen extends React.Component {
       
       //return this.props.axiosWrapper.axiosGet('/main/home', this.handleLoad);
     }
-
+    /*
     handleLoad = (status, data) =>{
         if (status === 200){
             console.log(status);
@@ -45,7 +45,7 @@ class HomeScreen extends React.Component {
             });
         }
     }
-  
+    */
     render() {
         let renderContainer = false
         

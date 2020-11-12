@@ -3,6 +3,7 @@ import axios from 'axios'
 import AxiosWrapper from '../components/axiosWrapper/axiosWrapper.js'
 axios.defaults.baseURL = 'http://localhost:4000'
 const _ = require('lodash');
+
 let sessions = require('./sampleSessions.json');
 let collections = require('./sampleCollections.json')
 let songs = require('./sampleSongs.json')
@@ -82,6 +83,7 @@ let sampleDatabase = {
         return user
     }), "user")
 }
+
 
 
 /*

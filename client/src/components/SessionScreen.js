@@ -17,7 +17,7 @@ class SessionScreen extends React.Component {
 			//(AXIOS)replace loading:true
 			loading:true,
 			error: false,
-			id:this.session._id,
+			id: this.session._id,
 			hostId:this.session.hostId,
 			name : this.session.name ,
 			startTime : this.session.startTime ,
@@ -66,7 +66,6 @@ class SessionScreen extends React.Component {
 	//replace icon with the associated user profile image
     render(){
     	let renderContainer = false
-
     	if(!this.state.loading && !this.state.error){
     		renderContainer = 
     			<div style={{fontFamily: 'BalsamiqSans', marginLeft:'15px', height:'100%'}}>

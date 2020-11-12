@@ -121,7 +121,6 @@ exports.getSessions = async function(){
   let sessions = await connection.then(async () => {
     return await Session.find({}).sort({viewCount:1});
   }).catch(error => {console.log(error)});
-  
   return sessions;
 }
 
