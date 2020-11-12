@@ -1,7 +1,7 @@
 import React from 'react';
 import Spinner from './Spinner';
 import { icon_profile_image, icon_like, icon_music_1, plus_button } from '../graphics';
-import { Modal } from 'react-bootstrap'
+import { Modal, Button } from 'react-bootstrap'
 
 class ProfileScreen extends React.Component{
 

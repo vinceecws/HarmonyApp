@@ -145,4 +145,12 @@ app.use('/main', mainRouter)
 
 db.on('error', console.error.bind(console, "Error connecting to MongoDB Atlas Database:"))
 
-app.listen(apiPort, () => console.log(`Server running on port ${apiPort}`))
+process.on('SIGTERM', terminateServer)
+process.on('SIGINT', terminateServer)
+
+var server = app.listen(apiPort, () => console.log(`Server running on port ${apiPort}`))
+
+function terminateServer() {
+    db.close()
+    server.close()
+}

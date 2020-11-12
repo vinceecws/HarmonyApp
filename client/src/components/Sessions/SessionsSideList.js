@@ -1,39 +1,61 @@
 import React from 'react';
 import SessionEntry from './sessionentry.js'
-import { genSampleSessions } from '../../test/genSamples.js'
+import Spinner from '../Spinner';
 
 
 class SessionSideList extends React.Component{
     
+    constructor(props) {
+        super(props)
+        this.state = {
+            loading: true,
+            sessions: []
+        }
+        this.fetchSessions()
+    }
 
     handleGoToItem = () => {
 
     }
     
     fetchSessions = () => {
-        return genSampleSessions()
+        this.props.axiosWrapper.axiosGet('/main/', (function(res, data) {
+            console.log(res)
+            console.log(data.data.sessions.sessions)
+            if (data.success) {
+                this.setState({
+                    loading: false,
+                    sessions: data.data.sessions.sessions
+                })
+            }
+        }).bind(this))
     }
 
 
 
     render(){
-        var sessionEntries = this.fetchSessions().sort((session1, session2) => session2.streams - session1.streams)
-                            .filter(session => session.live ? true : false)
-                            .map((session, ind) => <SessionEntry
-                    key={ind}
-                    id={session.id}
-                    hostId={session.hostId}
-                    hostName={session.hostName}
-                    name={session.name}
-                    image={session.image}
-                    streams={session.streams}
-                /> );
-    	return(
-    		<div className='list-group list-group-session'>
-    			{sessionEntries}
-        	</div>
-        );
-        
+        if (this.state.loading) {
+            return <Spinner/>
+        }
+        else {
+            return (
+                <div className='list-group list-group-session'>
+                    {
+                        this.state.sessions.sort((session1, session2) => session2.streams - session1.streams)
+                        .filter(session => session.live ? true : false)
+                        .map((session, ind) => <SessionEntry
+                            key={ind}
+                            id={session.id}
+                            hostId={session.hostId}
+                            hostName={session.hostName}
+                            name={session.name}
+                            image={session.image}
+                            streams={session.streams}
+                        /> )
+                    }
+                </div>
+            )
+        }
     }
 }
 

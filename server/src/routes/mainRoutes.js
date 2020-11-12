@@ -3,6 +3,19 @@ const mongooseQuery = require('../db');
 
 mainRouter = express.Router()
 
+mainRouter.get('/', async (req, res) => {
+    let sessions = await mongooseQuery.getSessions()
+        .catch(err => {res.sendStatus(404)});
+    return res.status(200).json({
+        message: "Fetch success",
+        statusCode: 200,
+        data: {
+            sessions: {sessions}
+        },
+        success: true
+    })
+})
+
 mainRouter.get('/profile/:id', async (req, res) => {
     let id = req.params.id;
     if (id == null){
@@ -27,11 +40,7 @@ mainRouter.get('/collection/:id', async (req, res) => {
 });
 
 mainRouter.get('/home', async (req, res) => {
-
-    let sessions = await mongooseQuery.getSessions()
-        .catch(err => {res.sendStatus(404)});
-    
-    res.json(sessions);
+    //Suggestions only
 });
 
 mainRouter.post('/collection/delete/:id', async (req, res) => {

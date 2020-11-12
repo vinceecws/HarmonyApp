@@ -33,7 +33,7 @@ class HomeScreen extends React.Component {
     }
     getHomeInfo = () => {
       
-      return this.props.axiosWrapper.axiosGet('/main/home', this.handleLoad);
+      //return this.props.axiosWrapper.axiosGet('/main/home', this.handleLoad);
     }
 
     handleLoad = (status, data) =>{

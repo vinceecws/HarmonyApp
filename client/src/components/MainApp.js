@@ -92,7 +92,7 @@ class MainApp extends React.Component {
                 <Row id="mid-container" style={{marginLeft:'0px'}}>
                     <Col id="side-list-container" sm={2} md={2} lg={2} xl={2}>
                     <header className='Session-Side-List'>
-                        <SessionSideList/>
+                        <SessionSideList axiosWrapper={this.props.axiosWrapper} />
                     </header>
                     </Col>
                     <Col id="screen-container">

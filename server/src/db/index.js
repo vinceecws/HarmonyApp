@@ -8,9 +8,7 @@ const sessionSchema = require('./Schema/sessionSchema.js')
 
 const User = mongoose.model('user', userSchema, 'user')
 const Collection = mongoose.model('collection', collectionSchema, 'collection')
-const Song = mongoose.model('song', songSchema, 'song')
 const Session = mongoose.model('session', sessionSchema, 'session')
-const mainrout = require('../routes/mainRoutes.js')
 const connection = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})
 const db = mongoose.connection
 
@@ -20,7 +18,7 @@ exports.createUserLocal = async function(name, password) { //User CRUD methods: 
     local: {name, password}
   }).save().catch(error => console.log(error));
   console.log('New user: ', newUser);
-  db.close();
+  
   return newUser;
 }
 
@@ -29,7 +27,7 @@ exports.createUserGoogle = async function(id, token, email, name){
     google: {id, token, email, name}
   }).save().catch(error => console.log(error));
   console.log('New user: ', newUser);
-  db.close();
+  
   return newUser;
 }
 
@@ -38,7 +36,7 @@ exports.getUser = async function(userObject) { //User CRUD methods: Retrieve
     return await User.findOne(userObject)
   }).catch(error => {console.log(error)});
   console.log(user);
-  db.close();
+  
   return user;
 }
 
@@ -49,7 +47,7 @@ exports.createCollection = async function(name, description, songList) {
     songList
   }).save().catch(error => console.log(error));;
   console.log('New collection: ', collection, collection.description);
-  db.close();
+  
   return collection;
 }
 
@@ -61,7 +59,7 @@ exports.getCollection = async function(collectionObject){
     return await Collection.findOne(collectionObject);
   }).catch(error => console.log(error));
   //console.log(collection);
-  db.close();
+  
   return collection;
 }
  
@@ -72,7 +70,7 @@ exports.updateCollection = async function(collectionObject, updateFieldsObject){
     return await Collection.findOneAndUpdate(collectionObject, updateFieldsObject, {new: true});
   }).catch(error => console.log(error));
   console.log(collection);
-  db.close();
+  
 }
 
 //updateCollection({'_id': '5faaa7f7f098b317d81e5585'}, {name: 'the bigger crunch'});
@@ -83,7 +81,7 @@ exports.deleteCollection = async function(collectionObject){
     return await Collection.findOneAndRemove(collectionObject);
   }).catch(error => console.log(error));
   console.log(collection);
-  db.close();
+  
 }
 
 //deleteCollection({name: 'the bigger crunch'});
@@ -101,7 +99,7 @@ exports.createSession = async function(hostId, name, startTime, endTime, streams
     actionLog
   }).save().catch(error => {console.log(error)});
   console.log(session);
-  db.close();
+  
   console.log('connection closed');
   return session;
 }
@@ -114,17 +112,15 @@ exports.getSession = async function(sessionObject){
     return await Session.findOne(sessionObject);
   }).catch(error => {console.log(error)});
   console.log(session);
-  db.close();
+  
   return session;
 }
 
 exports.getSessions = async function(){
-  console.log('Get sessions');
   let sessions = await connection.then(async () => {
     return await Session.find({}).sort({viewCount:1});
   }).catch(error => {console.log(error)});
-  console.log(sessions);
-  db.close();
+  
   return sessions;
 }
 
@@ -135,7 +131,7 @@ exports.updateSession = async function(sessionID, updateObject){
     return await Session.findOneAndUpdate({'_id': sessionID}, updateObject, {new: true});
   });
   console.log(session);
-  db.close();
+  
   return session;
 }
 
@@ -144,7 +140,7 @@ exports.deleteSession = async function(sessionObject){
   let session = await connection.then(async () => {
     return await Session.findOneAndRemove(sessionObject);
   }).catch(error => {console.log(error)});
-  db.close();
+  
   console.log(session);
 }
 
@@ -166,9 +162,7 @@ async function findSong(songObject) {
   return await Song.findOne(songObject)
 }
 
-module.exports = {
-  db: db,
-  User: User,
-  Collection: Collection,
-  Song: Song
-}
+exports.User = User
+exports.Collection = Collection
+exports.Session = Session
+exports.db = db
