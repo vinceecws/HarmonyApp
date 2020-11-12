@@ -64,7 +64,7 @@ mainRouter.get('/profile/:id', async (req, res) => {
     }
 });
 
-mainRouter.post('/profile/createCollection/:name', async (req, res) => {
+mainRouter.get('/profile/createCollection/:name', async (req, res) => {
 	let name = req.params.name;
 	if(name == null){
 		return res.status(404).json({
@@ -81,12 +81,12 @@ mainRouter.post('/profile/createCollection/:name', async (req, res) => {
         })
 	}
 	else{
-		let newCollection = await mongooseQuery.createCollection({name: req.params.name});
+		let newCollection = await mongooseQuery.createCollection(req.params.name);
 		return res.status(200).json({
 			message: "Post success",
 			statusCode: 200,
 			data: {
-				collection: newCollection
+				newCollection: newCollection
 			},
 			success:true
 		})

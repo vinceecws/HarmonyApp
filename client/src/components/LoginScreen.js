@@ -182,7 +182,7 @@ class LoginScreen extends React.Component{
                 {/* Modal */}
                 <Route path={'/login/signup'} render={() => { 
                     return(
-                        <div id="registrationModal" style={{position: 'relative', transform: 'translate(0, -120%)'}}>
+                    <div id="registrationModal" style={{position: 'relative', transform: 'translate(0, -120%)'}}>
                         <div className="modal-dialog">
                             {/* Modal Content */}
                             <div className="modal-content">
@@ -200,7 +200,7 @@ class LoginScreen extends React.Component{
                                     </div>
                                 </div>
                                 <div className="modal-footer">
-                                    <button type="button" className="btn btn-default" data-dismiss="modal" onClick={data => this.props.history.goBack()}>Close</button>
+                                    <button type="button" className="btn btn-default" data-dismiss="modal" onClick={data => this.handleCloseSignUpModal(data)}>Close</button>
                                 </div>
                             </div>
                         </div>
