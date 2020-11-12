@@ -122,11 +122,6 @@ mainRouter.get('/session/:id', async (req, res) => {
     else{
         let session = await mongooseQuery.getSession({'_id': req.params.id});
 
-        var newInitialQueue = JSON.parse(JSON.stringify(session.initialQueue))
-        var newActionLog = JSON.parse(JSON.stringify(session.actionLog))
-        session.initialQueue = {newInitialQueue}
-        session.newActionLog = {newActionLog}
-
         return res.status(200).json({
             message: "Fetch success",
             statusCode: 200,

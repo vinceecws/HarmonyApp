@@ -106,8 +106,7 @@ exports.getSession = async function(sessionObject){
   let session = await connection.then(async () => {
     return await Session.findOne(sessionObject);
   }).catch(error => {console.log(error)});
-  console.log("GETSESSION")
-  console.log(session)
+
   return session;
 }
 
