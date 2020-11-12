@@ -5,7 +5,7 @@ mainRouter = express.Router()
 
 mainRouter.get('/profile/:id', async (req, res) => {
     let id = req.params.id;
-    if (id === null){
+    if (id == null){
         res.status(404).send();
     }
     else{

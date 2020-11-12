@@ -139,7 +139,26 @@ exports.deleteSession = async function(sessionObject){
 
 
 
+exports.getColletionsFromQuery = async function(query){
+  console.log('Get collections from search query');
+  let collections = await connection.then(async () => {
+    return await Collection.find({name: query}).sort({likes: 1})
+                      .catch(err => console.log(err));
+  });
+  db.close();
+  return collections;
+}
 
+exports.getUsersFromQuery = async function(query){
+  let users = await connection.then(async () => {
+    return await User.find({local: {username: query}}).catch(err => console.log(err));
+  })
+  db.close();
+  return users;
+}
+
+exports.getSessionsFromQuery = async function(query){
+}
 
 //async function 
 
