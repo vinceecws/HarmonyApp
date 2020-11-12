@@ -1,6 +1,7 @@
 import React from 'react';
 import Spinner from './Spinner';
 import { icon_profile_image, icon_like, icon_music_1, plus_button } from '../graphics';
+import { Modal } from 'react-bootstrap'
 
 class ProfileScreen extends React.Component{
 
@@ -10,7 +11,9 @@ class ProfileScreen extends React.Component{
 		this.state = {
 			user: this.props.user,
 			loading: true,
-			profileUser: null
+			profileUser: null,
+			newCollectionName: "",
+			showCreateCollectionModal: false
 		}
 
 	}
@@ -20,7 +23,26 @@ class ProfileScreen extends React.Component{
 	}
 
 	handleCreateCollection = () => {
-		
+		//this.props.axiosPost('/collection/createCollection/')
+	}
+
+	handleNewCollectionNameChange = (e) => {
+		this.setState({
+			newCollectionName: e.target.value
+		})
+	}
+
+	showCreateCollectionModal = () => {
+		this.setState({
+			showCreateCollectionModal: true
+		})
+	}
+
+	hideCreateCollectionModal = () => {
+		this.setState({
+			newCollectionName: "",
+			showCreateCollectionModal: false
+		})
 	}
 
 	fetchUser = () => {
@@ -41,6 +63,21 @@ class ProfileScreen extends React.Component{
 		else {
 			return(
 				<div style={{fontFamily: 'BalsamiqSans', padding:'1em'}}>
+					<Modal show={this.state.showCreateCollectionModal}>
+						<Modal.Dialog>
+							<Modal.Header onHide={this.hideCreateCollectionModal} closeButton>
+								<Modal.Title>Create A New Playlist</Modal.Title>
+							</Modal.Header>
+							<Modal.Body>
+								<p>Playlist Name:</p>
+								<input value={this.state.newCollectionName} onChange={this.handleNewCollectionNameChange}></input>
+							</Modal.Body>
+							<Modal.Footer>
+								<Button variant="secondary" onClick={this.hideCreateCollectionModal}>Close</Button>
+								<Button variant="primary" onClick={this.handleCreateCollection}>Create</Button>
+							</Modal.Footer>
+						</Modal.Dialog>
+					</Modal>
 					<div id='profile-screen-top-container' className='row'>
 						<div className='col-sm-1.3' style={{display:'flex', padding:'1em'}}>
 							<div id='container' style={{position:'relative'}}>
@@ -114,7 +151,7 @@ class ProfileScreen extends React.Component{
 										}
 										{
 											this.state.user._id === this.state.profileUser._id ? //Viewing own profile
-											<div className='card profile-screen-category-item-card' onClick={this.handleCreateCollection}>
+											<div className='card profile-screen-category-item-card' onClick={this.showCreateCollectionModal}>
 												<img className="card-img-top profile-screen-category-item-card-image" src={plus_button}/>
 											</div> :
 											<div></div>
@@ -182,5 +219,4 @@ class ProfileScreen extends React.Component{
 		}
 	}
 }
-//<img id="user-profile-image" src={icon_song} className='song-entry-profile'/>
 export default ProfileScreen;
