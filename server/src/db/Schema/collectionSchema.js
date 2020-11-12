@@ -9,7 +9,7 @@ const collectionSchema = new mongoose.Schema ({
     ownerId:{
         type:String,
         default: ""
-    }
+    },
     description: {
         type: String,
         default: ""
