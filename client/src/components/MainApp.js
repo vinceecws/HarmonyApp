@@ -96,8 +96,8 @@ class MainApp extends React.Component {
                     </Col>
                     <Col id="screen-container">
                         <Switch>
-                            <Route path='/main/search' render={(props) => <SearchScreen {...props} auth={this.props.auth} history={this.props.user.history} queryVideos={this.queryVideos} playVideo={this.playVideo} queue={this.queue} axiosWrapper = {this.props.axiosWrapper}/>} />
-                            <Route path={['/main/session/:sessionId']} render={(props) => <SessionScreen {...props} auth={this.props.auth} key={props.match.params.sessionId} queue={this.queue} axiosWrapper = {this.props.axiosWrapper} />} />
+                            <Route path='/main/search' render={(props) => <SearchScreen {...props} auth={this.props.auth} user={this.props.user} queryVideos={this.queryVideos} playVideo={this.playVideo} queue={this.queue} axiosWrapper = {this.props.axiosWrapper}/>} />
+                            <Route path={['/main/session/:sessionId', '/main/session']} render={(props) => <SessionScreen {...props} auth={this.props.auth} key={props.match.params.sessionId} queue={this.queue} axiosWrapper = {this.props.axiosWrapper} />} />
                             <Route path='/main/profile/:userId' render={(props) => <ProfileScreen {...props} auth={this.props.auth} user={this.props.user} axiosWrapper = {this.props.axiosWrapper}/>} />
                             <Route path='/main/collection/:collectionId' render={(props) => <CollectionScreen {...props} auth={this.props.auth} axiosWrapper = {this.props.axiosWrapper}/>} />
                             <Route path='/main/collection' render={(props) => <CollectionScreen {...props} auth={this.props.auth} />} axiosWrapper = {this.props.axiosWrapper}/>
