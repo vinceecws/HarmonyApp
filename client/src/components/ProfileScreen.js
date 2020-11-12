@@ -24,7 +24,15 @@ class ProfileScreen extends React.Component{
 	}
 
 	handleCreateCollection = () => {
-		//this.props.axiosPost('/collection/createCollection/')
+		if (this.state.newCollectionName.trim() !== ''){
+			this.props.axiosWrapper.axiosGet('main/profile/createCollection/' + this.state.newCollectionName, (function(res, data){
+				console.log('Got data');
+				if (data.success){
+					console.log('Created Successfully');
+					this.handleGoToCollection(data.data.newCollection._id);
+				}
+			}).bind(this))
+		}
 	}
 
 	handleNewCollectionNameChange = (e) => {
@@ -49,6 +57,7 @@ class ProfileScreen extends React.Component{
 	fetchUser = () => {
 		this.props.axiosWrapper.axiosGet('/main/profile/' + this.props.match.params.userId, (function(res, data) {
 			if (data.success) {
+				console.log('Success!')
 				this.setState({
 					profileUser: data.data.user,
 					loading: false
@@ -65,7 +74,6 @@ class ProfileScreen extends React.Component{
 			return(
 				<div style={{fontFamily: 'BalsamiqSans', padding:'1em'}}>
 					<Modal show={this.state.showCreateCollectionModal}>
-						<Modal.Dialog>
 							<Modal.Header onHide={this.hideCreateCollectionModal} closeButton>
 								<Modal.Title>Create A New Playlist</Modal.Title>
 							</Modal.Header>
@@ -77,7 +85,6 @@ class ProfileScreen extends React.Component{
 								<Button variant="secondary" onClick={this.hideCreateCollectionModal}>Close</Button>
 								<Button variant="primary" onClick={this.handleCreateCollection}>Create</Button>
 							</Modal.Footer>
-						</Modal.Dialog>
 					</Modal>
 					<div id='profile-screen-top-container' className='row'>
 						<div className='col-sm-1.3' style={{display:'flex', padding:'1em'}}>
@@ -132,7 +139,7 @@ class ProfileScreen extends React.Component{
 					<div>	
 						<div className='row' style={{padding:'1em'}}>
 							<div style={{color: 'white', fontSize:'35px'}}>
-								{this.state.profileUser.name}'s Playlists
+								{this.state.profileUser.username}'s Playlists
 							</div>
 						</div>
 						<div className='row' style={{padding:'1em'}}>
@@ -150,7 +157,7 @@ class ProfileScreen extends React.Component{
 										)
 								}
 								{
-									this.state.user._id === this.state.profileUser._id ? //Viewing own profile
+									this.state.user._id === this.state.profileUser.Id ? //Viewing own profile
 									<div className='card profile-screen-category-item-card' onClick={this.showCreateCollectionModal}>
 										<img className="card-img-top profile-screen-category-item-card-image" src={plus_button}/>
 									</div> :
@@ -163,7 +170,7 @@ class ProfileScreen extends React.Component{
 							<div>
 								<div className='row' style={{padding:'1em'}}>
 									<div style={{color: 'white', fontSize:'35px'}}>
-										{this.state.profileUser.name}'s Liked Songs
+										{this.state.profileUser.username}'s Liked Songs
 									</div>
 								</div>
 								<div className='row' style={{padding:'1em'}}>
@@ -189,7 +196,7 @@ class ProfileScreen extends React.Component{
 							<div>
 								<div className='row' style={{padding:'1em'}}>
 									<div style={{color: 'white', fontSize:'35px'}}>
-										{this.state.profileUser.name}'s Liked Collections
+										{this.state.profileUser.username}'s Liked Collections
 									</div>
 								</div>
 								<div className='row' style={{padding:'1em'}}>
@@ -208,10 +215,13 @@ class ProfileScreen extends React.Component{
 										}
 									</div>
 								</div>
-							</div> : 
-							<div></div>
+							</div> 
+							: <div></div>
+							
 						}
+                    		
 					</div>
+
 				</div>
 			);
 		}

@@ -64,9 +64,17 @@ mainRouter.get('/profile/:id', async (req, res) => {
     }
 });
 
-mainRouter.post('/profile/createCollection/:name', async (req, res) => {
-    let newCollection = await mongooseQuery.createCollection({name: req.params.name});
-    return res.json(newCollection);
+mainRouter.get('/profile/createCollection/:name', async (req, res) => {
+	console.log('Creating Collection: ', req.params.name);
+    let newCollection = await mongooseQuery.createCollection(req.params.name);
+    return res.json({
+		message: 'Fetch success',
+		statusCode: 200,
+		data: {
+			newCollection: newCollection
+		},
+		success: true
+	});
 });
 
 
