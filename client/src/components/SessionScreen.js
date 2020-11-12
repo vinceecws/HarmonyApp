@@ -15,7 +15,8 @@ class SessionScreen extends React.Component {
 		this.getSession();
 		this.state = {
 			//(AXIOS)replace loading:true
-			loading:false,
+			loading:true,
+			error: false,
 			id:this.session._id,
 			hostId:this.session.hostId,
 			name : this.session.name ,
@@ -23,39 +24,50 @@ class SessionScreen extends React.Component {
 			endTime : this.session.endTime,
 			initialQueue: this.session.initialQueue,
 			actionLog : this.session.actionLog,
-			host: this.getSessionHost()
-			//(AXIOS)REPLACE HOST with hostName : this.session.hostName;
+			//host: this.getSessionHost()
+			/*(AXIOS)REPLACE HOST with */hostName : this.session.hostName
 			
 		}
 		
 	}
 	// the session Id is passed as a prop when a user clicks on a session to view it.
 	getSession=() => {
-		var session = sessions.find(session => this.props.id === session.id);
-		this.session = session === undefined ? sessions[0] : session;
+		//var session = sessions.find(session => this.props.id === session.id);
+		//this.session = session === undefined ? sessions[0] : session;
 		
-		/*(AXIOS)var findSession = function(status,data){
-			if(status == 200){
+		var findSession = function(status,data){
+			if(status === 200){
 	            console.log(status);
 	            console.log(data);
+	            this.session = data
 	            this.setState({
 	                loading: false,
-	                session: data
+	                error: false,
+	                
 	            });
             }
+            else if(status === 404){
+            	console.log(status);
+            	console.log(data);
+            	this.setState({
+            		loading:false,
+            		error: true
+            	})
+            }
         }
-		this.props.axiosWrapper.axiosGet('/main/session/:id', findSession);*/
+		this.props.axiosWrapper.axiosGet('/main/session/:id', findSession);
 	}
-	//(AXIOS)Not needed when axiosGet returns session.hostName
+	/*(AXIOS)Not needed when axiosGet returns session.hostName
 	getSessionHost = () => {
 		return users.find(user=>this.session.hostId === user.Id);
 
 	}
+	*/
 	//replace icon with the associated user profile image
     render(){
     	let renderContainer = false
 
-    	if(!this.state.loading){
+    	if(!this.state.loading && !this.state.error){
     		renderContainer = 
     			<div style={{fontFamily: 'BalsamiqSans', marginLeft:'15px', height:'100%'}}>
         		<div className='row' style={{height:'100%'}}>
@@ -107,8 +119,11 @@ class SessionScreen extends React.Component {
         	</div>
 
     	}
-    	else{
+    	else if (this.state.loading && !this.state.error){
     		renderContainer = <Spinner/>
+    	}
+    	else{
+    		renderContainer = <div style={{color:'white'}}>Error 404</div>
     	}
         return(
         	renderContainer

@@ -10,7 +10,7 @@ const User = mongoose.model('user', userSchema, 'user')
 const Collection = mongoose.model('collection', collectionSchema, 'collection')
 const Song = mongoose.model('song', songSchema, 'song')
 const Session = mongoose.model('session', sessionSchema, 'session')
-
+const mainrout = require('../routes/mainRoutes.js')
 const connection = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})
 const db = mongoose.connection
 
@@ -117,6 +117,17 @@ exports.getSession = async function(sessionObject){
   db.close();
   return session;
 }
+
+exports.getSessions = async function(){
+  console.log('Get sessions');
+  let sessions = await connection.then(async () => {
+    return await Session.find({}).sort({viewCount:1});
+  }).catch(error => {console.log(error)});
+  console.log(sessions);
+  db.close();
+  return sessions;
+}
+
 
 exports.updateSession = async function(sessionID, updateObject){
   console.log('Update session');
