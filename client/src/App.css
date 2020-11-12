@@ -667,6 +667,7 @@ body, html {
 /* Search Screen */
 .search-screen-container {
   padding: 15px;
+  height: 100%;
 }
 
 /* Search Box */
@@ -720,6 +721,10 @@ body, html {
 }
 
 /* History */
+#search-screen-history-spinner {
+  margin: auto !important; 
+}
+
 .search-screen-history-title {
   padding: 10px 0px 0px 10px;
 }

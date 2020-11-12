@@ -54,6 +54,9 @@ class ProfileScreen extends React.Component{
 		})
 	}
 
+	/*
+		Need to implement recursive calls to fetch songs 
+	*/
 	fetchUser = () => {
 		this.props.axiosWrapper.axiosGet('/main/profile/' + this.props.match.params.userId, (function(res, data) {
 			if (data.success) {

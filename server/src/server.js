@@ -21,7 +21,7 @@ const MongoStore = require('connect-mongo')(session)
 app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
-app.use(cookieParser())
+app.use(cookieParser(process.env.MONGO_STORE_SESSION_SECRET.split(' ')))
 app.use(session({
     store: new MongoStore({ 
         mongooseConnection: db

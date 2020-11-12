@@ -136,7 +136,7 @@ exports.deleteSession = async function(sessionObject){
 }
 
 
-exports.getColletionsFromQuery = async function(query){
+exports.getCollectionsFromQuery = async function(query){
   console.log('Get collections from search query');
   let collections = await connection.then(async () => {
     return await Collection.find({name: query}).sort({likes: 1});

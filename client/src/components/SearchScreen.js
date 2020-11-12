@@ -2,7 +2,7 @@ import React from 'react'
 import { ListGroup, Image, Button, CardDeck, Card, InputGroup, FormControl, Dropdown, ButtonGroup } from 'react-bootstrap'
 import { genSampleResults } from '../test/genSamples'
 import { delete_cross_white, delete_button_white, icon_play_2, menu_button_white } from '../graphics'
-
+import Spinner from './Spinner';
 import SuggestionsAPI from '../api/SuggestionsAPI'
 
 const _ = require('lodash');
@@ -16,7 +16,11 @@ class SearchScreen extends React.Component {
             query: "",
             history: [],
             suggestions: [],
-            res: {}
+            res: {},
+            loading: this.props.auth ? true : false
+        }
+        if (this.props.auth) {
+            this.fetchHistory()
         }
     }
 
@@ -97,7 +101,14 @@ class SearchScreen extends React.Component {
     }
 
     fetchHistory = () => {
-        return this.props.history
+        this.props.axiosWrapper.axiosGet('/main/search', (function(res, data) {
+            if (data.success) {
+                this.setState({
+                    history: data.data.user.history,
+                    loading: false
+                })
+            }
+        }).bind(this), true)
     }
 
     fetchResults = (query) => {
@@ -109,9 +120,17 @@ class SearchScreen extends React.Component {
                     res: newRes
                 })
             })
-            this.setState({
-                res: genSampleResults(query.toLowerCase())
-            })
+            this.props.axiosWrapper.axiosGet('/main/search/query=' + query, (function(res, data) {
+                if (data.success) {
+                    var newRes = _.cloneDeep(this.state.res)
+                    newRes.sessions = data.data.results.sessions
+                    newRes.collections = data.data.results.collections
+                    newRes.users = data.data.results.users
+                    this.setState({
+                        res: newRes
+                    })
+                }
+            }).bind(this))
         }
     }
 
@@ -152,30 +171,38 @@ class SearchScreen extends React.Component {
                         }
                     </Dropdown.Menu>
                 </div>
-                <div className={this.getHistoryClass()}>
-                    <div className="search-screen-history-title super-title color-accented">
-                        Your Recent History
-                    </div>
-                    <ListGroup>
+                {
+                    !this.state.loading ? 
+                    <div className={this.getHistoryClass()}>
                         {
-                            this.state.history.map((obj, ind) => 
-                                <ListGroup.Item className="search-screen-history-item" key={ind} onClick={e => this.handleGoToItem(e)} action>
-                                    <div className="search-screen-history-item-type title color-contrasted">{obj.type.capitalize()}</div>
-                                    <div className="search-screen-history-item-container">
-                                        <Image className="search-screen-history-item-display-image" src={obj.image}/>
-                                        <div className="search-screen-history-item-display-container">
-                                            <div className="subtitle color-accented">{obj.name}</div>
-                                            <div className="body-text color-accented">{obj.creator}</div>
-                                        </div>
-                                    </div>
-                                    <div className="search-screen-history-item-remove-button" onClick={e => this.handleRemoveHistory(e, obj.index)}>
-                                        <Image className="search-screen-history-item-remove-button-icon" src={delete_cross_white}/>
-                                    </div>
-                                </ListGroup.Item>
-                                )
+                            this.props.auth ? 
+                            <div className="search-screen-history-title super-title color-accented">
+                                Your Recent History
+                            </div> :
+                            <div></div>
                         }
-                    </ListGroup>
-                </div>
+                        <ListGroup>
+                            {
+                                this.state.history.map((obj, ind) => 
+                                    <ListGroup.Item className="search-screen-history-item" key={ind} onClick={e => this.handleGoToItem(e)} action>
+                                        <div className="search-screen-history-item-type title color-contrasted">{obj.type.capitalize()}</div>
+                                        <div className="search-screen-history-item-container">
+                                            <Image className="search-screen-history-item-display-image" src={obj.image}/>
+                                            <div className="search-screen-history-item-display-container">
+                                                <div className="subtitle color-accented">{obj.name}</div>
+                                                <div className="body-text color-accented">{obj.creator}</div>
+                                            </div>
+                                        </div>
+                                        <div className="search-screen-history-item-remove-button" onClick={e => this.handleRemoveHistory(e, obj.index)}>
+                                            <Image className="search-screen-history-item-remove-button-icon" src={delete_cross_white}/>
+                                        </div>
+                                    </ListGroup.Item>
+                                    )
+                            }
+                        </ListGroup>
+                    </div> :
+                    <Spinner id="search-screen-history-spinner"/>
+                }
                 <div className={this.getResultsClass()}>
                     {Object.keys(this.state.res).map((category, cat_ind) => this.state.res[category] !== undefined && this.state.res[category].length > 0 ?
                         <div className="search-screen-results-category-container" key={cat_ind}>
