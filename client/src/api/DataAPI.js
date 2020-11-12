@@ -61,7 +61,7 @@ class DataAPI {
                 part: [
                     "snippet"
                 ],
-                eventType: "completed",
+                //eventType: "completed",
                 maxResults: 25,
                 order: "viewCount",
                 q: query,
