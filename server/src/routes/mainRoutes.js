@@ -27,8 +27,10 @@ mainRouter.get('/collection/:id', async (req, res) => {
 });
 
 mainRouter.get('/home', async (req, res) => {
+
     let sessions = await mongooseQuery.getSessions()
         .catch(err => {res.sendStatus(404)});
+    
     res.json(sessions);
 });
 
@@ -70,10 +72,4 @@ mainRouter.post('/session/endSession/:id', async (req, res) => {
 
 
 
-module.exports = {
-  db: db,
-  User: User,
-  Collection: Collection,
-  Session: Session,
-  Song: Song
-}, mainRouter
+module.exports = mainRouter;

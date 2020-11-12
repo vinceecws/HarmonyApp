@@ -10,7 +10,7 @@ const User = mongoose.model('user', userSchema, 'user')
 const Collection = mongoose.model('collection', collectionSchema, 'collection')
 const Song = mongoose.model('song', songSchema, 'song')
 const Session = mongoose.model('session', sessionSchema, 'session')
-
+const mainrout = require('../routes/mainRoutes.js')
 const connection = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})
 const db = mongoose.connection
 
@@ -170,6 +170,5 @@ module.exports = {
   db: db,
   User: User,
   Collection: Collection,
-  Session: Session,
   Song: Song
 }
