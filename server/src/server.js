@@ -14,7 +14,6 @@ const session = require("express-session")
 const db = require('./db').db
 const apiPort = 4000
 
-const mainRouter = require('./routes/mainRoutes.js')
 const MongoStore = require('connect-mongo')(session)
 /*
     Express.js configurations
@@ -51,94 +50,14 @@ passport.use('local-signup', new LocalStrategy({
 passport.serializeUser(passportCallbacks.serialize)
 passport.deserializeUser(passportCallbacks.deserialize)
 
+app.use(passportCallbacks.isLoggedIn)
+
 /*
     Express.js routes
 */
 
-authRouter = express.Router()
-
-authRouter.post('/login', function(req, res, next) {
-    passport.authenticate('local-login', function(err, user, info) {
-        if (err) {
-            return next(err)
-        }
-
-        if (!user) {
-            return res.status(401).json({
-                error: {
-                    name: "JsonWebTokenError",
-                    message: "Invalid credentials"
-                },
-                message: "Invalid credentials",
-                statusCode: 401,
-                data: {
-                    user: null
-                },
-                success: false
-            })
-        }
-
-        req.login(user, function(err) {
-            if (err) {
-                return next(err)
-            }
-
-            return res.status(200).json({
-                message: "Authorization success",
-                statusCode: 200,
-                data: {
-                    user: user
-                },
-                success: true
-            })
-        })
-    })(req, res, next)
-})
-
-authRouter.post('/login/signup', function(req, res, next) {
-    passport.authenticate('local-signup', function(err, user, info) {
-        if (err) {
-            return next(err)
-        }
-
-        if (!user) {
-            return res.status(401).json({
-                error: {
-                    name: "JsonWebTokenError",
-                    message: "Username is taken"
-                },
-                message: "Username is taken",
-                statusCode: 401,
-                data: {
-                    user: null
-                },
-                success: false
-            })
-        }
-
-        req.login(user, function(err) {
-            if (err) {
-                return next(err)
-            }
-
-            return res.status(200).json({
-                message: "Sign-up success",
-                statusCode: 200,
-                data: {
-                    user: user
-                },
-                success: true
-            })
-        })
-    })(req, res, next)
-})
-
-authRouter.get('/logout', function(req, res) {
-    req.logout();
-    res.redirect('/login')
-});
-
-app.use(passportCallbacks.isLoggedIn)
+const authRouter = require('./routes/authRoutes.js')(passport)
+const mainRouter = require('./routes/mainRoutes.js')
 
 app.use('/', authRouter)
 app.use('/main', mainRouter)
