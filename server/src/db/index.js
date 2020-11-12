@@ -36,7 +36,6 @@ exports.getUser = async function(userObject) { //User CRUD methods: Retrieve
   let user = await connection.then(async () => {
     return await User.findOne(userObject)
   }).catch(error => {console.log(error)});
-  console.log(user);
   
   return user;
 }
@@ -58,7 +57,6 @@ exports.getCollection = async function(collectionObject){
   let collection = await connection.then(async () => {
     return await Collection.findOne(collectionObject);
   }).catch(error => console.log(error));
-  //console.log(collection);
   
   return collection;
 }
@@ -69,7 +67,6 @@ exports.updateCollection = async function(collectionObject, updateFieldsObject){
   let collection = await connection.then(async () => {
     return await Collection.findOneAndUpdate(collectionObject, updateFieldsObject, {new: true});
   }).catch(error => console.log(error));
-  console.log(collection);
   
 }
 
@@ -80,7 +77,6 @@ exports.deleteCollection = async function(collectionObject){
   let collection = await connection.then(async () => {
     return await Collection.findOneAndRemove(collectionObject);
   }).catch(error => console.log(error));
-  console.log(collection);
   
 }
 
@@ -99,7 +95,6 @@ exports.createSession = async function(hostId, hostName, name, startTime, endTim
     initialQueue, 
     actionLog
   }).save().catch(error => {console.log(error)});
-  console.log(session);
   
   console.log('connection closed');
   return session;
@@ -111,7 +106,7 @@ exports.getSession = async function(sessionObject){
   let session = await connection.then(async () => {
     return await Session.findOne(sessionObject);
   }).catch(error => {console.log(error)});
-  
+
   return session;
 }
 
@@ -128,7 +123,6 @@ exports.updateSession = async function(sessionID, updateObject){
   let session = await connection.then(async () => {
     return await Session.findOneAndUpdate({'_id': sessionID}, updateObject, {new: true});
   });
-  console.log(session);
   
   return session;
 }
@@ -138,8 +132,7 @@ exports.deleteSession = async function(sessionObject){
   let session = await connection.then(async () => {
     return await Session.findOneAndRemove(sessionObject);
   }).catch(error => {console.log(error)});
-  
-  console.log(session);
+
 }
 
 

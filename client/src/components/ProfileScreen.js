@@ -133,7 +133,7 @@ class ProfileScreen extends React.Component{
 					<div>	
 						<div className='row' style={{padding:'1em'}}>
 							<div style={{color: 'white', fontSize:'35px'}}>
-								{this.state.profileUser.name}'s Playlists
+								{this.state.profileUser.username}'s Playlists
 							</div>
 						</div>
 						<div className='row' style={{padding:'1em'}}>

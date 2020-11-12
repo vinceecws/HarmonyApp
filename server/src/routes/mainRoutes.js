@@ -48,7 +48,7 @@ mainRouter.get('/profile/:id', async (req, res) => {
     else{
 		let user = await mongooseQuery.getUser({'_id': req.params.id});
 		let fetchedUser = {username: user.google.name === undefined ? user.local.username : user.google.name,
-								Id: user._id, biography: user.biography,
+								_id: user._id, biography: user.biography,
 								privateMode: user.privateMode, live: user.live,
 								playlists: user.playlists, sessions: user.sessions,
 								history: user.history, likedSongs: user.likedSongs,
@@ -217,6 +217,7 @@ mainRouter.get('/session/:id', async (req, res) => {
     }
     else{
         let session = await mongooseQuery.getSession({'_id': req.params.id});
+
         return res.status(200).json({
             message: "Fetch success",
             statusCode: 200,

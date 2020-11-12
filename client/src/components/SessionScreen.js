@@ -37,7 +37,7 @@ class SessionScreen extends React.Component {
 		var session = null;
 		if(status === 200){
 			session = data.data.session;
-
+			console.log(session)
             this.setState({
         		loading:false,
         		id: session._id,
@@ -62,6 +62,7 @@ class SessionScreen extends React.Component {
 	}
 
     render(){
+
     	let renderContainer = false
     	if(!this.state.loading && !this.state.error){
     		renderContainer = 

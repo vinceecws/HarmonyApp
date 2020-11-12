@@ -14,7 +14,7 @@ class SearchScreen extends React.Component {
         this.suggestions = new SuggestionsAPI()
         this.state = {
             query: "",
-            history: this.fetchHistory(),
+            history: [],
             suggestions: [],
             res: {}
         }
