@@ -147,17 +147,23 @@ mainRouter.post('/search/createCollection/:name', async (req, res) => {
     return res.json(newCollection);
 });
 
+mainRouter.get('/search', async (req, res) => {
+	// let user = await mongooseQuery.getUser({_id: })
+	// 								.catch(err => res.sendStatus(404));
+    // return res.json(user.history);
+});
+
 mainRouter.get('/search/query=:search', async (req, res) => {
 	let sessionMatches = await mongooseQuery.getSessionsFromQuery(req.params.search)
 									.catch(err => res.sendStatus(404));
 	let collectionMatches = await mongooseQuery.getCollectionsFromQuery(req.params.search)
 									.catch(err => res.sendStatus(404));	
 	let userMatches = await mongooseQuery.getUsersFromQuery(req.params.search)
-									.catch(err => res.sendStatus(404));	
+                                    .catch(err => res.sendStatus(404));	
 	if (req.user == null){
-		return res.json({session: sessionMatches, 
+		return res.json({sessions: sessionMatches, 
 					collections: collectionMatches,
-					users: userMathces});
+					users: userMatches});
 	}
 	else {
 		let thisUser = await mongooseQuery.getUser({'_id': req.user})

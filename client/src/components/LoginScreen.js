@@ -147,7 +147,7 @@ class LoginScreen extends React.Component{
                         <h2 style={{marginBottom: '20px'}}>Log-in</h2>
                         <div>
                             <input type='text' name='username' placeholder='Username' style={{marginBottom: '5px'}} onChange={this.handleLoginUsernameChange} value={this.state.login_username}/><br/>
-                            <input type='text' name='password' placeholder='Password' onChange={this.handleLoginPasswordChange} value={this.state.login_password}/> <br/>
+                            <input type='password' name='password' placeholder='Password' onChange={this.handleLoginPasswordChange} value={this.state.login_password}/> <br/>
                             <button style={{marginTop:'20px', boxShadow: '3px 3px'}} onClick={e => this.handleLogin(e)}>Log-In</button>
                         </div>
                         {}
@@ -194,8 +194,8 @@ class LoginScreen extends React.Component{
                                     <p>Enter Your Account Information:</p>
                                     <div onSubmit={e => this.handleSignup(e)}>
                                         <input type='text' name='username' placeholder='Username' style={{marginBottom: '5px'}} onChange={this.handleSignUpUsernameChange} value={this.state.signup_username}/><br/>
-                                        <input type='text' name='password' placeholder='Password' style={{marginBottom: '5px'}} onChange={this.handleSignUpPasswordChange} value={this.state.signup_password}/> <br/>
-                                        <input type='text' name='confirmPwd' placeholder='Confirm Password' style={{marginBottom: '5px'}} onChange={this.handleSignUpConfirmPasswordChange} value={this.state.signup_confirm_password}/> <br/>
+                                        <input type='password' name='password' placeholder='Password' style={{marginBottom: '5px'}} onChange={this.handleSignUpPasswordChange} value={this.state.signup_password}/> <br/>
+                                        <input type='password' name='confirmPwd' placeholder='Confirm Password' style={{marginBottom: '5px'}} onChange={this.handleSignUpConfirmPasswordChange} value={this.state.signup_confirm_password}/> <br/>
                                         <button style={{marginTop:'20px', boxShadow: '3px 3px'}} onClick={e => this.handleSignup(e)}>Sign Up</button>
                                     </div>
                                 </div>
