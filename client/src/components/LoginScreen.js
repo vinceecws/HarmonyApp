@@ -102,7 +102,6 @@ class LoginScreen extends React.Component{
             username: this.state.login_username,
             password: this.state.login_password
         }, (function(res, data) {
-            console.log(data)
             if (data.success) {
                 this.props.handleAuthenticate(data.data.user)
                 this.clearLoginCredentials()
