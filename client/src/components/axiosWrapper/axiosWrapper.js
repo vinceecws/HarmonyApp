@@ -2,8 +2,8 @@ import axios from 'axios';
 
 
 class AxiosWrapper {
-	axiosGet(path, callback) {
-		return axios.get(path)
+	axiosGet(path, callback, withCredentials=false) {
+		return axios.get(path, {withCredentials: withCredentials})
         .then(response => {
         	if(callback){
         		callback(response.status, response.data);

@@ -103,7 +103,6 @@ class MainApp extends React.Component {
                             <Route path='/main/collection/:collectionId' render={(props) => <CollectionScreen {...props} auth={this.props.auth} axiosWrapper = {this.props.axiosWrapper}/>} />
                             <Route path='/main/collection' render={(props) => <CollectionScreen {...props} auth={this.props.auth} />} axiosWrapper = {this.props.axiosWrapper}/>
                             <Route path='/main/settings' render={(props) => <SettingsScreen {...props} auth={this.props.auth} user={this.props.user} axiosWrapper = {this.props.axiosWrapper}/>} />
-                            <Route path='/login' render={(props) => <LoginScreen {...props} auth={this.props.auth} axiosWrapper = {this.props.axiosWrapper}/>} />
                             <Route path='/' render={(props) => <HomeScreen {...props} auth={this.props.auth} axiosWrapper = {this.props.axiosWrapper}/>} />
                         </Switch>
                     </Col>

@@ -44,8 +44,8 @@ class App extends React.Component {
       <Container id="app-container">
         <Router>
           <Switch>
-            <Route path={['/login']} render={(props) => <LoginScreen {...props} auth={this.state.auth} handleAuthenticate={this.handleAuthenticate} axiosWrapper={this.axiosWrapper}/>} />
-            <Route path={['/', '/main']} render={(props) => <MainApp {...props} auth={this.state.auth} user={this.state.user} handleLogOut={this.handleLogOut} axiosWrapper={this.axiosWrapper}/>} />
+            <Route path={['/main']} render={(props) => <MainApp {...props} auth={this.state.auth} user={this.state.user} handleLogOut={this.handleLogOut} axiosWrapper={this.axiosWrapper}/>} />
+            <Route path={['/', '/login']} render={(props) => <LoginScreen {...props} auth={this.state.auth} handleAuthenticate={this.handleAuthenticate} axiosWrapper={this.axiosWrapper}/>} />
           </Switch>
         </Router>
       </Container>

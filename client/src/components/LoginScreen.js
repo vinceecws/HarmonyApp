@@ -4,12 +4,26 @@ import {icon_speak_2, icon_speak_1, icon_radio, icon_album, icon_disc_1, icon_di
 
 class LoginScreen extends React.Component{
 
-    state = {
-        signup_username: "",
-        signup_password: "",
-        signup_confirm_password: "",
-        login_username: "",
-        login_password: "",
+    constructor(props) {
+        super(props)
+        this.state = {
+            signup_username: "",
+            signup_password: "",
+            signup_confirm_password: "",
+            login_username: "",
+            login_password: "",
+        }
+        this.checkCredentials()
+    }
+
+    checkCredentials = () => {
+        this.props.axiosWrapper.axiosGet('/login', (function(res, data) {
+            if (data.success) {
+                this.props.handleAuthenticate(data.data.user)
+                this.clearSignUpCredentials()
+                this.props.history.push("/main/home")
+            }
+        }).bind(this), true)
     }
 
     clearLoginCredentials = () => {
@@ -80,8 +94,8 @@ class LoginScreen extends React.Component{
             password: this.state.signup_password
         }, (function(res, data) {
             if (data.success) {
-                this.props.handleAuthenticate(data.data.user)
                 this.clearSignUpCredentials()
+                this.props.handleAuthenticate(data.data.user)
                 this.props.history.push("/main/home")
             }
             else {
@@ -103,8 +117,8 @@ class LoginScreen extends React.Component{
             password: this.state.login_password
         }, (function(res, data) {
             if (data.success) {
-                this.props.handleAuthenticate(data.data.user)
                 this.clearLoginCredentials()
+                this.props.handleAuthenticate(data.data.user)
                 this.props.history.push("/main/home")
             }
             else {

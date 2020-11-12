@@ -18,7 +18,7 @@ const MongoStore = require('connect-mongo')(session)
 /*
     Express.js configurations
 */
-app.use(cors())
+app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(cookieParser())
@@ -28,10 +28,7 @@ app.use(session({
     }),
     secret: process.env.MONGO_STORE_SESSION_SECRET.split(' '),
     resave: false, //Prevents sessions from being saved, if unmodified
-    saveUninitialized: false, //Prevents sessions from being saved, if nothing is stored
-    cookie: { 
-        secure: true 
-    } 
+    saveUninitialized: false //Prevents sessions from being saved, if nothing is stored
 }))
 app.use(passport.initialize())
 app.use(passport.session())

@@ -57,7 +57,6 @@ class ProfileScreen extends React.Component{
 	}
 
     render(){
-		console.log(this.state.profileUser)
 		if (this.state.loading) {
 			return <Spinner/>
 		}
@@ -88,7 +87,7 @@ class ProfileScreen extends React.Component{
 						<div className='col'>
 							<div className='body-text color-contrasted'>PROFILE</div>
 							<div id='profile-screen-username' className='color-contrasted'>
-								{this.state.profileUser.name}
+								{this.state.profileUser.username}
 							</div>
 							<div id='profile-screen-biography' className='body-text color-contrasted' rows='5' cols='35'>{this.state.profileUser.biography}</div>
 							<div id='profile-screen-summary' className='row'>
@@ -129,39 +128,36 @@ class ProfileScreen extends React.Component{
 							</div> :
 							<div></div>
 					}
-					{ this.state.profileUser.playlists !== undefined && this.state.profileUser.playlists.length > 0 ?
-							<div>	
-								<div className='row' style={{padding:'1em'}}>
-									<div style={{color: 'white', fontSize:'35px'}}>
-										{this.state.profileUser.name}'s Playlists
-									</div>
-								</div>
-								<div className='row' style={{padding:'1em'}}>
-									<div className='card-deck profile-screen-category-container'>
-										{
-											this.state.profileUser.playlists.map((playlist, ind) => 
-												<div className='card profile-screen-category-item-card' key={ind} onClick={this.handleGoToCollection.bind(this, playlist._id)}>
-													<img className="card-img-top profile-screen-category-item-card-image" src={playlist.image}/>
-													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
-														<h1 className="card-title profile-screen-category-item-card-name title">{playlist.name}</h1>
-														<p className="profile-screen-category-item-card-creator body-text">{playlist.user}</p>
-														<p className="profile-screen-category-item-card-likes">{playlist.likes} <img src={icon_like} className='profile-screen-category-item-card-likes-icon'/></p>
-													</div>
-												</div>
-												)
-										}
-										{
-											this.state.profileUser._id === this.state.profileUser._id ? //Viewing own profile
-											<div className='card profile-screen-category-item-card' onClick={this.showCreateCollectionModal}>
-												<img className="card-img-top profile-screen-category-item-card-image" src={plus_button}/>
-											</div> :
-											<div></div>
-										}
-									</div>
-								</div>
-							</div> :
-							<div></div>
-						}
+					<div>	
+						<div className='row' style={{padding:'1em'}}>
+							<div style={{color: 'white', fontSize:'35px'}}>
+								{this.state.profileUser.name}'s Playlists
+							</div>
+						</div>
+						<div className='row' style={{padding:'1em'}}>
+							<div className='card-deck profile-screen-category-container'>
+								{
+									this.state.profileUser.playlists.map((playlist, ind) => 
+										<div className='card profile-screen-category-item-card' key={ind} onClick={this.handleGoToCollection.bind(this, playlist._id)}>
+											<img className="card-img-top profile-screen-category-item-card-image" src={playlist.image}/>
+											<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
+												<h1 className="card-title profile-screen-category-item-card-name title">{playlist.name}</h1>
+												<p className="profile-screen-category-item-card-creator body-text">{playlist.user}</p>
+												<p className="profile-screen-category-item-card-likes">{playlist.likes} <img src={icon_like} className='profile-screen-category-item-card-likes-icon'/></p>
+											</div>
+										</div>
+										)
+								}
+								{
+									this.state.user._id === this.state.profileUser._id ? //Viewing own profile
+									<div className='card profile-screen-category-item-card' onClick={this.showCreateCollectionModal}>
+										<img className="card-img-top profile-screen-category-item-card-image" src={plus_button}/>
+									</div> :
+									<div></div>
+								}
+							</div>
+						</div>
+					</div>
 						{ this.state.profileUser.likedSongs !== undefined && this.state.profileUser.likedSongs.length > 0 ?
 							<div>
 								<div className='row' style={{padding:'1em'}}>
