@@ -98,9 +98,34 @@ mainRouter.post('/session/newSession', async (req, res) => {
 })
 
 mainRouter.get('/session/:id', async (req, res) => {
-    let session = await mongooseQuery.getSession({'_id': req.params.id})
-                                    .catch(err => {res.sendStatus(404);});
-    res.json(session);
+    let id = req.params.id;
+    console.log("ID:"+id);
+    if (id == null){
+        return res.status(404).json({
+            error: {
+                name: "JsonWebTokenError",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                sessions: null
+            },
+            success: false
+        })
+    }
+    else{
+        let session = await mongooseQuery.getSession({'_id': req.params.id});
+        return res.status(200).json({
+            message: "Fetch success",
+            statusCode: 200,
+            data: {
+               session: session
+            },
+            success: true
+        })
+    }
+
 });
 
 

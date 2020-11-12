@@ -43,7 +43,7 @@ class SessionSideList extends React.Component{
                         .filter(session => session.live ? true : false)
                         .map((session, ind) => <SessionEntry
                             key={ind}
-                            id={session.id}
+                            id={session._id}
                             hostId={session.hostId}
                             hostName={session.hostName}
                             name={session.name}

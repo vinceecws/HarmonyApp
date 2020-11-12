@@ -12,22 +12,26 @@ class SessionScreen extends React.Component {
 	constructor(props){
 
 		super(props);
+		this.session = false;
+		
 		this.getSession();
+
 		this.state = {
 			//(AXIOS)replace loading:true
 			loading:true,
 			error: false,
-			id: this.session._id,
-			hostId:this.session.hostId,
-			name : this.session.name ,
-			startTime : this.session.startTime ,
-			endTime : this.session.endTime,
-			initialQueue: this.session.initialQueue,
-			actionLog : this.session.actionLog,
+			id: null,
+			hostId:null,
+			name : null,
+			startTime : null ,
+			endTime : null,
+			initialQueue: null,
+			actionLog : null,
 			//host: this.getSessionHost()
-			/*(AXIOS)REPLACE HOST with */hostName : this.session.hostName
+			hostName : null
 			
 		}
+		
 		
 	}
 	// the session Id is passed as a prop when a user clicks on a session to view it.
@@ -35,27 +39,39 @@ class SessionScreen extends React.Component {
 		//var session = sessions.find(session => this.props.id === session.id);
 		//this.session = session === undefined ? sessions[0] : session;
 		
-		var findSession = function(status,data){
-			if(status === 200){
-	            console.log(status);
-	            console.log(data);
-	            this.session = data
-	            this.setState({
-	                loading: false,
-	                error: false,
-	                
-	            });
-            }
-            else if(status === 404){
-            	console.log(status);
-            	console.log(data);
-            	this.setState({
-            		loading:false,
-            		error: true
-            	})
-            }
+			
+            
+		this.props.axiosWrapper.axiosGet(this.props.location.pathname , this.handleGetSession);
+	}
+	handleGetSession = (status,data) =>{
+		var session = null;
+		if(status === 200){
+            console.log(status);
+            
+            session = data.data.session;
+            console.log(session);
+            this.setState({
+        		loading:false,
+        		id: session._id,
+				hostId:session.hostId,
+				name : session.name,
+				startTime : session.startTime ,
+				endTime : session.endTime,
+				initialQueue: session.initialQueue,
+				actionLog : session.actionLog,
+				//host: this.getSessionHost()
+				hostName : session.hostName
+        	})
+            
         }
-		this.props.axiosWrapper.axiosGet('/main/session/:id', findSession);
+        else if(status === 404){
+        	console.log(status);
+        	console.log(data);
+        	this.setState({
+        		loading:false,
+        		error: true
+        	})
+        }
 	}
 	/*(AXIOS)Not needed when axiosGet returns session.hostName
 	getSessionHost = () => {
@@ -82,7 +98,7 @@ class SessionScreen extends React.Component {
 
 	        					</div>
 	        					<div className='body-text' style={{marginTop:'30px', margin: 'auto'}}>
-	        						{this.state.host.name}
+	        						{this.state.hostName}
 	        					</div>
 	        				</div>
 	        				<div className='col' style={{maxWidth:'25%', textAlign: 'right', padding:'1em', minWidth:'10%',color:'white',  float:'right'}}>

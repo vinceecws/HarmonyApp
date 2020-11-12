@@ -47,7 +47,7 @@ class SessionEntry extends React.Component{
 			entry = <h1 className='Session-Entry-Text body-text color-accented'>{this.props.name}</h1>;
 		}
 		return(
-			<Link className="session-entry-container" to={"/main/session/" + this.props._id} onMouseEnter={this.handleEntryToggle} onMouseLeave={this.handleEntryToggle}>
+			<Link className="session-entry-container" to={{pathname:"/main/session/" + this.props.id}} onMouseEnter={this.handleEntryToggle} onMouseLeave={this.handleEntryToggle}>
 				<div className='list-group-item list-group-item-action'>
 					<Row className="session-entry-row-container">
 						<Col className="session-entry-image-container">
