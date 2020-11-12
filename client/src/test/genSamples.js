@@ -1,6 +1,15 @@
 import * as icons from '../test'
+import axios from 'axios'
+import AxiosWrapper from '../components/axiosWrapper/axiosWrapper.js'
+axios.defaults.baseURL = 'http://localhost:4000'
 const _ = require('lodash');
-let sessions = require('./sampleSessions.json')
+let wrapper = new AxiosWrapper();
+console.log(wrapper);
+let sessions = false;
+wrapper.axiosGet('/main/home', function(status, data){
+    console.log(data);
+    sessions = data;
+});
 let collections = require('./sampleCollections.json')
 let songs = require('./sampleSongs.json')
 let users = require('./sampleUsers.json')

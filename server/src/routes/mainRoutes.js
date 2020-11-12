@@ -24,7 +24,13 @@ mainRouter.get('/collection/:id', async (req, res) => {
     let collection = await mongooseQuery.getCollection({'_id': req.params.id})
         .catch(err => {res.sendStatus(404)});
     res.json(collection);
-})
+});
+
+mainRouter.get('/home', async (req, res) => {
+    let sessions = await mongooseQuery.getSessions()
+        .catch(err => {res.sendStatus(404)});
+    res.json(sessions);
+});
 
 mainRouter.post('/collection/delete/:id', async (req, res) => {
     await mongooseQuery.deleteCollection({'_id': req.params.id})
@@ -64,4 +70,10 @@ mainRouter.post('/session/endSession/:id', async (req, res) => {
 
 
 
-module.exports = mainRouter
+module.exports = {
+  db: db,
+  User: User,
+  Collection: Collection,
+  Session: Session,
+  Song: Song
+}, mainRouter

@@ -118,6 +118,17 @@ exports.getSession = async function(sessionObject){
   return session;
 }
 
+exports.getSessions = async function(){
+  console.log('Get sessions');
+  let sessions = await connection.then(async () => {
+    return await Session.find({}).sort({viewCount:1});
+  }).catch(error => {console.log(error)});
+  console.log(sessions);
+  db.close();
+  return sessions;
+}
+
+
 exports.updateSession = async function(sessionID, updateObject){
   console.log('Update session');
   let session = await connection.then(async () => {
@@ -159,5 +170,6 @@ module.exports = {
   db: db,
   User: User,
   Collection: Collection,
+  Session: Session,
   Song: Song
 }
