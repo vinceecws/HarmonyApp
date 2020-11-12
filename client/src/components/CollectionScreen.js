@@ -10,6 +10,7 @@ class CollectionScreen extends React.Component{
         this.user = null;
         this.state = {
             collection: null,
+            songList: [],
             loading: true
         }
         this.fetchCollection()
@@ -35,10 +36,16 @@ class CollectionScreen extends React.Component{
     favoritedSong = (song) => {
         return this.state.favorited;
     }
+
+    fetchSongs = (songList) => {
+
+    }
+
     fetchCollection = () => {
         if (this.props.match.params.collectionId) {
             this.props.axiosWrapper.axiosGet('/main/collection/' + this.props.match.params.collectionId, (function(res, data) {
                 if (data.success) {
+                    this.fetchSongs(data.data.collection.songList)
                     this.setState({
                         collection: data.data.collection,
                         loading: false
@@ -77,7 +84,7 @@ class CollectionScreen extends React.Component{
                             <div className='row'>
                                 {/* Remember to add these attributes to collection objects*/}
                                 <p className='collection-page-text'>
-                                    ChilledCow - {this.state.collection.likes} likes - 4 songs - 4 hr 10 min
+                                    {this.state.collection.ownerId} - {this.state.collection.likes} likes - {this.state.collection.songList.length} songs 
                                 </p>
                             </div>
                         </div>
