@@ -4,52 +4,40 @@ import ChatFeed from './Chat/ChatFeed.js';
 import QueueComponent from './Queues/QueueComponent.js';
 import Spinner from './Spinner';
 
-//(AXIOS) remove these once front to back works
-let sessions = require('../test/sampleSessions.json')
-let users = require('../test/sampleUsers.json')
-
 class SessionScreen extends React.Component {
 	constructor(props){
-
 		super(props);
-		this.session = false;
-		
-		this.getSession();
 
+		this.getSession()
 		this.state = {
-			//(AXIOS)replace loading:true
-			loading:true,
+			loading: true,
 			error: false,
 			id: null,
 			hostId:null,
-			name : null,
-			startTime : null ,
-			endTime : null,
+			name: null,
+			startTime: null ,
+			endTime: null,
 			initialQueue: null,
-			actionLog : null,
-			//host: this.getSessionHost()
-			hostName : null
-			
+			actionLog: null,
+			hostName: null
 		}
 		
-		
 	}
-	// the session Id is passed as a prop when a user clicks on a session to view it.
-	getSession=() => {
-		//var session = sessions.find(session => this.props.id === session.id);
-		//this.session = session === undefined ? sessions[0] : session;
-		
-			
-            
-		this.props.axiosWrapper.axiosGet(this.props.location.pathname , this.handleGetSession);
+
+	getSession = () => { 
+		if (this.props.match.params.sessionId){
+			this.props.axiosWrapper.axiosGet("/main/session/" + this.props.match.params.sessionId, this.handleGetSession)
+		}
+		else {
+			// Render suggestions to start a session?
+		}
 	}
+
 	handleGetSession = (status,data) =>{
 		var session = null;
 		if(status === 200){
-            console.log(status);
-            
-            session = data.data.session;
-            console.log(session);
+			session = data.data.session;
+
             this.setState({
         		loading:false,
         		id: session._id,
@@ -59,7 +47,6 @@ class SessionScreen extends React.Component {
 				endTime : session.endTime,
 				initialQueue: session.initialQueue,
 				actionLog : session.actionLog,
-				//host: this.getSessionHost()
 				hostName : session.hostName
         	})
             
@@ -73,13 +60,7 @@ class SessionScreen extends React.Component {
         	})
         }
 	}
-	/*(AXIOS)Not needed when axiosGet returns session.hostName
-	getSessionHost = () => {
-		return users.find(user=>this.session.hostId === user.Id);
 
-	}
-	*/
-	//replace icon with the associated user profile image
     render(){
     	let renderContainer = false
     	if(!this.state.loading && !this.state.error){

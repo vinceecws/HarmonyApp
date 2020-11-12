@@ -108,18 +108,16 @@ exports.createSession = async function(hostId, hostName, name, startTime, endTim
 //createSession('hello', 'shipping tools', 12);
 
 exports.getSession = async function(sessionObject){
-  console.log('Get session');
   let session = await connection.then(async () => {
     return await Session.findOne(sessionObject);
   }).catch(error => {console.log(error)});
-  console.log("SESSION:"+session);
   
   return session;
 }
 
 exports.getSessions = async function(){
   let sessions = await connection.then(async () => {
-    return await Session.find({}).sort({viewCount:1});
+    return await Session.find({});
   }).catch(error => {console.log(error)});
   return sessions;
 }

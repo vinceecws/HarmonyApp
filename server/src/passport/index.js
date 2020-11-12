@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const User = mongoose.model('user', userSchema, 'user')
 
 exports.serialize = function(req, user, done) {
-    done(null, user.id)
+    done(null, user._id)
 }
 
 exports.deserialize = function(req, id, done) {

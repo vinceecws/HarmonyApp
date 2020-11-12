@@ -12,7 +12,6 @@ import SearchScreen from './SearchScreen.js'
 import ProfileScreen from './ProfileScreen.js'
 import SessionScreen from './SessionScreen.js'
 import CollectionScreen from './CollectionScreen.js'
-import LoginScreen from './LoginScreen.js'
 
 import { Row, Col } from 'react-bootstrap';
 import { Route, Switch } from 'react-router-dom'
@@ -97,13 +96,12 @@ class MainApp extends React.Component {
                     </Col>
                     <Col id="screen-container">
                         <Switch>
-                            <Route path={['/main/session', '/main/session/:sessionId']} render={(props) => <SessionScreen {...props} auth={this.props.auth} queue={this.queue} axiosWrapper = {this.props.axiosWrapper}/>} />
                             <Route path='/main/search' render={(props) => <SearchScreen {...props} auth={this.props.auth} history={this.props.user.history} queryVideos={this.queryVideos} playVideo={this.playVideo} queue={this.queue} axiosWrapper = {this.props.axiosWrapper}/>} />
+                            <Route path={['/main/session/:sessionId']} render={(props) => <SessionScreen {...props} auth={this.props.auth} key={props.match.params.sessionId} queue={this.queue} axiosWrapper = {this.props.axiosWrapper} />} />
                             <Route path='/main/profile/:userId' render={(props) => <ProfileScreen {...props} auth={this.props.auth} user={this.props.user} axiosWrapper = {this.props.axiosWrapper}/>} />
                             <Route path='/main/collection/:collectionId' render={(props) => <CollectionScreen {...props} auth={this.props.auth} axiosWrapper = {this.props.axiosWrapper}/>} />
                             <Route path='/main/collection' render={(props) => <CollectionScreen {...props} auth={this.props.auth} />} axiosWrapper = {this.props.axiosWrapper}/>
                             <Route path='/main/settings' render={(props) => <SettingsScreen {...props} auth={this.props.auth} user={this.props.user} axiosWrapper = {this.props.axiosWrapper}/>} />
-                            <Route path='/login' render={(props) => <LoginScreen {...props} auth={this.props.auth} axiosWrapper = {this.props.axiosWrapper}/>} />
                             <Route path='/' render={(props) => <HomeScreen {...props} auth={this.props.auth} axiosWrapper = {this.props.axiosWrapper}/>} />
                         </Switch>
                     </Col>

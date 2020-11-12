@@ -105,7 +105,6 @@ mainRouter.post('/session/newSession', async (req, res) => {
 
 mainRouter.get('/session/:id', async (req, res) => {
     let id = req.params.id;
-    console.log("ID:"+id);
     if (id == null){
         return res.status(404).json({
             error: {
@@ -130,6 +129,7 @@ mainRouter.get('/session/:id', async (req, res) => {
             },
             success: true
         })
+        console.log(session.initialQueue[0]);
     }
 
 });
