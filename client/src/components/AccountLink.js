@@ -5,6 +5,15 @@ import { icon_profile_image } from '../graphics';
 
 class AccountLink extends React.Component {
 
+    handleLogOutAccount = () => {
+        this.props.axiosWrapper.axiosGet('/logout', (function(res, data) {
+            if (data.success) {
+                this.props.handleLogOut()
+                this.props.history.push("/login")
+            }
+        }).bind(this), true)
+    }
+
     render() {
         if (this.props.auth) {
             return (
@@ -16,13 +25,17 @@ class AccountLink extends React.Component {
                     </Button>
                     <Dropdown.Toggle split id="tab-component-account-link-dropdown-button" />
                     <Dropdown.Menu id="tab-component-account-link-dropdown-menu">
-                        <Dropdown.Item as={Link} to={"/main/profile/" + this.props.user._id}>
-                            Profile
-                        </Dropdown.Item>
-                        <Dropdown.Item as={Link} to={"/main/settings"}>
-                            Settings
-                        </Dropdown.Item>
-                        <Dropdown.Item as={Link} to={"/login"} onClick={this.props.handleLogOut}>
+                        <Link to={"/main/profile/" + this.props.user._id}>
+                            <Dropdown.Item as={Button}>
+                                Profile
+                            </Dropdown.Item>
+                        </Link>
+                        <Link to={"/main/settings"}>
+                            <Dropdown.Item as={Button}>
+                                Settings
+                            </Dropdown.Item>
+                        </Link>
+                        <Dropdown.Item as={Button} onClick={(e) => this.handleLogOutAccount(e)}>
                             Log Out
                         </Dropdown.Item>
                     </Dropdown.Menu>

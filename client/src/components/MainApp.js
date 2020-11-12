@@ -86,7 +86,7 @@ class MainApp extends React.Component {
         return(
             <div id="main-app-container">
                 <Row id="top-container">
-                    <TabComponent auth={this.props.auth} user={this.props.user} handleLogOut={this.props.handleLogOut}/>
+                    <TabComponent auth={this.props.auth} user={this.props.user} axiosWrapper={this.props.axiosWrapper} handleLogOut={this.props.handleLogOut} history={this.props.history}/>
                 </Row>
                 <Row id="mid-container" style={{marginLeft:'0px'}}>
                     <Col id="side-list-container" sm={2} md={2} lg={2} xl={2}>
