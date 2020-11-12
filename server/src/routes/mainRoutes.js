@@ -5,7 +5,20 @@ mainRouter = express.Router()
 
 mainRouter.get('/', async (req, res) => {
     let sessions = await mongooseQuery.getSessions()
-        .catch(err => {res.sendStatus(404)});
+        .catch(err => {
+            return res.status(401).json({
+                error: {
+                    name: "JsonWebTokenError",
+                    message: "Invalid query"
+                },
+                message: "Invalid query",
+                statusCode: 401,
+                data: {
+                    sessions: null
+                },
+                success: false
+            })
+        });
     return res.status(200).json({
         message: "Fetch success",
         statusCode: 200,
@@ -19,11 +32,29 @@ mainRouter.get('/', async (req, res) => {
 mainRouter.get('/profile/:id', async (req, res) => {
     let id = req.params.id;
     if (id == null){
-        res.status(404).send();
+        return res.status(404).json({
+            error: {
+                name: "JsonWebTokenError",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                sessions: null
+            },
+            success: false
+        })
     }
     else{
         let user = await mongooseQuery.getUser({'_id': req.params.id});
-        res.json(user);
+        return res.status(200).json({
+            message: "Fetch success",
+            statusCode: 200,
+            data: {
+                user: user
+            },
+            success: true
+        })
     }
 });
 
