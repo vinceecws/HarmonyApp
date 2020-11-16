@@ -30,7 +30,7 @@ class AccountLink extends React.Component {
                                 Profile
                             </Dropdown.Item>
                         </Link>
-                        <Link to={"/main/settings"}>
+                        <Link to={"/main/settings/" + this.props.user._id}>
                             <Dropdown.Item as={Button}>
                                 Settings
                             </Dropdown.Item>

@@ -64,6 +64,41 @@ mainRouter.get('/profile/:id', async (req, res) => {
     }
 });
 
+mainRouter.get('/settings/:id', async (req, res) => {
+    let id = req.params.id;
+    if (id == null){
+        return res.status(404).json({
+            error: {
+                name: "JsonWebTokenError",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                sessions: null
+            },
+            success: false
+        })
+    }
+    else{
+        let user = await mongooseQuery.getUser({'_id': req.params.id});
+        let fetchedUser = {username: user.google.name === undefined ? user.local.username : user.google.name,
+                                _id: user._id, biography: user.biography,
+                                privateMode: user.privateMode, live: user.live,
+                                playlists: user.playlists, sessions: user.sessions,
+                                history: user.history, likedSongs: user.likedSongs,
+                                likedCollections: user.likedCollections}
+        return res.status(200).json({
+            message: "Fetch success",
+            statusCode: 200,
+            data: {
+                user: fetchedUser
+            },
+            success: true
+        })
+    }
+});
+
 mainRouter.get('/profile/createCollection/:name', async (req, res) => {
 	let name = req.params.name;
 	if(name == null){
@@ -182,6 +217,33 @@ mainRouter.post('/collection/updateCollection/:id', async (req, res) => {
 			success:true
 		})
 	}
+});
+
+mainRouter.post('/settings/:id/changeUsername', async (req, res) => {
+    let id = req.params.id;
+    if(id == null){
+        return res.status(404).json({
+            error: {
+                name: "JsonWebTokenError",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
+    else{
+        await mongooseQuery.deleteCollection({'_id': req.params.id});
+        return res.status(200).json({
+            message: "Collection deleted",
+            statusCode: 200,
+            success:true
+        })
+    }
+    
 });
 
 mainRouter.post('/session/newSession', async (req, res) => {
