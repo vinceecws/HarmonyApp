@@ -5,6 +5,7 @@ module.exports = function(passport) {
     authRouter = express.Router()
 
     authRouter.get('/login', function(req, res, next) {
+
         if (req.user) {
             return res.status(200).json({
                 message: "Authorization success",
@@ -91,6 +92,8 @@ module.exports = function(passport) {
             }
 
             req.login(user, function(err) {
+                console.log("REQ.LOGIN")
+                console.log(user)
                 if (err) {
                     return next(err)
                 }

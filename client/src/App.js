@@ -9,7 +9,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
 import './App.css';
 import AxiosWrapper from './components/axiosWrapper/axiosWrapper.js'
-axios.defaults.baseURL = 'http://localhost:4000'
+axios.defaults.baseURL = 'http://127.0.0.1:4000'
 
 class App extends React.Component {
 

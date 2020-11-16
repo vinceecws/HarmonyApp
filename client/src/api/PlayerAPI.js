@@ -18,7 +18,7 @@ class PlayerAPI {
     }
 
     onPlayerStateChange = (e) => {
-
+        
     }
 
     isPlayerInit = () => {
@@ -62,6 +62,12 @@ class PlayerAPI {
     pauseVideo = () => {
         if (this._playerReady && this.player != null) {
             this.player.pauseVideo()
+        }
+    }
+
+    stopVideo = () => {
+        if (this._playerReady && this.player != null) {
+            this.player.stopVideo()
         }
     }
 

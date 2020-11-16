@@ -42,15 +42,18 @@ class Player extends React.Component{
     handleNextSong = () => {
         this.props.queue.nextSong()
         var currentSong = this.props.queue.getCurrentSong()
-        if (currentSong != null) {
+        if (currentSong.id !== "") {
             this.props.playerAPI.loadVideoById(currentSong.id)
+        }
+        else {
+            this.props.playerAPI.stopVideo()
         }
     }
 
     handlePreviousSong = () => {
         this.props.queue.previousSong()
         var currentSong = this.props.queue.getCurrentSong()
-        if (currentSong != null) {
+        if (currentSong.id !== "") {
             this.props.playerAPI.loadVideoById(currentSong.id)
         }
     }

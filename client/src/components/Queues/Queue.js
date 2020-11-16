@@ -7,12 +7,7 @@ class Queue {
     constructor(pastQueue, futureQueue, currentSong, repeat=repeatStates.OFF, shuffle=false) {
         this._pastQueue = (pastQueue === undefined || pastQueue.length === 0) ? [] : pastQueue
         this._futureQueue = (futureQueue === undefined || futureQueue.length === 0) ? [] : futureQueue
-        this._currentSong = currentSong === undefined ? {
-            name: "",
-            creator: "",
-            image: icon_profile_image
-        } : currentSong
-
+        this._currentSong = currentSong === undefined ? this.getEmptySong() : currentSong
         this._repeat = repeat
         this._shuffle = shuffle
 
@@ -22,6 +17,17 @@ class Queue {
     /*
         Queue States
     */
+
+    getEmptySong = () => {
+        return {
+            id: "",
+            type: "song",
+            name: "",
+            creatorId: "",
+            creator: "",
+            image: icon_profile_image
+        }
+    }
 
     getCurrentSong = () => {
         return _.cloneDeep(this._currentSong)
@@ -77,6 +83,10 @@ class Queue {
             this._pastQueue.push(this._currentSong)
             this._currentSong = this._pastQueue.shift()
         }
+        else {
+            this._pastQueue.push(this._currentSong)
+            this._currentSong = this.getEmptySong()
+        }
     }
 
     previousSong = () => {
@@ -104,7 +114,6 @@ class Queue {
 
     addSongToFutureQueue = (song) => {
         this._futureQueue.push(song)
-        console.log(this._futureQueue)
     }
 
     removeSongFromFutureQueue = (index) => {
@@ -115,8 +124,24 @@ class Queue {
         this._repeat = this._repeat === repeatStates.QUEUE ? repeatStates.OFF : this._repeat + 1
     }
 
+
+    //Need to implement handling for song ended
     toggleShuffle = () => {
         this._shuffle = !this._shuffle
+        if (this._shuffle) {
+
+            this._tempFutureQueue = _.cloneDeep(this._futureQueue)
+            /* Fisher-Yates shuffle from https://medium.com/@nitinpatel_20236/how-to-shuffle-correctly-shuffle-an-array-in-javascript-15ea3f84bfb */
+            for (let i = this._tempFutureQueue.length - 1; i > 0; i--){
+                const j = Math.floor(Math.random() * i)
+                const temp = this._tempFutureQueue[i]
+                this._tempFutureQueue[i] = this._tempFutureQueue[j]
+                this._tempFutureQueue[j] = temp
+            }
+        }
+        else {
+            this._tempFutureQueue = []
+        }
     }
 
     /*
