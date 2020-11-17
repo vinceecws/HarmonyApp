@@ -16,6 +16,7 @@ class ProfileScreen extends React.Component{
 			newCollectionName: "",
 			showCreateCollectionModal: false
 		}
+		console.log(this.props.match.params.userId);
 		this.fetchUser()
 	}
 
@@ -65,7 +66,7 @@ class ProfileScreen extends React.Component{
 					profileUser: data.data.user,
 					loading: false
 				})
-				console.log(this.profileUser);
+				console.log(this.state.profileUser);
 			}
 		}).bind(this))
 	}

@@ -1,117 +1,154 @@
 import React from 'react';
+import Spinner from './Spinner';
 import {icon_profile_image, icon_calendar} from '../graphics';
-
+import { Link, Route } from 'react-router-dom'
 
 class SettingsScreen extends React.Component{
 	constructor (props) {
         super(props);
         this.state = {
-						user : {image: null, 
-						dob: new Date(),
-						username: "",
-						password: "",
-						email: "",
-						privateMode: false}
+				username: "",
+                password: "",
+                confirm_password: "",
+                biography: "",
+                privateMode: false,
+                loading: true,
+                profileUser: null
 
-    				}
+    		}
+        this.fetchUser();
     }
-    
-	getUserImage = () => {
-        return this.state.user.image ? this.state.user.image : icon_profile_image;
+    clearUsernameCredentials = () => {
+        this.setState({
+            username: "",
+            password: "",
+        })
     }
-    getBirthday = () =>{
-    	return this.state.user.date ? this.state.user.date : new Date();
+    handleCloseUsernameModal = () => {
+        this.clearUsernameCredentials()
+        this.props.history.goBack()
     }
-    getUsername = () => {
-        return this.state.user.username ? this.state.user.username : "No name";
+    handleUsernameChange = (e) => {
+        this.setState({
+            username: e.target.value
+        })
     }
-    getPassword = () =>{
-    	return this.state.user.password ? this.state.user.password : "No password";
+
+    handlePasswordChange = (e) => {
+        this.setState({
+            password: e.target.value
+        })
     }
-    getEmail = () =>{
-    	return this.state.user.email ? this.state.user.email : "No email";
+    handleUsername = (e) => {
+        if (this.state.username.trim() === "" || this.state.password.trim() === "" || this.state.confirm_password === ""){
+            //Handle empty username, password or confirm password here
+            console.log("Username, password and confirm password must not be empty")
+            return
+        }
+
+        if (this.state.password !== this.state.confirm_password) {
+            //Handle inconsistent password here
+            console.log("Password must be the same as confirm password")
+            return
+        }
+
+        this.props.axiosWrapper.axiosPost('/main/settings/'+this.props.match.params.userId+'/changeUsername', {
+            username: this.state.username,
+        }, (function(res, data) {
+            if (data.success) {
+                //this.props.handleAuthenticate(data.data.user)
+                this.props.history.push("/main/settings")
+            }
+            else {
+                // Handle username taken prompting here
+                console.log(data.message)
+            }
+        }).bind(this))
     }
     getPrivateMode = () =>{
-    	return this.state.user.prvateMode;
+    	return this.state.user.privateMode;
     }
-    onChange =() =>{
-    	this.setState(this.state.user.date);
-	}
+    fetchUser = () => {
+        this.props.axiosWrapper.axiosGet('/main/settings/' + this.props.match.params.userId, (function(res, data) {
+            console.log(data);
+            if (data.success) {
+                console.log('Success!')
+                this.setState({
+                    profileUser: data.data.user,
+                    loading: false
+                })
+                console.log(this.state.profileUser);
+            }
+        }).bind(this))
+    }
 	render(){
-        return (
-        		<div style={{fontFamily: 'BalsamiqSans', display:'inline'}}>
-        			<div className='row'>
-        				<div className='col-sm-2'>
-        					<div style={{color: 'white', fontSize:'40px', 
-        										marginTop: '20px'}}>
-        										Settings
-        					</div>
-        					<div id='container' style={{position:'relative'}}>
-        						<img id="user-profile-image" src={this.getUserImage()} style={{width: '200px', border: '3px solid',
-        																					   backgroundColor: 'white'}}/>
-        						
-        						
-        						<input type='submit' value='Edit' style={{marginTop: '155px', position: 'absolute', 
-        																	  marginLeft:'-122px', boxShadow: '3px 3px'}}/>
-        						
-        					</div>
-        				</div>
-        				<div className='col-sm-10' style={{display:'inline-block'}}>
-        					<div id='container' style={{marginTop: '5%', border: '3px solid', height:'80vh', padding:'1em',backgroundSize:'100%', backgroundColor: '#C0C0C0'}}>
-        						<form>
-        							<div>
-        								<textarea rows='7' cols='30' style={{resize: 'none'}}/>
-
-                                    	<input type='submit' value='Edit' style={{marginTop: '150px', position: 'absolute', 
-        																	  marginLeft:'-60px', boxShadow: '3px 3px'}}/>
-        								<div style={{position:'relative', marginLeft:'380px', marginTop:'-65px'}}>
-	        								<label for='Birthday'style={{display:'block'}}>Birthday</label>
-	        								<div style ={{display:'flex'}}>
-	        									<input type='text' name='Birthday' placeholder='10/10/1997' style={{display:'block'}}/>
-	        									<button>
-	        										<img id="calendar" src={icon_calendar} style={{width:'25px', marginLeft:'5px', display:'inline-block'}}/>
-
-	        									</button>
-		        								
-		        									
-
-        									</div>
-	        							</div>
-	        							
-
-        							</div>
-        							<div style = {{ marginLeft:'85%', position:'relative', top:'-175px' }}>
-	        								<input type="checkbox" id="customSwitch1" className='checkbox'/>
-	        								<label for='customSwitch1' className='switch'></label>
-	        								<label style={{position:'relative',bottom:'12px', left:'15px'}}>Private Mode</label>
-        							</div>
-        							
-        							<div style = {{display: 'flex' }}>
-	        							<div style = {{ marginTop: '2%'}}>
-	        								<label for='Username' style={{display:'block'}}>Username</label>
-	        								<input type='text' name='Username' placeholder='Username' style={{marginBottom: '90px', bottom:'-70px', display:'block'}}/>
-	        								
-	        							</div>
-	        							<div style = {{marginLeft:'1%', marginTop: '2%'}}>
-		        							<label for='Password'>Password</label>
-	        								<input type='password' name='Password' placeholder='Password' style={{display:'block'}}/>
-	        							</div>
-        							</div>
-        							<div style = {{ marginTop: '-50px'}}>
-	        								<label for='Email' style={{display:'block'}}>Email</label>
-	        								<input type='text' name='Email' placeholder='Email' style={{marginBottom: '50px', bottom:'-50px', display:'block'}}/>
-	        								
-	        						</div>
-        							<input type='submit' value='Submit Changes' style={{bottom: '10%', position: 'absolute', 
-        																	  marginLeft:'80%', boxShadow: '3px 3px'}}/>
-        							
-                                </form>
-                                
-        					</div>
-        				</div>
-        			</div>
-        		</div>
-        	);
+        if (this.state.loading) {
+            return <Spinner/>
+        }
+        else {
+            return (
+            		<div className='container' style={{fontFamily: 'BalsamiqSans', display:'inline'}}>
+            			<div className='row'>
+                            <div className='col' style={{color:'white'}}>
+                                    <input type="checkbox" id="customSwitch1" className='checkbox'/>
+                                    <label for='customSwitch1' className='switch'></label>
+                                    <label style={{position:'relative',bottom:'12px', left:'15px'}}>Private Mode</label>
+                            </div>
+            			</div>
+                        <div className='row'>
+                            <div className='col' style={{color:'white'}}>
+                                <Link to={'/main/settings/'+this.props.match.params.userId+'/changeUsername'}>
+                                    <button data-toggle='modal' data-target='#changeUsernameModal'>Change Username</button><br/>
+                                </Link>
+                            </div>
+                        </div>
+                        <div className='row'>
+                            <div className='col' style={{color:'white'}}>
+                                    <input type="checkbox" id="customSwitch1" className='checkbox'/>
+                                    <label for='customSwitch1' className='switch'></label>
+                                    <label style={{position:'relative',bottom:'12px', left:'15px'}}>Private Mode</label>
+                            </div>
+                        </div>
+                        <div className='row'>
+                            <div className='col' style={{color:'white'}}>
+                                    <input type="checkbox" id="customSwitch1" className='checkbox'/>
+                                    <label for='customSwitch1' className='switch'></label>
+                                    <label style={{position:'relative',bottom:'12px', left:'15px'}}>Private Mode</label>
+                            </div>
+                        </div>
+                        {/* Modal */}
+                        <Route path={'/main/settings/'+this.props.match.params.userId+'/changeUsername'} render={() => { 
+                            return(
+                            <div id="changeUsernameModal" style={{position: 'relative', transform: 'translate(0, -40%)'}}>
+                                <div className="modal-dialog">
+                                    {/* Modal Content */}
+                                    <div className="modal-content">
+                                        <div className="modal-header">
+                                            <h3>Change Username</h3>
+                                            <button type="button" className="close" data-dismiss="modal" onClick={data => this.handleCloseUsernameModal(data)}>&times;</button>
+                                        </div>
+                                        <div className="modal-body">
+                                            <p>Update your username:</p>
+                                                <div onSubmit={e => this.handleUsername(e)}>
+                                                    <input type='text' name='username' placeholder='Username' style={{marginBottom: '5px'}} onChange={this.handleUsernameChange}/><br/>
+                                                    <input type='password' name='password' placeholder='Password' style={{marginBottom: '5px'}}/> <br/>
+                                                    <input type='password' name='confirmPwd' placeholder='Confirm Password' style={{marginBottom: '5px'}}/> <br/>
+                                                    <button style={{marginTop:'20px', boxShadow: '3px 3px'}} onClick={e => this.handleUsernameChange(e)}>Submit</button>
+                                                </div>
+                                        </div>
+                                        <div className="modal-footer">
+                                            <button type="button" className="btn btn-default" data-dismiss="modal" onClick={data => this.handleCloseUsernameModal(data)}>Close</button>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        )}}/>
+            		</div>
+                    
+            	);
+        }
+        
     }
 
 }
