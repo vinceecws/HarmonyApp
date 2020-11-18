@@ -16,7 +16,6 @@ class ProfileScreen extends React.Component{
 			newCollectionName: "",
 			showCreateCollectionModal: false
 		}
-		console.log(this.props.match.params.userId);
 		this.fetchUser()
 	}
 
@@ -61,12 +60,10 @@ class ProfileScreen extends React.Component{
 	fetchUser = () => {
 		this.props.axiosWrapper.axiosGet('/main/profile/' + this.props.match.params.userId, (function(res, data) {
 			if (data.success) {
-				console.log('Success!')
 				this.setState({
 					profileUser: data.data.user,
 					loading: false
 				})
-				console.log(this.state.profileUser);
 			}
 		}).bind(this))
 	}

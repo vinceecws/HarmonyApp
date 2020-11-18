@@ -5,6 +5,7 @@ module.exports = function(passport) {
     authRouter = express.Router()
 
     authRouter.get('/login', function(req, res, next) {
+
         if (req.user) {
             return res.status(200).json({
                 message: "Authorization success",
@@ -16,13 +17,9 @@ module.exports = function(passport) {
             })
         }
         else {
-            return res.status(401).json({
-                error: {
-                    name: "Invalid session",
-                    message: "Unauthorized"
-                },
-                message: "Unauthorized",
-                statusCode: 401,
+            return res.status(200).json({
+                message: "Session does not exist",
+                statusCode: 200,
                 data: {
                     user: null
                 },
@@ -32,9 +29,7 @@ module.exports = function(passport) {
     })
 
     authRouter.post('/login', function(req, res, next) {
-        console.log("INVALID")
         passport.authenticate('local-login', function(err, user, info) {
-            console.log("INVALID")
             if (err) {
                 return next(err)
             }
