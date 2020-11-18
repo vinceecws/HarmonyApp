@@ -5,7 +5,6 @@ module.exports = function(passport) {
     authRouter = express.Router()
 
     authRouter.get('/login', function(req, res, next) {
-
         if (req.user) {
             return res.status(200).json({
                 message: "Authorization success",
@@ -19,7 +18,7 @@ module.exports = function(passport) {
         else {
             return res.status(401).json({
                 error: {
-                    name: "JsonWebTokenError",
+                    name: "Invalid session",
                     message: "Unauthorized"
                 },
                 message: "Unauthorized",
@@ -33,19 +32,17 @@ module.exports = function(passport) {
     })
 
     authRouter.post('/login', function(req, res, next) {
+        console.log("INVALID")
         passport.authenticate('local-login', function(err, user, info) {
+            console.log("INVALID")
             if (err) {
                 return next(err)
             }
 
             if (!user) {
-                return res.status(401).json({
-                    error: {
-                        name: "JsonWebTokenError",
-                        message: "Invalid credentials"
-                    },
-                    message: "Invalid credentials",
-                    statusCode: 401,
+                return res.status(200).json({
+                    message: "Invalid username or password",
+                    statusCode: 200,
                     data: {
                         user: null
                     },
@@ -77,13 +74,9 @@ module.exports = function(passport) {
             }
 
             if (!user) {
-                return res.status(401).json({
-                    error: {
-                        name: "JsonWebTokenError",
-                        message: "Username is taken"
-                    },
+                return res.status(200).json({
                     message: "Username is taken",
-                    statusCode: 401,
+                    statusCode: 200,
                     data: {
                         user: null
                     },
@@ -92,8 +85,6 @@ module.exports = function(passport) {
             }
 
             req.login(user, function(err) {
-                console.log("REQ.LOGIN")
-                console.log(user)
                 if (err) {
                     return next(err)
                 }
@@ -116,7 +107,7 @@ module.exports = function(passport) {
             if (err) {
                 return res.status(400).json({
                     error: {
-                        name: "JsonWebTokenError",
+                        name: "Invalid session",
                         message: "Invalid logout action"
                     },
                     message: "Invalid logout action",

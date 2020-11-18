@@ -17,6 +17,7 @@ class Player extends React.Component{
     }
 
     componentDidMount = () => {
+        this.props.playerAPI.subscribeToEvent("onPlayerStateChange", this.handlePlayerStateChange.bind(this))
         setInterval(() => {
             this.setState({
                 currentSong: this.props.queue.getCurrentSong(),
@@ -25,8 +26,18 @@ class Player extends React.Component{
         }, 1000)
     }
 
+    componentWillUnmount = () => {
+        this.props.playerAPI.unsubscribeFromEvent("onPlayerStateChange")
+    }
+
     handleGoToItem = (e) => {
         
+    }
+
+    handlePlayerStateChange = (e) => {
+        if (e.data === window.YT.PlayerState.ENDED) {
+            this.handleNextSong()
+        }
     }
 
     handleSeek = (value) => {
@@ -59,18 +70,25 @@ class Player extends React.Component{
     }
 
     handleTogglePlay = () => {
+        if (this.props.playerAPI.isPlayerInit() === false) { //Initialize on first use
+            if (this.props.queue.currentSongIsEmpty()) {
+                this.props.queue.nextSong()
+            }
+
+            if (!this.props.queue.currentSongIsEmpty()) {
+                var currentSong = this.props.queue.getCurrentSong()
+                this.props.playerAPI.initIFrameAPI(currentSong.id)
+            }
+            return
+        }
+
         if (this.props.playerAPI.isPaused()) {
-            if (this.props.queue.getCurrentSong().id == null) {
+            if (this.props.queue.currentSongIsEmpty()) {
                 this.props.queue.nextSong()
 
                 var currentSong = this.props.queue.getCurrentSong()
                 if (currentSong != null) {
-                    if (this.props.playerAPI.isPlayerInit() === false) { //Initialize on first use
-                        this.props.initPlayerAPI(currentSong.id)
-                    }
-                    else {
-                        this.props.playerAPI.loadVideoById(currentSong.id)
-                    }
+                    this.props.playerAPI.loadVideoById(currentSong.id)
                 }
             }
             else {

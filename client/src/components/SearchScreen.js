@@ -1,6 +1,5 @@
 import React from 'react'
 import { ListGroup, Image, Button, CardDeck, Card, InputGroup, FormControl, Dropdown, ButtonGroup } from 'react-bootstrap'
-import { genSampleResults } from '../test/genSamples'
 import { delete_cross_white, delete_button_white, icon_play_2, menu_button_white } from '../graphics'
 import Spinner from './Spinner';
 import SuggestionsAPI from '../api/SuggestionsAPI'
@@ -19,9 +18,7 @@ class SearchScreen extends React.Component {
             res: {},
             loading: this.props.auth ? true : false
         }
-        if (this.props.auth) {
-            this.fetchHistory()
-        }
+        this.fetchHistoryAndCollections()
     }
 
     isSearchBoxEmpty = () => {
@@ -100,11 +97,12 @@ class SearchScreen extends React.Component {
         return array
     }
 
-    fetchHistory = () => {
+    fetchHistoryAndCollections = () => {
         this.props.axiosWrapper.axiosGet('/main/search', (function(res, data) {
             if (data.success) {
                 this.setState({
                     history: data.data.user.history,
+                    collections: data.data.user.collections,
                     loading: false
                 })
             }

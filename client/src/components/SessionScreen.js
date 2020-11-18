@@ -7,7 +7,6 @@ import Spinner from './Spinner';
 class SessionScreen extends React.Component {
 	constructor(props){
 		super(props);
-
 		this.getSession()
 		this.state = {
 			loading: true,

@@ -1,12 +1,16 @@
 import React from 'react';
 import { Link, Route } from 'react-router-dom'
-import {icon_speak_2, icon_speak_1, icon_radio, icon_album, icon_disc_1, icon_disc_2, icon_music_album_1, icon_music_album_2, icon_sound_mixer_1, icon_sound_mixer_2} from '../graphics'
+import { icon_speak_2, icon_speak_1, icon_radio, icon_album, icon_disc_1, icon_disc_2, icon_music_album_1, icon_music_album_2, icon_sound_mixer_1, icon_sound_mixer_2 } from '../graphics'
+import { Form, Col, Button } from 'react-bootstrap'
 
 class LoginScreen extends React.Component{
 
     constructor(props) {
         super(props)
         this.state = {
+            signup_validated: false,
+            signup_username_taken: false,
+            login_validated: false,
             signup_username: "",
             signup_password: "",
             signup_confirm_password: "",
@@ -28,6 +32,7 @@ class LoginScreen extends React.Component{
 
     clearLoginCredentials = () => {
         this.setState({
+            login_validated: false,
             login_username: "",
             login_password: ""
         })
@@ -35,6 +40,8 @@ class LoginScreen extends React.Component{
 
     clearSignUpCredentials = () => {
         this.setState({
+            signup_validated: false,
+            signup_username_taken: false,
             signup_username: "",
             signup_password: "",
             signup_confirm_password: ""
@@ -60,6 +67,7 @@ class LoginScreen extends React.Component{
 
     handleSignUpUsernameChange = (e) => {
         this.setState({
+            signup_username_taken: false,
             signup_username: e.target.value
         })
     }
@@ -76,42 +84,97 @@ class LoginScreen extends React.Component{
         })
     }
 
-    handleSignup = (e) => {
-        if (this.state.signup_username.trim() === "" || this.state.signup_password.trim() === "" || this.state.signup_confirm_password === ""){
-            //Handle empty username, password or confirm password here
-            console.log("Username, password and confirm password must not be empty")
-            return
+    handleValidateSignUpUsername = (e) => {
+        if (this.state.signup_username_taken) { //Username is taken
+            return false
         }
 
-        if (this.state.signup_password !== this.state.signup_confirm_password) {
-            //Handle inconsistent password here
-            console.log("Password must be the same as confirm password")
-            return
+        if (/\s/g.test(this.state.signup_username)) { //Contains whitespace
+            return false
         }
 
-        this.props.axiosWrapper.axiosPost('/login/signup', {
-            username: this.state.signup_username,
-            password: this.state.signup_password
-        }, (function(res, data) {
-            if (data.success) {
-                this.clearSignUpCredentials()
-                this.props.handleAuthenticate(data.data.user)
-                this.props.history.push("/main/home")
-            }
-            else {
-                // Handle username taken prompting here
-                console.log(data.message)
-            }
-        }).bind(this))
+        if (!/^[0-9a-zA-Z_]+$/.test(this.state.signup_username)) { //Contains illegal characters
+            return false
+        }
+
+        if (this.state.signup_username.trim().length < 6 || this.state.signup_username.trim().length > 12) { //Invalid length
+            return false
+        }
+
+        return true
+    }
+
+    handleValidateSignUpPassword = (e) => {
+        if (/\s/g.test(this.state.signup_password)) { //Contains whitespace
+            return false
+        }
+
+        if (!/^[0-9a-zA-Z_!@#$%^&*]+$/.test(this.state.signup_password)) { //Contains illegal characters
+            return false
+        }
+
+        if (this.state.signup_password.trim().length < 6 || this.state.signup_password.trim().length > 12) { //Invalid length
+            return false
+        }
+
+        return true
+    }
+
+    handleValidateSignUpConfirmPassword = (e) => {
+        if (this.handleValidateSignUpPassword() && this.state.signup_password === this.state.signup_confirm_password) {
+            return true
+        }
+        return false
+    }
+
+    handleInvalidateSignUpConfirmPassword = () => {
+        if (this.handleValidateSignUpPassword() && !(this.state.signup_password === this.state.signup_confirm_password)) {
+            return true
+        }
+        return false
+    }
+
+    validateSignUp = () => {
+        if (this.handleValidateSignUpUsername() && this.handleValidateSignUpPassword() && this.handleValidateSignUpConfirmPassword()) {
+            return true
+        }
+        return false
+    }
+
+    handleSignUp = (e) => {
+        e.preventDefault()
+        if (this.validateSignUp()) {
+            this.props.axiosWrapper.axiosPost('/login/signup', {
+                username: this.state.signup_username,
+                password: this.state.signup_password
+            }, (function(res, data) {
+                if (data.success) {
+                    this.clearSignUpCredentials()
+                    this.props.handleAuthenticate(data.data.user)
+                    this.props.history.push("/main/home")
+                }
+                else {
+                    this.setState({
+                        signup_validated: true,
+                        signup_username_taken: true
+                    })
+                }
+            }).bind(this))
+        }
+        else {
+            this.setState({
+                signup_validated: true,
+                signup_username_taken: false
+            })
+        }
+    }
+
+    handleInvalidateLogin = () => {
+        return this.state.login_validated
     }
 
     handleLogin = (e) => {
-        if (this.state.login_username.trim() === "" || this.state.login_password.trim() === ""){
-            //Handle empty username or password here
-            console.log("Username and password must not be empty")
-            return
-        }
-
+        e.preventDefault()
         this.props.axiosWrapper.axiosPost('/login', {
             username: this.state.login_username,
             password: this.state.login_password
@@ -122,8 +185,9 @@ class LoginScreen extends React.Component{
                 this.props.history.push("/main/home")
             }
             else {
-                // Handle invalid username/password prompting here
-                console.log(data.message)
+                this.setState({
+                    login_validated: true
+                })
             }
         }).bind(this))
     }
@@ -145,12 +209,41 @@ class LoginScreen extends React.Component{
                     <div className='col' style={{marginTop: '60px', marginLeft: '10%'}}>
 
                         <h2 style={{marginBottom: '20px'}}>Log-in</h2>
-                        <div>
+                        {/* <div>
                             <input type='text' name='username' placeholder='Username' style={{marginBottom: '5px'}} onChange={this.handleLoginUsernameChange} value={this.state.login_username}/><br/>
                             <input type='password' name='password' placeholder='Password' onChange={this.handleLoginPasswordChange} value={this.state.login_password}/> <br/>
                             <button style={{marginTop:'20px', boxShadow: '3px 3px'}} onClick={e => this.handleLogin(e)}>Log-In</button>
-                        </div>
-                        {}
+                        </div> */}
+                        <Form noValidate onSubmit={this.handleLogin}>
+                            <Form.Row>
+                                <Form.Group as={Col} controlId="login-username">
+                                    <Form.Label>Username</Form.Label>
+                                    <Form.Control
+                                        required
+                                        value={this.state.login_username}
+                                        type="text"
+                                        onChange={this.handleLoginUsernameChange}
+                                        placeholder="Username"
+                                    />
+                                </Form.Group>
+                            </Form.Row>
+                            <Form.Row>
+                                <Form.Group as={Col} controlId="login-password">
+                                    <Form.Label>Password</Form.Label>
+                                    <Form.Control
+                                        required
+                                        value={this.state.login_password}
+                                        type="password"
+                                        onChange={this.handleLoginPasswordChange}
+                                        isInvalid={this.handleInvalidateLogin()}
+                                    />
+                                    <Form.Control.Feedback type="invalid">
+                                        Invalid username or password.
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+                            </Form.Row>
+                            <Button type="submit">Login</Button>
+                        </Form>
                         <Link to={'/login/signup'}>
                             <button className="btn btn-link" style={{marginTop: '10px'}} data-toggle='modal' data-target='#registrationModal'>Or create an account</button><br/>
                         </Link>
@@ -182,7 +275,7 @@ class LoginScreen extends React.Component{
                 {/* Modal */}
                 <Route path={'/login/signup'} render={() => { 
                     return(
-                    <div id="registrationModal" style={{position: 'relative', transform: 'translate(0, -120%)'}}>
+                    <div id="signup-modal">
                         <div className="modal-dialog">
                             {/* Modal Content */}
                             <div className="modal-content">
@@ -191,13 +284,69 @@ class LoginScreen extends React.Component{
                                     <button type="button" className="close" data-dismiss="modal" onClick={data => this.handleCloseSignUpModal(data)}>&times;</button>
                                 </div>
                                 <div className="modal-body">
-                                    <p>Enter Your Account Information:</p>
-                                    <div onSubmit={e => this.handleSignup(e)}>
-                                        <input type='text' name='username' placeholder='Username' style={{marginBottom: '5px'}} onChange={this.handleSignUpUsernameChange} value={this.state.signup_username}/><br/>
-                                        <input type='password' name='password' placeholder='Password' style={{marginBottom: '5px'}} onChange={this.handleSignUpPasswordChange} value={this.state.signup_password}/> <br/>
-                                        <input type='password' name='confirmPwd' placeholder='Confirm Password' style={{marginBottom: '5px'}} onChange={this.handleSignUpConfirmPasswordChange} value={this.state.signup_confirm_password}/> <br/>
-                                        <button style={{marginTop:'20px', boxShadow: '3px 3px'}} onClick={e => this.handleSignup(e)}>Sign Up</button>
-                                    </div>
+                                    <p>Create A New Account:</p>
+                                    <Form noValidate onSubmit={this.handleSignUp}>
+                                        <Form.Row>
+                                            <Form.Group as={Col} controlId="signup-username">
+                                                <Form.Label>Username</Form.Label>
+                                                <Form.Control
+                                                    required
+                                                    value={this.state.signup_username}
+                                                    type="text"
+                                                    placeholder="Username"
+                                                    onChange={this.handleSignUpUsernameChange}
+                                                    isValid={this.handleValidateSignUpUsername()}
+                                                    isInvalid={this.state.signup_validated && !this.handleValidateSignUpUsername()}
+                                                />
+                                                <Form.Text muted>
+                                                    Your username must contain 6 to 12 alphanumerical characters.
+                                                </Form.Text>
+                                                <Form.Control.Feedback>OK!</Form.Control.Feedback>
+                                                <Form.Control.Feedback type="invalid">
+                                                    {this.state.signup_username_taken ? "Username is taken." : "Invalid username."}
+                                                </Form.Control.Feedback>
+                                            </Form.Group>
+                                        </Form.Row>
+                                        <Form.Row>
+                                            <Form.Group as={Col} controlId="signup-password">
+                                                <Form.Label>Password</Form.Label>
+                                                <Form.Control
+                                                    required
+                                                    value={this.state.signup_password}
+                                                    type="password"
+                                                    placeholder="Password"
+                                                    onChange={this.handleSignUpPasswordChange}
+                                                    isValid={this.handleValidateSignUpPassword()}
+                                                    isInvalid={this.state.signup_validated && !this.handleValidateSignUpPassword()}
+                                                />
+                                                <Form.Text muted>
+                                                    Your password must contain 6 to 12 alphanumerical or special characters.
+                                                </Form.Text>
+                                                <Form.Control.Feedback type="invalid">
+                                                    Invalid password.
+                                                </Form.Control.Feedback>
+                                                <Form.Control.Feedback>OK!</Form.Control.Feedback>
+                                            </Form.Group>
+                                        </Form.Row>
+                                        <Form.Row>
+                                            <Form.Group as={Col} controlId="signup-confirm-password">
+                                                <Form.Label>Confirm Password</Form.Label>
+                                                <Form.Control
+                                                    required
+                                                    value={this.state.signup_confirm_password}
+                                                    type="password"
+                                                    onChange={this.handleSignUpConfirmPasswordChange}
+                                                    isValid={this.handleValidateSignUpConfirmPassword()}
+                                                    isInvalid={this.state.signup_validated && this.handleInvalidateSignUpConfirmPassword()}
+                                                />
+                                                <Form.Control.Feedback>Great!</Form.Control.Feedback>
+                                                <Form.Control.Feedback type="invalid">
+                                                    Passwords do not match.
+                                                </Form.Control.Feedback>
+                                            </Form.Group>
+                                        </Form.Row>
+                                        <Button type="submit">Sign Up</Button>
+                                    </Form>
                                 </div>
                                 <div className="modal-footer">
                                     <button type="button" className="btn btn-default" data-dismiss="modal" onClick={data => this.handleCloseSignUpModal(data)}>Close</button>
