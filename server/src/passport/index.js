@@ -7,6 +7,7 @@ exports.serialize = function(user, done) {
 }
 
 exports.deserialize = function(id, done) {
+    console.log("DESERIALIZE")
     User.findById(id, function(err, user) {
         if (err) {
             return done(err)

@@ -21,15 +21,18 @@ const MongoStore = require('connect-mongo')(session)
 app.use(cors({credentials: true, origin: true}))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
-app.use(cookieParser(process.env.MONGO_STORE_SESSION_SECRET.split(' ')))
+//app.use(cookieParser(process.env.MONGO_STORE_SESSION_SECRET.split(' ')))
 app.use(session({
     store: new MongoStore({ 
         mongooseConnection: db
     }),
     secret: process.env.MONGO_STORE_SESSION_SECRET.split(' '),
-    resave: true, //Prevents sessions from being saved, if unmodified
-    saveUninitialized: true //Prevents sessions from being saved, if nothing is stored
+    resave: true, 
+    saveUninitialized: true 
 }))
+passport.serializeUser(passportCallbacks.serialize)
+passport.deserializeUser(passportCallbacks.deserialize)
+
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -43,9 +46,6 @@ passport.use('local-login', new LocalStrategy({
 passport.use('local-signup', new LocalStrategy({
     passReqToCallback : true
 }, passportCallbacks.localSignUp))
-
-passport.serializeUser(passportCallbacks.serialize)
-passport.deserializeUser(passportCallbacks.deserialize)
 
 app.use(passportCallbacks.isLoggedIn)
 

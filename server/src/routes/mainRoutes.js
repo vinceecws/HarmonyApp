@@ -34,7 +34,7 @@ mainRouter.get('/profile/:id', async (req, res) => {
     if (id == null){
         return res.status(404).json({
             error: {
-                name: "Invalid session",
+                name: "Invalid id",
                 message: "Not found"
             },
             message: "Not found",
