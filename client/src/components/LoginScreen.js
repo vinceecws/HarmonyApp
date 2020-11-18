@@ -32,6 +32,7 @@ class LoginScreen extends React.Component{
 
     clearLoginCredentials = () => {
         this.setState({
+            login_validated: false,
             login_username: "",
             login_password: ""
         })
@@ -168,13 +169,12 @@ class LoginScreen extends React.Component{
         }
     }
 
-    handleLogin = (e) => {
-        if (this.state.login_username.trim() === "" || this.state.login_password.trim() === ""){
-            //Handle empty username or password here
-            console.log("Username and password must not be empty")
-            return
-        }
+    handleInvalidateLogin = () => {
+        return this.state.login_validated
+    }
 
+    handleLogin = (e) => {
+        e.preventDefault()
         this.props.axiosWrapper.axiosPost('/login', {
             username: this.state.login_username,
             password: this.state.login_password
@@ -185,8 +185,9 @@ class LoginScreen extends React.Component{
                 this.props.history.push("/main/home")
             }
             else {
-                // Handle invalid username/password prompting here
-                console.log(data.message)
+                this.setState({
+                    login_validated: true
+                })
             }
         }).bind(this))
     }
@@ -208,12 +209,41 @@ class LoginScreen extends React.Component{
                     <div className='col' style={{marginTop: '60px', marginLeft: '10%'}}>
 
                         <h2 style={{marginBottom: '20px'}}>Log-in</h2>
-                        <div>
+                        {/* <div>
                             <input type='text' name='username' placeholder='Username' style={{marginBottom: '5px'}} onChange={this.handleLoginUsernameChange} value={this.state.login_username}/><br/>
                             <input type='password' name='password' placeholder='Password' onChange={this.handleLoginPasswordChange} value={this.state.login_password}/> <br/>
                             <button style={{marginTop:'20px', boxShadow: '3px 3px'}} onClick={e => this.handleLogin(e)}>Log-In</button>
-                        </div>
-                        {}
+                        </div> */}
+                        <Form noValidate onSubmit={this.handleLogin}>
+                            <Form.Row>
+                                <Form.Group as={Col} controlId="login-username">
+                                    <Form.Label>Username</Form.Label>
+                                    <Form.Control
+                                        required
+                                        value={this.state.login_username}
+                                        type="text"
+                                        onChange={this.handleLoginUsernameChange}
+                                        placeholder="Username"
+                                    />
+                                </Form.Group>
+                            </Form.Row>
+                            <Form.Row>
+                                <Form.Group as={Col} controlId="login-password">
+                                    <Form.Label>Password</Form.Label>
+                                    <Form.Control
+                                        required
+                                        value={this.state.login_password}
+                                        type="password"
+                                        onChange={this.handleLoginPasswordChange}
+                                        isInvalid={this.handleInvalidateLogin()}
+                                    />
+                                    <Form.Control.Feedback type="invalid">
+                                        Invalid username or password.
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+                            </Form.Row>
+                            <Button type="submit">Login</Button>
+                        </Form>
                         <Link to={'/login/signup'}>
                             <button className="btn btn-link" style={{marginTop: '10px'}} data-toggle='modal' data-target='#registrationModal'>Or create an account</button><br/>
                         </Link>
@@ -257,14 +287,14 @@ class LoginScreen extends React.Component{
                                     <p>Create A New Account:</p>
                                     <Form noValidate onSubmit={this.handleSignUp}>
                                         <Form.Row>
-                                            <Form.Group as={Col} controlId="username">
+                                            <Form.Group as={Col} controlId="signup-username">
                                                 <Form.Label>Username</Form.Label>
                                                 <Form.Control
                                                     required
                                                     value={this.state.signup_username}
                                                     type="text"
-                                                    onChange={this.handleSignUpUsernameChange}
                                                     placeholder="Username"
+                                                    onChange={this.handleSignUpUsernameChange}
                                                     isValid={this.handleValidateSignUpUsername()}
                                                     isInvalid={this.state.signup_validated && !this.handleValidateSignUpUsername()}
                                                 />
@@ -278,12 +308,13 @@ class LoginScreen extends React.Component{
                                             </Form.Group>
                                         </Form.Row>
                                         <Form.Row>
-                                            <Form.Group as={Col} controlId="password">
+                                            <Form.Group as={Col} controlId="signup-password">
                                                 <Form.Label>Password</Form.Label>
                                                 <Form.Control
                                                     required
                                                     value={this.state.signup_password}
                                                     type="password"
+                                                    placeholder="Password"
                                                     onChange={this.handleSignUpPasswordChange}
                                                     isValid={this.handleValidateSignUpPassword()}
                                                     isInvalid={this.state.signup_validated && !this.handleValidateSignUpPassword()}
@@ -298,7 +329,7 @@ class LoginScreen extends React.Component{
                                             </Form.Group>
                                         </Form.Row>
                                         <Form.Row>
-                                            <Form.Group as={Col} controlId="confirm_password">
+                                            <Form.Group as={Col} controlId="signup-confirm-password">
                                                 <Form.Label>Confirm Password</Form.Label>
                                                 <Form.Control
                                                     required

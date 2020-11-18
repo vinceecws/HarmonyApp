@@ -31,15 +31,18 @@ module.exports = function(passport) {
         }
     })
 
-    authRouter.post('/login', passport.authenticate('local-login'), function(req, res, next) {
-            if (!req.user) {
-                return res.status(401).json({
-                    error: {
-                        name: "Invalid session",
-                        message: "Invalid credentials"
-                    },
-                    message: "Invalid credentials",
-                    statusCode: 401,
+    authRouter.post('/login', function(req, res, next) {
+        console.log("INVALID")
+        passport.authenticate('local-login', function(err, user, info) {
+            console.log("INVALID")
+            if (err) {
+                return next(err)
+            }
+
+            if (!user) {
+                return res.status(200).json({
+                    message: "Invalid username or password",
+                    statusCode: 200,
                     data: {
                         user: null
                     },
@@ -47,7 +50,7 @@ module.exports = function(passport) {
                 })
             }
 
-            req.login(req.user, function(err) {
+            req.login(user, function(err) {
                 if (err) {
                     return next(err)
                 }
@@ -56,12 +59,13 @@ module.exports = function(passport) {
                     message: "Authorization success",
                     statusCode: 200,
                     data: {
-                        user: req.user
+                        user: user
                     },
                     success: true
                 })
             })
-        })
+        })(req, res, next)
+    })
 
     authRouter.post('/login/signup', function(req, res, next) {
         passport.authenticate('local-signup', function(err, user, info) {
