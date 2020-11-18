@@ -69,7 +69,18 @@ exports.updateCollection = async function(collectionObject, updateFieldsObject){
   }).catch(error => console.log(error));
   
 }
+//Settings
+exports.changeUsername = async function(userObject, updateFieldsObject){
+  console.log('update username for user');
+  console.log(userObject);
+  console.log(updateFieldsObject);
+  let user = await connection.then(async () => {
+    return await User.findOneAndUpdate(userObject, {$set:{'local.username':updateFieldsObject.username}}, {new: true});
+  }).catch(error => console.log(error));
 
+  return user;
+  
+}
 //updateCollection({'_id': '5faaa7f7f098b317d81e5585'}, {name: 'the bigger crunch'});
 
 exports.deleteCollection = async function(collectionObject){

@@ -236,9 +236,12 @@ mainRouter.post('/settings/:id/changeUsername', async (req, res) => {
         })
     }
     else{
-        await mongooseQuery.deleteCollection({'_id': req.params.id});
+        let updatedUser = await mongooseQuery.changeUsername({'_id': req.params.id}, req.body);
         return res.status(200).json({
-            message: "Collection deleted",
+            message: "Username Changed",
+            data: {
+                user: updatedUser
+            },
             statusCode: 200,
             success:true
         })

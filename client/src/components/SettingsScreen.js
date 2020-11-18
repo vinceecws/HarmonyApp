@@ -34,9 +34,15 @@ class SettingsScreen extends React.Component{
         })
     }
 
-    handlePasswordChange = (e) => {
+    handleChangeUsernamePassword = (e) => {
         this.setState({
             password: e.target.value
+        })
+    }
+
+    handleChangeUsernameConfirmPassword = (e) => {
+        this.setState({
+            confirm_password: e.target.value
         })
     }
     handleUsername = (e) => {
@@ -53,15 +59,19 @@ class SettingsScreen extends React.Component{
         }
 
         this.props.axiosWrapper.axiosPost('/main/settings/'+this.props.match.params.userId+'/changeUsername', {
-            username: this.state.username,
+                
+                username: this.state.username
+                
         }, (function(res, data) {
             if (data.success) {
-                //this.props.handleAuthenticate(data.data.user)
-                this.props.history.push("/main/settings")
+                console.log(data.data.user)
+                this.props.history.push('/main/settings/' + this.props.match.params.userId)
+                console.log("new Username Pushed")
+                console.log(data.data.user)
             }
             else {
                 // Handle username taken prompting here
-                console.log(data.message)
+                console.log("new Username was not Pushed")
             }
         }).bind(this))
     }
@@ -87,34 +97,48 @@ class SettingsScreen extends React.Component{
         }
         else {
             return (
-            		<div className='container' style={{fontFamily: 'BalsamiqSans', display:'inline'}}>
+            		<div style={{fontFamily: 'BalsamiqSans', maxWidth:'100%', padding:'1em'}}>
+                        <div className='body-text color-contrasted'>SETTINGS</div>
             			<div className='row'>
-                            <div className='col' style={{color:'white'}}>
+                            <div style={{position: 'relative', left:'15px', height:'30px'}}>
                                     <input type="checkbox" id="customSwitch1" className='checkbox'/>
                                     <label for='customSwitch1' className='switch'></label>
-                                    <label style={{position:'relative',bottom:'12px', left:'15px'}}>Private Mode</label>
+                                    <label style={{position:'relative',bottom:'12px', left:'15px', color:'white'}}>Private Mode</label>
                             </div>
+                            
             			</div>
-                        <div className='row'>
-                            <div className='col' style={{color:'white'}}>
+                        <div className='row' style={{position: 'relative', left:'15px', height:'30px', color:'white'}}>
+                            <label>Private mode allows you to listen to songs and collections without creating a public session.</label>
+                        </div>
+                        <div className='row' style={{position: 'relative', height:'30px'}}>
+                            <div className='col'>
                                 <Link to={'/main/settings/'+this.props.match.params.userId+'/changeUsername'}>
                                     <button data-toggle='modal' data-target='#changeUsernameModal'>Change Username</button><br/>
                                 </Link>
                             </div>
                         </div>
-                        <div className='row'>
-                            <div className='col' style={{color:'white'}}>
-                                    <input type="checkbox" id="customSwitch1" className='checkbox'/>
-                                    <label for='customSwitch1' className='switch'></label>
-                                    <label style={{position:'relative',bottom:'12px', left:'15px'}}>Private Mode</label>
-                            </div>
+                        <div className='row' style={{position: 'relative', height:'30px', color:'white'}}>
+                            <label style={{position:'relative',bottom:'0px', left:'15px'}}>Change the name that is displayed on your profile.</label>
                         </div>
                         <div className='row'>
                             <div className='col' style={{color:'white'}}>
-                                    <input type="checkbox" id="customSwitch1" className='checkbox'/>
-                                    <label for='customSwitch1' className='switch'></label>
-                                    <label style={{position:'relative',bottom:'12px', left:'15px'}}>Private Mode</label>
+                                <Link to={'/main/settings/'+this.props.match.params.userId+'/changeUsername'}>
+                                    <button data-toggle='modal' data-target='#changeUsernameModal'>Change Password</button><br/>
+                                </Link>
                             </div>
+                        </div>
+                        <div className='row' style={{position: 'relative', height:'30px', color:'white'}}>
+                            <label style={{position:'relative',bottom:'0px', left:'15px'}}>Change your password. Requires your current password.</label>
+                        </div>
+                        <div className='row'>
+                            <div className='col' style={{color:'white'}}>
+                                <Link to={'/main/settings/'+this.props.match.params.userId+'/changeUsername'}>
+                                    <button data-toggle='modal' data-target='#changeUsernameModal'>Change Biography</button><br/>
+                                </Link>
+                            </div>
+                        </div>
+                        <div className='row' style={{position: 'relative', height:'30px', color:'white'}}>
+                            <label style={{position:'relative',bottom:'0px', left:'15px'}}>Change the biography that is displayed on your profile.</label>
                         </div>
                         {/* Modal */}
                         <Route path={'/main/settings/'+this.props.match.params.userId+'/changeUsername'} render={() => { 
@@ -130,10 +154,10 @@ class SettingsScreen extends React.Component{
                                         <div className="modal-body">
                                             <p>Update your username:</p>
                                                 <div onSubmit={e => this.handleUsername(e)}>
-                                                    <input type='text' name='username' placeholder='Username' style={{marginBottom: '5px'}} onChange={this.handleUsernameChange}/><br/>
-                                                    <input type='password' name='password' placeholder='Password' style={{marginBottom: '5px'}}/> <br/>
-                                                    <input type='password' name='confirmPwd' placeholder='Confirm Password' style={{marginBottom: '5px'}}/> <br/>
-                                                    <button style={{marginTop:'20px', boxShadow: '3px 3px'}} onClick={e => this.handleUsernameChange(e)}>Submit</button>
+                                                    <input type='text' name='username' placeholder='Username' style={{marginBottom: '5px'}} value={this.state.username} onChange={this.handleUsernameChange}/><br/>
+                                                    <input type='password' name='password' placeholder='Password' style={{marginBottom: '5px'}} value={this.state.password} onChange={this.handleChangeUsernamePassword}/> <br/>
+                                                    <input type='password' name='confirmPwd' placeholder='Confirm Password' style={{marginBottom: '5px'}} value={this.state.confirm_password}  onChange={this.handleChangeUsernameConfirmPassword}/> <br/>
+                                                    <button style={{marginTop:'20px', boxShadow: '3px 3px'}} onClick={e => this.handleUsername(e)}>Submit</button>
                                                 </div>
                                         </div>
                                         <div className="modal-footer">
