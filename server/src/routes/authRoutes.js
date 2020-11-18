@@ -5,7 +5,6 @@ module.exports = function(passport) {
     authRouter = express.Router()
 
     authRouter.get('/login', function(req, res, next) {
-
         if (req.user) {
             return res.status(200).json({
                 message: "Authorization success",
@@ -19,7 +18,7 @@ module.exports = function(passport) {
         else {
             return res.status(401).json({
                 error: {
-                    name: "JsonWebTokenError",
+                    name: "Invalid session",
                     message: "Unauthorized"
                 },
                 message: "Unauthorized",
@@ -32,16 +31,11 @@ module.exports = function(passport) {
         }
     })
 
-    authRouter.post('/login', function(req, res, next) {
-        passport.authenticate('local-login', function(err, user, info) {
-            if (err) {
-                return next(err)
-            }
-
-            if (!user) {
+    authRouter.post('/login', passport.authenticate('local-login'), function(req, res, next) {
+            if (!req.user) {
                 return res.status(401).json({
                     error: {
-                        name: "JsonWebTokenError",
+                        name: "Invalid session",
                         message: "Invalid credentials"
                     },
                     message: "Invalid credentials",
@@ -53,7 +47,7 @@ module.exports = function(passport) {
                 })
             }
 
-            req.login(user, function(err) {
+            req.login(req.user, function(err) {
                 if (err) {
                     return next(err)
                 }
@@ -62,13 +56,12 @@ module.exports = function(passport) {
                     message: "Authorization success",
                     statusCode: 200,
                     data: {
-                        user: user
+                        user: req.user
                     },
                     success: true
                 })
             })
-        })(req, res, next)
-    })
+        })
 
     authRouter.post('/login/signup', function(req, res, next) {
         passport.authenticate('local-signup', function(err, user, info) {
@@ -77,13 +70,9 @@ module.exports = function(passport) {
             }
 
             if (!user) {
-                return res.status(401).json({
-                    error: {
-                        name: "JsonWebTokenError",
-                        message: "Username is taken"
-                    },
+                return res.status(200).json({
                     message: "Username is taken",
-                    statusCode: 401,
+                    statusCode: 200,
                     data: {
                         user: null
                     },
@@ -92,8 +81,6 @@ module.exports = function(passport) {
             }
 
             req.login(user, function(err) {
-                console.log("REQ.LOGIN")
-                console.log(user)
                 if (err) {
                     return next(err)
                 }
@@ -116,7 +103,7 @@ module.exports = function(passport) {
             if (err) {
                 return res.status(400).json({
                     error: {
-                        name: "JsonWebTokenError",
+                        name: "Invalid session",
                         message: "Invalid logout action"
                     },
                     message: "Invalid logout action",

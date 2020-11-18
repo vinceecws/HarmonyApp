@@ -27,8 +27,8 @@ app.use(session({
         mongooseConnection: db
     }),
     secret: process.env.MONGO_STORE_SESSION_SECRET.split(' '),
-    resave: false, //Prevents sessions from being saved, if unmodified
-    saveUninitialized: false //Prevents sessions from being saved, if nothing is stored
+    resave: true, //Prevents sessions from being saved, if unmodified
+    saveUninitialized: true //Prevents sessions from being saved, if nothing is stored
 }))
 app.use(passport.initialize())
 app.use(passport.session())
