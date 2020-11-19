@@ -2,6 +2,7 @@ import React from 'react';
 import Spinner from './Spinner';
 import {icon_profile_image, icon_calendar} from '../graphics';
 import { Link, Route } from 'react-router-dom'
+import { Form, Col, Button } from 'react-bootstrap'
 
 class SettingsScreen extends React.Component{
 	constructor (props) {
@@ -14,7 +15,10 @@ class SettingsScreen extends React.Component{
                 biography: "",
                 privateMode: false,
                 loading: true,
-                profileUser: null
+                profileUser: null,
+                changeUsername_taken: false,
+                changeUsername_validated: false,
+                changePassword_validated: false
 
     		}
         this.fetchUser();
@@ -81,11 +85,11 @@ class SettingsScreen extends React.Component{
             confirm_password: e.target.value
         })
     }
-    handleUsername = (e) => {
-        if (this.state.username.trim() === "" || this.state.password.trim() === ""){
+    handleValidateUsername = (e) =>{
+         if (this.state.username.trim() === ""){
             //Handle empty username, password or confirm password here
             console.log("Username, password and confirm password must not be empty")
-            return
+            return false
         }
 
         
@@ -93,35 +97,105 @@ class SettingsScreen extends React.Component{
 
         if (/\s/g.test(this.state.username)) { //Contains whitespace
             console.log("Username Contains whitespace")
-            return
+            return  false
         }
 
-        if (!/^[0-9a-zA-Z_]+$/.test(this.state.sername)) { //Contains illegal characters
+        if (!/^[0-9a-zA-Z_]+$/.test(this.state.username)) { //Contains illegal characters
             console.log("Username contains illegal characters")
-            return
+            return false
         }
 
         if (this.state.username.trim().length < 6 || this.state.username.trim().length > 12) { //Invalid length
             console.log("Username has invalid length")
-            return
+            return false
+        }
+        return true
+    }
+    handleValidateNewPassword = (e) =>{
+        if (/\s/g.test(this.state.new_password)) { //Contains whitespace
+            return false
         }
 
-        this.props.axiosWrapper.axiosPost('/main/settings/changeUsername', {
-                password: this.state.password,
-                username: this.state.username
+        if (!/^[0-9a-zA-Z_!@#$%^&*]+$/.test(this.state.new_password)) { //Contains illegal characters
+            return false
+        }
+
+        if (this.state.new_password.trim().length < 6 || this.state.new_password.trim().length > 12) { //Invalid length
+            return false
+        }
+
+        return true
+    }
+    handleValidatePassword = (e) =>{
+        if (/\s/g.test(this.state.password)) { //Contains whitespace
+            return false
+        }
+
+        if (!/^[0-9a-zA-Z_!@#$%^&*]+$/.test(this.state.password)) { //Contains illegal characters
+            return false
+        }
+
+        if (this.state.password.trim().length < 6 || this.state.password.trim().length > 12) { //Invalid length
+            return false
+        }
+
+        return true
+    }
+    handleValidateChangePasswordConfirmPassword = (e) => {
+        if (this.handleValidatePassword() && this.state.password === this.state.confirm_password) {
+            return true
+        }
+        return false
+    }
+
+    handleInvalidateChangePasswordSignUpConfirmPassword = () => {
+        if (this.handleValidatePassword()  && !(this.state.password === this.state.confirm_password)) {
+            return true
+        }
+        return false
+    }
+
+    validateNewPassword = () => {
+        if (this.handleValidateNewPassword() && this.handleValidatePassword() && this.handleValidateChangePasswordConfirmPassword()) {
+            return true
+        }
+        return false
+    }
+    validateNewUsername = () => {
+        if (this.handleValidateUsername() && this.handleValidatePassword()) {
+            return true
+        }
+        return false
+    }
+    handleUsername = (e) => {
+        e.preventDefault()
+        if (this.validateNewUsername()) {
+
+            this.props.axiosWrapper.axiosPost('/main/settings/changeUsername', {
+                    password: this.state.password,
+                    username: this.state.username
+                    
+            }, (function(res, data) {
+                if (data.success) {
+                    
+                    this.props.history.push('/main/settings')
                 
-        }, (function(res, data) {
-            if (data.success) {
-                
-                this.props.history.push('/main/settings')
-            
-                console.log(data.message)
-            }
-            else {
-                // Handle username taken prompting here
-                console.log(data.message)
-            }
-        }).bind(this), true)
+                    console.log(data.message)
+                }
+                else {
+                    this.setState({
+                        changeUsername_validated: true,
+                        changeUsername_taken: true
+                    })
+                }
+            }).bind(this), true)
+        }
+        else {
+            this.setState({
+                changeUsername_validated: true,
+                changeUsername_taken: false
+            })
+        }
     }
     handleBiography = (e) => {
         
@@ -144,48 +218,38 @@ class SettingsScreen extends React.Component{
         }).bind(this), true)
     }
     handlePassword = (e) => {
-        if (this.state.confirm_password.trim() === "" || this.state.password.trim() === ""|| this.state.new_password.trim() === ""){
-            //Handle empty username, password or confirm password here
-            console.log("new password, password and confirm password must not be empty")
-            return
+        e.preventDefault();
+        if(this.validateNewPassword()){
+            this.props.axiosWrapper.axiosPost('/main/settings/changePassword', {
+                    
+                    password: this.state.password,
+                    new_password: this.state.new_password
+                    
+            }, (function(res, data) {
+                if (data.success) {
+                    
+                    this.props.history.push('/main/settings')
+                    this.clearPasswordCredentials();
+                    
+                }
+                else {
+                    // Handle username taken prompting here
+                    console.log("Password was not updated")
+                    this.setState({
+                        changePassword_validated: true
+                    });
+                    
+                }
+            }).bind(this), true)
+        
         }
-        if (!(this.state.confirm_password === this.state.password)){
-            //Handle empty username, password or confirm password here
-            console.log("confirm password must be equal to password")
-            return
-        }
-        if (/\s/g.test(this.state.new_password)) { //Contains whitespace
-            console.log("New password Contains whitespace")
-            return
-        }
+        else{
+            this.setState({
+                changePassword_validated: true
+            });
 
-        if (!/^[0-9a-zA-Z_]+$/.test(this.state.new_password)) { //Contains illegal characters
-            console.log("New password  contains illegal characters")
-            return
         }
-
-        if (this.state.new_password.trim().length < 6 || this.state.new_password.trim().length > 12) { //Invalid length
-            console.log("New password  has invalid length")
-            return
-        }
-        this.props.axiosWrapper.axiosPost('/main/settings/changePassword', {
-                
-                password: this.state.password,
-                new_password: this.state.new_password
-                
-        }, (function(res, data) {
-            if (data.success) {
-                
-                this.props.history.push('/main/settings')
-               
-                
-            }
-            else {
-                // Handle username taken prompting here
-                console.log("Password was not updated")
-            }
-        }).bind(this), true)
-        this.clearPasswordCredentials();
+        
     }
     getPrivateMode = () =>{
     	return this.state.user.privateMode;
@@ -265,11 +329,53 @@ class SettingsScreen extends React.Component{
                                         </div>
                                         <div className="modal-body">
                                             <p>Update your username:</p>
-                                                <div onSubmit={e => this.handleUsername(e)}>
-                                                    <input type='text' name='username' placeholder='Username' style={{marginBottom: '5px'}} value={this.state.username} onChange={this.handleUsernameChange}/><br/>
-                                                    <input type='password' name='password' placeholder='Password' style={{marginBottom: '5px'}} value={this.state.password} onChange={this.handleChangeUsernamePassword}/> <br/>
-                                                    <button style={{marginTop:'20px', boxShadow: '3px 3px'}} onClick={e => this.handleUsername(e)}>Submit</button>
-                                                </div>
+                                                
+                                            <Form noValidate onSubmit={this.handleUsername}>
+                                            <Form.Row>
+                                                <Form.Group as={Col} controlId="username">
+                                                    <Form.Label>Username</Form.Label>
+                                                    <Form.Control
+                                                        required
+                                                        value={this.state.username}
+                                                        type="text"
+                                                        placeholder="Username"
+                                                        onChange={this.handleUsernameChange}
+                                                        isValid={this.handleValidateUsername()}
+                                                        isInvalid={this.state.changeUsername_validated && !this.handleValidateUsername()}
+                                                    />
+                                                    <Form.Text muted>
+                                                        Your username must contain 6 to 12 alphanumerical characters.
+                                                    </Form.Text>
+                                                    <Form.Control.Feedback>OK!</Form.Control.Feedback>
+                                                    <Form.Control.Feedback type="invalid">
+                                                        {this.state.changeUsername_taken ? "Username is taken." : "Invalid username."}
+                                                    </Form.Control.Feedback>
+                                                </Form.Group>
+                                            </Form.Row>
+                                            <Form.Row>
+                                                <Form.Group as={Col} controlId="password">
+                                                    <Form.Label>Password</Form.Label>
+                                                    <Form.Control
+                                                        required
+                                                        value={this.state.password}
+                                                        type="password"
+                                                        placeholder="Password"
+                                                        onChange={this.handleChangeUsernamePassword}
+                                                        isValid={this.handleValidatePassword()}
+                                                        isInvalid={this.state.changePassword_validated && !this.handleValidatePassword()}
+                                                    />
+                                                    <Form.Text muted>
+                                                        Your password must contain 6 to 12 alphanumerical or special characters.
+                                                    </Form.Text>
+                                                    <Form.Control.Feedback type="invalid">
+                                                        Invalid password.
+                                                    </Form.Control.Feedback>
+                                                    <Form.Control.Feedback>OK!</Form.Control.Feedback>
+                                                </Form.Group>
+                                            </Form.Row>
+                                       
+                                        <Button type="submit">Submit</Button>
+                                    </Form>
                                         </div>
                                         <div className="modal-footer">
                                             <button type="button" className="btn btn-default" data-dismiss="modal" onClick={data => this.handleCloseUsernameModal(data)}>Close</button>
@@ -318,17 +424,77 @@ class SettingsScreen extends React.Component{
                                         </div>
                                         <div className="modal-body">
                                             <p>Change your Password:</p>
-                                                <div onSubmit={e => this.handlePassword(e)}>
-                                                    <input type='password' name='new password' placeholder='New Password' style={{marginBottom: '5px'}} value={this.state.new_password} onChange={this.handleChangeNewPassword}/><br/>
-                                                    <input type='password' name='password' placeholder='Password' style={{marginBottom: '5px'}} value={this.state.password} onChange={this.handleChangeUsernamePassword}/> <br/>
-                                                    <input type='password' name='confirm password' placeholder='Confirm Password' style={{marginBottom: '5px'}} value={this.state.confirm_password} onChange={this.handleChangeUsernameConfirmPassword}/> <br/>
-                                                    <button style={{marginTop:'20px', boxShadow: '3px 3px'}} onClick={e => this.handlePassword(e)}>Submit</button>
-                                                </div>
-                                        </div>
+                                                
+                                                <Form noValidate onSubmit={this.handlePassword}>
+                                                    <Form.Row>
+                                                        <Form.Group as={Col} controlId="new_password">
+                                                            <Form.Label>New Password</Form.Label>
+                                                            <Form.Control
+                                                                required
+                                                                value={this.state.new_password}
+                                                                type="password"
+                                                                placeholder="New Password"
+                                                                onChange={this.handleChangeNewPassword}
+                                                                isValid={this.handleValidateNewPassword()}
+                                                                isInvalid={this.state.changePassword_validated && !this.handleValidateNewPassword()}
+                                                            />
+                                                            <Form.Text muted>
+                                                                Your new password must contain 6 to 12 alphanumerical characters.
+                                                            </Form.Text>
+                                                            <Form.Control.Feedback>OK!</Form.Control.Feedback>
+                                                            <Form.Control.Feedback type="invalid">
+                                                                Invalid Password.
+                                                            </Form.Control.Feedback>
+                                                        </Form.Group>
+                                                    </Form.Row>
+                                                    <Form.Row>
+                                                        <Form.Group as={Col} controlId="password">
+                                                            <Form.Label>Password</Form.Label>
+                                                            <Form.Control
+                                                                required
+                                                                value={this.state.password}
+                                                                type="password"
+                                                                placeholder="Password"
+                                                                onChange={this.handleChangeUsernamePassword}
+                                                                isValid={this.handleValidatePassword()}
+                                                                isInvalid={this.state.changePassword_validated && !this.handleValidatePassword()}
+                                                            />
+                                                            <Form.Text muted>
+                                                                Your password must contain 6 to 12 alphanumerical characters.
+                                                            </Form.Text>
+                                                            <Form.Control.Feedback>OK!</Form.Control.Feedback>
+                                                            <Form.Control.Feedback type="invalid">
+                                                                Invalid Password.
+                                                            </Form.Control.Feedback>
+                                                        </Form.Group>
+                                                    </Form.Row>
+                                                    <Form.Row>
+                                                        <Form.Group as={Col} controlId="confirm_password">
+                                                            <Form.Label>Confirm Password</Form.Label>
+                                                            <Form.Control
+                                                                required
+                                                                value={this.state.confirm_password}
+                                                                type="password"
+                                                                placeholder="Confirm Password"
+                                                                onChange={this.handleChangeUsernameConfirmPassword}
+                                                                isValid={this.handleValidateChangePasswordConfirmPassword()}
+                                                                isInvalid={this.state.changePassword_validated && !this.handleInvalidateChangePasswordSignUpConfirmPassword()}
+                                                            />
+                                                            <Form.Text muted>
+                                                                Your password must contain 6 to 12 alphanumerical characters.
+                                                            </Form.Text>
+                                                            <Form.Control.Feedback>OK!</Form.Control.Feedback>
+                                                            <Form.Control.Feedback type="invalid">
+                                                                Invalid Password.
+                                                            </Form.Control.Feedback>
+                                                        </Form.Group>
+                                                    </Form.Row>
+                                                    <Button type="submit">Submit</Button>
+                                                </Form>
                                         <div className="modal-footer">
                                             <button type="button" className="btn btn-default" data-dismiss="modal" onClick={data => this.handleClosePasswordModal(data)}>Close</button>
                                         </div>
-                                        
+                                        </div>
                                     </div>
                                 </div>
                             </div>
