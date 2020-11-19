@@ -128,7 +128,7 @@ mainRouter.get('/home', async (req, res) => {
     //Suggestions only
 });
 
-mainRouter.post('/collection/delete/:id', async (req, res) => {
+mainRouter.get('/collection/delete/:id', async (req, res) => {
 	let id = req.params.id;
 	if(id == null){
 		return res.status(404).json({
@@ -172,7 +172,8 @@ mainRouter.post('/collection/updateCollection/:id', async (req, res) => {
         })
 	}
 	else{
-		let updateCollection = await mongooseQuery.updateCollection(req.params.id, req.body);
+        console.log('Request Payload: ', req.body);
+        let updateCollection = await mongooseQuery.updateCollection({'_id': req.params.id}, req.body);
 		return res.status(200).json({
 			message: "Collection updated",
 			statusCode: 200,
@@ -183,6 +184,9 @@ mainRouter.post('/collection/updateCollection/:id', async (req, res) => {
 		})
 	}
 });
+
+
+//mainRouter.post('/collection/updateUser/')
 
 mainRouter.post('/session/newSession', async (req, res) => {
     let newSession = 

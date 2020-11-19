@@ -36,7 +36,15 @@ exports.getUser = async function(userObject) { //User CRUD methods: Retrieve
   let user = await connection.then(async () => {
     return await User.findOne(userObject)
   }).catch(error => {console.log(error)});
-  
+  return user;
+}
+
+
+exports.updateUser = async function(userId) {
+  let user = await connection.then(async () => {
+    return await User.findByIdAndUpdate(userId, {new: true});
+  }).catch(error => console.log(error));
+  console.log('Updated User: ', user)
   return user;
 }
 
@@ -67,7 +75,7 @@ exports.updateCollection = async function(collectionObject, updateFieldsObject){
   let collection = await connection.then(async () => {
     return await Collection.findOneAndUpdate(collectionObject, updateFieldsObject, {new: true});
   }).catch(error => console.log(error));
-  
+  console.log('Updated Collection: ', collection);
 }
 
 //updateCollection({'_id': '5faaa7f7f098b317d81e5585'}, {name: 'the bigger crunch'});
