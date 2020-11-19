@@ -51,6 +51,8 @@ export const icon_favorite_1 = require('./music_player_pack/047-favorite.svg')
 export const icon_delete_2 = require('./music_player_pack/048-delete.svg')
 export const icon_playlist_3 = require('./music_player_pack/049-playlist.svg')
 export const icon_favorite_2 = require('./music_player_pack/050-favorite.svg')
+export const icon_up_arrow = require('./music_player_pack/TriangleArrow-Up.svg')
+export const icon_down_arrow = require('./music_player_pack/TriangleArrow-Down.svg')
 
 /* user_pack imports*/
 
