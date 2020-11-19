@@ -5,7 +5,7 @@ import { Modal, Button } from 'react-bootstrap'
 
 
 class ProfileScreen extends React.Component{
-	
+
 	constructor(props){
 		super(props)
 		this.state = {
@@ -36,7 +36,7 @@ class ProfileScreen extends React.Component{
 		if (this.state.newCollectionName.trim() !== ''){
 			this.props.axiosWrapper.axiosGet('main/profile/createCollection/' + this.state.newCollectionName, (function(res, data){
 				if (data.success){
-					this.handleGoToCollection(data.data.newCollection._id);
+					this.handleGoToCollection(data.data.collectionId);
 				}
 			}).bind(this), true)
 		}

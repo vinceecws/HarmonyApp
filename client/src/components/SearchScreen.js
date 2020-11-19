@@ -33,12 +33,20 @@ class SearchScreen extends React.Component {
         return this.state.suggestions.length === 0
     }
 
-    handleAddSongToFavorites = (id, e) => {
-
+    handleAddSongToFavorites = (songId, e) => {
+        this.props.axiosWrapper.axiosPost('/main/search/addSongToFavorites/' + songId, (function(res, data) {
+            if (!data.success) {
+                console.log("ERROR")
+            }
+        }).bind(this), true)
     }
 
-    handleAddSongToCollection = (id, collectionId, e) => {
-
+    handleAddSongToCollection = (songId, collectionId, e) => {
+        this.props.axiosWrapper.axiosPost('/main/search/addSongToCollection/' + songId + '&' + collectionId, (function(res, data) {
+            if (!data.success) {
+                console.log("ERROR")
+            }
+        }).bind(this), true)
     }
 
     handleGoToHistoryItem = (e) => {
