@@ -12,11 +12,21 @@ class ProfileScreen extends React.Component{
 		this.state = {
 			user: this.props.user,
 			loading: true,
+			sessions_loading: true,
+			playlists_loading: true,
+			likedSongs_loading: true,
+			likedCollections_loading: true,
 			profileUser: null,
+			sessions: [],
+			playlists: [],
+			likedSongs: [],
+			likedCollections: [],
 			newCollectionName: "",
 			showCreateCollectionModal: false
 		}
-		this.fetchUser()
+		this.fetchUser().then(() => {
+			this.fetchUserData()
+		})
 	}
 
 	handleGoToCollection = (id, e) => {
@@ -26,12 +36,10 @@ class ProfileScreen extends React.Component{
 	handleCreateCollection = () => {
 		if (this.state.newCollectionName.trim() !== ''){
 			this.props.axiosWrapper.axiosGet('main/profile/createCollection/' + this.state.newCollectionName, (function(res, data){
-				console.log('Got data');
 				if (data.success){
-					console.log('Created Successfully');
 					this.handleGoToCollection(data.data.newCollection._id);
 				}
-			}).bind(this))
+			}).bind(this), true)
 		}
 	}
 
@@ -54,11 +62,8 @@ class ProfileScreen extends React.Component{
 		})
 	}
 
-	/*
-		Need to implement recursive calls to fetch songs 
-	*/
-	fetchUser = () => {
-		this.props.axiosWrapper.axiosGet('/main/profile/' + this.props.match.params.userId, (function(res, data) {
+	fetchUser () {
+		return this.props.axiosWrapper.axiosGet('/main/profile/' + this.props.match.params.userId, (function(res, data) {
 			if (data.success) {
 				this.setState({
 					profileUser: data.data.user,
@@ -66,6 +71,52 @@ class ProfileScreen extends React.Component{
 				})
 			}
 		}).bind(this), true)
+	}
+
+	fetchUserData = () => {
+		if (this.state.profileUser && this.state.profileUser.sessions.length > 0) {
+			this.props.axiosWrapper.axiosGet('/main/profile/' + this.props.match.params.userId + '/sessions', (function(res, data) {
+				if (data.success) {
+					this.setState({
+						sessions: data.data.sessions,
+						sessions_loading: false
+					})
+				}
+			}).bind(this), true)
+		}
+
+		if (this.state.profileUser && this.state.profileUser.playlists.length > 0) {
+			this.props.axiosWrapper.axiosGet('/main/profile/' + this.props.match.params.userId + '/playlists', (function(res, data) {
+				if (data.success) {
+					this.setState({
+						playlists: data.data.playlists,
+						playlists_loading: false
+					})
+				}
+			}).bind(this), true)
+		}
+
+		if (this.state.profileUser && this.state.profileUser.likedSongs.length > 0) {
+			Promise.all(this.state.profileUser.likedSongs.map((songId) => {
+				return this.props.fetchVideoById(songId, true)
+			})).then((likedSongs) => {
+				this.setState({
+					likedSongs: likedSongs,
+					likedSongs_loading: false
+				})
+			})
+		}
+
+		if (this.state.profileUser && this.state.profileUser.likedCollections.length > 0) {
+			this.props.axiosWrapper.axiosGet('/main/profile/' + this.props.match.params.userId + '/likedCollections', (function(res, data) {
+				if (data.success) {
+					this.setState({
+						likedCollections: data.data.likedCollections,
+						likedCollections_loading: false
+					})
+				}
+			}).bind(this), true)
+		}
 	}
 
     render(){
@@ -103,7 +154,7 @@ class ProfileScreen extends React.Component{
 							<div id='profile-screen-summary' className='row'>
 								<div id='profile-screen-summary-text' className='body-text color-contrasted'>
 									{this.state.profileUser.sessions.length} Session(s) ⋅  
-									{" " + this.state.profileUser.playlists.length} Playlists ⋅  
+									{" " + this.state.profileUser.playlists.length} Playlist(s) ⋅  
 									{" " + this.state.profileUser.likedSongs.length} Liked Song(s) ⋅  
 									{" " + this.state.profileUser.likedCollections.length} Liked Collection(s)
 								</div>
@@ -115,13 +166,15 @@ class ProfileScreen extends React.Component{
 							<div>	
 								<div className='row' style={{padding:'1em'}}>
 									<div style={{color: 'white', fontSize:'35px'}}>
-										{this.state.profileUser.name}'s Sessions
+										{this.state.profileUser.username}'s Sessions
 									</div>
 								</div>
 								<div className='row' style={{padding:'1em'}}>
 									<div className='card-deck profile-screen-category-container'>
 										{
-											this.state.profileUser.sessions.map(session => 
+											this.state.sessions_loading ? 
+											<Spinner/> :
+											this.state.sessions.map(session => 
 												<div className='card profile-screen-category-item-card'>
 													<img className="card-img-top profile-screen-category-item-card-image" src={session.image}/>
 													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
@@ -147,7 +200,9 @@ class ProfileScreen extends React.Component{
 						<div className='row' style={{padding:'1em'}}>
 							<div className='card-deck profile-screen-category-container'>
 								{
-									this.state.profileUser.playlists.map((playlist, ind) => 
+									this.state.playlists_loading ?
+									<Spinner/> :
+									this.state.playlists.map((playlist, ind) => 
 										<div className='card profile-screen-category-item-card' key={ind} onClick={this.handleGoToCollection.bind(this, playlist._id)}>
 											<img className="card-img-top profile-screen-category-item-card-image" src={playlist.image}/>
 											<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
@@ -178,7 +233,9 @@ class ProfileScreen extends React.Component{
 								<div className='row' style={{padding:'1em'}}>
 									<div className='card-deck profile-screen-category-container'>
 										{
-											this.state.profileUser.likedSongs.map(song => 
+											this.state.likedSongs_loading ? 
+											<Spinner/> :
+											this.state.likedSongs.map(song => 
 												<div className='card profile-screen-category-item-card'>
 													<img className="card-img-top profile-screen-category-item-card-image" src={song.image}/>
 													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
@@ -204,7 +261,9 @@ class ProfileScreen extends React.Component{
 								<div className='row' style={{padding:'1em'}}>
 									<div className='card-deck profile-screen-category-container'>
 										{
-											this.state.profileUser.likedCollections.map(collection => 
+											this.state.likedSongs_loading ? 
+											<Spinner/> :
+											this.state.likedCollections.map(collection => 
 												<div className='card profile-screen-category-item-card'>
 													<img className="card-img-top profile-screen-category-item-card-image" src={collection.image}/>
 													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>

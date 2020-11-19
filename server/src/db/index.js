@@ -40,27 +40,45 @@ exports.getUser = async function(userObject) { //User CRUD methods: Retrieve
   return user;
 }
 
-exports.createCollection = async function(name, description, songList) {
+exports.createCollection = async function(userId, name, description, songList) {
   let collection = await new Collection({
     name,
     description,
     songList
-  }).save().catch(error => console.log(error));;
-  console.log('New collection: ', collection, collection.songList, collection.likes);
-  return collection;
-}
+  }).save().catch(error => console.log(error));
 
-//exports.createCollection('the bigger crunch', 'crunchy like oreo');
+  let res = await User.update({
+    _id: userId
+  }, {
+    $push: {
+      playlists: collection._id 
+    }
+  })
 
-exports.getCollection = async function(collectionObject){
-  console.log('get collection');
-  let collection = await connection.then(async () => {
-    return await Collection.findOne(collectionObject);
-  }).catch(error => console.log(error));
-  
-  return collection;
+  return collection
 }
  
+exports.getCollection = async function(collectionObject) {
+  console.log(collectionObject)
+  var collection
+  if (Array.isArray(collectionObject)) {
+    collection = await connection.then(async () => {
+      return await Collection.find({
+        '_id': { $in: collectionObject
+        }
+      }).catch(error => {
+        console.log(error)
+      })
+    })
+  }
+  else {
+    collection = await connection.then(async () => {
+      return await Collection.findOne(collectionObject);
+    }).catch(error => {console.log(error)});
+  }
+
+  return collection;
+}
 
 exports.updateCollection = async function(collectionObject, updateFieldsObject){
   console.log('update collection');
@@ -140,8 +158,6 @@ exports.deleteCollection = async function(collectionObject){
   
 }
 
-//deleteCollection({name: 'the bigger crunch'});
-
 exports.createSession = async function(hostId, hostName, name, startTime, endTime, streams, likes, live, initialQueue, actionLog){
   let session = await new Session({
     hostid, 
@@ -160,12 +176,23 @@ exports.createSession = async function(hostId, hostName, name, startTime, endTim
   return session;
 }
 
-//createSession('hello', 'shipping tools', 12);
-
-exports.getSession = async function(sessionObject){
-  let session = await connection.then(async () => {
-    return await Session.findOne(sessionObject);
-  }).catch(error => {console.log(error)});
+exports.getSession = async function(sessionObject) {
+  var session
+  if (Array.isArray(sessionObject)) {
+    session = await connection.then(async () => {
+      return await Session.find({
+        '_id': { $in: sessionObject
+        }
+      }).catch(error => {
+        console.log(error)
+      })
+    })
+  }
+  else {
+    session = await connection.then(async () => {
+      return await Session.findOne(sessionObject);
+    }).catch(error => {console.log(error)});
+  }
 
   return session;
 }
@@ -215,24 +242,6 @@ exports.getSessionsFromQuery = async function(query){
     return await Session.find({name: query});
   }).catch(error => {console.log(error)});
   return sessions;
-}
-
-//async function 
-
-
-async function createSong(_id, title, artist, album, embedLink, imageLink) {
-  return new Song({
-    _id,
-    title,
-    artist,
-    album,
-    embedLink,
-    imageLink
-  }).save();
-}
-
-async function findSong(songObject) { 
-  return await Song.findOne(songObject)
 }
 
 exports.User = User
