@@ -33,7 +33,15 @@ class SearchScreen extends React.Component {
         return this.state.suggestions.length === 0
     }
 
-    handleGoToItem = (e) => {
+    handleAddSongToFavorites = (id, e) => {
+
+    }
+
+    handleAddSongToCollection = (id, collectionId, e) => {
+
+    }
+
+    handleGoToHistoryItem = (e) => {
         
     }
 
@@ -101,8 +109,8 @@ class SearchScreen extends React.Component {
         this.props.axiosWrapper.axiosGet('/main/search', (function(res, data) {
             if (data.success) {
                 this.setState({
-                    history: data.data.user.history,
-                    collections: data.data.user.collections,
+                    history: data.data.history,
+                    playlists: data.data.playlists,
                     loading: false
                 })
             }
@@ -182,7 +190,7 @@ class SearchScreen extends React.Component {
                         <ListGroup>
                             {
                                 this.state.history.map((obj, ind) => 
-                                    <ListGroup.Item className="search-screen-history-item" key={ind} onClick={e => this.handleGoToItem(e)} action>
+                                    <ListGroup.Item className="search-screen-history-item" key={ind} onClick={e => this.handleGoToHistoryItem(e)} action>
                                         <div className="search-screen-history-item-type title color-contrasted">{obj.type.capitalize()}</div>
                                         <div className="search-screen-history-item-container">
                                             <Image className="search-screen-history-item-display-image" src={obj.image}/>
@@ -231,16 +239,22 @@ class SearchScreen extends React.Component {
                                                                             Add To Queue
                                                                         </Button>
                                                                     </Dropdown.Item>
-                                                                    <Dropdown.Item>
-                                                                        <Button>
-                                                                            Add To Collection
-                                                                        </Button>
-                                                                    </Dropdown.Item>
-                                                                    <Dropdown.Item>
-                                                                        <Button>
-                                                                            Save To Favorites
-                                                                        </Button>
-                                                                    </Dropdown.Item>
+                                                                    {
+                                                                        this.props.auth ?
+                                                                        <div>
+                                                                            <Dropdown.Item>
+                                                                                <Button onClick={this.handleAddSongToCollection.bind(this, obj.id)}>
+                                                                                    Add To Collection
+                                                                                </Button>
+                                                                            </Dropdown.Item>
+                                                                            <Dropdown.Item>
+                                                                                <Button onClick={this.handleAddSongToFavorites.bind(this, obj.id)}>
+                                                                                    Save To Favorites
+                                                                                </Button>
+                                                                            </Dropdown.Item>
+                                                                        </div>
+                                                                        : <div></div>
+                                                                    }
                                                                 </Dropdown.Menu>
                                                             </Dropdown>
                                                             <Button className="search-screen-results-category-list-item-img-overlay-play-button" onClick={this.handlePlayItem.bind(this, obj.id)}>

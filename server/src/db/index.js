@@ -59,7 +59,7 @@ exports.createCollection = async function(userId, name, description, songList) {
 }
  
 exports.getCollection = async function(collectionObject) {
-  console.log(collectionObject)
+  
   var collection
   if (Array.isArray(collectionObject)) {
     collection = await connection.then(async () => {
