@@ -63,7 +63,6 @@ exports.createCollection = async function(userId, name, description, songList) {
       playlists: collection._id 
     }
   })
-
   return collection
 }
  

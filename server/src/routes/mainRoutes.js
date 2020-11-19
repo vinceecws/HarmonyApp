@@ -242,7 +242,7 @@ mainRouter.get('/profile/createCollection/:name', async (req, res) => {
 			message: "Post success",
 			statusCode: 200,
 			data: {
-				newCollection: newCollection
+				collectionId: newCollection._id
 			},
 			success:true
 		})
@@ -517,7 +517,6 @@ mainRouter.post('/collection/updateUser/:id', async (req, res) => {
         })
     }
     else {
-        console.log('Request Payload: ', req.body);
         let updatedUser = await mongooseQuery.updateUser(userId, req.body)
                                          .catch(err => console.log(err));
         return res.status(200).json({
