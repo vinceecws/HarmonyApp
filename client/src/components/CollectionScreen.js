@@ -336,7 +336,7 @@ class CollectionScreen extends React.Component{
                                     <div className='collection-page-text' style={{display: 'inline-block', marginRight: '5%'}}>{d => this.getDurationString(d)} </div>
                                     <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}}>
                                         {/* Fix during implementation */}
-                                        <Image className={this.state.favoritedSongs[0] ? 'player-song-favorite-button-icon-on' : 'player-song-favorite-button-icon'} src={icon_like} 
+                                        <Image className='player-song-favorite-button-icon' src={icon_like} 
                                                 style={{maxHeight: '25px', maxWidth: '25px'}} onClick={e => this.onPressLikeSong(e)} roundedCircle/>
                                     </Button>
                                     <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}} 
