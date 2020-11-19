@@ -88,12 +88,10 @@ exports.getCollection = async function(collectionObject) {
   return collection;
 }
 
-exports.updateCollection = async function(collectionObject, updateFieldsObject){
-  console.log('update collection');
+exports.updateCollection = async function(collectionId, updateFieldsObject){
   let collection = await connection.then(async () => {
-    return await Collection.findOneAndUpdate(collectionObject, updateFieldsObject, {new: true});
+    return await Collection.findOneAndUpdate({_id: collectionId}, updateFieldsObject, {new: true});
   }).catch(error => console.log(error));
-  console.log('Updated Collection: ', collection);
 }
 //Settings
 exports.changeUsername = async function(userObject, updateFieldsObject){

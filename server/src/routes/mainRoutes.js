@@ -328,8 +328,7 @@ mainRouter.post('/collection/updateCollection/:id', async (req, res) => {
         })
 	}
 	else{
-        console.log('Request Payload: ', req.body);
-        let updateCollection = await mongooseQuery.updateCollection({'_id': req.params.id}, req.body);
+        let updateCollection = await mongooseQuery.updateCollection(req.params.id, req.body);
 		return res.status(200).json({
 			message: "Collection updated",
 			statusCode: 200,
@@ -684,9 +683,7 @@ mainRouter.post('/search/addSongToCollection/:songId&:collectionId', async (req,
         })
     }
     else {
-        let collection = await mongooseQuery.updateCollection({
-            _id: collectionId
-        }, {
+        let collection = await mongooseQuery.updateCollection(collectionId, {
             $push: {
               songList: songId 
             }
@@ -736,9 +733,7 @@ mainRouter.post('/search/addSongToFavorites/:songId', async (req, res) => {
         })
     }
     else {
-        let collection = await mongooseQuery.updateCollection({
-            _id: req.user.likedSongs
-        }, {
+        let collection = await mongooseQuery.updateCollection(req.user.likedSongs, {
             $push: {
               songList: songId 
             }
