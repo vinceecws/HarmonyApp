@@ -64,8 +64,22 @@ mainRouter.get('/profile/:id', async (req, res) => {
     }
 });
 
-mainRouter.get('/settings/:id', async (req, res) => {
-    let id = req.params.id;
+mainRouter.get('/settings', async (req, res) => {
+    if(req.user == null){
+        return res.status(404).json({
+            error: {
+                name: "Invalid session",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
+    let id = req.user._id;
     if (id == null){
         return res.status(404).json({
             error: {
@@ -81,7 +95,7 @@ mainRouter.get('/settings/:id', async (req, res) => {
         })
     }
     else{
-        let user = await mongooseQuery.getUser({'_id': req.params.id});
+        let user = await mongooseQuery.getUser({'_id': id});
         let fetchedUser = {username: user.google.name === undefined ? user.local.username : user.google.name,
                                 _id: user._id, biography: user.biography,
                                 privateMode: user.privateMode, live: user.live,
@@ -220,6 +234,20 @@ mainRouter.post('/collection/updateCollection/:id', async (req, res) => {
 });
 
 mainRouter.post('/settings/changeUsername', async (req, res) => {
+    if(req.user == null){
+        return res.status(404).json({
+            error: {
+                name: "Invalid session",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
     let id = req.user._id
     if(id == null){
         return res.status(404).json({
@@ -259,6 +287,20 @@ mainRouter.post('/settings/changeUsername', async (req, res) => {
     
 });
 mainRouter.post('/settings/changeBiography', async (req, res) => {
+    if(req.user == null){
+        return res.status(404).json({
+            error: {
+                name: "Invalid session",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
     let id = req.user._id
     if(id == null){
         return res.status(404).json({

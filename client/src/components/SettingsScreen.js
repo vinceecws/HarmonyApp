@@ -95,7 +95,7 @@ class SettingsScreen extends React.Component{
         }, (function(res, data) {
             if (data.success) {
                 
-                this.props.history.push('/main/settings/')
+                this.props.history.push('/main/settings')
             
                 console.log(data.message)
             }
@@ -103,7 +103,7 @@ class SettingsScreen extends React.Component{
                 // Handle username taken prompting here
                 console.log(data.message)
             }
-        }).bind(this))
+        }).bind(this), true)
     }
     handleBiography = (e) => {
         
@@ -123,7 +123,7 @@ class SettingsScreen extends React.Component{
                 // Handle username taken prompting here
                 console.log("Biography was not updated")
             }
-        }).bind(this))
+        }).bind(this), true)
     }
     getPrivateMode = () =>{
     	return this.state.user.privateMode;
@@ -162,7 +162,7 @@ class SettingsScreen extends React.Component{
                         </div>
                         <div className='row' style={{position: 'relative', height:'30px'}}>
                             <div className='col'>
-                                <Link to={'/main/settings/'+this.props.match.params.userId+'/changeUsername'}>
+                                <Link to={'/main/settings/changeUsername'}>
                                     <button data-toggle='modal' data-target='#changeUsernameModal'>Change Username</button><br/>
                                 </Link>
                             </div>
@@ -172,7 +172,7 @@ class SettingsScreen extends React.Component{
                         </div>
                         <div className='row'>
                             <div className='col' style={{color:'white'}}>
-                                <Link to={'/main/settings/'+this.props.match.params.userId+'/changeUsername'}>
+                                <Link to={'/main/settings/changeUsername'}>
                                     <button data-toggle='modal' data-target='#changeUsernameModal'>Change Password</button><br/>
                                 </Link>
                             </div>
@@ -182,7 +182,7 @@ class SettingsScreen extends React.Component{
                         </div>
                         <div className='row'>
                             <div className='col' style={{color:'white'}}>
-                                <Link to={'/main/settings/'+this.props.match.params.userId+'/changeBiography'}>
+                                <Link to={'/main/settings/changeBiography'}>
                                     <button data-toggle='modal' data-target='#changeBiographyModal'>Change Biography</button><br/>
                                 </Link>
                             </div>
