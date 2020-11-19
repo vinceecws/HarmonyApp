@@ -128,7 +128,7 @@ class SearchScreen extends React.Component {
                         res: newRes
                     })
                 }
-            }).bind(this))
+            }).bind(this), true)
         }
     }
 

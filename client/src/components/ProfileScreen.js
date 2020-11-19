@@ -65,7 +65,7 @@ class ProfileScreen extends React.Component{
 					loading: false
 				})
 			}
-		}).bind(this))
+		}).bind(this), true)
 	}
 
     render(){

@@ -159,7 +159,7 @@ class LoginScreen extends React.Component{
                         signup_username_taken: true
                     })
                 }
-            }).bind(this))
+            }).bind(this), true)
         }
         else {
             this.setState({
@@ -189,7 +189,7 @@ class LoginScreen extends React.Component{
                     login_validated: true
                 })
             }
-        }).bind(this))
+        }).bind(this), true)
     }
 
     render(){

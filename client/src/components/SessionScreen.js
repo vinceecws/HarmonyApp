@@ -25,7 +25,7 @@ class SessionScreen extends React.Component {
 
 	getSession = () => { 
 		if (this.props.match.params.sessionId){
-			this.props.axiosWrapper.axiosGet("/main/session/" + this.props.match.params.sessionId, this.handleGetSession)
+			this.props.axiosWrapper.axiosGet("/main/session/" + this.props.match.params.sessionId, this.handleGetSession, true)
 		}
 		else {
 			// Render suggestions to start a session?

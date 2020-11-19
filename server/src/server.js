@@ -6,7 +6,6 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy
 const LocalStrategy = require('passport-local').Strategy
 
 const bodyParser = require('body-parser')
-const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const express = require("express")
 const app = express()
@@ -18,23 +17,25 @@ const MongoStore = require('connect-mongo')(session)
 /*
     Express.js configurations
 */
-app.use(cors({credentials: true, origin: true}))
+app.use(cors({credentials: true, origin: 'http://127.0.0.1:3000'}))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
-//app.use(cookieParser(process.env.MONGO_STORE_SESSION_SECRET.split(' ')))
 app.use(session({
     store: new MongoStore({ 
         mongooseConnection: db
     }),
     secret: process.env.MONGO_STORE_SESSION_SECRET.split(' '),
-    resave: true, 
+    resave: false, 
     saveUninitialized: true 
 }))
+
+app.use(function(req, res, next) {
+    console.log(req.sessionID)
+    next()
+})
+
 passport.serializeUser(passportCallbacks.serialize)
 passport.deserializeUser(passportCallbacks.deserialize)
-
-app.use(passport.initialize())
-app.use(passport.session())
 
 /*
     Passport.js configurations
@@ -46,6 +47,9 @@ passport.use('local-login', new LocalStrategy({
 passport.use('local-signup', new LocalStrategy({
     passReqToCallback : true
 }, passportCallbacks.localSignUp))
+
+app.use(passport.initialize())
+app.use(passport.session())
 
 app.use(passportCallbacks.isLoggedIn)
 
