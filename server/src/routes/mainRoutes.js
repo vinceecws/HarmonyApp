@@ -703,7 +703,7 @@ mainRouter.post('/search/addSongToCollection/:songId&:collectionId', async (req,
 mainRouter.post('/search/addSongToFavorites/:songId', async (req, res) => {
     let songId = req.params.songId
 
-    if (songId == null || collectionId == null){
+    if (songId == null){
         return res.status(401).json({
             error: {
                 name: "Bad request",
@@ -712,7 +712,7 @@ mainRouter.post('/search/addSongToFavorites/:songId', async (req, res) => {
             message: "Invalid songId",
             statusCode: 401,
             data: {
-                collectionId: null
+                likedSongs: null
             },
             success: false
         })
@@ -726,7 +726,7 @@ mainRouter.post('/search/addSongToFavorites/:songId', async (req, res) => {
             message: "Unauthorized session",
             statusCode: 401,
             data: {
-                collection: null
+                likedSongs: null
             },
             success: false
         })
@@ -737,11 +737,12 @@ mainRouter.post('/search/addSongToFavorites/:songId', async (req, res) => {
               likedSongs: songId 
             }
         });
+
         return res.status(200).json({
             message: "Update successful",
             statusCode: 200,
             data:{
-            	userId: user._id
+            	likedSongs: user.likedSongs
             },
             success: true
         })
@@ -755,12 +756,14 @@ mainRouter.get('/search', async (req, res) => {
         let user = await mongooseQuery.getUser({
             _id: req.user._id
         }).catch(err => res.sendStatus(404));
+
         return res.status(200).json({
             message: "Fetch successful",
             statusCode: 200,
             data: {
                 history: user.history,
-                playlists: user.playlists
+                playlists: user.playlists,
+                likedSongs: user.likedSongs
             },
             success: true
         })

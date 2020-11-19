@@ -36,15 +36,17 @@ class SearchScreen extends React.Component {
     }
 
     handleAddSongToFavorites = (songId, e) => {
-        this.props.axiosWrapper.axiosPost('/main/search/addSongToFavorites/' + songId, (function(res, data) {
-            if (!data.success) {
-                console.log("ERROR")
+        this.props.axiosWrapper.axiosPost('/main/search/addSongToFavorites/' + songId, {}, (function(res, data) {
+            if (data.success) {
+                this.setState({
+                    likedSongs: data.data.likedSongs
+                })
             }
         }).bind(this), true)
     }
 
     handleAddSongToCollection = (songId, collectionId, e) => {
-        this.props.axiosWrapper.axiosPost('/main/search/addSongToCollection/' + songId + '&' + collectionId, (function(res, data) {
+        this.props.axiosWrapper.axiosPost('/main/search/addSongToCollection/' + songId + '&' + collectionId, {}, (function(res, data) {
             if (!data.success) {
                 console.log("ERROR")
             }
@@ -116,15 +118,18 @@ class SearchScreen extends React.Component {
     }
 
     fetchHistoryAndCollections = () => {
-        this.props.axiosWrapper.axiosGet('/main/search', (function(res, data) {
-            if (data.success) {
-                this.setState({
-                    history: data.data.history,
-                    playlists: data.data.playlists,
-                    loading: false
-                })
-            }
-        }).bind(this), true)
+        if (this.props.auth) {
+            this.props.axiosWrapper.axiosGet('/main/search', (function(res, data) {
+                if (data.success) {
+                    this.setState({
+                        history: data.data.history,
+                        playlists: data.data.playlists,
+                        likedSongs: data.data.likedSongs,
+                        loading: false
+                    })
+                }
+            }).bind(this), true)
+        }
     }
 
     fetchResults = (query) => {
@@ -258,7 +263,7 @@ class SearchScreen extends React.Component {
                                                                                 </Button>
                                                                             </Dropdown.Item>
                                                                             {
-                                                                                !this.state.profileUser.likedSongs.includes(obj.id) ? 
+                                                                                !this.state.likedSongs.includes(obj.id) ? 
                                                                                 <Dropdown.Item>
                                                                                     <Button onClick={this.handleAddSongToFavorites.bind(this, obj.id)}>
                                                                                         Save To Favorites

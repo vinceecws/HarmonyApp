@@ -37,8 +37,7 @@ class ProfileScreen extends React.Component{
 		if (this.state.newCollectionName.trim() !== ''){
 			this.props.axiosWrapper.axiosGet('main/profile/createCollection/' + this.state.newCollectionName, (function(res, data){
 				if (data.success){
-					console.log(data);
-					this.handleGoToCollection(data.data.newCollection._id);
+					this.handleGoToCollection(data.data.collectionId);
 				}
 			}).bind(this), true)
 		}
@@ -240,8 +239,8 @@ class ProfileScreen extends React.Component{
 												<div className='card profile-screen-category-item-card'>
 													<img className="card-img-top profile-screen-category-item-card-image" src={song.image}/>
 													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
-														<h1 className="card-title profile-screen-category-item-card-name title">{song.title}</h1>
-														<p className="profile-screen-category-item-card-creator body-text">{song.artist}</p>
+														<h1 className="card-title profile-screen-category-item-card-name title">{song.name}</h1>
+														<p className="profile-screen-category-item-card-creator body-text">{song.creator}</p>
 														<p className="profile-screen-category-item-card-likes">{song.likes} <img src={icon_like} className='profile-screen-category-item-card-likes-icon'/></p>
 													</div>
 												</div>

@@ -22,7 +22,7 @@ class DataAPI {
     fetchVideoById = (id, snippet=false) => {
         if (this._dataAPIReady) {
             var res = window.gapi.client.youtube.videos.list({
-                part: snippet ? ["snippet", "contentDetails"] : ["contentDetails"],
+                part: snippet ? ["snippet", "statistics", "contentDetails"] : ["contentDetails"],
                 id: id
             }).then((response) => {
                 var obj = response.result.items[0]
@@ -33,6 +33,7 @@ class DataAPI {
                         name: obj.snippet.title,
                         creatorId: obj.snippet.channelId,
                         creator: obj.snippet.channelTitle,
+                        likes: parseInt(obj.statistics.likeCount),
                         image: obj.snippet.thumbnails.default ? obj.snippet.thumbnails.default.url : null,
                         image_high: obj.snippet.thumbnails.high ? obj.snippet.thumbnails.high.url : null,
                         image_maxres: obj.snippet.thumbnails.maxres ? obj.snippet.thumbnails.maxres.url : null,
