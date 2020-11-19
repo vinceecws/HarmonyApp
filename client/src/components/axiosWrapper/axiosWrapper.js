@@ -16,8 +16,10 @@ class AxiosWrapper {
             console.log(error);
         });
 	}
-	axiosPost(path, payload, callback) {
-		return axios.post(path, payload)
+	axiosPost(path, payload, callback, withCredentials=false) {
+		return axios.post(path, payload, {
+			withCredentials: withCredentials
+		})
         .then(response => {
         	if(callback){
         		callback(response.status, response.data)

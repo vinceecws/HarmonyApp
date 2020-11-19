@@ -357,19 +357,29 @@ mainRouter.post('/search/createCollection/:name', async (req, res) => {
 });
 
 mainRouter.get('/search', async (req, res) => {
-	let user = await mongooseQuery.getUser({
-        _id: req.user._id
-    }).catch(err => res.sendStatus(404));
-    return res.status(200).json({
-        message: "Fetch successful",
-        statusCode: 200,
-        data: {
-            history: user.history,
-            playlists: user.playlists
-        },
-        success: true
-    })
-});
+    if (req.user) {
+        let user = await mongooseQuery.getUser({
+            _id: req.user._id
+        }).catch(err => res.sendStatus(404));
+        return res.status(200).json({
+            message: "Fetch successful",
+            statusCode: 200,
+            data: {
+                history: user.history,
+                playlists: user.playlists
+            },
+            success: true
+        })
+    }
+    else {
+        return res.status(200).json({
+            message: "Unauthenticated",
+            statusCode: 200,
+            data: null,
+            success: false
+        })
+    }
+})
 
 mainRouter.get('/search/query=:search', async (req, res) => {
 	let sessionMatches = await mongooseQuery.getSessionsFromQuery(req.params.search)

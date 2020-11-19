@@ -7,7 +7,6 @@ exports.serialize = function(user, done) {
 }
 
 exports.deserialize = function(id, done) {
-    console.log("DESERIALIZE")
     User.findById(id, function(err, user) {
         if (err) {
             return done(err)
@@ -82,6 +81,7 @@ exports.localSignUp = function(req, username, password, done) {
     using res.locals.authenticated
 */
 exports.isLoggedIn = function(req, res, next) {
+    console.log(req.isAuthenticated())
 
     if (req.isAuthenticated()) {
         res.locals.authenticated = true
