@@ -14,6 +14,8 @@ class SearchScreen extends React.Component {
         this.state = {
             query: "",
             history: [],
+            playlists: [],
+            likedSongs: [],
             suggestions: [],
             res: {},
             loading: this.props.auth ? true : false
@@ -255,11 +257,15 @@ class SearchScreen extends React.Component {
                                                                                     Add To Collection
                                                                                 </Button>
                                                                             </Dropdown.Item>
-                                                                            <Dropdown.Item>
-                                                                                <Button onClick={this.handleAddSongToFavorites.bind(this, obj.id)}>
-                                                                                    Save To Favorites
-                                                                                </Button>
-                                                                            </Dropdown.Item>
+                                                                            {
+                                                                                !this.state.profileUser.likedSongs.includes(obj.id) ? 
+                                                                                <Dropdown.Item>
+                                                                                    <Button onClick={this.handleAddSongToFavorites.bind(this, obj.id)}>
+                                                                                        Save To Favorites
+                                                                                    </Button>
+                                                                                </Dropdown.Item> :
+                                                                                <div></div>
+                                                                            }
                                                                         </div>
                                                                         : <div></div>
                                                                     }

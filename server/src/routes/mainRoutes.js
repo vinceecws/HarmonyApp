@@ -733,16 +733,16 @@ mainRouter.post('/search/addSongToFavorites/:songId', async (req, res) => {
         })
     }
     else {
-        let collection = await mongooseQuery.updateCollection(req.user.likedSongs, {
+        let user = await mongooseQuery.updateUser(req.user._id, {
             $push: {
-              songList: songId 
+              likedSongs: songId 
             }
         });
         return res.status(200).json({
             message: "Update successful",
             statusCode: 200,
             data:{
-            	collectionId: collection._id
+            	userId: user._id
             },
             success: true
         })
