@@ -8,7 +8,7 @@ mainRouter.get('/', async (req, res) => {
         .catch(err => {
             return res.status(401).json({
                 error: {
-                    name: "JsonWebTokenError",
+                    name: "Invalid session",
                     message: "Invalid query"
                 },
                 message: "Invalid query",
@@ -32,20 +32,20 @@ mainRouter.get('/', async (req, res) => {
 mainRouter.get('/profile/:id', async (req, res) => {
     let id = req.params.id;
     if (id == null){
-        return res.status(404).json({
+        return res.status(401).json({
             error: {
-                name: "JsonWebTokenError",
-                message: "Not found"
+                name: "Bad request",
+                message: "Invalid query"
             },
-            message: "Not found",
-            statusCode: 404,
+            message: "Invalid query",
+            statusCode: 401,
             data: {
-                sessions: null
+                user: null
             },
             success: false
         })
     }
-    else{
+    else {
 		let user = await mongooseQuery.getUser({'_id': req.params.id});
 		let fetchedUser = {username: user.google.name === undefined ? user.local.username : user.google.name,
 								_id: user._id, biography: user.biography,
@@ -64,12 +64,104 @@ mainRouter.get('/profile/:id', async (req, res) => {
     }
 });
 
-mainRouter.get('/profile/createCollection/:name', async (req, res) => {
-	let name = req.params.name;
-	if(name == null){
-		return res.status(404).json({
+mainRouter.get('/profile/:id/sessions', async (req, res) => {
+    let id = req.params.id;
+    if (id == null){
+        return res.status(401).json({
             error: {
-                name: "JsonWebTokenError",
+                name: "Bad request",
+                message: "Invalid query"
+            },
+            message: "Invalid query",
+            statusCode: 401,
+            data: {
+                sessions: null
+            },
+            success: false
+        })
+    }
+    else {
+        let user = await mongooseQuery.getUser({'_id': id})
+        let sessions = await mongooseQuery.getSession(user.sessions)
+        
+        return res.status(200).json({
+            message: "Fetch success",
+            statusCode: 200,
+            data: {
+                sessions: sessions
+            },
+            success: true
+        })
+    }
+});
+
+mainRouter.get('/profile/:id/playlists', async (req, res) => {
+    let id = req.params.id;
+    if (id == null){
+        return res.status(401).json({
+            error: {
+                name: "Bad request",
+                message: "Invalid query"
+            },
+            message: "Invalid query",
+            statusCode: 401,
+            data: {
+                playlists: null
+            },
+            success: false
+        })
+    }
+    else {
+        let user = await mongooseQuery.getUser({'_id': id})
+        let playlists = await mongooseQuery.getCollection(user.playlists)
+        
+        return res.status(200).json({
+            message: "Fetch success",
+            statusCode: 200,
+            data: {
+                playlists: playlists
+            },
+            success: true
+        })
+    }
+});
+
+mainRouter.get('/profile/:id/likedCollections', async (req, res) => {
+    let id = req.params.id;
+    if (id == null){
+        return res.status(401).json({
+            error: {
+                name: "Bad request",
+                message: "Invalid query"
+            },
+            message: "Invalid query",
+            statusCode: 401,
+            data: {
+                playlists: null
+            },
+            success: false
+        })
+    }
+    else {
+        let user = await mongooseQuery.getUser({'_id': id})
+        let likedCollections = await mongooseQuery.getCollection(user.likedCollections)
+        
+        return res.status(200).json({
+            message: "Fetch success",
+            statusCode: 200,
+            data: {
+                likedCollections: likedCollections
+            },
+            success: true
+        })
+    }
+});
+
+mainRouter.get('/settings', async (req, res) => {
+    if(req.user == null){
+        return res.status(404).json({
+            error: {
+                name: "Invalid session",
                 message: "Not found"
             },
             message: "Not found",
@@ -79,9 +171,73 @@ mainRouter.get('/profile/createCollection/:name', async (req, res) => {
             },
             success: false
         })
-	}
-	else{
-		let newCollection = await mongooseQuery.createCollection(req.params.name);
+    }
+    let id = req.user._id;
+    if (id == null){
+        return res.status(404).json({
+            error: {
+                name: "Invalid session",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                sessions: null
+            },
+            success: false
+        })
+    }
+    else{
+        let user = await mongooseQuery.getUser({'_id': id});
+        let fetchedUser = {username: user.google.name === undefined ? user.local.username : user.google.name,
+                                _id: user._id, biography: user.biography,
+                                privateMode: user.privateMode, live: user.live,
+                                playlists: user.playlists, sessions: user.sessions,
+                                history: user.history, likedSongs: user.likedSongs,
+                                likedCollections: user.likedCollections}
+        return res.status(200).json({
+            message: "Fetch success",
+            statusCode: 200,
+            data: {
+                user: fetchedUser
+            },
+            success: true
+        })
+    }
+});
+
+mainRouter.get('/profile/createCollection/:name', async (req, res) => {
+	let name = req.params.name;
+	if(name == null) {
+		return res.status(200).json({
+            error: {
+                name: "Bad request",
+                message: "Invalid operation"
+            },
+            message: "Invalid operation",
+            statusCode: 400,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
+    else if (!req.user) {
+        return res.status(401).json({
+            error: {
+                name: "Unauthorized",
+                message: "Unauthorized session"
+            },
+            message: "Unauthorized session",
+            statusCode: 401,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
+	else {
+		let newCollection = await mongooseQuery.createCollection(req.user._id, req.params.name);
 		return res.status(200).json({
 			message: "Post success",
 			statusCode: 200,
@@ -100,7 +256,7 @@ mainRouter.get('/collection/:id', async (req, res) => {
     if (id == null){
         return res.status(404).json({
             error: {
-                name: "JsonWebTokenError",
+                name: "Invalid session",
                 message: "Not found"
             },
             message: "Not found",
@@ -133,7 +289,7 @@ mainRouter.get('/collection/delete/:id', async (req, res) => {
 	if(id == null){
 		return res.status(404).json({
             error: {
-                name: "JsonWebTokenError",
+                name: "Invalid session",
                 message: "Not found"
             },
             message: "Not found",
@@ -160,7 +316,7 @@ mainRouter.post('/collection/updateCollection/:id', async (req, res) => {
 	if(id == null){
 		return res.status(404).json({
             error: {
-                name: "JsonWebTokenError",
+                name: "Invalid session",
                 message: "Not found"
             },
             message: "Not found",
@@ -185,13 +341,11 @@ mainRouter.post('/collection/updateCollection/:id', async (req, res) => {
 	}
 });
 
-
-mainRouter.post('/collection/updateUser/:id', async (req, res) => {
-    let userId = req.params.id;
-    if(userId == null){
-		return res.status(404).json({
+mainRouter.post('/settings/changeUsername', async (req, res) => {
+    if(req.user == null){
+        return res.status(404).json({
             error: {
-                name: "JsonWebTokenError",
+                name: "Invalid session",
                 message: "Not found"
             },
             message: "Not found",
@@ -201,11 +355,172 @@ mainRouter.post('/collection/updateUser/:id', async (req, res) => {
             },
             success: false
         })
-	}
-	else{
+    }
+    let id = req.user._id
+    if(id == null){
+        return res.status(404).json({
+            error: {
+                name: "Invalid session",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
+    else{
+        let updatedUser = await mongooseQuery.changeUsername({'_id': id}, req.body);
+        if (!updatedUser) {
+            return res.status(422).json({
+                message: "Invalid password or username taken",
+                statusCode: 422,
+                data: {
+                    user: null
+                },
+                success: false
+            })
+        }
+        return res.status(200).json({
+            message: "Username Changed",
+            data: {
+                user: updatedUser
+            },
+            statusCode: 200,
+            success:true
+        })
+    }
+    
+});
+mainRouter.post('/settings/changeBiography', async (req, res) => {
+    if(req.user == null){
+        return res.status(404).json({
+            error: {
+                name: "Invalid session",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
+    let id = req.user._id
+    if(id == null){
+        return res.status(404).json({
+            error: {
+                name: "Invalid session",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
+    else{
+        let updatedUser = await mongooseQuery.changeBiography({'_id': id}, req.body);
+        if (!updatedUser) {
+            return res.status(422).json({
+                message: "biography could not be updated",
+                statusCode: 422,
+                data: {
+                    user: null
+                },
+                success: false
+            })
+        }
+        return res.status(200).json({
+            message: "Biography changed",
+            data: {
+                user: updatedUser
+            },
+            statusCode: 200,
+            success:true
+        })
+    }
+    
+});
+mainRouter.post('/settings/changePassword', async (req, res) => {
+    if(req.user == null){
+        return res.status(404).json({
+            error: {
+                name: "Invalid session",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
+    let id = req.user._id
+    if(id == null){
+        return res.status(404).json({
+            error: {
+                name: "Invalid session",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
+    else{
+        let updatedUser = await mongooseQuery.changePassword({'_id': id}, req.body);
+        if (!updatedUser) {
+            return res.status(422).json({
+                message: "password could not be updated",
+                statusCode: 422,
+                data: {
+                    user: null
+                },
+                success: false
+            })
+        }
+        return res.status(200).json({
+            message: "Biography changed",
+            data: {
+                user: updatedUser
+            },
+            statusCode: 200,
+            success:true
+        })
+    }
+    
+});
+
+mainRouter.post('/collection/updateUser/:id', async (req, res) => {
+    let userId = req.params.id;
+    if(userId == null){
+		return res.status(404).json({
+            error: {
+                name: "Invalid session",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
+    else {
         console.log('Request Payload: ', req.body);
         let updatedUser = await mongooseQuery.updateUser(userId, req.body)
-                                             .catch(err => console.log(err));
+                                         .catch(err => console.log(err));
         return res.status(200).json({
             message: 'User Updated',
             statusCode: 200,
@@ -213,7 +528,7 @@ mainRouter.post('/collection/updateUser/:id', async (req, res) => {
             success: true
         })
     }
-})
+});
 
 mainRouter.post('/session/newSession', async (req, res) => {
     let newSession = 
@@ -235,7 +550,7 @@ mainRouter.get('/session/:id', async (req, res) => {
     if (id == null){
         return res.status(404).json({
             error: {
-                name: "JsonWebTokenError",
+                name: "Invalid session",
                 message: "Not found"
             },
             message: "Not found",
@@ -268,7 +583,7 @@ mainRouter.post('/session/endSession/:id', async (req, res) => {
     if (id == null){
         return res.status(404).json({
             error: {
-                name: "JsonWebTokenError",
+                name: "Invalid session",
                 message: "Not found"
             },
             message: "Not found",
@@ -282,7 +597,7 @@ mainRouter.post('/session/endSession/:id', async (req, res) => {
     else{
         let session = await mongooseQuery.updateSession(req.params.id);
         return res.status(200).json({
-            message: "Session Ended",
+            message: "Fetch successful",
             statusCode: 200,
             success: true
         })
@@ -292,11 +607,11 @@ mainRouter.post('/session/endSession/:id', async (req, res) => {
 });
 
 mainRouter.post('/search/createCollection/:name', async (req, res) => {
-    let name= req.params.name;
+    let name = req.params.name;
     if (name == null){
         return res.status(404).json({
             error: {
-                name: "JsonWebTokenError",
+                name: "Invalid session",
                 message: "Not found"
             },
             message: "Not found",
@@ -307,10 +622,10 @@ mainRouter.post('/search/createCollection/:name', async (req, res) => {
             success: false
         })
     }
-    else{
+    else {
         let newCollection = await mongooseQuery.createCollection({name: req.params.name});
         return res.status(200).json({
-            message: "Session Ended",
+            message: "Fetch successful",
             statusCode: 200,
             data:{
             	collection: newCollection
@@ -323,10 +638,29 @@ mainRouter.post('/search/createCollection/:name', async (req, res) => {
 });
 
 mainRouter.get('/search', async (req, res) => {
-	// let user = await mongooseQuery.getUser({_id: })
-	// 								.catch(err => res.sendStatus(404));
-    // return res.json(user.history);
-});
+    if (req.user) {
+        let user = await mongooseQuery.getUser({
+            _id: req.user._id
+        }).catch(err => res.sendStatus(404));
+        return res.status(200).json({
+            message: "Fetch successful",
+            statusCode: 200,
+            data: {
+                history: user.history,
+                playlists: user.playlists
+            },
+            success: true
+        })
+    }
+    else {
+        return res.status(200).json({
+            message: "Unauthenticated",
+            statusCode: 200,
+            data: null,
+            success: false
+        })
+    }
+})
 
 mainRouter.get('/search/query=:search', async (req, res) => {
 	let sessionMatches = await mongooseQuery.getSessionsFromQuery(req.params.search)

@@ -6,7 +6,6 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy
 const LocalStrategy = require('passport-local').Strategy
 
 const bodyParser = require('body-parser')
-const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const express = require("express")
 const app = express()
@@ -21,17 +20,21 @@ const MongoStore = require('connect-mongo')(session)
 app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
-app.use(cookieParser(process.env.MONGO_STORE_SESSION_SECRET.split(' ')))
 app.use(session({
     store: new MongoStore({ 
         mongooseConnection: db
     }),
+    cookie: {
+        sameSite: 'none',
+        domain: null
+    },
     secret: process.env.MONGO_STORE_SESSION_SECRET.split(' '),
-    resave: false, //Prevents sessions from being saved, if unmodified
-    saveUninitialized: false //Prevents sessions from being saved, if nothing is stored
+    resave: false, 
+    saveUninitialized: true 
 }))
-app.use(passport.initialize())
-app.use(passport.session())
+
+passport.serializeUser(passportCallbacks.serialize)
+passport.deserializeUser(passportCallbacks.deserialize)
 
 /*
     Passport.js configurations
@@ -44,8 +47,8 @@ passport.use('local-signup', new LocalStrategy({
     passReqToCallback : true
 }, passportCallbacks.localSignUp))
 
-passport.serializeUser(passportCallbacks.serialize)
-passport.deserializeUser(passportCallbacks.deserialize)
+app.use(passport.initialize())
+app.use(passport.session())
 
 app.use(passportCallbacks.isLoggedIn)
 

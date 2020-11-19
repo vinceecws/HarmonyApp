@@ -1,3 +1,4 @@
+import { ThemeConsumer } from 'react-bootstrap/esm/ThemeProvider';
 import { repeatStates } from '../../const'
 import { icon_profile_image } from '../../graphics';
 const _ = require('lodash');
@@ -7,21 +8,31 @@ class Queue {
     constructor(pastQueue, futureQueue, currentSong, repeat=repeatStates.OFF, shuffle=false) {
         this._pastQueue = (pastQueue === undefined || pastQueue.length === 0) ? [] : pastQueue
         this._futureQueue = (futureQueue === undefined || futureQueue.length === 0) ? [] : futureQueue
-        this._currentSong = currentSong === undefined ? {
-            name: "",
-            creator: "",
-            image: icon_profile_image
-        } : currentSong
-
+        this._currentSong = currentSong === undefined ? this.getEmptySong() : currentSong
         this._repeat = repeat
         this._shuffle = shuffle
 
-        this._tempFutureQueue = []
+        this._originalFutureQueue = []
     }
 
     /*
         Queue States
     */
+
+    currentSongIsEmpty = () => {
+        return this._currentSong.id === ""
+    }
+
+    getEmptySong = () => {
+        return {
+            id: "",
+            type: "song",
+            name: "",
+            creatorId: "",
+            creator: "",
+            image: icon_profile_image
+        }
+    }
 
     getCurrentSong = () => {
         return _.cloneDeep(this._currentSong)
@@ -70,13 +81,27 @@ class Queue {
         }
 
         if (this._futureQueue.length > 0) {
+            console.log(this._futureQueue)
+            console.log(this._originalFutureQueue)
             this._pastQueue.push(this._currentSong)
-            this._currentSong = this._futureQueue.shift()
+            var song = this._futureQueue.shift()
+            this.setCurrentSong(song)
+            console.log(song)
+
+            if (this._shuffle) {
+                var ind = this._originalFutureQueue.findIndex(x => x.id === song.id)
+                console.log(this._originalFutureQueue.splice(ind, 1)[0])
+            }
         }
         else if (this._repeat === repeatStates.QUEUE) {
             this._pastQueue.push(this._currentSong)
-            this._currentSong = this._pastQueue.shift()
+            this.setCurrentSong(this._pastQueue.shift())
         }
+        else {
+            this._pastQueue.push(this._currentSong)
+            this.setCurrentSong(this.getEmptySong())
+        }
+        
     }
 
     previousSong = () => {
@@ -86,50 +111,96 @@ class Queue {
 
         if (this._pastQueue.length > 0) {
             this._futureQueue.unshift(this._currentSong)
-            this._currentSong = this._pastQueue.pop()
+
+            if (this._shuffle) {
+                this._originalFutureQueue.unshift(this._currentSong)
+            }
+
+            this.setCurrentSong(this._pastQueue.pop())
         }
         else if (this._repeat === repeatStates.QUEUE) {
             this._futureQueue.unshift(this._currentSong)
-            this._currentSong = this._futureQueue.pop()
+
+            if (this._shuffle) {
+                this._originalFutureQueue.unshift(this._currentSong)
+            }
+
+            this.setCurrentSong(this._futureQueue.pop())
         }
     }
 
     clearFutureQueue = () => {
         this._futureQueue = []
+        
+        if (this._shuffle) {
+            this.toggleShuffle()
+        }
     }
 
-    moveSongInFutureQueue = (fromIndex, toIndex) => {
-        this._futureQueue.splice(toIndex, 0, this._futureQueue.splice(fromIndex, 1)[0])
+    /*
+        moveSongInFutureQueue prioritizes user-defined order, therefore, changes in order made in shuffle mode
+        is expected to persist even when shuffle is turned off. However, note that the converse is not true.
+    */
+    moveSongInFutureQueue = (fromIndex, toIndex) => { 
+        var song = this._futureQueue.splice(fromIndex, 1)[0]
+        this._futureQueue.splice(toIndex, 0, song)
+
+        if (this._shuffle) {
+            var ind = this._originalFutureQueue.findIndex(x => x.id === song.id)
+            this._originalFutureQueue.splice(toIndex, 0, this._originalFutureQueue.splice(ind, 1)[0])
+        }
     }
 
     addSongToFutureQueue = (song) => {
-        this._futureQueue.push(song)
-        console.log(this._futureQueue)
+        if (this._shuffle) {
+            var ind = Math.floor(Math.random() * this._futureQueue.length - 1)
+            this._futureQueue.splice(ind, 0, song)
+            this._originalFutureQueue.push(song)
+        }
+        else {
+            this._futureQueue.push(song)
+        }
     }
 
     removeSongFromFutureQueue = (index) => {
-        this._futureQueue.splice(index, 1)
+        var song = this._futureQueue.splice(index, 1)
+
+        if (this._shuffle) {
+            var ind = this._originalFutureQueue.findIndex(x => x.id === song.id)
+            this._originalFutureQueue.splice(ind, 1)
+        }
     }
 
     toggleRepeat = () => {
         this._repeat = this._repeat === repeatStates.QUEUE ? repeatStates.OFF : this._repeat + 1
     }
 
+
     toggleShuffle = () => {
         this._shuffle = !this._shuffle
+        if (this._shuffle) {
+            this._originalFutureQueue = _.cloneDeep(this._futureQueue)
+            /* Fisher-Yates shuffle from https://medium.com/@nitinpatel_20236/how-to-shuffle-correctly-shuffle-an-array-in-javascript-15ea3f84bfb */
+            for (let i = this._futureQueue.length - 1; i > 0; i--){
+                const j = Math.floor(Math.random() * i)
+                const temp = this._futureQueue[i]
+                this._futureQueue[i] = this._futureQueue[j]
+                this._futureQueue[j] = temp
+            }
+        }
+        else {
+            this._futureQueue = this._originalFutureQueue
+            this._originalFutureQueue = []
+        }
     }
 
     /*
-        setRepeat and setShuffle should only be used only in special cases where an abnormal state
+        setRepeat should only be used only in special cases where an abnormal state
         transition is necessary, which cannot be achieved using toggle (e.g. repeat-song -> repeat-off),
         and that the developer is well aware of the states before and after calling set
     */
     setRepeat = (val) => {
         this._repeat = val
-    }
-
-    setShuffle = (val) => {
-        this._shuffle = val
     }
 }
 

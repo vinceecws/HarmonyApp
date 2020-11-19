@@ -67,7 +67,8 @@ class DataAPI {
                 q: query,
                 type: "video",
                 videoCategoryId: "10",
-                videoSyndicated: true
+                videoSyndicated: true,
+                videoEmbeddable: true
             }).then((response) => {
                 return response.result.items.map(res => this.constructVideoResultObj(res))
             }, (err) => {

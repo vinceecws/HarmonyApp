@@ -2,13 +2,16 @@ const userSchema = require('../db/Schema/userSchema.js')
 const mongoose = require('mongoose')
 const User = mongoose.model('user', userSchema, 'user')
 
-exports.serialize = function(req, user, done) {
+exports.serialize = function(user, done) {
     done(null, user._id)
 }
 
-exports.deserialize = function(req, id, done) {
-    User.findById(id, '-password', function(err, user) {
-        done(err, user)
+exports.deserialize = function(id, done) {
+    User.findById(id, function(err, user) {
+        if (err) {
+            return done(err)
+        }
+        done(null, user)
     })
 }
 
@@ -38,6 +41,7 @@ exports.localLogIn = function(req, username, password, done) {
 }
 
 exports.localSignUp = function(req, username, password, done) {
+
     User.findOne({
         'local.username': username
     }, function(err, user) {
@@ -79,10 +83,10 @@ exports.localSignUp = function(req, username, password, done) {
 exports.isLoggedIn = function(req, res, next) {
 
     if (req.isAuthenticated()) {
-        res.locals.authenticated = false
+        res.locals.authenticated = true
     }
     else {
-        res.locals.authenticated = true
+        res.locals.authenticated = false
     }
     next()
 }

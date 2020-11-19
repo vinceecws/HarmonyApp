@@ -26,7 +26,7 @@ class SessionSideList extends React.Component{
                     sessions: data.data.sessions.sessions
                 })
             }
-        }).bind(this))
+        }).bind(this), true)
     }
 
 

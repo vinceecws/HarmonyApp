@@ -7,7 +7,6 @@ import Spinner from './Spinner';
 class SessionScreen extends React.Component {
 	constructor(props){
 		super(props);
-
 		this.getSession()
 		this.state = {
 			loading: true,
@@ -26,7 +25,7 @@ class SessionScreen extends React.Component {
 
 	getSession = () => { 
 		if (this.props.match.params.sessionId){
-			this.props.axiosWrapper.axiosGet("/main/session/" + this.props.match.params.sessionId, this.handleGetSession)
+			this.props.axiosWrapper.axiosGet("/main/session/" + this.props.match.params.sessionId, this.handleGetSession, true)
 		}
 		else {
 			// Render suggestions to start a session?

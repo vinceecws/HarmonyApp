@@ -48,27 +48,45 @@ exports.updateUser = async function(userId, updatePayload) {
   return user;
 }
 
-exports.createCollection = async function(name, description, songList) {
+exports.createCollection = async function(userId, name, description, songList) {
   let collection = await new Collection({
     name,
     description,
     songList
-  }).save().catch(error => console.log(error));;
-  console.log('New collection: ', collection, collection.songList, collection.likes);
-  return collection;
-}
+  }).save().catch(error => console.log(error));
 
-//exports.createCollection('the bigger crunch', 'crunchy like oreo');
+  let res = await User.update({
+    _id: userId
+  }, {
+    $push: {
+      playlists: collection._id 
+    }
+  })
 
-exports.getCollection = async function(collectionObject){
-  console.log('get collection');
-  let collection = await connection.then(async () => {
-    return await Collection.findOne(collectionObject);
-  }).catch(error => console.log(error));
-  
-  return collection;
+  return collection
 }
  
+exports.getCollection = async function(collectionObject) {
+  
+  var collection
+  if (Array.isArray(collectionObject)) {
+    collection = await connection.then(async () => {
+      return await Collection.find({
+        '_id': { $in: collectionObject
+        }
+      }).catch(error => {
+        console.log(error)
+      })
+    })
+  }
+  else {
+    collection = await connection.then(async () => {
+      return await Collection.findOne(collectionObject);
+    }).catch(error => {console.log(error)});
+  }
+
+  return collection;
+}
 
 exports.updateCollection = async function(collectionObject, updateFieldsObject){
   console.log('update collection');
@@ -77,7 +95,67 @@ exports.updateCollection = async function(collectionObject, updateFieldsObject){
   }).catch(error => console.log(error));
   console.log('Updated Collection: ', collection);
 }
+//Settings
+exports.changeUsername = async function(userObject, updateFieldsObject){
+  console.log('update username for user');
 
+  /*let user = await connection.then(async () => {
+    return await User.findOneAndUpdate(userObject, {$set:{'local.username':updateFieldsObject.username}}, {new: true});
+  }).catch(error => console.log(error));*/
+  let user = await connection.then(async () => {
+    return await User.findOne({'local.username':updateFieldsObject.username});
+  }).catch(error => console.log(error));
+  if(user){
+    return false;
+  }
+  user = await connection.then(async () => {
+    return await User.findOne(userObject);
+  }).catch(error => console.log(error));
+  console.log(user);
+  if (!user.authenticateLocal(user.local.username, updateFieldsObject.password)) {
+      console.log("incorrect password");
+      return false;
+      
+  }
+  user.local.username = updateFieldsObject.username;
+  
+  return await User.updateOne(userObject, {$set:{'local.username':updateFieldsObject.username}}, {new: true});
+  
+}
+exports.changeBiography= async function(userObject, updateFieldsObject){
+  console.log('update biography for user');
+  
+  /*let user = await connection.then(async () => {
+    return await User.findOneAndUpdate(userObject, {$set:{'local.username':updateFieldsObject.username}}, {new: true});
+  }).catch(error => console.log(error));*/
+  
+  let user = await connection.then(async () => {
+    return await User.findOneAndUpdate(userObject, {$set:{'biography':updateFieldsObject.biography}}, {new: true});
+  }).catch(error => console.log(error));
+  
+  return user;
+  
+}
+exports.changePassword= async function(userObject, updateFieldsObject){
+  console.log('update password for user');
+  /*let user = await connection.then(async () => {
+    return await User.findOneAndUpdate(userObject, {$set:{'local.username':updateFieldsObject.username}}, {new: true});
+  }).catch(error => console.log(error));*/
+  
+  user = await connection.then(async () => {
+    return await User.findOne(userObject);
+  }).catch(error => console.log(error));
+  if (!user.authenticateLocal(user.local.username, updateFieldsObject.password)) {
+      console.log("incorrect password");
+      return false;
+      
+  }
+  user.local.password = updateFieldsObject.new_password;
+  user.save();
+  
+  return user;
+  
+}
 //updateCollection({'_id': '5faaa7f7f098b317d81e5585'}, {name: 'the bigger crunch'});
 
 exports.deleteCollection = async function(collectionObject){
@@ -87,8 +165,6 @@ exports.deleteCollection = async function(collectionObject){
   }).catch(error => console.log(error));
   
 }
-
-//deleteCollection({name: 'the bigger crunch'});
 
 exports.createSession = async function(hostId, hostName, name, startTime, endTime, streams, likes, live, initialQueue, actionLog){
   let session = await new Session({
@@ -108,12 +184,23 @@ exports.createSession = async function(hostId, hostName, name, startTime, endTim
   return session;
 }
 
-//createSession('hello', 'shipping tools', 12);
-
-exports.getSession = async function(sessionObject){
-  let session = await connection.then(async () => {
-    return await Session.findOne(sessionObject);
-  }).catch(error => {console.log(error)});
+exports.getSession = async function(sessionObject) {
+  var session
+  if (Array.isArray(sessionObject)) {
+    session = await connection.then(async () => {
+      return await Session.find({
+        '_id': { $in: sessionObject
+        }
+      }).catch(error => {
+        console.log(error)
+      })
+    })
+  }
+  else {
+    session = await connection.then(async () => {
+      return await Session.findOne(sessionObject);
+    }).catch(error => {console.log(error)});
+  }
 
   return session;
 }
@@ -145,7 +232,6 @@ exports.deleteSession = async function(sessionObject){
 
 
 exports.getCollectionsFromQuery = async function(query){
-  console.log('Get collections from search query');
   let collections = await connection.then(async () => {
     return await Collection.find({name: query}).sort({likes: 1});
   }).catch(err => console.log(err));
@@ -164,24 +250,6 @@ exports.getSessionsFromQuery = async function(query){
     return await Session.find({name: query});
   }).catch(error => {console.log(error)});
   return sessions;
-}
-
-//async function 
-
-
-async function createSong(_id, title, artist, album, embedLink, imageLink) {
-  return new Song({
-    _id,
-    title,
-    artist,
-    album,
-    embedLink,
-    imageLink
-  }).save();
-}
-
-async function findSong(songObject) { 
-  return await Song.findOne(songObject)
 }
 
 exports.User = User

@@ -4,21 +4,65 @@ const loadScript = require('load-script2')
 
 class PlayerAPI {
 
-    constructor(onLoad) {
+    constructor() {
         this._playerReady = false
-        this.onLoad = onLoad
         this.player = null
+        this.subscribedEvents = {
+            onPlayerReady: null,
+            onPlayerStateChange: null,
+            onPlayerPlaybackQualityChange: null,
+            onPlayerPlaybackRateChange: null,
+            onPlayerError: null,
+            onPlayerApiChange: null
+        }
+    }
+
+    subscribeToEvent = (event, subscriber) => {
+        if (event in this.subscribedEvents) {
+            this.subscribedEvents[event] = subscriber
+        }
+    }
+
+    unsubscribeFromEvent = (event) => {
+        this.subscribedEvents[event] = null
     }
 
     onPlayerReady = (e) => { //Called when initial player is loaded
-        //BUG IN SAFARI 11 PREVENTS VIDEO FROM PLAYING AT ALL
         this._playerReady = true
         this.player.playVideo()
-        this.onLoad()
+        if (this.subscribedEvents.onPlayerReady) {
+            this.subscribedEvents.onPlayerReady(e)
+        }
     }
 
     onPlayerStateChange = (e) => {
+        if (this.subscribedEvents.onPlayerStateChange) {
+            this.subscribedEvents.onPlayerStateChange(e)
+        }
+    }
 
+    onPlayerPlaybackQualityChange = (e) => {
+        if (this.subscribedEvents.onPlayerPlaybackQualityChange) {
+            this.subscribedEvents.onPlayerPlaybackQualityChange(e)
+        }
+    }
+
+    onPlayerPlaybackRateChange = (e) => {
+        if (this.subscribedEvents.onPlayerPlaybackRateChange) {
+            this.subscribedEvents.onPlayerPlaybackRateChange(e)
+        }
+    }
+
+    onPlayerError = (e) => {
+        if (this.subscribedEvents.onPlayerError) {
+            this.subscribedEvents.onPlayerError(e)
+        }
+    }
+
+    onPlayerApiChange = (e) => {
+        if (this.subscribedEvents.onPlayerApiChange) {
+            this.subscribedEvents.onPlayerApiChange(e)
+        }
     }
 
     isPlayerInit = () => {
@@ -38,7 +82,11 @@ class PlayerAPI {
                     },
                     events: {
                         onReady: this.onPlayerReady.bind(this),
-                        onStateChange: this.onPlayerStateChange.bind(this)
+                        onStateChange: this.onPlayerStateChange.bind(this),
+                        onPlaybackQualityChange: this.onPlayerPlaybackQualityChange.bind(this),
+                        onPlaybackRateChange: this.onPlayerPlaybackRateChange.bind(this),
+                        onError: this.onPlayerError.bind(this),
+                        onApiChange: this.onPlayerApiChange.bind(this)
                     }
                 })
             })
@@ -49,7 +97,6 @@ class PlayerAPI {
         if (this.player != null) {
             this.player.loadVideoById(id)
             this.player.playVideo()
-            //this.player.mute() //Per Google Chrome's policy, for autoplay, video must be muted
         }
     }
 
@@ -62,6 +109,12 @@ class PlayerAPI {
     pauseVideo = () => {
         if (this._playerReady && this.player != null) {
             this.player.pauseVideo()
+        }
+    }
+
+    stopVideo = () => {
+        if (this._playerReady && this.player != null) {
+            this.player.stopVideo()
         }
     }
 
