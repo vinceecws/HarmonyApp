@@ -757,12 +757,14 @@ mainRouter.get('/search', async (req, res) => {
             _id: req.user._id
         }).catch(err => res.sendStatus(404));
 
+        let playlists = await mongooseQuery.getCollection(user.playlists)
+
         return res.status(200).json({
             message: "Fetch successful",
             statusCode: 200,
             data: {
                 history: user.history,
-                playlists: user.playlists,
+                playlists: playlists,
                 likedSongs: user.likedSongs
             },
             success: true

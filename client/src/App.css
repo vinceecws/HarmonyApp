@@ -895,6 +895,22 @@ body, html {
   padding: 2px 10px 2px 10px !important;
 }
 
+.search-screen-results-category-list-item-img-overlay-dropdown-menu-collection {
+  background-color: #505050 !important;
+  padding: 2px 10px 2px 10px !important;
+}
+
+.search-screen-results-category-list-item-img-overlay-dropdown-menu-collection .dropdown-toggle {
+  border: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+
+.search-screen-results-category-list-item-img-overlay-dropdown-menu-collection .dropdown-menu a {
+  font-family: BalsamiqSans;
+  color: whitesmoke
+}
+
 .search-screen-results-category-list-item-img-overlay-dropdown .dropdown-item a {
   font-family: BalsamiqSans;
   color: whitesmoke;

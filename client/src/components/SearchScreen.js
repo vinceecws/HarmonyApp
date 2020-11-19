@@ -1,5 +1,5 @@
 import React from 'react'
-import { ListGroup, Image, Button, CardDeck, Card, InputGroup, FormControl, Dropdown, ButtonGroup } from 'react-bootstrap'
+import { ListGroup, Image, Button, CardDeck, Card, InputGroup, FormControl, Dropdown, DropdownButton, ButtonGroup } from 'react-bootstrap'
 import { delete_cross_white, delete_button_white, icon_play_2, menu_button_white } from '../graphics'
 import Spinner from './Spinner';
 import SuggestionsAPI from '../api/SuggestionsAPI'
@@ -33,6 +33,10 @@ class SearchScreen extends React.Component {
 
     isSuggestionsEmpty = () => {
         return this.state.suggestions.length === 0
+    }
+
+    handleCreateCollection = () => {
+
     }
 
     handleAddSongToFavorites = (songId, e) => {
@@ -257,11 +261,26 @@ class SearchScreen extends React.Component {
                                                                     {
                                                                         this.props.auth ?
                                                                         <div>
-                                                                            <Dropdown.Item>
-                                                                                <Button onClick={this.handleAddSongToCollection.bind(this, obj.id)}>
-                                                                                    Add To Collection
-                                                                                </Button>
-                                                                            </Dropdown.Item>
+                                                                            <DropdownButton
+                                                                                as={ButtonGroup}
+                                                                                key="right"
+                                                                                className="search-screen-results-category-list-item-img-overlay-dropdown-menu-collection"
+                                                                                drop="right"
+                                                                                variant="secondary"
+                                                                                title="Add To Playlist"
+                                                                            >
+                                                                                {
+                                                                                    this.state.playlists.map((playlist, playlist_ind) => 
+                                                                                        <Dropdown.Item onClick={this.handleAddSongToCollection.bind(this, obj.id, playlist._id)}>{playlist.name}</Dropdown.Item>
+                                                                                    )
+                                                                                }
+                                                                                {
+                                                                                    this.state.playlists.length > 0 ?
+                                                                                    <Dropdown.Divider /> :
+                                                                                    <div></div>
+                                                                                }
+                                                                                <Dropdown.Item onClick={this.handleCreateCollection}>Create Playlist</Dropdown.Item>
+                                                                            </DropdownButton>
                                                                             {
                                                                                 !this.state.likedSongs.includes(obj.id) ? 
                                                                                 <Dropdown.Item>

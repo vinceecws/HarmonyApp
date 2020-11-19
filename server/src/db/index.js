@@ -92,6 +92,8 @@ exports.updateCollection = async function(collectionId, updateFieldsObject){
   let collection = await connection.then(async () => {
     return await Collection.findOneAndUpdate({_id: collectionId}, updateFieldsObject, {new: true});
   }).catch(error => console.log(error));
+
+  return collection
 }
 //Settings
 exports.changeUsername = async function(userObject, updateFieldsObject){
