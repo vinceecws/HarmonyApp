@@ -29,6 +29,7 @@ class ProfileScreen extends React.Component{
 	}
 
 	handleGoToCollection = (id, e) => {
+
 		this.props.history.push('/main/collection/' + id)
 	}
 
@@ -36,7 +37,8 @@ class ProfileScreen extends React.Component{
 		if (this.state.newCollectionName.trim() !== ''){
 			this.props.axiosWrapper.axiosGet('main/profile/createCollection/' + this.state.newCollectionName, (function(res, data){
 				if (data.success){
-					this.handleGoToCollection(data.data.collectionId);
+					console.log(data);
+					this.handleGoToCollection(data.data.newCollection._id);
 				}
 			}).bind(this), true)
 		}
