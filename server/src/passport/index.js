@@ -81,7 +81,6 @@ exports.localSignUp = function(req, username, password, done) {
     using res.locals.authenticated
 */
 exports.isLoggedIn = function(req, res, next) {
-    console.log(req.isAuthenticated())
 
     if (req.isAuthenticated()) {
         res.locals.authenticated = true

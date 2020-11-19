@@ -29,11 +29,6 @@ app.use(session({
     saveUninitialized: true 
 }))
 
-app.use(function(req, res, next) {
-    console.log(req.sessionID)
-    next()
-})
-
 passport.serializeUser(passportCallbacks.serialize)
 passport.deserializeUser(passportCallbacks.deserialize)
 
