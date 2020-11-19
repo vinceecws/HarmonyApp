@@ -74,11 +74,27 @@ exports.changeUsername = async function(userObject, updateFieldsObject){
   console.log('update username for user');
   console.log(userObject);
   console.log(updateFieldsObject);
-  let user = await connection.then(async () => {
+  /*let user = await connection.then(async () => {
     return await User.findOneAndUpdate(userObject, {$set:{'local.username':updateFieldsObject.username}}, {new: true});
+  }).catch(error => console.log(error));*/
+  let user = await connection.then(async () => {
+    return await User.findOne({'local.username':updateFieldsObject.username});
   }).catch(error => console.log(error));
-
-  return user;
+  if(user){
+    return false;
+  }
+  user = await connection.then(async () => {
+    return await User.findOne(userObject);
+  }).catch(error => console.log(error));
+  console.log(user);
+  if (!user.authenticateLocal(user.local.username, updateFieldsObject.password)) {
+      console.log("incorrect password");
+      return false;
+      
+  }
+  user.local.username = updateFieldsObject.username;
+  
+  return await User.updateOne(userObject, {$set:{'local.username':updateFieldsObject.username}}, {new: true});
   
 }
 //updateCollection({'_id': '5faaa7f7f098b317d81e5585'}, {name: 'the bigger crunch'});

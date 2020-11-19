@@ -219,8 +219,8 @@ mainRouter.post('/collection/updateCollection/:id', async (req, res) => {
 	}
 });
 
-mainRouter.post('/settings/:id/changeUsername', async (req, res) => {
-    let id = req.params.id;
+mainRouter.post('/settings/changeUsername', async (req, res) => {
+    let id = req.user._id
     if(id == null){
         return res.status(404).json({
             error: {
@@ -236,7 +236,17 @@ mainRouter.post('/settings/:id/changeUsername', async (req, res) => {
         })
     }
     else{
-        let updatedUser = await mongooseQuery.changeUsername({'_id': req.params.id}, req.body);
+        let updatedUser = await mongooseQuery.changeUsername({'_id': id}, req.body);
+        if (!updatedUser) {
+            return res.status(422).json({
+                message: "Invalid password or username taken",
+                statusCode: 422,
+                data: {
+                    user: null
+                },
+                success: false
+            })
+        }
         return res.status(200).json({
             message: "Username Changed",
             data: {
@@ -248,6 +258,46 @@ mainRouter.post('/settings/:id/changeUsername', async (req, res) => {
     }
     
 });
+mainRouter.post('/settings/changeBiography', async (req, res) => {
+    let id = req.user._id
+    if(id == null){
+        return res.status(404).json({
+            error: {
+                name: "Invalid session",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
+    else{
+        let updatedUser = await mongooseQuery.changeBiography({'_id': id}, req.body);
+        if (!updatedUser) {
+            return res.status(422).json({
+                message: "biography could not be updated",
+                statusCode: 422,
+                data: {
+                    user: null
+                },
+                success: false
+            })
+        }
+        return res.status(200).json({
+            message: "Biography changed",
+            data: {
+                user: updatedUser
+            },
+            statusCode: 200,
+            success:true
+        })
+    }
+    
+});
+
 
 mainRouter.post('/session/newSession', async (req, res) => {
     let newSession = 
