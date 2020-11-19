@@ -88,14 +88,14 @@ class SettingsScreen extends React.Component{
             return
         }
 
-        this.props.axiosWrapper.axiosPost('/main/settings/'+this.props.match.params.userId+'/changeUsername', {
+        this.props.axiosWrapper.axiosPost('/main/settings/changeUsername', {
                 password: this.state.password,
                 username: this.state.username
                 
         }, (function(res, data) {
             if (data.success) {
                 
-                this.props.history.push('/main/settings/' + this.props.match.params.userId)
+                this.props.history.push('/main/settings/')
             
                 console.log(data.message)
             }
@@ -108,14 +108,14 @@ class SettingsScreen extends React.Component{
     handleBiography = (e) => {
         
 
-        this.props.axiosWrapper.axiosPost('/main/settings/'+this.props.match.params.userId+'/changeBiography', {
+        this.props.axiosWrapper.axiosPost('/main/settings/changeBiography', {
                 
                 biography: this.state.biography
                 
         }, (function(res, data) {
             if (data.success) {
                 
-                this.props.history.push('/main/settings/' + this.props.match.params.userId)
+                this.props.history.push('/main/settings')
                
                 
             }
@@ -129,7 +129,7 @@ class SettingsScreen extends React.Component{
     	return this.state.user.privateMode;
     }
     fetchUser = () => {
-        this.props.axiosWrapper.axiosGet('/main/settings/' + this.props.match.params.userId, (function(res, data) {
+        this.props.axiosWrapper.axiosGet('/main/settings', (function(res, data) {
             console.log(data);
             if (data.success) {
                 console.log('Success!')
@@ -191,7 +191,7 @@ class SettingsScreen extends React.Component{
                             <label style={{position:'relative',bottom:'0px', left:'15px'}}>Change the biography that is displayed on your profile.</label>
                         </div>
                         {/* Modal */}
-                        <Route path={'/main/settings/'+this.props.match.params.userId+'/changeUsername'} render={() => { 
+                        <Route path={'/main/settings/changeUsername'} render={() => { 
                             return(
                             <div id="changeUsernameModal" style={{position: 'relative', transform: 'translate(0, -40%)'}}>
                                 <div className="modal-dialog">
@@ -219,7 +219,7 @@ class SettingsScreen extends React.Component{
                             </div>
                         )}}/>
                         {/* Modal */}
-                        <Route path={'/main/settings/'+this.props.match.params.userId+'/changeBiography'} render={() => { 
+                        <Route path={'/main/settings/changeBiography'} render={() => { 
                             return(
                             <div id="changeBiographyModal" style={{position: 'relative', transform: 'translate(0, -50%)'}}>
                                 <div className="modal-dialog">
