@@ -276,7 +276,7 @@ class CollectionScreen extends React.Component{
                             <div className='row'>
                                 {/* Remember to add these attributes to collection objects*/}
                                 <p className='collection-page-text'>
-                                    {this.state.collection.ownerId} - {this.state.collection.likes} likes - {this.state.collection.songList.length} songs 
+                                    {this.state.user.local === undefined ? this.state.user.google.name : this.state.user.local.username} - {this.state.collection.likes} likes - {this.state.collection.songList.length} songs 
                                 </p>
                             </div>
                         </div>
