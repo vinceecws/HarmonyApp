@@ -72,8 +72,7 @@ exports.updateCollection = async function(collectionObject, updateFieldsObject){
 //Settings
 exports.changeUsername = async function(userObject, updateFieldsObject){
   console.log('update username for user');
-  console.log(userObject);
-  console.log(updateFieldsObject);
+
   /*let user = await connection.then(async () => {
     return await User.findOneAndUpdate(userObject, {$set:{'local.username':updateFieldsObject.username}}, {new: true});
   }).catch(error => console.log(error));*/
@@ -98,9 +97,8 @@ exports.changeUsername = async function(userObject, updateFieldsObject){
   
 }
 exports.changeBiography= async function(userObject, updateFieldsObject){
-  console.log('update username for user');
-  console.log(userObject);
-  console.log(updateFieldsObject);
+  console.log('update biography for user');
+  
   /*let user = await connection.then(async () => {
     return await User.findOneAndUpdate(userObject, {$set:{'local.username':updateFieldsObject.username}}, {new: true});
   }).catch(error => console.log(error));*/
@@ -108,6 +106,26 @@ exports.changeBiography= async function(userObject, updateFieldsObject){
   let user = await connection.then(async () => {
     return await User.findOneAndUpdate(userObject, {$set:{'biography':updateFieldsObject.biography}}, {new: true});
   }).catch(error => console.log(error));
+  
+  return user;
+  
+}
+exports.changePassword= async function(userObject, updateFieldsObject){
+  console.log('update password for user');
+  /*let user = await connection.then(async () => {
+    return await User.findOneAndUpdate(userObject, {$set:{'local.username':updateFieldsObject.username}}, {new: true});
+  }).catch(error => console.log(error));*/
+  
+  user = await connection.then(async () => {
+    return await User.findOne(userObject);
+  }).catch(error => console.log(error));
+  if (!user.authenticateLocal(user.local.username, updateFieldsObject.password)) {
+      console.log("incorrect password");
+      return false;
+      
+  }
+  user.local.password = updateFieldsObject.new_password;
+  user.save();
   
   return user;
   

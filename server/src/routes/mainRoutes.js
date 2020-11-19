@@ -339,6 +339,59 @@ mainRouter.post('/settings/changeBiography', async (req, res) => {
     }
     
 });
+mainRouter.post('/settings/changePassword', async (req, res) => {
+    if(req.user == null){
+        return res.status(404).json({
+            error: {
+                name: "Invalid session",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
+    let id = req.user._id
+    if(id == null){
+        return res.status(404).json({
+            error: {
+                name: "Invalid session",
+                message: "Not found"
+            },
+            message: "Not found",
+            statusCode: 404,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
+    else{
+        let updatedUser = await mongooseQuery.changePassword({'_id': id}, req.body);
+        if (!updatedUser) {
+            return res.status(422).json({
+                message: "password could not be updated",
+                statusCode: 422,
+                data: {
+                    user: null
+                },
+                success: false
+            })
+        }
+        return res.status(200).json({
+            message: "Biography changed",
+            data: {
+                user: updatedUser
+            },
+            statusCode: 200,
+            success:true
+        })
+    }
+    
+});
 
 
 mainRouter.post('/session/newSession', async (req, res) => {

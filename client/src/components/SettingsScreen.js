@@ -8,6 +8,7 @@ class SettingsScreen extends React.Component{
         super(props);
         this.state = {
 				username: "",
+                new_password:"",
                 password: "",
                 confirm_password: "",
                 biography: "",
@@ -25,6 +26,13 @@ class SettingsScreen extends React.Component{
             confirm_password:""
         })
     }
+    clearPasswordCredentials = () => {
+        this.setState({
+            new_password: "",
+            password: "",
+            confirm_password:""
+        })
+    }
     handleCloseUsernameModal = () => {
         
         this.props.history.goBack()
@@ -36,6 +44,11 @@ class SettingsScreen extends React.Component{
         this.setState({
             biography: ""
         })
+    }
+    handleClosePasswordModal = () => {
+        
+        this.props.history.goBack()
+        this.clearPasswordCredentials()
     }
     handleUsernameChange = (e) => {
         this.setState({
@@ -57,6 +70,11 @@ class SettingsScreen extends React.Component{
             password: e.target.value
         })
     }
+    handleChangeNewPassword = (e) => {
+        this.setState({
+            new_password: e.target.value
+        })
+    }
 
     handleChangeUsernameConfirmPassword = (e) => {
         this.setState({
@@ -64,17 +82,13 @@ class SettingsScreen extends React.Component{
         })
     }
     handleUsername = (e) => {
-        if (this.state.username.trim() === "" || this.state.password.trim() === "" || this.state.confirm_password === ""){
+        if (this.state.username.trim() === "" || this.state.password.trim() === ""){
             //Handle empty username, password or confirm password here
             console.log("Username, password and confirm password must not be empty")
             return
         }
 
-        if (this.state.password !== this.state.confirm_password) {
-            //Handle inconsistent password here
-            console.log("Password must be the same as confirm password")
-            return
-        }
+        
 
 
         if (/\s/g.test(this.state.username)) { //Contains whitespace
@@ -129,6 +143,50 @@ class SettingsScreen extends React.Component{
             }
         }).bind(this), true)
     }
+    handlePassword = (e) => {
+        if (this.state.confirm_password.trim() === "" || this.state.password.trim() === ""|| this.state.new_password.trim() === ""){
+            //Handle empty username, password or confirm password here
+            console.log("new password, password and confirm password must not be empty")
+            return
+        }
+        if (!(this.state.confirm_password === this.state.password)){
+            //Handle empty username, password or confirm password here
+            console.log("confirm password must be equal to password")
+            return
+        }
+        if (/\s/g.test(this.state.new_password)) { //Contains whitespace
+            console.log("New password Contains whitespace")
+            return
+        }
+
+        if (!/^[0-9a-zA-Z_]+$/.test(this.state.new_password)) { //Contains illegal characters
+            console.log("New password  contains illegal characters")
+            return
+        }
+
+        if (this.state.new_password.trim().length < 6 || this.state.new_password.trim().length > 12) { //Invalid length
+            console.log("New password  has invalid length")
+            return
+        }
+        this.props.axiosWrapper.axiosPost('/main/settings/changePassword', {
+                
+                password: this.state.password,
+                new_password: this.state.new_password
+                
+        }, (function(res, data) {
+            if (data.success) {
+                
+                this.props.history.push('/main/settings')
+               
+                
+            }
+            else {
+                // Handle username taken prompting here
+                console.log("Password was not updated")
+            }
+        }).bind(this), true)
+        this.clearPasswordCredentials();
+    }
     getPrivateMode = () =>{
     	return this.state.user.privateMode;
     }
@@ -176,8 +234,8 @@ class SettingsScreen extends React.Component{
                         </div>
                         <div className='row'>
                             <div className='col' style={{color:'white'}}>
-                                <Link to={'/main/settings/changeUsername'}>
-                                    <button data-toggle='modal' data-target='#changeUsernameModal'>Change Password</button><br/>
+                                <Link to={'/main/settings/changePassword'}>
+                                    <button data-toggle='modal' data-target='#changePasswordModal'>Change Password</button><br/>
                                 </Link>
                             </div>
                         </div>
@@ -210,7 +268,6 @@ class SettingsScreen extends React.Component{
                                                 <div onSubmit={e => this.handleUsername(e)}>
                                                     <input type='text' name='username' placeholder='Username' style={{marginBottom: '5px'}} value={this.state.username} onChange={this.handleUsernameChange}/><br/>
                                                     <input type='password' name='password' placeholder='Password' style={{marginBottom: '5px'}} value={this.state.password} onChange={this.handleChangeUsernamePassword}/> <br/>
-                                                    <input type='password' name='confirmPwd' placeholder='Confirm Password' style={{marginBottom: '5px'}} value={this.state.confirm_password}  onChange={this.handleChangeUsernameConfirmPassword}/> <br/>
                                                     <button style={{marginTop:'20px', boxShadow: '3px 3px'}} onClick={e => this.handleUsername(e)}>Submit</button>
                                                 </div>
                                         </div>
@@ -242,6 +299,34 @@ class SettingsScreen extends React.Component{
                                         </div>
                                         <div className="modal-footer">
                                             <button type="button" className="btn btn-default" data-dismiss="modal" onClick={data => this.handleCloseBiographyModal(data)}>Close</button>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        )}}/>
+                        {/* Modal */}
+                        <Route path={'/main/settings/changePassword'} render={() => { 
+                            return(
+                            <div id="changePasswordModal" style={{position: 'relative', transform: 'translate(0, -50%)'}}>
+                                <div className="modal-dialog">
+                                    {/* Modal Content */}
+                                    <div className="modal-content">
+                                        <div className="modal-header">
+                                            <h3>Change Password</h3>
+                                            <button type="button" className="close" data-dismiss="modal" onClick={data => this.handleClosePasswordModal(data)}>&times;</button>
+                                        </div>
+                                        <div className="modal-body">
+                                            <p>Change your Password:</p>
+                                                <div onSubmit={e => this.handlePassword(e)}>
+                                                    <input type='password' name='new password' placeholder='New Password' style={{marginBottom: '5px'}} value={this.state.new_password} onChange={this.handleChangeNewPassword}/><br/>
+                                                    <input type='password' name='password' placeholder='Password' style={{marginBottom: '5px'}} value={this.state.password} onChange={this.handleChangeUsernamePassword}/> <br/>
+                                                    <input type='password' name='confirm password' placeholder='Confirm Password' style={{marginBottom: '5px'}} value={this.state.confirm_password} onChange={this.handleChangeUsernameConfirmPassword}/> <br/>
+                                                    <button style={{marginTop:'20px', boxShadow: '3px 3px'}} onClick={e => this.handlePassword(e)}>Submit</button>
+                                                </div>
+                                        </div>
+                                        <div className="modal-footer">
+                                            <button type="button" className="btn btn-default" data-dismiss="modal" onClick={data => this.handleClosePasswordModal(data)}>Close</button>
                                         </div>
                                         
                                     </div>
