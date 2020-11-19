@@ -40,9 +40,9 @@ exports.getUser = async function(userObject) { //User CRUD methods: Retrieve
 }
 
 
-exports.updateUser = async function(userId) {
+exports.updateUser = async function(userId, updatePayload) {
   let user = await connection.then(async () => {
-    return await User.findByIdAndUpdate(userId, {new: true});
+    return await User.findOneAndUpdate({'_id': userId}, updatePayload, {new: true});
   }).catch(error => console.log(error));
   console.log('Updated User: ', user)
   return user;

@@ -38,13 +38,20 @@ class App extends React.Component {
     })
   }
 
+  handleUpdateUser = (updatedUser) => {
+    this.setState({
+      auth: true,
+      user: updatedUser
+    });
+  }
+
 
   render() {
     return (
       <Container id="app-container">
         <Router>
           <Switch>
-            <Route path={['/main']} render={(props) => <MainApp {...props} auth={this.state.auth} user={this.state.user} handleLogOut={this.handleLogOut} axiosWrapper={this.axiosWrapper}/>} />
+            <Route path={['/main']} render={(props) => <MainApp {...props} auth={this.state.auth} user={this.state.user} handleLogOut={this.handleLogOut} handleUpdateUser={this.handleUpdateUser} axiosWrapper={this.axiosWrapper}/>} />
             <Route path={['/', '/login']} render={(props) => <LoginScreen {...props} auth={this.state.auth} handleAuthenticate={this.handleAuthenticate} axiosWrapper={this.axiosWrapper}/>} />
           </Switch>
         </Router>

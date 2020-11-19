@@ -25,15 +25,31 @@ class CollectionScreen extends React.Component{
     }
 
     onPressLikeCollection = () =>{
-        this.setState({favorited: !this.state.favorited});
-        let favoritedCollections = this.state.collection.likedCollections;
-        if (this.state.favorited){
-            favoritedCollections.push(this.state.collection._id);
-            //this.props.axiosWrapper.axiosPost('/main/collection/updateUser/' + this.props.match.params.collectionId,
-            //{})
-        }
-        else {
-            // Remove collection from likedCollections
+        if (this.user !== null){
+            let favoritedCollections = this.user.likedCollections;
+            if (!this.state.favorited){
+                this.user.likedCollections === undefined ? 
+                            favoritedCollections = [this.state.collection._id] :
+                            favoritedCollections.push(this.state.collection._id);
+            }
+            else if (this.user.likedCollections !== undefined){
+                favoritedCollections = [];
+                for (let c of this.user.likedCollections){
+                    if (c !== this.props.match.params.collectionId){
+                        favoritedCollections.push(c);
+                    }
+                }
+            }
+            console.log('Sending Payload: ', favoritedCollections);
+            
+            this.props.axiosWrapper.axiosPost('/main/collection/updateUser/' + this.user._id,
+            {likedCollections: favoritedCollections}, (function(res, data){
+                if (data.success){
+                    console.log('Updated user: ', favoritedCollections);
+                    this.props.handleUpdateUser(data.data.user);
+                    this.setState({favorited: !this.state.favorited});
+                }
+            }).bind(this));
         }
     }
 
@@ -194,9 +210,11 @@ class CollectionScreen extends React.Component{
             for (let c of this.user.likedCollections){
                 if (c === this.state.collection._id){
                     this.setState({favorited: true});
+                    break;
                 }
             }
         } 
+        console.log('Collection favorited: ', this.state.favorited);
     }
 
     render(){
