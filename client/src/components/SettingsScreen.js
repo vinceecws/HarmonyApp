@@ -43,9 +43,13 @@ class SettingsScreen extends React.Component{
         })
     }
     handleBiographyChange = (e)=>{
-        this.setState({
-            biography: e.target.value
-        })
+        const shouldSet = this.state.biography.length < 100;
+        if(shouldSet){
+            this.setState({
+                biography: e.target.value
+            })
+        }
+        
     }
 
     handleChangeUsernamePassword = (e) => {
