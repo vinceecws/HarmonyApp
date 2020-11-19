@@ -8,8 +8,8 @@ import { Image, Button, Dropdown, ButtonGroup, Modal } from 'react-bootstrap';
 class CollectionScreen extends React.Component{
     constructor(props){
         super(props)
-        this.user = this.props.user;
         this.state = {
+            user: this.props.user,
             collection: null,
             songList: [],
             loading: true,
@@ -25,16 +25,16 @@ class CollectionScreen extends React.Component{
     }
 
     onPressLikeCollection = () =>{
-        if (this.user !== null){
-            let favoritedCollections = this.user.likedCollections;
+        if (this.state.user !== null){
+            let favoritedCollections = this.state.user.likedCollections;
             if (!this.state.favorited){
-                this.user.likedCollections === undefined ? 
+                this.state.user.likedCollections === undefined ? 
                             favoritedCollections = [this.state.collection._id] :
                             favoritedCollections.push(this.state.collection._id);
             }
-            else if (this.user.likedCollections !== undefined){
+            else if (this.state.user.likedCollections !== undefined){
                 favoritedCollections = [];
-                for (let c of this.user.likedCollections){
+                for (let c of this.state.user.likedCollections){
                     if (c !== this.props.match.params.collectionId){
                         favoritedCollections.push(c);
                     }
@@ -42,14 +42,16 @@ class CollectionScreen extends React.Component{
             }
             console.log('Sending Payload: ', favoritedCollections);
             
-            this.props.axiosWrapper.axiosPost('/main/collection/updateUser/' + this.user._id,
+            this.props.axiosWrapper.axiosPost('/main/collection/updateUser/' + this.state.user._id,
             {likedCollections: favoritedCollections}, (function(res, data){
                 if (data.success){
                     console.log('Updated user: ', favoritedCollections);
                     this.props.handleUpdateUser(data.data.user);
-                    this.setState({favorited: !this.state.favorited});
+                    this.setState({
+                        user: data.data.user,
+                        favorited: !this.state.favorited});
                 }
-            }).bind(this));
+            }).bind(this), true);
         }
     }
 
@@ -77,7 +79,7 @@ class CollectionScreen extends React.Component{
                     this.hideEditNameModal();
                     this.fetchCollection();
                 }
-            }).bind(this));
+            }).bind(this), true);
         }
     }
 
@@ -89,7 +91,7 @@ class CollectionScreen extends React.Component{
                     this.hideEditDescriptionModal();
                     this.fetchCollection();
                 }
-            }).bind(this));
+            }).bind(this), true);
         }
     }
 
@@ -113,7 +115,7 @@ class CollectionScreen extends React.Component{
             if (data.success){
                 this.fetchCollection();
             }
-        }).bind(this))
+        }).bind(this), true)
     }
 
     onPressLikeSong = (song) => {
@@ -149,7 +151,7 @@ class CollectionScreen extends React.Component{
                     this.fetchSongs(data.data.collection.songList);
                     this.isCollectionFavorited();
                 }
-            }).bind(this))
+            }).bind(this), true)
         }
     }
 
@@ -206,8 +208,8 @@ class CollectionScreen extends React.Component{
     }
 
     isCollectionFavorited = () => {
-        if (this.user !== null && this.user.likedCollections !== undefined){
-            for (let c of this.user.likedCollections){
+        if (this.state.user !== null && this.state.user.likedCollections !== undefined){
+            for (let c of this.state.user.likedCollections){
                 if (c === this.state.collection._id){
                     this.setState({favorited: true});
                     break;
