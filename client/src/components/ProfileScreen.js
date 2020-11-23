@@ -28,6 +28,18 @@ class ProfileScreen extends React.Component{
 		})
 	}
 
+	formatCount = (count) => {
+		if (count < 1000) {
+			return count
+		}
+		else if (count < 1000000) {
+			return Math.floor(count/1000) + "k"
+		}
+		else {
+			return Math.floor(count/1000000) + "m"
+		}
+	}
+
 	handleGoToCollection = (id, e) => {
 
 		this.props.history.push('/main/collection/' + id)
@@ -180,7 +192,7 @@ class ProfileScreen extends React.Component{
 													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
 														<h1 className="card-title profile-screen-category-item-card-name title">{session.name}</h1>
 														<p className="body-text profile-screen-category-item-card-creator body-text">{session.hostName}</p>
-														<div className="profile-screen-category-item-card-likes">{session.likes} <img src={icon_like} className='profile-screen-category-item-card-likes-icon'/></div>
+														<div className="profile-screen-category-item-card-likes">{this.formatCount(session.likes)} <img src={icon_like} className='profile-screen-category-item-card-likes-icon'/></div>
 														<div className="profile-screen-category-item-card-streams">{session.streams} <img src={icon_music_1} className='profile-screen-category-item-card-streams-icon'/></div>
 													</div>
 												</div>
@@ -208,7 +220,7 @@ class ProfileScreen extends React.Component{
 											<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
 												<h1 className="card-title profile-screen-category-item-card-name title">{playlist.name}</h1>
 												<p className="profile-screen-category-item-card-creator body-text">{playlist.user}</p>
-												<p className="profile-screen-category-item-card-likes">{playlist.likes} <img src={icon_like} className='profile-screen-category-item-card-likes-icon'/></p>
+												<p className="profile-screen-category-item-card-likes">{this.formatCount(playlist.likes)} <img src={icon_like} className='profile-screen-category-item-card-likes-icon'/></p>
 											</div>
 										</div>
 										)
@@ -237,11 +249,11 @@ class ProfileScreen extends React.Component{
 											<Spinner/> :
 											this.state.likedSongs.map(song => 
 												<div className='card profile-screen-category-item-card'>
-													<img className="card-img-top profile-screen-category-item-card-image" src={song.image}/>
+													<img className="card-img-top profile-screen-category-item-card-image" src={song.image_high ? song.image_high : song.image_med ? song.image_med : song.image_std ? song.image_std : song.image ? song.image : icon_music_1}/>
 													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
 														<h1 className="card-title profile-screen-category-item-card-name title">{song.name}</h1>
 														<p className="profile-screen-category-item-card-creator body-text">{song.creator}</p>
-														<p className="profile-screen-category-item-card-likes">{song.likes} <img src={icon_like} className='profile-screen-category-item-card-likes-icon'/></p>
+														<p className="profile-screen-category-item-card-likes">{this.formatCount(song.likes)} <img src={icon_like} className='profile-screen-category-item-card-likes-icon'/></p>
 													</div>
 												</div>
 												)
@@ -269,7 +281,7 @@ class ProfileScreen extends React.Component{
 													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
 														<h1 className="card-title profile-screen-category-item-card-name title">{collection.name}</h1>
 														<p className="profile-screen-category-item-card-creator body-text">{collection.user}</p>
-														<p className="profile-screen-category-item-card-likes">{collection.likes} <img src={icon_like} className='profile-screen-category-item-card-likes-icon'/></p>
+														<p className="profile-screen-category-item-card-likes">{this.formatCount(collection.likes)} <img src={icon_like} className='profile-screen-category-item-card-likes-icon'/></p>
 													</div>
 												</div>
 												)

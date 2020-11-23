@@ -1,7 +1,7 @@
 import React from 'react';
 import RangeSlider from 'react-bootstrap-range-slider';
 import { Container, Row, Col, Image, Button } from 'react-bootstrap';
-import { icon_play_2, icon_pause_3, icon_previous, icon_next, icon_repeat_3, icon_repeat_1, icon_shuffle_arrows, icon_volume_up_1, icon_no_sound, icon_like } from '../graphics';
+import { icon_play_2, icon_pause_3, icon_previous, icon_next, icon_repeat_3, icon_repeat_1, icon_shuffle_arrows, icon_volume_up_1, icon_no_sound, icon_like, icon_music_1 } from '../graphics';
 import { repeatStates } from '../const'
 
 
@@ -70,13 +70,14 @@ class Player extends React.Component{
     }
 
     handleTogglePlay = () => {
+        var currentSong
         if (this.props.playerAPI.isPlayerInit() === false) { //Initialize on first use
             if (this.props.queue.currentSongIsEmpty()) {
                 this.props.queue.nextSong()
             }
 
             if (!this.props.queue.currentSongIsEmpty()) {
-                var currentSong = this.props.queue.getCurrentSong()
+                currentSong = this.props.queue.getCurrentSong()
                 this.props.playerAPI.initIFrameAPI(currentSong.id)
             }
             return
@@ -86,7 +87,7 @@ class Player extends React.Component{
             if (this.props.queue.currentSongIsEmpty()) {
                 this.props.queue.nextSong()
 
-                var currentSong = this.props.queue.getCurrentSong()
+                currentSong = this.props.queue.getCurrentSong()
                 if (currentSong != null) {
                     this.props.playerAPI.loadVideoById(currentSong.id)
                 }
@@ -130,7 +131,21 @@ class Player extends React.Component{
     }
 
     getSongImage = () => {
-        return this.state.currentSong.image;
+        if (this.state.currentSong.image_high) {
+            return this.state.currentSong.image_high;
+        }
+        else if (this.state.currentSong.image_med) {
+            return this.state.currentSong.image_med
+        }
+        else if (this.state.currentSong.image_std) {
+            return this.state.currentSong.image_std
+        }
+        else if (this.state.currentSong.image) {
+            return this.state.currentSong.image
+        }
+        else {
+            return icon_music_1
+        }
     }
 
     getSongName = () => {

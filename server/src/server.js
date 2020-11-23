@@ -25,7 +25,6 @@ app.use(session({
         mongooseConnection: db
     }),
     cookie: {
-        sameSite: 'none',
         domain: null
     },
     secret: process.env.MONGO_STORE_SESSION_SECRET.split(' '),

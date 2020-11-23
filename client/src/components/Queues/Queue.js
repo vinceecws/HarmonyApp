@@ -1,4 +1,3 @@
-import { ThemeConsumer } from 'react-bootstrap/esm/ThemeProvider';
 import { repeatStates } from '../../const'
 import { icon_profile_image } from '../../graphics';
 const _ = require('lodash');

@@ -1,6 +1,6 @@
 import React from 'react'
 import { ListGroup, Image, Button, CardDeck, Card, InputGroup, FormControl, Dropdown, DropdownButton, ButtonGroup } from 'react-bootstrap'
-import { delete_cross_white, delete_button_white, icon_play_2, menu_button_white } from '../graphics'
+import { delete_cross_white, delete_button_white, icon_play_white_1, menu_button_white, icon_music_1 } from '../graphics'
 import Spinner from './Spinner';
 import SuggestionsAPI from '../api/SuggestionsAPI'
 
@@ -296,10 +296,10 @@ class SearchScreen extends React.Component {
                                                                 </Dropdown.Menu>
                                                             </Dropdown>
                                                             <Button className="search-screen-results-category-list-item-img-overlay-play-button" onClick={this.handlePlayItem.bind(this, obj.id)}>
-                                                                <Image className="search-screen-results-category-list-item-img-overlay-play-button-icon" src={icon_play_2}/>
+                                                                <Image className="search-screen-results-category-list-item-img-overlay-play-button-icon" src={icon_play_white_1} roundedCircle/>
                                                             </Button>
                                                         </div>
-                                                        <Card.Img className="search-screen-results-category-list-item-img" src={obj.image} />
+                                                        <Card.Img className="search-screen-results-category-list-item-img" src={obj.image_high ? obj.image_high : obj.image_med ? obj.image_med : obj.image_std ? obj.image_std : obj.image ? obj.image : icon_music_1} />
                                                     </div> :
                                                     <Card.Img className="search-screen-results-category-list-item-img" src={obj.image} />
                                             }

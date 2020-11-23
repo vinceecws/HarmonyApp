@@ -1,3 +1,86 @@
+/* Reset script */ 
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote,  pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary, time, mark, audio, video {
+  margin:0;
+  padding:0;
+  border:0;
+  outline:0;
+  font-size:100%;
+  vertical-align:baseline;
+  background:transparent;
+}
+
+body {
+  line-height:1;
+}
+
+article,aside,details,figcaption,figure, footer,header,hgroup,menu,nav,section{ 
+  display:block;
+}
+
+nav ul {
+ list-style:none;
+}
+
+blockquote, q {
+ quotes:none;
+}
+
+blockquote:before, blockquote:after, q:before, q:after {
+ content:'';
+ content:none;
+}
+
+a {
+ margin:0;
+ padding:0;
+ font-size:100%;
+ vertical-align:baseline;
+ background:transparent;
+}
+
+/* change colors to suit your needs */
+ins {
+ background-color:#ff9;
+ color:#000;
+ text-decoration:none;
+}
+
+/* change colors to suit your needs */
+mark {
+ background-color:#ff9;
+ color:#000; 
+ font-style:italic;
+ font-weight:bold;
+}
+
+del {
+ text-decoration: line-through;
+}
+
+abbr[title], dfn[title] {
+ border-bottom:1px dotted;
+ cursor:help;
+}
+
+table {
+ border-collapse:collapse;
+ border-spacing:0;
+}
+
+/* change border color to suit your needs */
+hr {
+ display:block;
+ height:1px;
+ border:0;   
+ border-top:1px solid #cccccc;
+ margin:1em 0;
+ padding:0;
+}
+
+input, select {
+ vertical-align:middle;
+}
+
 @font-face {
   font-family: BalsamiqSans;
   src: url(./graphics/balsamiq_sans/BalsamiqSans-Regular.ttf)
@@ -270,7 +353,6 @@ body, html {
 #root {
   width: 100vw;
   height: 100%;
-  min-height: 100%;
   box-sizing: border-box;
   overflow-x: hidden;
   overflow-y: hidden;
@@ -292,12 +374,13 @@ body, html {
 
 #top-container {
   background-color: #505050;
+  height: 50px;
   min-height: 50px;
   margin: 0;
 }
 
 #mid-container {
-  min-height: 550px;
+  min-height: 400px;
   height: calc(100% - 120px - 50px);
   margin: 0;
 }
@@ -444,18 +527,20 @@ body, html {
 }
 
 #player-song-image-container {
-  height: 120px;
-  width: 120px;
+  height: 72px;
+  width: 128px;
+  min-width: 128px;
+  min-height: 72px;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 10px;
+  overflow: hidden;
 }
 
 #player-song-image {
-  background: transparent !important;
   border: none;
-  height: 100px;
-  width: 100px;
+  padding: 0;
 }
 
 #player-song-title {
@@ -500,6 +585,12 @@ body, html {
 
 #player-volume-container .row {
   justify-content: left;
+  display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+  display: -ms-flexbox;      /* TWEENER - IE 10 */
+  display: -webkit-flex;     /* NEW - Chrome */
+  display: flex;
+  flex-wrap: nowrap;
 }
 
 #player-controls-main-container {
@@ -548,6 +639,9 @@ body, html {
 #player-volume-bar-container {
   padding: 12px !important;
   min-width: 130px;
+  display: flex;
+  justify-content: center;
+  width: 80%;
 }
 
 #player-volume-bar-container span {
@@ -752,10 +846,6 @@ body, html {
   background-color: darkgray !important;
 }
 
-.search-screen-history-item-type {
-
-}
-
 .search-screen-history-item-container {
   display: flex;
   padding: 10px;
@@ -812,10 +902,10 @@ body, html {
 
 .search-screen-results-category-list-item {
   flex: 0 0 auto !important;
-  height: 190px;
-  width: 150px;
+  width: 200px;
   background-color: gray !important;
   margin-bottom: 20px !important;
+  overflow: hidden;
 }
 
 .search-screen-results-list-item-live-indicator {
@@ -845,25 +935,33 @@ body, html {
 }
 
 .search-screen-results-category-list-item-img {
-  height: 120px;
-  width: 120px;
   background-color: gray;
 }
 
-.search-screen-results-category-list-item-img-overlay-container {
+.search-screen-results-category-list-item-img-overlay-trigger {
+  height: 112.50px;
+  width: 200px;
+  min-width: 200px;
+  min-height: 112.50px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.search-screen-results-category-list-item-img-overlay-trigger:hover .search-screen-results-category-list-item-img-overlay-container {
   position: absolute;
   top: 0px;
   left: 0px;
-  display: flex;
+  display: flex !important;
   background-color: rgba(0, 0, 0, 0.5);
-  height: 120px;
+  height: 112.50px;
   width: 100%;
   justify-content: center;
-  visibility: visible;
+  align-items: center;
 }
 
-.search-screen-results-category-list-item-img-overlay-container:hover {
-  visibility: visible;
+.search-screen-results-category-list-item-img-overlay-container {
+  display: none;
 }
 
 
@@ -938,11 +1036,20 @@ body, html {
   color: white;
   background-color: transparent !important;
   border-color: transparent !important;
+  width: 43%;
+  padding: 0 !important;
+  border-width: 0px !important;
+  border-radius: 50% !important;
+  overflow: hidden; /* For border-radius: 50% to work*/
+}
+
+.search-screen-results-category-list-item-img-overlay-play-button:hover {
+  background-color: black !important;
 }
 
 .search-screen-results-category-list-item-img-overlay-play-button-icon {
-  height: 80px;
-  width: 80px;
+  height: 100%;
+  width: 100%;
 }
 
 .search-screen-results-category-list-item-footer {
