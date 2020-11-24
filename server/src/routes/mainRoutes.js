@@ -206,15 +206,16 @@ mainRouter.get('/settings', async (req, res) => {
     }
 });
 
-mainRouter.get('/profile/createCollection/:name', async (req, res) => {
-	let name = req.params.name;
-	if(name == null) {
+mainRouter.post('/profile/createCollection/:collectionName', async (req, res) => {
+    let collectionName = req.params.collectionName;
+    
+	if (collectionName == null) {
 		return res.status(200).json({
             error: {
                 name: "Bad request",
-                message: "Invalid operation"
+                message: "Invalid collection name"
             },
-            message: "Invalid operation",
+            message: "Invalid collection name",
             statusCode: 400,
             data: {
                 collection: null
@@ -237,14 +238,14 @@ mainRouter.get('/profile/createCollection/:name', async (req, res) => {
         })
     }
 	else {
-		let newCollection = await mongooseQuery.createCollection(req.user._id, req.params.name);
+		let newCollection = await mongooseQuery.createCollection(req.user._id, collectionName);
 		return res.status(200).json({
 			message: "Post success",
 			statusCode: 200,
 			data: {
 				collectionId: newCollection._id
 			},
-			success:true
+			success: true
 		})
 	}
     
@@ -604,15 +605,17 @@ mainRouter.post('/session/endSession/:id', async (req, res) => {
 
 });
 
-mainRouter.post('/search/createCollection/:name', async (req, res) => {
-    let name = req.params.name;
-    if (name == null){
+mainRouter.post('/search/createCollectionWithSong/:collectionName&:songId', async (req, res) => {
+    let collectionName = req.params.collectionName
+    let songId = req.params.songId
+
+    if (collectionName == null || songId == null){
         return res.status(401).json({
             error: {
                 name: "Bad request",
-                message: "Invalid name"
+                message: "Invalid name or song id"
             },
-            message: "Invalid name",
+            message: "Invalid name or song id",
             statusCode: 401,
             data: {
                 collectionId: null
@@ -635,7 +638,7 @@ mainRouter.post('/search/createCollection/:name', async (req, res) => {
         })
     }
     else {
-        let newCollection = await mongooseQuery.createCollection(req.user._id, req.params.name)
+        let newCollection = await mongooseQuery.createCollection(req.user._id, collectionName, "", [songId])
         return res.status(200).json({
             message: "Creation successful",
             statusCode: 200,
