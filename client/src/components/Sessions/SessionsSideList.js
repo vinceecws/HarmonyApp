@@ -11,6 +11,9 @@ class SessionSideList extends React.Component{
             loading: true,
             sessions: []
         }
+    }
+
+    componentDidMount = () => {
         this.fetchSessions()
     }
 

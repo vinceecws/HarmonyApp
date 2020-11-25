@@ -22,22 +22,8 @@ class MainApp extends React.Component {
     constructor(props) {
         super(props)
         this.queue = new Queue()
-        this.state = {
-            dataAPIReady: false,
-            playerAPIReady: false
-        }
-
-        this.playerAPI = new PlayerAPI(() => {
-            this.setState({
-                playerAPIReady: true
-            })
-        })
-
-        this.dataAPI = new DataAPI(() => {
-            this.setState({
-                dataAPIReady: true
-            })
-        })
+        this.playerAPI = new PlayerAPI()
+        this.dataAPI = new DataAPI()
     }
 
     isFavorited = () => {
@@ -109,7 +95,6 @@ class MainApp extends React.Component {
                         initPlayerAPI={this.initPlayerAPI}
                         queue={this.queue}
                         playerAPI={this.playerAPI}
-                        isFavorited={this.isFavorited}
                         handleUpdateUser={this.props.handleUpdateUser}          
                     />
                 </Row>

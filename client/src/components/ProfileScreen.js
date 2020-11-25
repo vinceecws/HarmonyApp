@@ -12,6 +12,7 @@ class ProfileScreen extends React.Component{
 		super(props)
 		this.newCollectionNameMaxLength = 50
 		this.state = {
+			user: this.props.user,
 			loading: true,
 			sessions_loading: true,
 			playlists_loading: true,
@@ -27,6 +28,17 @@ class ProfileScreen extends React.Component{
 			showDropdown: false,
 			showCreateCollectionModal: false
 		}
+	}
+
+	componentDidUpdate = (prevProps, prevState) => {
+		if (prevState.user !== this.props.user) {
+			this.setState({
+				user: this.props.user
+			})
+		}
+	}
+
+	componentDidMount = () => {
 		this.fetchUser().then(() => {
 			this.fetchUserData()
 		})
@@ -66,9 +78,7 @@ class ProfileScreen extends React.Component{
 	handleAddSongToFavorites = (songId, e) => {
         this.props.axiosWrapper.axiosPost('/main/profile/addSongToFavorites/' + songId, {}, (function(res, data) {
             if (data.success) {
-                var newUser = _.cloneDeep(this.props.user)
-                newUser.likedSongs = data.data.likedSongs
-                this.props.handleUpdateUser(newUser)
+                this.props.handleUpdateUser(data.data.user)
             }
         }).bind(this), true)
     }
@@ -76,9 +86,7 @@ class ProfileScreen extends React.Component{
     handleAddSongToCollection = (songId, collectionId, e) => {
         this.props.axiosWrapper.axiosPost('/main/profile/addSongToCollection/' + songId + '&' + collectionId, {}, (function(res, data) {
             if (data.success) {
-                var newUser = _.cloneDeep(this.props.user)
-                newUser.likedSongs = data.data.likedSongs
-                this.props.handleUpdateUser(newUser)
+                this.props.handleUpdateUser(data.data.user)
             }
         }).bind(this), true)
     }
@@ -239,8 +247,8 @@ class ProfileScreen extends React.Component{
 										{
 											this.state.sessions_loading ? 
 											<Spinner/> :
-											this.state.sessions.map(session => 
-												<div className='card profile-screen-category-item-card'>
+											this.state.sessions.map((session, session_ind) => 
+												<div key={session_ind} className='card profile-screen-category-item-card'>
 													<img className="card-img-top profile-screen-category-item-card-image" src={session.image}/>
 													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
 														<h1 className="card-title profile-screen-category-item-card-name title">{session.name}</h1>
@@ -267,8 +275,8 @@ class ProfileScreen extends React.Component{
 								{
 									this.state.playlists_loading ?
 									<Spinner/> :
-									this.state.playlists.map((playlist, ind) => 
-										<div className='card profile-screen-category-item-card' key={ind} onClick={this.handleGoToCollection.bind(this, playlist._id)}>
+									this.state.playlists.map((playlist, playlist_ind) => 
+										<div className='card profile-screen-category-item-card' key={playlist_ind} onClick={this.handleGoToCollection.bind(this, playlist._id)}>
 											<img className="card-img-top profile-screen-category-item-card-image" src={playlist.image ? playlist.image : icon_playlist_2}/>
 											<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
 												<h1 className="card-title profile-screen-category-item-card-name title">{playlist.name}</h1>
@@ -279,7 +287,7 @@ class ProfileScreen extends React.Component{
 										)
 								}
 								{
-									this.props.user._id === this.state.profileUser._id ? //Viewing own profile
+									this.state.user._id === this.state.profileUser._id ? //Viewing own profile
 									<div className='card profile-screen-create-collection-card' onClick={this.showCreateCollectionModal}>
 										<img className="profile-screen-create-collection-card-img" src={plus_button}/>
 									</div> :
@@ -300,8 +308,8 @@ class ProfileScreen extends React.Component{
 										{
 											this.state.likedSongs_loading ? 
 											<Spinner/> :
-											this.state.likedSongs.map(song => 
-												<div className='card profile-screen-category-item-card'>
+											this.state.likedSongs.map((song, song_ind) => 
+												<div key={song_ind} className='card profile-screen-category-item-card'>
 													<div className="profile-screen-category-item-card-image-overlay-trigger">
                                                         <div className="profile-screen-category-item-card-image-overlay-container">
                                                             <Dropdown className="profile-screen-category-item-card-image-overlay-dropdown" as={ButtonGroup}>
@@ -329,7 +337,7 @@ class ProfileScreen extends React.Component{
                                                                                 >
                                                                                     {
                                                                                         this.state.playlists.map((playlist, playlist_ind) => 
-                                                                                            <Dropdown.Item onClick={this.handleAddSongToCollection.bind(this, song.id, playlist._id)}>{playlist.name}</Dropdown.Item>
+                                                                                            <Dropdown.Item key={playlist_ind} onClick={this.handleAddSongToCollection.bind(this, song.id, playlist._id)}>{playlist.name}</Dropdown.Item>
                                                                                         )
                                                                                     }
                                                                                     {
@@ -341,7 +349,7 @@ class ProfileScreen extends React.Component{
                                                                                 </DropdownButton>
                                                                             </DropdownItem>
                                                                             {
-                                                                                !this.props.user.likedSongs.includes(song.id) ? 
+                                                                                !this.state.user.likedSongs.includes(song.id) ? 
                                                                                 <Dropdown.Item>
                                                                                     <Button onClick={this.handleAddSongToFavorites.bind(this, song.id)}>
                                                                                         Save To Favorites
@@ -385,8 +393,8 @@ class ProfileScreen extends React.Component{
 										{
 											this.state.likedSongs_loading ? 
 											<Spinner/> :
-											this.state.likedCollections.map(collection => 
-												<div className='card profile-screen-category-item-card'>
+											this.state.likedCollections.map((collection, collection_ind) => 
+												<div key={collection_ind} className='card profile-screen-category-item-card'>
 													<img className="card-img-top profile-screen-category-item-card-image" src={collection.image ? collection.image : icon_list}/>
 													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
 														<h1 className="card-title profile-screen-category-item-card-name title">{collection.name}</h1>

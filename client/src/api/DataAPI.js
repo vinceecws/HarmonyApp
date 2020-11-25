@@ -13,7 +13,9 @@ class DataAPI {
                     discoveryDocs: [youtube_data_api_discovery_doc],
                 }).then(() => {
                     this._dataAPIReady = true
-                    onLoad(...args)
+                    if (onLoad) {
+                        onLoad(...args)
+                    }
                 })
             })
         })
