@@ -1,15 +1,17 @@
 import React from 'react';
 import Spinner from './Spinner';
-import { icon_profile_image, icon_like, icon_music_1, plus_button } from '../graphics';
-import { Modal, Button } from 'react-bootstrap'
+import { icon_profile_image, icon_like, icon_music_1, plus_button, icon_play_white_1, menu_button_white, icon_sound_mixer_1, icon_list, icon_playlist_2 } from '../graphics';
+import { Modal, Image, Card, Button, Dropdown, DropdownButton, ButtonGroup } from 'react-bootstrap'
+import DropdownItem from 'react-bootstrap/esm/DropdownItem'
 
+const _ = require('lodash')
 
 class ProfileScreen extends React.Component{
 
 	constructor(props){
 		super(props)
+		this.newCollectionNameMaxLength = 50
 		this.state = {
-			user: this.props.user,
 			loading: true,
 			sessions_loading: true,
 			playlists_loading: true,
@@ -20,7 +22,9 @@ class ProfileScreen extends React.Component{
 			playlists: [],
 			likedSongs: [],
 			likedCollections: [],
+			currentSongTarget: "",
 			newCollectionName: "",
+			showDropdown: false,
 			showCreateCollectionModal: false
 		}
 		this.fetchUser().then(() => {
@@ -41,19 +45,52 @@ class ProfileScreen extends React.Component{
 	}
 
 	handleGoToCollection = (id, e) => {
-
 		this.props.history.push('/main/collection/' + id)
 	}
 
+	handlePlayItem = (id, e) => {
+        this.props.playVideo(id)
+    }
+
 	handleCreateCollection = () => {
-		if (this.state.newCollectionName.trim() !== ''){
-			this.props.axiosWrapper.axiosGet('main/profile/createCollection/' + this.state.newCollectionName, (function(res, data){
-				if (data.success){
-					this.handleGoToCollection(data.data.collectionId);
+		if (this.handleValidateNewCollectionName()){
+			this.props.axiosWrapper.axiosPost('main/profile/createCollection/' + this.state.newCollectionName, {}, (function(res, data){
+				if (data.success) {
+					this.props.handleUpdateUser(data.data.user)
+					this.handleGoToCollection(data.data.collectionId)
 				}
 			}).bind(this), true)
 		}
 	}
+
+	handleAddSongToFavorites = (songId, e) => {
+        this.props.axiosWrapper.axiosPost('/main/profile/addSongToFavorites/' + songId, {}, (function(res, data) {
+            if (data.success) {
+                var newUser = _.cloneDeep(this.props.user)
+                newUser.likedSongs = data.data.likedSongs
+                this.props.handleUpdateUser(newUser)
+            }
+        }).bind(this), true)
+    }
+
+    handleAddSongToCollection = (songId, collectionId, e) => {
+        this.props.axiosWrapper.axiosPost('/main/profile/addSongToCollection/' + songId + '&' + collectionId, {}, (function(res, data) {
+            if (data.success) {
+                var newUser = _.cloneDeep(this.props.user)
+                newUser.likedSongs = data.data.likedSongs
+                this.props.handleUpdateUser(newUser)
+            }
+        }).bind(this), true)
+    }
+
+	handleValidateNewCollectionName = () => {
+        var length = this.state.newCollectionName.length
+
+        if (length > 0 && length <= this.newCollectionNameMaxLength) {
+            return true
+        }
+        return false
+    }
 
 	handleNewCollectionNameChange = (e) => {
 		this.setState({
@@ -61,18 +98,34 @@ class ProfileScreen extends React.Component{
 		})
 	}
 
-	showCreateCollectionModal = () => {
+	handleMouseEnterDropdown = () => {
+        this.setState({
+            showDropdown: true
+        })
+    }
+
+    handleMouseLeaveDropdown = () => {
+        this.setState({
+            showDropdown: false
+        })
+    }
+
+	handleShowCreateCollectionModal = () => {
 		this.setState({
 			showCreateCollectionModal: true
 		})
 	}
 
-	hideCreateCollectionModal = () => {
+	handleHideCreateCollectionModal = () => {
 		this.setState({
 			newCollectionName: "",
 			showCreateCollectionModal: false
 		})
 	}
+
+	getCharLengthClass = () => {
+        return this.state.newCollectionName.length === 0 || this.handleValidateNewCollectionName() ? "color-accented body-text" : "color-alert body-text"
+    }
 
 	fetchUser () {
 		return this.props.axiosWrapper.axiosGet('/main/profile/' + this.props.match.params.userId, (function(res, data) {
@@ -138,17 +191,17 @@ class ProfileScreen extends React.Component{
 		else {
 			return(
 				<div style={{fontFamily: 'BalsamiqSans', padding:'1em'}}>
-					<Modal show={this.state.showCreateCollectionModal}>
-							<Modal.Header onHide={this.hideCreateCollectionModal} closeButton>
-								<Modal.Title>Create A New Playlist</Modal.Title>
+					<Modal contentClassName="profile-screen-modal" show={this.state.showCreateCollectionModal}>
+							<Modal.Header onHide={this.handleHideCreateCollectionModal} closeButton>
+								<Modal.Title className="title color-accented">Create A New Playlist</Modal.Title>
 							</Modal.Header>
 							<Modal.Body>
-								<p>Playlist Name:</p>
-								<input value={this.state.newCollectionName} onChange={this.handleNewCollectionNameChange}></input>
+								<p className="subtitle color-accented">Playlist Name:</p>
+								<input className="body-text" value={this.state.newCollectionName} onChange={this.handleNewCollectionNameChange}></input>
+								<div className={this.getCharLengthClass()}>{this.state.newCollectionName.length}/{this.newCollectionNameMaxLength}</div>
 							</Modal.Body>
 							<Modal.Footer>
-								<Button variant="secondary" onClick={this.hideCreateCollectionModal}>Close</Button>
-								<Button variant="primary" onClick={this.handleCreateCollection}>Create</Button>
+								<Button className="body-text bg-color-harmony color-accented" onClick={this.handleCreateCollection} disabled={!this.handleValidateNewCollectionName()}>Create</Button>
 							</Modal.Footer>
 					</Modal>
 					<div id='profile-screen-top-container' className='row'>
@@ -193,7 +246,7 @@ class ProfileScreen extends React.Component{
 														<h1 className="card-title profile-screen-category-item-card-name title">{session.name}</h1>
 														<p className="body-text profile-screen-category-item-card-creator body-text">{session.hostName}</p>
 														<div className="profile-screen-category-item-card-likes">{this.formatCount(session.likes)} <img src={icon_like} className='profile-screen-category-item-card-likes-icon'/></div>
-														<div className="profile-screen-category-item-card-streams">{session.streams} <img src={icon_music_1} className='profile-screen-category-item-card-streams-icon'/></div>
+														<div className="profile-screen-category-item-card-streams">{session.streams} <img src={session.image ? session.image : icon_sound_mixer_1} className='profile-screen-category-item-card-streams-icon'/></div>
 													</div>
 												</div>
 												)
@@ -216,7 +269,7 @@ class ProfileScreen extends React.Component{
 									<Spinner/> :
 									this.state.playlists.map((playlist, ind) => 
 										<div className='card profile-screen-category-item-card' key={ind} onClick={this.handleGoToCollection.bind(this, playlist._id)}>
-											<img className="card-img-top profile-screen-category-item-card-image" src={playlist.image}/>
+											<img className="card-img-top profile-screen-category-item-card-image" src={playlist.image ? playlist.image : icon_playlist_2}/>
 											<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
 												<h1 className="card-title profile-screen-category-item-card-name title">{playlist.name}</h1>
 												<p className="profile-screen-category-item-card-creator body-text">{playlist.user}</p>
@@ -226,9 +279,9 @@ class ProfileScreen extends React.Component{
 										)
 								}
 								{
-									this.state.user._id === this.state.profileUser._id ? //Viewing own profile
-									<div className='card profile-screen-category-item-card' onClick={this.showCreateCollectionModal}>
-										<img className="card-img-top profile-screen-category-item-card-image" src={plus_button}/>
+									this.props.user._id === this.state.profileUser._id ? //Viewing own profile
+									<div className='card profile-screen-create-collection-card' onClick={this.showCreateCollectionModal}>
+										<img className="profile-screen-create-collection-card-img" src={plus_button}/>
 									</div> :
 									<div></div>
 								}
@@ -249,7 +302,64 @@ class ProfileScreen extends React.Component{
 											<Spinner/> :
 											this.state.likedSongs.map(song => 
 												<div className='card profile-screen-category-item-card'>
-													<img className="card-img-top profile-screen-category-item-card-image" src={song.image_high ? song.image_high : song.image_med ? song.image_med : song.image_std ? song.image_std : song.image ? song.image : icon_music_1}/>
+													<div className="profile-screen-category-item-card-image-overlay-trigger">
+                                                        <div className="profile-screen-category-item-card-image-overlay-container">
+                                                            <Dropdown className="profile-screen-category-item-card-image-overlay-dropdown" as={ButtonGroup}>
+                                                                <Dropdown.Toggle split className="profile-screen-category-item-card-image-overlay-dropdown-button no-caret">
+                                                                    <Image className="profile-screen-category-item-card-image-overlay-dropdown-button-icon" src={menu_button_white} />
+                                                                </Dropdown.Toggle>
+                                                                <Dropdown.Menu className="profile-screen-category-item-card-image-overlay-dropdown-menu">
+                                                                    <Dropdown.Item>
+                                                                        <Button onClick={this.props.queue.addSongToFutureQueue.bind(this, song)}>
+                                                                            Add To Queue
+                                                                        </Button>
+                                                                    </Dropdown.Item>
+                                                                    {
+                                                                        this.props.auth ?
+                                                                        <div>
+                                                                            <DropdownItem onMouseEnter={this.handleMouseEnterDropdown} onMouseLeave={this.handleMouseLeaveDropdown}>
+                                                                                <DropdownButton
+                                                                                    as={ButtonGroup}
+                                                                                    key="right"
+                                                                                    className="profile-screen-category-item-card-image-overlay-dropdown-menu-collection"
+                                                                                    drop="right"
+                                                                                    variant="secondary"
+                                                                                    title="Add To Playlist"
+                                                                                    show={this.state.showDropdown}
+                                                                                >
+                                                                                    {
+                                                                                        this.state.playlists.map((playlist, playlist_ind) => 
+                                                                                            <Dropdown.Item onClick={this.handleAddSongToCollection.bind(this, song.id, playlist._id)}>{playlist.name}</Dropdown.Item>
+                                                                                        )
+                                                                                    }
+                                                                                    {
+                                                                                        this.state.playlists.length > 0 ?
+                                                                                        <Dropdown.Divider /> :
+                                                                                        <div></div>
+                                                                                    }
+                                                                                    <Dropdown.Item onClick={this.handleShowCreateCollectionModal.bind(this, song.id)}>Create Playlist</Dropdown.Item>
+                                                                                </DropdownButton>
+                                                                            </DropdownItem>
+                                                                            {
+                                                                                !this.props.user.likedSongs.includes(song.id) ? 
+                                                                                <Dropdown.Item>
+                                                                                    <Button onClick={this.handleAddSongToFavorites.bind(this, song.id)}>
+                                                                                        Save To Favorites
+                                                                                    </Button>
+                                                                                </Dropdown.Item> :
+                                                                                <div></div>
+                                                                            }
+                                                                        </div>
+                                                                        : <div></div>
+                                                                    }
+                                                                </Dropdown.Menu>
+                                                            </Dropdown>
+                                                            <Button className="profile-screen-category-item-card-image-overlay-play-button" onClick={this.handlePlayItem.bind(this, song.id)}>
+                                                                <Image className="profile-screen-category-item-card-image-overlay-play-button-icon" src={icon_play_white_1} roundedCircle/>
+                                                            </Button>
+                                                        </div>
+                                                        <Card.Img className="profile-screen-category-item-card-image" src={song.image_high ? song.image_high : song.image_med ? song.image_med : song.image_std ? song.image_std : song.image ? song.image : icon_music_1} />
+                                                    </div>
 													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
 														<h1 className="card-title profile-screen-category-item-card-name title">{song.name}</h1>
 														<p className="profile-screen-category-item-card-creator body-text">{song.creator}</p>
@@ -277,7 +387,7 @@ class ProfileScreen extends React.Component{
 											<Spinner/> :
 											this.state.likedCollections.map(collection => 
 												<div className='card profile-screen-category-item-card'>
-													<img className="card-img-top profile-screen-category-item-card-image" src={collection.image}/>
+													<img className="card-img-top profile-screen-category-item-card-image" src={collection.image ? collection.image : icon_list}/>
 													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
 														<h1 className="card-title profile-screen-category-item-card-name title">{collection.name}</h1>
 														<p className="profile-screen-category-item-card-creator body-text">{collection.user}</p>

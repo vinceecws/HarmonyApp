@@ -1,5 +1,6 @@
 const express = require("express")
 const mongooseQuery = require('../db');
+const stripUser = require('./index').stripUser
 
 mainRouter = express.Router()
 
@@ -238,19 +239,127 @@ mainRouter.post('/profile/createCollection/:collectionName', async (req, res) =>
         })
     }
 	else {
-		let newCollection = await mongooseQuery.createCollection(req.user._id, collectionName);
+        let newCollection = await mongooseQuery.createCollection(req.user._id, collectionName)
+        let updatedUser = await mongooseQuery.getUser({
+            _id: req.user._id
+        }).catch(err => res.sendStatus(404))
+
 		return res.status(200).json({
 			message: "Post success",
 			statusCode: 200,
 			data: {
+                user: stripUser(updatedUser),
 				collectionId: newCollection._id
 			},
 			success: true
 		})
 	}
     
-});
+})
 
+mainRouter.post('/profile/addSongToFavorites/:songId', async (req, res) => {
+    let songId = req.params.songId;
+    
+	if (songId == null) {
+		return res.status(200).json({
+            error: {
+                name: "Bad request",
+                message: "Invalid song id"
+            },
+            message: "Invalid song id",
+            statusCode: 400,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
+    else if (!req.user) {
+        return res.status(401).json({
+            error: {
+                name: "Unauthorized",
+                message: "Unauthorized session"
+            },
+            message: "Unauthorized session",
+            statusCode: 401,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
+	else {
+        let updatedUser = await mongooseQuery.updateUser(req.user._id, {
+            $push: {
+              likedSongs: songId 
+            }
+        }).catch(err => res.sendStatus(404))
+
+		return res.status(200).json({
+			message: "Update successful",
+			statusCode: 200,
+			data: {
+                user: stripUser(updatedUser)
+			},
+			success: true
+		})
+	}
+    
+})
+
+mainRouter.post('/profile/addSongToCollection/:songId&collectionId', async (req, res) => {
+    let songId = req.params.songId;
+    let collectionId = req.params.collectionId
+    
+	if (songId == null || collectionId == null) {
+		return res.status(200).json({
+            error: {
+                name: "Bad request",
+                message: "Invalid song id or collection id"
+            },
+            message: "Invalid song id or collection id",
+            statusCode: 400,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
+    else if (!req.user) {
+        return res.status(401).json({
+            error: {
+                name: "Unauthorized",
+                message: "Unauthorized session"
+            },
+            message: "Unauthorized session",
+            statusCode: 401,
+            data: {
+                collection: null
+            },
+            success: false
+        })
+    }
+	else {
+        let collection = await mongooseQuery.updateCollection(collectionId, {
+            $push: {
+              songList: songId 
+            }
+        })
+        let updatedUser = await mongooseQuery.getUser({
+            _id: req.user._id
+        }).catch(err => res.sendStatus(404))
+
+		return res.status(200).json({
+			message: "Update successful",
+			statusCode: 200,
+			data: {
+                user: stripUser(updatedUser)
+			},
+			success: true
+		})
+	}
+    
+})
 
 mainRouter.get('/collection/:id', async (req, res) => {
     let id = req.params.id;
@@ -639,10 +748,15 @@ mainRouter.post('/search/createCollectionWithSong/:collectionName&:songId', asyn
     }
     else {
         let newCollection = await mongooseQuery.createCollection(req.user._id, collectionName, "", [songId])
+        let updatedUser = await mongooseQuery.getUser({
+            _id: req.user._id
+        }).catch(err => res.sendStatus(404))
+
         return res.status(200).json({
             message: "Creation successful",
             statusCode: 200,
-            data:{
+            data: {
+                user: stripUser(updatedUser),
             	collectionId: newCollection._id
             },
             success: true
@@ -689,12 +803,16 @@ mainRouter.post('/search/addSongToCollection/:songId&:collectionId', async (req,
             $push: {
               songList: songId 
             }
-        });
+        })
+        let updatedUser = await mongooseQuery.getUser({
+            _id: req.user._id
+        }).catch(err => res.sendStatus(404))
+
         return res.status(200).json({
             message: "Update successful",
             statusCode: 200,
-            data:{
-            	collectionId: collection._id
+            data: {
+                user: stripUser(updatedUser),
             },
             success: true
         })
@@ -735,17 +853,17 @@ mainRouter.post('/search/addSongToFavorites/:songId', async (req, res) => {
         })
     }
     else {
-        let user = await mongooseQuery.updateUser(req.user._id, {
+        let updatedUser = await mongooseQuery.updateUser(req.user._id, {
             $push: {
               likedSongs: songId 
             }
-        });
+        }).catch(err => res.sendStatus(404))
 
         return res.status(200).json({
             message: "Update successful",
             statusCode: 200,
-            data:{
-            	likedSongs: user.likedSongs
+            data: {
+            	user: stripUser(updatedUser)
             },
             success: true
         })
@@ -766,9 +884,7 @@ mainRouter.get('/search', async (req, res) => {
             message: "Fetch successful",
             statusCode: 200,
             data: {
-                history: user.history,
-                playlists: playlists,
-                likedSongs: user.likedSongs
+                playlists: playlists
             },
             success: true
         })
@@ -820,7 +936,7 @@ mainRouter.get('/search/query=:search', async (req, res) => {
 		for (let u of userMatches){
 			if (thisUser._id !== u._id){
 				let fetchedUser = {username: u.google.name === undefined ? u.local.username : u.google.name,
-					Id: u._id, biography: u.biography,
+					_id: u._id, biography: u.biography,
 					privateMode: u.privateMode, live: u.live,
 					playlists: u.playlists, sessions: u.sessions,
 					history: u.history, likedSongs: u.likedSongs,

@@ -1,15 +1,15 @@
 import React from 'react';
 import RangeSlider from 'react-bootstrap-range-slider';
 import { Container, Row, Col, Image, Button } from 'react-bootstrap';
-import { icon_play_2, icon_pause_3, icon_previous, icon_next, icon_repeat_3, icon_repeat_1, icon_shuffle_arrows, icon_volume_up_1, icon_no_sound, icon_like, icon_music_1 } from '../graphics';
+import { icon_play_2, icon_pause_3, icon_previous, icon_next, icon_repeat_3, icon_repeat_1, icon_shuffle_arrows, icon_volume_up_1, icon_no_sound } from '../graphics';
+import { ReactComponent as FavoriteButton } from '../graphics/music_player_pack/035-like.svg'
 import { repeatStates } from '../const'
 
 
-class Player extends React.Component{
+class Player extends React.Component {
 
     constructor(props) {
         super(props)
-
         this.state = {
             currentSong: this.props.queue.getCurrentSong(),
             currentTime: this.props.playerAPI.getCurrentTime()
@@ -144,7 +144,7 @@ class Player extends React.Component{
             return this.state.currentSong.image
         }
         else {
-            return icon_music_1
+            return null
         }
     }
 
@@ -191,10 +191,14 @@ class Player extends React.Component{
                             </Col>
                             <Col id="player-song-title">
                                 <div className="body-text color-contrasted">{this.getSongName()}</div>
-                                <div className="body-text color-contrasted">{this.getArtist()}</div>
-                                <Button id="player-song-favorite-button">
-                                    <Image className={this.getFavoriteButtonIconClass()} src={icon_like} onClick={e => this.handleToggleFavorite()} roundedCircle/>
-                                </Button>
+                                <div className="tiny-text color-contrasted">{this.getArtist()}</div>
+                                {
+                                    !this.props.queue.currentSongIsEmpty() ?
+                                    <Button id="player-song-favorite-button">
+                                        <FavoriteButton className={this.getFavoriteButtonIconClass()} onClick={e => this.handleToggleFavorite()} />
+                                    </Button> :
+                                    <div></div>
+                                }
                             </Col>
                         </Row>
                     </Col>

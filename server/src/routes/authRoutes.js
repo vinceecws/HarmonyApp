@@ -1,4 +1,5 @@
 const express = require("express")
+const stripUser = require('./index').stripUser
 
 module.exports = function(passport) {
     
@@ -11,7 +12,7 @@ module.exports = function(passport) {
                 message: "Authorization success",
                 statusCode: 200,
                 data: {
-                    user: req.user
+                    user: stripUser(req.user)
                 },
                 success: true
             })
@@ -55,7 +56,7 @@ module.exports = function(passport) {
                     message: "Authorization success",
                     statusCode: 200,
                     data: {
-                        user: user
+                        user: stripUser(user)
                     },
                     success: true
                 })
@@ -89,7 +90,7 @@ module.exports = function(passport) {
                     message: "Sign-up success",
                     statusCode: 200,
                     data: {
-                        user: user
+                        user: stripUser(user)
                     },
                     success: true
                 })
