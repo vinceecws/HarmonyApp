@@ -199,7 +199,6 @@ class Player extends React.Component {
     }
 
     render(){
-        console.log(this.state.user)
         return(
             <Container id="player-container" fluid>
                 <Row>

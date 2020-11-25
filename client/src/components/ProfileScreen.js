@@ -136,14 +136,25 @@ class ProfileScreen extends React.Component{
     }
 
 	fetchUser () {
-		return this.props.axiosWrapper.axiosGet('/main/profile/' + this.props.match.params.userId, (function(res, data) {
-			if (data.success) {
+		if (this.props.match.params.userId === this.state.user._id) {
+			return new Promise((resolve) => {
 				this.setState({
-					profileUser: data.data.user,
+					profileUser: _.cloneDeep(this.state.user),
 					loading: false
 				})
-			}
-		}).bind(this), true)
+				resolve()
+			})
+		}
+		else {
+			return this.props.axiosWrapper.axiosGet('/main/profile/' + this.props.match.params.userId, (function(res, data) {
+				if (data.success) {
+					this.setState({
+						profileUser: data.data.user,
+						loading: false
+					})
+				}
+			}).bind(this), true)
+		}
 	}
 
 	fetchUserData = () => {
