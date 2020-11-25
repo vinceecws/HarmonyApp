@@ -104,7 +104,7 @@ class SearchScreen extends React.Component {
     }
 
     handleAddSongToFavorites = (songId, e) => {
-        this.props.axiosWrapper.axiosPost('/main/api/addSongToFavorites/' + songId, {}, (function(res, data) {
+        this.props.axiosWrapper.axiosPost('/api/addSongToFavorites/' + songId, {}, (function(res, data) {
             if (data.success) {
                 this.props.handleUpdateUser(data.data.user)
             }
@@ -112,7 +112,7 @@ class SearchScreen extends React.Component {
     }
 
     handleRemoveSongFromFavorites = (songId, e) => {
-		this.props.axiosWrapper.axiosPost('/main/api/removeSongFromFavorites/' + songId, {}, (function(res, data) {
+		this.props.axiosWrapper.axiosPost('/api/removeSongFromFavorites/' + songId, {}, (function(res, data) {
 			if (data.success) {
 				this.props.handleUpdateUser(data.data.user)
 			}
@@ -120,7 +120,7 @@ class SearchScreen extends React.Component {
 	}
 
     handleAddSongToCollection = (songId, collectionId, e) => {
-        this.props.axiosWrapper.axiosPost('/main/api/addSongToCollection/' + songId + '&' + collectionId, {}, (function(res, data) {
+        this.props.axiosWrapper.axiosPost('/api/addSongToCollection/' + songId + '&' + collectionId, {}, (function(res, data) {
             if (data.success) {
                 this.props.handleUpdateUser(data.data.user)
             }

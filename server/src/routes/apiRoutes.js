@@ -2,9 +2,9 @@ const express = require("express")
 const mongooseQuery = require('../db');
 const stripUser = require('./index').stripUser
 
-mainRouter = express.Router()
+apiRouter = express.Router()
 
-mainRouter.get('/', async (req, res) => {
+apiRouter.get('/', async (req, res) => {
     let sessions = await mongooseQuery.getSessions()
         .catch(err => {
             return res.status(401).json({
@@ -30,7 +30,7 @@ mainRouter.get('/', async (req, res) => {
     })
 })
 
-mainRouter.post('/api/addSongToFavorites/:songId', async (req, res) => {
+apiRouter.post('/addSongToFavorites/:songId', async (req, res) => {
     let songId = req.params.songId
 
     if (songId == null){
@@ -81,7 +81,7 @@ mainRouter.post('/api/addSongToFavorites/:songId', async (req, res) => {
 
 });
 
-mainRouter.post('/api/removeSongFromFavorites/:songId', async (req, res) => {
+apiRouter.post('/removeSongFromFavorites/:songId', async (req, res) => {
     let songId = req.params.songId
 
     if (songId == null){
@@ -132,7 +132,7 @@ mainRouter.post('/api/removeSongFromFavorites/:songId', async (req, res) => {
 
 });
 
-mainRouter.post('/api/createCollection/:collectionName', async (req, res) => {
+apiRouter.post('/createCollection/:collectionName', async (req, res) => {
     let collectionName = req.params.collectionName;
     
 	if (collectionName == null) {
@@ -184,7 +184,7 @@ mainRouter.post('/api/createCollection/:collectionName', async (req, res) => {
     
 })
 
-mainRouter.post('/api/createCollectionWithSong/:collectionName&:songId', async (req, res) => {
+apiRouter.post('/createCollectionWithSong/:collectionName&:songId', async (req, res) => {
     let collectionName = req.params.collectionName
     let songId = req.params.songId
 
@@ -238,7 +238,7 @@ mainRouter.post('/api/createCollectionWithSong/:collectionName&:songId', async (
 
 });
 
-mainRouter.post('/api/addSongToCollection/:songId&collectionId', async (req, res) => {
+apiRouter.post('/addSongToCollection/:songId&collectionId', async (req, res) => {
     let songId = req.params.songId;
     let collectionId = req.params.collectionId
     
@@ -291,7 +291,7 @@ mainRouter.post('/api/addSongToCollection/:songId&collectionId', async (req, res
 	}
 })
 
-mainRouter.post('/api/removeSongFromCollection/:songId&collectionId', async (req, res) => {
+apiRouter.post('/removeSongFromCollection/:songId&collectionId', async (req, res) => {
     let songId = req.params.songId;
     let collectionId = req.params.collectionId
     
@@ -345,7 +345,7 @@ mainRouter.post('/api/removeSongFromCollection/:songId&collectionId', async (req
     
 })
 
-mainRouter.get('/profile/:id', async (req, res) => {
+apiRouter.get('/profile/:id', async (req, res) => {
     let id = req.params.id;
     if (id == null){
         return res.status(401).json({
@@ -380,7 +380,7 @@ mainRouter.get('/profile/:id', async (req, res) => {
     }
 });
 
-mainRouter.get('/profile/:id/sessions', async (req, res) => {
+apiRouter.get('/profile/:id/sessions', async (req, res) => {
     let id = req.params.id;
     if (id == null){
         return res.status(401).json({
@@ -411,7 +411,7 @@ mainRouter.get('/profile/:id/sessions', async (req, res) => {
     }
 });
 
-mainRouter.get('/profile/:id/playlists', async (req, res) => {
+apiRouter.get('/profile/:id/playlists', async (req, res) => {
     let id = req.params.id;
     if (id == null){
         return res.status(401).json({
@@ -442,7 +442,7 @@ mainRouter.get('/profile/:id/playlists', async (req, res) => {
     }
 });
 
-mainRouter.get('/profile/:id/likedCollections', async (req, res) => {
+apiRouter.get('/profile/:id/likedCollections', async (req, res) => {
     let id = req.params.id;
     if (id == null){
         return res.status(401).json({
@@ -473,7 +473,7 @@ mainRouter.get('/profile/:id/likedCollections', async (req, res) => {
     }
 });
 
-mainRouter.get('/settings', async (req, res) => {
+apiRouter.get('/settings', async (req, res) => {
     if(req.user == null){
         return res.status(404).json({
             error: {
@@ -522,7 +522,7 @@ mainRouter.get('/settings', async (req, res) => {
     }
 });
 
-mainRouter.get('/collection/:id', async (req, res) => {
+apiRouter.get('/collection/:id', async (req, res) => {
     let id = req.params.id;
     if (id == null){
         return res.status(404).json({
@@ -551,11 +551,11 @@ mainRouter.get('/collection/:id', async (req, res) => {
     }
 });
 
-mainRouter.get('/home', async (req, res) => {
+apiRouter.get('/home', async (req, res) => {
     //Suggestions only
 });
 
-mainRouter.get('/collection/delete/:id', async (req, res) => {
+apiRouter.get('/collection/delete/:id', async (req, res) => {
 	let id = req.params.id;
 	if(id == null){
 		return res.status(404).json({
@@ -582,7 +582,7 @@ mainRouter.get('/collection/delete/:id', async (req, res) => {
     
 });
 
-mainRouter.post('/collection/updateCollection/:id', async (req, res) => {
+apiRouter.post('/collection/updateCollection/:id', async (req, res) => {
 	let id = req.params.id;
 	if(id == null){
 		return res.status(404).json({
@@ -611,7 +611,7 @@ mainRouter.post('/collection/updateCollection/:id', async (req, res) => {
 	}
 });
 
-mainRouter.post('/settings/changeUsername', async (req, res) => {
+apiRouter.post('/settings/changeUsername', async (req, res) => {
     if(req.user == null){
         return res.status(404).json({
             error: {
@@ -664,7 +664,7 @@ mainRouter.post('/settings/changeUsername', async (req, res) => {
     }
     
 });
-mainRouter.post('/settings/changeBiography', async (req, res) => {
+apiRouter.post('/settings/changeBiography', async (req, res) => {
     if(req.user == null){
         return res.status(404).json({
             error: {
@@ -717,7 +717,7 @@ mainRouter.post('/settings/changeBiography', async (req, res) => {
     }
     
 });
-mainRouter.post('/settings/changePassword', async (req, res) => {
+apiRouter.post('/settings/changePassword', async (req, res) => {
     if(req.user == null){
         return res.status(404).json({
             error: {
@@ -771,7 +771,7 @@ mainRouter.post('/settings/changePassword', async (req, res) => {
     
 });
 
-mainRouter.post('/collection/updateUser/:id', async (req, res) => {
+apiRouter.post('/collection/updateUser/:id', async (req, res) => {
     let userId = req.params.id;
     if(userId == null){
 		return res.status(404).json({
@@ -799,7 +799,7 @@ mainRouter.post('/collection/updateUser/:id', async (req, res) => {
     }
 });
 
-mainRouter.post('/session/newSession', async (req, res) => {
+apiRouter.post('/session/newSession', async (req, res) => {
     let newSession = 
         await mongooseQuery.createSession(req.body.hostId, req.body.hostName,
             req.body.name, req.body.startTime, req.body.endTime, 0, 0, 
@@ -814,7 +814,7 @@ mainRouter.post('/session/newSession', async (req, res) => {
 		})
 });
 
-mainRouter.get('/session/:id', async (req, res) => {
+apiRouter.get('/session/:id', async (req, res) => {
     let id = req.params.id;
     if (id == null){
         return res.status(404).json({
@@ -847,7 +847,7 @@ mainRouter.get('/session/:id', async (req, res) => {
 });
 
 
-mainRouter.post('/session/endSession/:id', async (req, res) => {
+apiRouter.post('/session/endSession/:id', async (req, res) => {
     let id = req.params.id;
     if (id == null){
         return res.status(404).json({
@@ -875,7 +875,7 @@ mainRouter.post('/session/endSession/:id', async (req, res) => {
 
 });
 
-mainRouter.get('/search', async (req, res) => {
+apiRouter.get('/search', async (req, res) => {
     if (req.user) {
         let user = await mongooseQuery.getUser({
             _id: req.user._id
@@ -902,7 +902,7 @@ mainRouter.get('/search', async (req, res) => {
     }
 })
 
-mainRouter.get('/search/query=:search', async (req, res) => {
+apiRouter.get('/search/query=:search', async (req, res) => {
 	let sessionMatches = await mongooseQuery.getSessionsFromQuery(req.params.search)
 									.catch(err => res.sendStatus(404));
 	let collectionMatches = await mongooseQuery.getCollectionsFromQuery(req.params.search)
@@ -954,4 +954,4 @@ mainRouter.get('/search/query=:search', async (req, res) => {
 
 
 
-module.exports = mainRouter;
+module.exports = apiRouter;

@@ -24,7 +24,7 @@ class LoginScreen extends React.Component{
     }
 
     checkCredentials = () => {
-        this.props.axiosWrapper.axiosGet('/login', (function(res, data) {
+        this.props.axiosWrapper.axiosGet('/auth', (function(res, data) {
             if (data.success) {
                 this.clearSignUpCredentials()
                 this.props.handleAuthenticate(data.data.user)
@@ -147,7 +147,7 @@ class LoginScreen extends React.Component{
     handleSignUp = (e) => {
         e.preventDefault()
         if (this.validateSignUp()) {
-            this.props.axiosWrapper.axiosPost('/login/signup', {
+            this.props.axiosWrapper.axiosPost('/auth/local/signup', {
                 username: this.state.signup_username,
                 password: this.state.signup_password
             }, (function(res, data) {
@@ -178,7 +178,7 @@ class LoginScreen extends React.Component{
 
     handleLogin = (e) => {
         e.preventDefault()
-        this.props.axiosWrapper.axiosPost('/login', {
+        this.props.axiosWrapper.axiosPost('/auth/local/login', {
             username: this.state.login_username,
             password: this.state.login_password
         }, (function(res, data) {

@@ -5,7 +5,7 @@ module.exports = function(passport) {
     
     authRouter = express.Router()
 
-    authRouter.get('/login', function(req, res, next) {
+    authRouter.get('/', function(req, res, next) {
 
         if (req.user) {
             return res.status(200).json({
@@ -29,7 +29,7 @@ module.exports = function(passport) {
         }
     })
 
-    authRouter.post('/login', function(req, res, next) {
+    authRouter.post('/local/login', function(req, res, next) {
         passport.authenticate('local-login', function(err, user, info) {
             if (err) {
                 return next(err)
@@ -64,7 +64,7 @@ module.exports = function(passport) {
         })(req, res, next)
     })
 
-    authRouter.post('/login/signup', function(req, res, next) {
+    authRouter.post('/local/signup', function(req, res, next) {
         passport.authenticate('local-signup', function(err, user, info) {
             if (err) {
                 return next(err)
