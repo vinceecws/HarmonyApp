@@ -117,8 +117,11 @@ exports.changeUsername = async function(userObject, updateFieldsObject){
       
   }
   user.local.username = updateFieldsObject.username;
-  
-  return await User.updateOne(userObject, {$set:{'local.username':updateFieldsObject.username}}, {new: true});
+  user = await User.updateOne(userObject, {$set:{'local.username':updateFieldsObject.username}}, {new: true});
+  user = await connection.then(async () => {
+    return await User.findOne(userObject);
+  }).catch(error => console.log(error));
+  return user;
   
 }
 exports.changeBiography= async function(userObject, updateFieldsObject){

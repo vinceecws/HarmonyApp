@@ -75,7 +75,9 @@ class SettingsScreen extends React.Component{
 
     handleChangeUsernamePassword = (e) => {
         this.setState({
-            password: e.target.value
+            password: e.target.value,
+            changeUsername_validated: false,
+            changePassword_validated: false
         })
     }
     handleChangeNewPassword = (e) => {
@@ -179,13 +181,14 @@ class SettingsScreen extends React.Component{
         e.preventDefault()
         if (this.validateNewUsername()) {
 
-            this.props.axiosWrapper.axiosPost('/main/settings/changeUsername', {
+            this.props.axiosWrapper.axiosPost('/api/settings/changeUsername', {
                     password: this.state.password,
                     username: this.state.username
                     
             }, (function(res, data) {
                 if (data.success) {
-                    
+                    console.log(data);
+                    this.props.handleUpdateUser(data.data.user);
                     this.setState({
                         
                         changeUsername_taken: false,
@@ -224,13 +227,13 @@ class SettingsScreen extends React.Component{
     handleBiography = (e) => {
         e.preventDefault();
         if(this.state.biography.length < this.state.character_limit){
-            this.props.axiosWrapper.axiosPost('/main/settings/changeBiography', {
+            this.props.axiosWrapper.axiosPost('/api/settings/changeBiography', {
                     
                     biography: this.state.biography
                     
             }, (function(res, data) {
                 if (data.success) {
-                    
+                    this.props.handleUpdateUser(data.data.user);
                     this.props.history.push('/main/settings')
                    
                     this.setState({
@@ -254,13 +257,14 @@ class SettingsScreen extends React.Component{
     handlePassword = (e) => {
         e.preventDefault();
         if(this.validateNewPassword()){
-            this.props.axiosWrapper.axiosPost('/main/settings/changePassword', {
+            this.props.axiosWrapper.axiosPost('/api/settings/changePassword', {
                     
                     password: this.state.password,
                     new_password: this.state.new_password
                     
             }, (function(res, data) {
                 if (data.success) {
+                    this.props.handleUpdateUser(data.data.user);
                     this.setState({
                         changePassword_invalidPassword: false
                     });
@@ -292,7 +296,7 @@ class SettingsScreen extends React.Component{
     	return this.state.user.privateMode;
     }
     fetchUser = () => {
-        this.props.axiosWrapper.axiosGet('/main/settings', (function(res, data) {
+        this.props.axiosWrapper.axiosGet('/api/settings', (function(res, data) {
             console.log(data);
             if (data.success) {
                 console.log('Success!')
