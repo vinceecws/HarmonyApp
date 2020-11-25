@@ -26,10 +26,15 @@ class CollectionScreen extends React.Component{
 
     componentDidMount = () => {
         this.fetchCollection();
-        console.log('Count');
     }
 
-
+    componentDidUpdate = (prevProps, prevState) => {
+        if (prevState.user !== this.props.user) {
+            this.setState({
+                user: this.props.user
+            })
+        }
+    }
 
     onPressLikeCollection = () =>{
         if (this.state.user !== null){
@@ -86,7 +91,7 @@ class CollectionScreen extends React.Component{
 
     onEditName = () => {
         if (this.state.collectionName.trim() !== ''){
-            this.props.axiosWrapper.axiosPost('api/collection/updateCollection/' + this.props.match.params.collectionId, 
+            this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.props.match.params.collectionId, 
             {name: this.state.collectionName}, (function(res, data){
                 if (data.success){
                     console.log('Editing Name Success')
@@ -99,7 +104,7 @@ class CollectionScreen extends React.Component{
 
     onEditDescription = () => {
         if (this.state.collectionName.trim() !== ''){
-            this.props.axiosWrapper.axiosPost('api/collection/updateCollection/' + this.props.match.params.collectionId, 
+            this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.props.match.params.collectionId, 
             {description: this.state.collectionDescription}, (function(res, data){
                 if (data.success){
                     this.hideEditDescriptionModal();
@@ -187,15 +192,11 @@ class CollectionScreen extends React.Component{
                                 }
                             }
                         }
-                        console.log(song);
                         listSongs.push(song);
                         this.setState({ songList: listSongs });
                     }
                 });
             }
-
-            
-            console.log('Songs: ', this.state.songList);
         }
     }
 
@@ -208,8 +209,6 @@ class CollectionScreen extends React.Component{
                         loading: false,
                         collectionName: data.data.collection.name
                     });
-                    console.log('Collection: ', this.state.collection);
-                    console.log('User: ', this.state.user)
                     this.fetchSongs(data.data.collection.songList);
                     this.isCollectionFavorited();
                 }
@@ -278,7 +277,6 @@ class CollectionScreen extends React.Component{
                 }
             }
         } 
-        console.log('Collection favorited: ', this.state.favorited);
     }
 
     render(){

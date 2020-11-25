@@ -242,7 +242,6 @@ class SearchScreen extends React.Component {
     }
 
     render() {
-        console.log(this.state.user.playlists)
         return(
             <div className="search-screen-container">
                 <Modal contentClassName="search-screen-modal" show={this.state.showCreateCollectionModal}>
