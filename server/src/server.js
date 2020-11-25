@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config(({path: './src/.env'}))
 
 const passportCallbacks = require('./passport')
 const passport = require('passport')
@@ -10,14 +10,15 @@ const cors = require('cors')
 const express = require("express")
 const app = express()
 const session = require("express-session")
+const path = require('path')
 const db = require('./db').db
-const apiPort = 4000
+const apiPort = process.env.PORT || 3000
 
 const MongoStore = require('connect-mongo')(session)
 /*
     Express.js configurations
 */
-app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
+//app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(session({
@@ -60,6 +61,15 @@ const apiRouter = require('./routes/apiRoutes.js')
 
 app.use('/auth', authRouter)
 app.use('/api', apiRouter)
+
+/*
+    Serve static build of React app in production
+*/
+app.use(express.static(path.resolve(__dirname, '..', '..', 'client', 'build')))
+
+app.get('/', (req, res, next) => {
+    res.sendFile(path.resolve(__dirname, '..', '..', 'client', 'build', 'index.html'));
+});
 
 db.on('error', console.error.bind(console, "Error connecting to MongoDB Atlas Database:"))
 
