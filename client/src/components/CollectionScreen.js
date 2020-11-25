@@ -55,7 +55,6 @@ class CollectionScreen extends React.Component{
                     console.log('Updated user: ', favoritedCollections);
                     this.props.handleUpdateUser(data.data.user);
                     this.setState({
-                        user: data.data.user,
                         favorited: !this.state.favorited});
                 }
             }).bind(this), true);
@@ -86,7 +85,7 @@ class CollectionScreen extends React.Component{
 
     onEditName = () => {
         if (this.state.collectionName.trim() !== ''){
-            this.props.axiosWrapper.axiosPost('api/collection/updateCollection/' + this.props.match.params.collectionId, 
+            this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.props.match.params.collectionId, 
             {name: this.state.collectionName}, (function(res, data){
                 if (data.success){
                     console.log('Editing Name Success')
@@ -99,7 +98,7 @@ class CollectionScreen extends React.Component{
 
     onEditDescription = () => {
         if (this.state.collectionName.trim() !== ''){
-            this.props.axiosWrapper.axiosPost('api/collection/updateCollection/' + this.props.match.params.collectionId, 
+            this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.props.match.params.collectionId, 
             {description: this.state.collectionDescription}, (function(res, data){
                 if (data.success){
                     this.hideEditDescriptionModal();
@@ -155,9 +154,6 @@ class CollectionScreen extends React.Component{
         {likedSongs: favedSongs}, (function(res, data){
             if(data.success){
                 this.props.handeUpdateUser(data.data.user);
-                this.setState({
-                    user: data.data.user
-                })
                 console.log('Updated favorited songs: ', data.data.user.likedSongs)
             }
         }).bind(this), true)
