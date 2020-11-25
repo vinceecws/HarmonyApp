@@ -49,7 +49,7 @@ class CollectionScreen extends React.Component{
             }
             console.log('Sending Payload: ', favoritedCollections);
             
-            this.props.axiosWrapper.axiosPost('/main/collection/updateUser/' + this.state.user._id,
+            this.props.axiosWrapper.axiosPost('/api/collection/updateUser/' + this.state.user._id,
             {likedCollections: favoritedCollections}, (function(res, data){
                 if (data.success){
                     console.log('Updated user: ', favoritedCollections);
@@ -86,7 +86,7 @@ class CollectionScreen extends React.Component{
 
     onEditName = () => {
         if (this.state.collectionName.trim() !== ''){
-            this.props.axiosWrapper.axiosPost('main/collection/updateCollection/' + this.props.match.params.collectionId, 
+            this.props.axiosWrapper.axiosPost('api/collection/updateCollection/' + this.props.match.params.collectionId, 
             {name: this.state.collectionName}, (function(res, data){
                 if (data.success){
                     console.log('Editing Name Success')
@@ -99,7 +99,7 @@ class CollectionScreen extends React.Component{
 
     onEditDescription = () => {
         if (this.state.collectionName.trim() !== ''){
-            this.props.axiosWrapper.axiosPost('main/collection/updateCollection/' + this.props.match.params.collectionId, 
+            this.props.axiosWrapper.axiosPost('api/collection/updateCollection/' + this.props.match.params.collectionId, 
             {description: this.state.collectionDescription}, (function(res, data){
                 if (data.success){
                     this.hideEditDescriptionModal();
@@ -132,7 +132,7 @@ class CollectionScreen extends React.Component{
                 newSongList.push(s);
             }
         }
-        this.props.axiosWrapper.axiosPost('/main/collection/updateCollection/' + this.props.match.params.collectionId, 
+        this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.props.match.params.collectionId, 
         {songList: newSongList}, (function(res, data){
             if (data.success){
                 this.fetchCollection();
@@ -151,7 +151,7 @@ class CollectionScreen extends React.Component{
         else{
             favedSongs.push(song);
         }
-        this.props.axiosWrapper.axiosPost('/main/collection/updateUser/' + this.state.user._id, 
+        this.props.axiosWrapper.axiosPost('/api/collection/updateUser/' + this.state.user._id, 
         {likedSongs: favedSongs}, (function(res, data){
             if(data.success){
                 this.props.handeUpdateUser(data.data.user);
@@ -201,7 +201,7 @@ class CollectionScreen extends React.Component{
 
     fetchCollection = () => {
         if (this.props.match.params.collectionId) {
-            this.props.axiosWrapper.axiosGet('/main/collection/' + this.props.match.params.collectionId, (function(res, data) {
+            this.props.axiosWrapper.axiosGet('/api/collection/' + this.props.match.params.collectionId, (function(res, data) {
                 if (data.success) {
                     this.setState({
                         collection: data.data.collection,
