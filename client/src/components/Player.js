@@ -121,14 +121,14 @@ class Player extends React.Component {
 
     handleToggleFavorite = (songId) => {
         if (this.state.user.likedSongs.includes(this.state.currentSong.id)) { //Unfavorite song
-            this.props.axiosWrapper.axiosPost('/main/removeSongFromFavorites/' + songId, {}, (function(res, data) {
+            this.props.axiosWrapper.axiosPost('/main/api/removeSongFromFavorites/' + songId, {}, (function(res, data) {
                 if (data.success) {
                     this.props.handleUpdateUser(data.data.user)
                 }
             }).bind(this), true)
         }
         else { //Favorite song
-            this.props.axiosWrapper.axiosPost('/main/addSongToFavorites/' + songId, {}, (function(res, data) {
+            this.props.axiosWrapper.axiosPost('/main/api/addSongToFavorites/' + songId, {}, (function(res, data) {
                 if (data.success) {
                     this.props.handleUpdateUser(data.data.user)
                 }

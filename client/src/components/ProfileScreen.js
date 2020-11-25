@@ -35,6 +35,12 @@ class ProfileScreen extends React.Component{
 			this.setState({
 				user: this.props.user
 			})
+
+			if (this.state.profileUser._id === this.state.user._id) { //Refresh if user is viewing own profile
+				this.fetchUser().then(() => {
+					this.fetchUserData()
+				})
+			}
 		}
 	}
 
@@ -66,7 +72,7 @@ class ProfileScreen extends React.Component{
 
 	handleCreateCollection = () => {
 		if (this.handleValidateNewCollectionName()){
-			this.props.axiosWrapper.axiosPost('main/profile/createCollection/' + this.state.newCollectionName, {}, (function(res, data){
+			this.props.axiosWrapper.axiosPost('main/api/createCollection/' + this.state.newCollectionName, {}, (function(res, data){
 				if (data.success) {
 					this.props.handleUpdateUser(data.data.user)
 					this.handleGoToCollection(data.data.collectionId)
@@ -76,20 +82,28 @@ class ProfileScreen extends React.Component{
 	}
 
 	handleAddSongToFavorites = (songId, e) => {
-        this.props.axiosWrapper.axiosPost('/main/profile/addSongToFavorites/' + songId, {}, (function(res, data) {
+        this.props.axiosWrapper.axiosPost('/main/api/addSongToFavorites/' + songId, {}, (function(res, data) {
             if (data.success) {
                 this.props.handleUpdateUser(data.data.user)
             }
         }).bind(this), true)
-    }
+	}
+	
+	handleRemoveSongFromFavorites = (songId, e) => {
+		this.props.axiosWrapper.axiosPost('/main/api/removeSongFromFavorites/' + songId, {}, (function(res, data) {
+			if (data.success) {
+				this.props.handleUpdateUser(data.data.user)
+			}
+		}).bind(this), true)
+	}
 
     handleAddSongToCollection = (songId, collectionId, e) => {
-        this.props.axiosWrapper.axiosPost('/main/profile/addSongToCollection/' + songId + '&' + collectionId, {}, (function(res, data) {
+        this.props.axiosWrapper.axiosPost('/main/api/addSongToCollection/' + songId + '&' + collectionId, {}, (function(res, data) {
             if (data.success) {
                 this.props.handleUpdateUser(data.data.user)
             }
         }).bind(this), true)
-    }
+	}
 
 	handleValidateNewCollectionName = () => {
         var length = this.state.newCollectionName.length
@@ -366,7 +380,11 @@ class ProfileScreen extends React.Component{
                                                                                         Save To Favorites
                                                                                     </Button>
                                                                                 </Dropdown.Item> :
-                                                                                <div></div>
+                                                                                <Dropdown.Item>
+																					<Button onClick={this.handleRemoveSongFromFavorites.bind(this, song.id)}>
+																						Remove From Favorites
+																					</Button>
+																				</Dropdown.Item>
                                                                             }
                                                                         </div>
                                                                         : <div></div>

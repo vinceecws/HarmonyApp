@@ -52,7 +52,7 @@ class SearchScreen extends React.Component {
 
     handleCreateCollection = () => {
 		if (this.handleValidateNewCollectionName()){
-			this.props.axiosWrapper.axiosPost('main/search/createCollectionWithSong/' + this.state.newCollectionName + "&" + this.state.currentSongTarget, {}, (function(res, data){
+			this.props.axiosWrapper.axiosPost('main/api/createCollectionWithSong/' + this.state.newCollectionName + "&" + this.state.currentSongTarget, {}, (function(res, data){
 				if (data.success) {
                     this.props.handleUpdateUser(data.data.user)
 					this.props.history.push('/main/collection/' + data.data.collectionId)
@@ -104,15 +104,23 @@ class SearchScreen extends React.Component {
     }
 
     handleAddSongToFavorites = (songId, e) => {
-        this.props.axiosWrapper.axiosPost('/main/search/addSongToFavorites/' + songId, {}, (function(res, data) {
+        this.props.axiosWrapper.axiosPost('/main/api/addSongToFavorites/' + songId, {}, (function(res, data) {
             if (data.success) {
                 this.props.handleUpdateUser(data.data.user)
             }
         }).bind(this), true)
     }
 
+    handleRemoveSongFromFavorites = (songId, e) => {
+		this.props.axiosWrapper.axiosPost('/main/api/removeSongFromFavorites/' + songId, {}, (function(res, data) {
+			if (data.success) {
+				this.props.handleUpdateUser(data.data.user)
+			}
+		}).bind(this), true)
+	}
+
     handleAddSongToCollection = (songId, collectionId, e) => {
-        this.props.axiosWrapper.axiosPost('/main/search/addSongToCollection/' + songId + '&' + collectionId, {}, (function(res, data) {
+        this.props.axiosWrapper.axiosPost('/main/api/addSongToCollection/' + songId + '&' + collectionId, {}, (function(res, data) {
             if (data.success) {
                 this.props.handleUpdateUser(data.data.user)
             }
@@ -363,7 +371,11 @@ class SearchScreen extends React.Component {
                                                                                         Save To Favorites
                                                                                     </Button>
                                                                                 </Dropdown.Item> :
-                                                                                <div></div>
+                                                                                <Dropdown.Item>
+                                                                                    <Button onClick={this.handleRemoveSongFromFavorites.bind(this, obj.id)}>
+                                                                                        Remove From Favorites
+                                                                                    </Button>
+                                                                                </Dropdown.Item>
                                                                             }
                                                                         </div>
                                                                         : <div></div>
@@ -391,7 +403,7 @@ class SearchScreen extends React.Component {
                                 }
                             </CardDeck>
                         </div> : 
-                        <div></div>)
+                        <div key={cat_ind}></div>)
                     }
                 </div>
             </div>

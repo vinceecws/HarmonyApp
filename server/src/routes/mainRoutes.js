@@ -30,7 +30,7 @@ mainRouter.get('/', async (req, res) => {
     })
 })
 
-mainRouter.post('/addSongToFavorites/:songId', async (req, res) => {
+mainRouter.post('/api/addSongToFavorites/:songId', async (req, res) => {
     let songId = req.params.songId
 
     if (songId == null){
@@ -81,7 +81,7 @@ mainRouter.post('/addSongToFavorites/:songId', async (req, res) => {
 
 });
 
-mainRouter.post('/removeSongFromFavorites/:songId', async (req, res) => {
+mainRouter.post('/api/removeSongFromFavorites/:songId', async (req, res) => {
     let songId = req.params.songId
 
     if (songId == null){
@@ -131,6 +131,219 @@ mainRouter.post('/removeSongFromFavorites/:songId', async (req, res) => {
     }
 
 });
+
+mainRouter.post('/api/createCollection/:collectionName', async (req, res) => {
+    let collectionName = req.params.collectionName;
+    
+	if (collectionName == null) {
+		return res.status(200).json({
+            error: {
+                name: "Bad request",
+                message: "Invalid collection name"
+            },
+            message: "Invalid collection name",
+            statusCode: 400,
+            data: {
+                user: null,
+                collectionId: null
+            },
+            success: false
+        })
+    }
+    else if (!req.user) {
+        return res.status(401).json({
+            error: {
+                name: "Unauthorized",
+                message: "Unauthorized session"
+            },
+            message: "Unauthorized session",
+            statusCode: 401,
+            data: {
+                user: null,
+				collectionId: null
+            },
+            success: false
+        })
+    }
+	else {
+        let newCollection = await mongooseQuery.createCollection(req.user._id, collectionName)
+        let updatedUser = await mongooseQuery.getUser({
+            _id: req.user._id
+        }).catch(err => res.sendStatus(404))
+
+		return res.status(200).json({
+			message: "Post success",
+			statusCode: 200,
+			data: {
+                user: stripUser(updatedUser),
+				collectionId: newCollection._id
+			},
+			success: true
+		})
+	}
+    
+})
+
+mainRouter.post('/api/createCollectionWithSong/:collectionName&:songId', async (req, res) => {
+    let collectionName = req.params.collectionName
+    let songId = req.params.songId
+
+    if (collectionName == null || songId == null){
+        return res.status(401).json({
+            error: {
+                name: "Bad request",
+                message: "Invalid name or song id"
+            },
+            message: "Invalid name or song id",
+            statusCode: 401,
+            data: {
+                user: null,
+                collectionId: null
+            },
+            success: false
+        })
+    }
+    else if (!req.user) {
+        return res.status(401).json({
+            error: {
+                name: "Unauthorized",
+                message: "Unauthorized session"
+            },
+            message: "Unauthorized session",
+            statusCode: 401,
+            data: {
+                user: null,
+                collectionId: null
+            },
+            success: false
+        })
+    }
+    else {
+        let newCollection = await mongooseQuery.createCollection(req.user._id, collectionName, "", [songId])
+        let updatedUser = await mongooseQuery.getUser({
+            _id: req.user._id
+        }).catch(err => res.sendStatus(404))
+
+        return res.status(200).json({
+            message: "Creation successful",
+            statusCode: 200,
+            data: {
+                user: stripUser(updatedUser),
+            	collectionId: newCollection._id
+            },
+            success: true
+        })
+        
+    }
+
+});
+
+mainRouter.post('/api/addSongToCollection/:songId&collectionId', async (req, res) => {
+    let songId = req.params.songId;
+    let collectionId = req.params.collectionId
+    
+	if (songId == null || collectionId == null) {
+		return res.status(200).json({
+            error: {
+                name: "Bad request",
+                message: "Invalid song id or collection id"
+            },
+            message: "Invalid song id or collection id",
+            statusCode: 400,
+            data: {
+                user: null
+            },
+            success: false
+        })
+    }
+    else if (!req.user) {
+        return res.status(401).json({
+            error: {
+                name: "Unauthorized",
+                message: "Unauthorized session"
+            },
+            message: "Unauthorized session",
+            statusCode: 401,
+            data: {
+                user: null
+            },
+            success: false
+        })
+    }
+	else {
+        let collection = await mongooseQuery.updateCollection(collectionId, {
+            $push: {
+              songList: songId 
+            }
+        })
+        let updatedUser = await mongooseQuery.getUser({
+            _id: req.user._id
+        }).catch(err => res.sendStatus(404))
+
+		return res.status(200).json({
+			message: "Update successful",
+			statusCode: 200,
+			data: {
+                user: stripUser(updatedUser)
+			},
+			success: true
+		})
+	}
+})
+
+mainRouter.post('/api/removeSongFromCollection/:songId&collectionId', async (req, res) => {
+    let songId = req.params.songId;
+    let collectionId = req.params.collectionId
+    
+	if (songId == null || collectionId == null) {
+		return res.status(200).json({
+            error: {
+                name: "Bad request",
+                message: "Invalid song id or collection id"
+            },
+            message: "Invalid song id or collection id",
+            statusCode: 400,
+            data: {
+                user: null
+            },
+            success: false
+        })
+    }
+    else if (!req.user) {
+        return res.status(401).json({
+            error: {
+                name: "Unauthorized",
+                message: "Unauthorized session"
+            },
+            message: "Unauthorized session",
+            statusCode: 401,
+            data: {
+                user: null
+            },
+            success: false
+        })
+    }
+	else {
+        let collection = await mongooseQuery.updateCollection(collectionId, {
+            $pull: {
+              songList: songId 
+            }
+        })
+        let updatedUser = await mongooseQuery.getUser({
+            _id: req.user._id
+        }).catch(err => res.sendStatus(404))
+
+		return res.status(200).json({
+			message: "Update successful",
+			statusCode: 200,
+			data: {
+                user: stripUser(updatedUser)
+			},
+			success: true
+		})
+	}
+    
+})
 
 mainRouter.get('/profile/:id', async (req, res) => {
     let id = req.params.id;
@@ -308,162 +521,6 @@ mainRouter.get('/settings', async (req, res) => {
         })
     }
 });
-
-mainRouter.post('/profile/createCollection/:collectionName', async (req, res) => {
-    let collectionName = req.params.collectionName;
-    
-	if (collectionName == null) {
-		return res.status(200).json({
-            error: {
-                name: "Bad request",
-                message: "Invalid collection name"
-            },
-            message: "Invalid collection name",
-            statusCode: 400,
-            data: {
-                user: null,
-                collectionId: null
-            },
-            success: false
-        })
-    }
-    else if (!req.user) {
-        return res.status(401).json({
-            error: {
-                name: "Unauthorized",
-                message: "Unauthorized session"
-            },
-            message: "Unauthorized session",
-            statusCode: 401,
-            data: {
-                user: null,
-				collectionId: null
-            },
-            success: false
-        })
-    }
-	else {
-        let newCollection = await mongooseQuery.createCollection(req.user._id, collectionName)
-        let updatedUser = await mongooseQuery.getUser({
-            _id: req.user._id
-        }).catch(err => res.sendStatus(404))
-
-		return res.status(200).json({
-			message: "Post success",
-			statusCode: 200,
-			data: {
-                user: stripUser(updatedUser),
-				collectionId: newCollection._id
-			},
-			success: true
-		})
-	}
-    
-})
-
-mainRouter.post('/profile/addSongToFavorites/:songId', async (req, res) => {
-    let songId = req.params.songId;
-    
-	if (songId == null) {
-		return res.status(200).json({
-            error: {
-                name: "Bad request",
-                message: "Invalid song id"
-            },
-            message: "Invalid song id",
-            statusCode: 400,
-            data: {
-                user: null
-            },
-            success: false
-        })
-    }
-    else if (!req.user) {
-        return res.status(401).json({
-            error: {
-                name: "Unauthorized",
-                message: "Unauthorized session"
-            },
-            message: "Unauthorized session",
-            statusCode: 401,
-            data: {
-                user: null
-            },
-            success: false
-        })
-    }
-	else {
-        let updatedUser = await mongooseQuery.updateUser(req.user._id, {
-            $push: {
-              likedSongs: songId 
-            }
-        }).catch(err => res.sendStatus(404))
-
-		return res.status(200).json({
-			message: "Update successful",
-			statusCode: 200,
-			data: {
-                user: stripUser(updatedUser)
-			},
-			success: true
-		})
-	}
-    
-})
-
-mainRouter.post('/profile/addSongToCollection/:songId&collectionId', async (req, res) => {
-    let songId = req.params.songId;
-    let collectionId = req.params.collectionId
-    
-	if (songId == null || collectionId == null) {
-		return res.status(200).json({
-            error: {
-                name: "Bad request",
-                message: "Invalid song id or collection id"
-            },
-            message: "Invalid song id or collection id",
-            statusCode: 400,
-            data: {
-                user: null
-            },
-            success: false
-        })
-    }
-    else if (!req.user) {
-        return res.status(401).json({
-            error: {
-                name: "Unauthorized",
-                message: "Unauthorized session"
-            },
-            message: "Unauthorized session",
-            statusCode: 401,
-            data: {
-                user: null
-            },
-            success: false
-        })
-    }
-	else {
-        let collection = await mongooseQuery.updateCollection(collectionId, {
-            $push: {
-              songList: songId 
-            }
-        })
-        let updatedUser = await mongooseQuery.getUser({
-            _id: req.user._id
-        }).catch(err => res.sendStatus(404))
-
-		return res.status(200).json({
-			message: "Update successful",
-			statusCode: 200,
-			data: {
-                user: stripUser(updatedUser)
-			},
-			success: true
-		})
-	}
-    
-})
 
 mainRouter.get('/collection/:id', async (req, res) => {
     let id = req.params.id;
@@ -811,166 +868,6 @@ mainRouter.post('/session/endSession/:id', async (req, res) => {
         return res.status(200).json({
             message: "Fetch successful",
             statusCode: 200,
-            success: true
-        })
-        
-    }
-
-});
-
-mainRouter.post('/search/createCollectionWithSong/:collectionName&:songId', async (req, res) => {
-    let collectionName = req.params.collectionName
-    let songId = req.params.songId
-
-    if (collectionName == null || songId == null){
-        return res.status(401).json({
-            error: {
-                name: "Bad request",
-                message: "Invalid name or song id"
-            },
-            message: "Invalid name or song id",
-            statusCode: 401,
-            data: {
-                user: null,
-                collectionId: null
-            },
-            success: false
-        })
-    }
-    else if (!req.user) {
-        return res.status(401).json({
-            error: {
-                name: "Unauthorized",
-                message: "Unauthorized session"
-            },
-            message: "Unauthorized session",
-            statusCode: 401,
-            data: {
-                user: null,
-                collectionId: null
-            },
-            success: false
-        })
-    }
-    else {
-        let newCollection = await mongooseQuery.createCollection(req.user._id, collectionName, "", [songId])
-        let updatedUser = await mongooseQuery.getUser({
-            _id: req.user._id
-        }).catch(err => res.sendStatus(404))
-
-        return res.status(200).json({
-            message: "Creation successful",
-            statusCode: 200,
-            data: {
-                user: stripUser(updatedUser),
-            	collectionId: newCollection._id
-            },
-            success: true
-        })
-        
-    }
-
-});
-
-mainRouter.post('/search/addSongToCollection/:songId&:collectionId', async (req, res) => {
-    let songId = req.params.songId
-    let collectionId = req.params.collectionId
-
-    if (songId == null || collectionId == null){
-        return res.status(401).json({
-            error: {
-                name: "Bad request",
-                message: "Invalid songId or collectionId"
-            },
-            message: "Invalid songId or collectionId",
-            statusCode: 401,
-            data: {
-                user: null
-            },
-            success: false
-        })
-    }
-    else if (!req.user) {
-        return res.status(401).json({
-            error: {
-                name: "Unauthorized",
-                message: "Unauthorized session"
-            },
-            message: "Unauthorized session",
-            statusCode: 401,
-            data: {
-                user: null
-            },
-            success: false
-        })
-    }
-    else {
-        let collection = await mongooseQuery.updateCollection(collectionId, {
-            $push: {
-              songList: songId 
-            }
-        })
-        let updatedUser = await mongooseQuery.getUser({
-            _id: req.user._id
-        }).catch(err => res.sendStatus(404))
-
-        return res.status(200).json({
-            message: "Update successful",
-            statusCode: 200,
-            data: {
-                user: stripUser(updatedUser),
-            },
-            success: true
-        })
-        
-    }
-
-});
-
-mainRouter.post('/search/addSongToFavorites/:songId', async (req, res) => {
-    let songId = req.params.songId
-
-    if (songId == null){
-        return res.status(401).json({
-            error: {
-                name: "Bad request",
-                message: "Invalid songId"
-            },
-            message: "Invalid songId",
-            statusCode: 401,
-            data: {
-                user: null
-            },
-            success: false
-        })
-    }
-    else if (!req.user) {
-        return res.status(401).json({
-            error: {
-                name: "Unauthorized",
-                message: "Unauthorized session"
-            },
-            message: "Unauthorized session",
-            statusCode: 401,
-            data: {
-                user: null
-            },
-            success: false
-        })
-    }
-    else {
-        let updatedUser = await mongooseQuery.updateUser(req.user._id, {
-            $push: {
-              likedSongs: songId 
-            }
-        }).catch(err => res.sendStatus(404))
-
-        return res.status(200).json({
-            message: "Update successful",
-            statusCode: 200,
-            data: {
-            	user: stripUser(updatedUser)
-            },
             success: true
         })
         
