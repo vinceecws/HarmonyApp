@@ -26,10 +26,15 @@ class CollectionScreen extends React.Component{
 
     componentDidMount = () => {
         this.fetchCollection();
-        console.log('Count');
     }
 
-
+    componentDidUpdate = (prevProps, prevState) => {
+        if (prevState.user !== this.props.user) {
+            this.setState({
+                user: this.props.user
+            })
+        }
+    }
 
     onPressLikeCollection = () =>{
         if (this.state.user !== null){
@@ -183,15 +188,11 @@ class CollectionScreen extends React.Component{
                                 }
                             }
                         }
-                        console.log(song);
                         listSongs.push(song);
                         this.setState({ songList: listSongs });
                     }
                 });
             }
-
-            
-            console.log('Songs: ', this.state.songList);
         }
     }
 
@@ -204,8 +205,6 @@ class CollectionScreen extends React.Component{
                         loading: false,
                         collectionName: data.data.collection.name
                     });
-                    console.log('Collection: ', this.state.collection);
-                    console.log('User: ', this.state.user)
                     this.fetchSongs(data.data.collection.songList);
                     this.isCollectionFavorited();
                 }
@@ -274,7 +273,6 @@ class CollectionScreen extends React.Component{
                 }
             }
         } 
-        console.log('Collection favorited: ', this.state.favorited);
     }
 
     render(){

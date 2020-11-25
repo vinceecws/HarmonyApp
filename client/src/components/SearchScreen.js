@@ -15,6 +15,7 @@ class SearchScreen extends React.Component {
         this.state = {
             user: this.props.user,
             query: "",
+            playlists: [],
             suggestions: [],
             res: {},
             newCollectionName: "",
@@ -52,7 +53,7 @@ class SearchScreen extends React.Component {
 
     handleCreateCollection = () => {
 		if (this.handleValidateNewCollectionName()){
-			this.props.axiosWrapper.axiosPost('main/api/createCollectionWithSong/' + this.state.newCollectionName + "&" + this.state.currentSongTarget, {}, (function(res, data){
+			this.props.axiosWrapper.axiosPost('/api/createCollectionWithSong/' + this.state.newCollectionName + "&" + this.state.currentSongTarget, {}, (function(res, data){
 				if (data.success) {
                     this.props.handleUpdateUser(data.data.user)
 					this.props.history.push('/main/collection/' + data.data.collectionId)
@@ -352,12 +353,12 @@ class SearchScreen extends React.Component {
                                                                                     show={this.state.showDropdown}
                                                                                 >
                                                                                     {
-                                                                                        this.state.user.playlists.map((playlist, playlist_ind) => 
+                                                                                        this.state.playlists.map((playlist, playlist_ind) => 
                                                                                             <Dropdown.Item key={playlist_ind} onClick={this.handleAddSongToCollection.bind(this, obj.id, playlist._id)}>{playlist.name}</Dropdown.Item>
                                                                                         )
                                                                                     }
                                                                                     {
-                                                                                        this.state.user.playlists.length > 0 ?
+                                                                                        this.state.playlists.length > 0 ?
                                                                                         <Dropdown.Divider /> :
                                                                                         <div></div>
                                                                                     }

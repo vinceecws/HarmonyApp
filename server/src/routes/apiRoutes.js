@@ -238,7 +238,7 @@ apiRouter.post('/createCollectionWithSong/:collectionName&:songId', async (req, 
 
 });
 
-apiRouter.post('/addSongToCollection/:songId&collectionId', async (req, res) => {
+apiRouter.post('/addSongToCollection/:songId&:collectionId', async (req, res) => {
     let songId = req.params.songId;
     let collectionId = req.params.collectionId
     
