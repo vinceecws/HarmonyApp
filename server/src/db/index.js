@@ -106,7 +106,7 @@ exports.changeUsername = async function(userObject, updateFieldsObject){
     return await User.findOne({'local.username':updateFieldsObject.username});
   }).catch(error => console.log(error));
   if(user){
-    return false;
+    return 409;
   }
   user = await connection.then(async () => {
     return await User.findOne(userObject);
@@ -114,7 +114,7 @@ exports.changeUsername = async function(userObject, updateFieldsObject){
   console.log(user);
   if (!user.authenticateLocal(user.local.username, updateFieldsObject.password)) {
       console.log("incorrect password");
-      return false;
+      return 422;
       
   }
   user.local.username = updateFieldsObject.username;

@@ -372,9 +372,25 @@ mainRouter.post('/settings/changeUsername', async (req, res) => {
     }
     else{
         let updatedUser = await mongooseQuery.changeUsername({'_id': id}, req.body);
-        if (!updatedUser) {
-            return res.status(422).json({
-                message: "Invalid password or username taken",
+        if (updatedUser == 409) {
+            return res.status(200).json({
+                error: {
+                    name: "Username Taken",
+                    message: "Username Taken"
+                },
+                statusCode: 409,
+                data: {
+                    user: null
+                },
+                success: false
+            })
+        }
+        else if (updatedUser == 422){
+             return res.status(200).json({
+                error: {
+                    name: "Incorrect Password",
+                    message: "Incorrect Password"
+                },
                 statusCode: 422,
                 data: {
                     user: null
@@ -426,7 +442,7 @@ mainRouter.post('/settings/changeBiography', async (req, res) => {
     else{
         let updatedUser = await mongooseQuery.changeBiography({'_id': id}, req.body);
         if (!updatedUser) {
-            return res.status(422).json({
+            return res.status(200).json({
                 message: "biography could not be updated",
                 statusCode: 422,
                 data: {
@@ -443,6 +459,7 @@ mainRouter.post('/settings/changeBiography', async (req, res) => {
             statusCode: 200,
             success:true
         })
+
     }
     
 });
@@ -479,7 +496,7 @@ mainRouter.post('/settings/changePassword', async (req, res) => {
     else{
         let updatedUser = await mongooseQuery.changePassword({'_id': id}, req.body);
         if (!updatedUser) {
-            return res.status(422).json({
+            return res.status(200).json({
                 message: "password could not be updated",
                 statusCode: 422,
                 data: {
