@@ -3,6 +3,7 @@ import Spinner from './Spinner'
 import {icon_music_1, icon_like, icon_play_2, icon_pause_3, icon_add_3, 
     icon_up_arrow, icon_down_arrow, menu_button_white, delete_button_white} from '../graphics'
 import { Image, Button, Dropdown, ButtonGroup, Modal } from 'react-bootstrap';
+import {Droppable, DragDropContext} from 'react-beautiful-dnd'
 
 
 class CollectionScreen extends React.Component{
@@ -21,8 +22,14 @@ class CollectionScreen extends React.Component{
             favorited: false,
             favoritedSong: false
         }
-        this.fetchCollection()
     }
+
+    componentDidMount = () => {
+        this.fetchCollection();
+        console.log('Count');
+    }
+
+
 
     onPressLikeCollection = () =>{
         if (this.state.user !== null){
@@ -61,7 +68,14 @@ class CollectionScreen extends React.Component{
             let futureQueue = this.state.collection.songList.slice(1);
             this.props.playVideo(this.state.collection.songList[0]);
             for (let s of futureQueue){
-                this.props.queue.addSongToFutureQueue(this.props.dataAPI.fetchVideoById(s, true));
+                this.props.dataAPI.fetchVideoById(s, true).then((song) => {
+                    if (song.status === 403){
+                        console.log('Youtube Query Quota Exceeded');
+                    }
+                    else{
+                        this.props.queue.addSongToFutureQueue(song);
+                    }  
+                });
             }
         }
         else if (this.state.playing){
@@ -99,7 +113,15 @@ class CollectionScreen extends React.Component{
         let futureQueue = this.state.collection.songList.slice(song_ind + 1);
         this.props.playVideo(this.state.collection.songList[song_ind]);
         for (let s of futureQueue){
-            this.props.queue.addSongToFutureQueue(this.props.dataAPI.fetchVideoById(s, true));
+            this.props.dataAPI.fetchVideoById(s, true).then((song) => {
+                if (song.status === 403){
+                    console.log('Youtube Query Quota Exceeded');
+                }
+                else{
+                    this.props.queue.addSongToFutureQueue(song);
+                }  
+            })
+            
         }
     }
 
@@ -115,11 +137,30 @@ class CollectionScreen extends React.Component{
             if (data.success){
                 this.fetchCollection();
             }
+            else{
+                console.log("Error: could not delete")            
+            }
         }).bind(this), true)
     }
 
     onPressLikeSong = (song) => {
-
+        let favedSongs = this.state.user.likedSongs;
+        if(favedSongs === undefined){
+            favedSongs = [song];
+        }
+        else{
+            favedSongs.push(song);
+        }
+        this.props.axiosWrapper.axiosPost('/main/collection/updateUser/' + this.state.user._id, 
+        {likedSongs: favedSongs}, (function(res, data){
+            if(data.success){
+                this.props.handeUpdateUser(data.data.user);
+                this.setState({
+                    user: data.data.user
+                })
+                console.log('Updated favorited songs: ', data.data.user.likedSongs)
+            }
+        }).bind(this), true)
     }
 
     //Update later
@@ -131,9 +172,29 @@ class CollectionScreen extends React.Component{
         if (songs !== undefined){
             let listSongs = [];
             for (let s of songs){
-                listSongs.push(this.props.dataAPI.fetchVideoById(s, true))
+                this.props.dataAPI.fetchVideoById(s, true).then((song) => {
+                    if (song.status === 403){
+                        console.log('Youtube Query Quota Exceeded');
+                    }
+                    else{
+                        if (this.state.user.likedSongs !== undefined){
+                            for (let fav of this.state.user.likedSongs){
+                                if (fav === s){
+                                    song.favorited = true;
+                                }
+                                else {
+                                    song.favorited = false;
+                                }
+                            }
+                        }
+                        console.log(song);
+                        listSongs.push(song);
+                        this.setState({ songList: listSongs });
+                    }
+                });
             }
-            this.setState({ songList: listSongs });
+
+            
             console.log('Songs: ', this.state.songList);
         }
     }
@@ -148,6 +209,7 @@ class CollectionScreen extends React.Component{
                         collectionName: data.data.collection.name
                     });
                     console.log('Collection: ', this.state.collection);
+                    console.log('User: ', this.state.user)
                     this.fetchSongs(data.data.collection.songList);
                     this.isCollectionFavorited();
                 }
@@ -276,7 +338,7 @@ class CollectionScreen extends React.Component{
                             <div className='row'>
                                 {/* Remember to add these attributes to collection objects*/}
                                 <p className='collection-page-text'>
-                                    {this.state.user.local === undefined ? this.state.user.google.name : this.state.user.local.username} - {this.state.collection.likes} likes - {this.state.collection.songList.length} songs 
+                                    {this.state.user.username} - {this.state.collection.likes} likes - {this.state.collection.songList.length} songs 
                                 </p>
                             </div>
                         </div>
@@ -325,6 +387,7 @@ class CollectionScreen extends React.Component{
 
                     {/* Songs */}
                     <div className='row'>
+                        <DragDropContext onDragEnd={() => {}}> 
                         <ul style={{listStyleType: 'none', padding: '0', border: '2px solid black'}}>
                         {this.state.songList.length > 0 ? 
                         (this.state.songList.map((e, i) => 
@@ -347,6 +410,7 @@ class CollectionScreen extends React.Component{
                             </li>)) : <div></div>
                         }
                         </ul>
+                        </DragDropContext>
                     </div>
                 </div>
             )

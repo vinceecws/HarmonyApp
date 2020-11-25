@@ -313,7 +313,7 @@ class ProfileScreen extends React.Component{
 								}
 								{
 									this.state.user._id === this.state.profileUser._id ? //Viewing own profile
-									<div className='card profile-screen-create-collection-card' onClick={this.showCreateCollectionModal}>
+									<div className='card profile-screen-create-collection-card' onClick={this.handleShowCreateCollectionModal}>
 										<img className="profile-screen-create-collection-card-img" src={plus_button}/>
 									</div> :
 									<div></div>
