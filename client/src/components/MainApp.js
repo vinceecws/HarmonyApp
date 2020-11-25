@@ -22,22 +22,8 @@ class MainApp extends React.Component {
     constructor(props) {
         super(props)
         this.queue = new Queue()
-        this.state = {
-            dataAPIReady: false,
-            playerAPIReady: false
-        }
-
-        this.playerAPI = new PlayerAPI(() => {
-            this.setState({
-                playerAPIReady: true
-            })
-        })
-
-        this.dataAPI = new DataAPI(() => {
-            this.setState({
-                dataAPIReady: true
-            })
-        })
+        this.playerAPI = new PlayerAPI()
+        this.dataAPI = new DataAPI()
     }
 
     isFavorited = () => {
@@ -92,23 +78,25 @@ class MainApp extends React.Component {
                     </Col>
                     <Col id="screen-container">
                         <Switch>
-                            <Route path='/main/search' render={(props) => <SearchScreen {...props} auth={this.props.auth} queryVideos={this.queryVideos} playVideo={this.playVideo} queue={this.queue} axiosWrapper = {this.props.axiosWrapper}/>} />
-                            <Route path={['/main/session/:sessionId', '/main/session']} render={(props) => <SessionScreen {...props} auth={this.props.auth} key={props.match.params.sessionId} queue={this.queue} axiosWrapper = {this.props.axiosWrapper} />} />
-                            <Route path='/main/profile/:userId' render={(props) => <ProfileScreen {...props} auth={this.props.auth} key={props.match.params.userId} fetchVideoById={this.fetchVideoById} user={this.props.user} axiosWrapper = {this.props.axiosWrapper}/>} />
-                            <Route path='/main/collection/:collectionId' render={(props) => <CollectionScreen {...props} auth={this.props.auth} key={props.match.params.collectionId} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper = {this.props.axiosWrapper} queue = {this.queue} dataAPI = {this.dataAPI} playVideo = {this.playVideo} />} />
-                            <Route path='/main/collection' render={(props) => <CollectionScreen {...props} auth={this.props.auth} />} axiosWrapper = {this.props.axiosWrapper}/>
-                            <Route path='/main/settings' render={(props) => <SettingsScreen {...props} auth={this.props.auth} user={this.props.user} axiosWrapper = {this.props.axiosWrapper}/>} />
-                            <Route path='/' render={(props) => <HomeScreen {...props} auth={this.props.auth} axiosWrapper = {this.props.axiosWrapper}/>} />
+                            <Route path='/main/search' render={(props) => <SearchScreen {...props} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} queryVideos={this.queryVideos} playVideo={this.playVideo} queue={this.queue} axiosWrapper={this.props.axiosWrapper}/>} />
+                            <Route path={['/main/session/:sessionId', '/main/session']} render={(props) => <SessionScreen {...props} auth={this.props.auth} user={this.props.user} key={props.match.params.sessionId} handleUpdateUser={this.props.handleUpdateUser} queue={this.queue} axiosWrapper={this.props.axiosWrapper} />} />
+                            <Route path='/main/profile/:userId' render={(props) => <ProfileScreen {...props} auth={this.props.auth} key={props.match.params.userId} handleUpdateUser={this.props.handleUpdateUser} fetchVideoById={this.fetchVideoById} user={this.props.user} playVideo={this.playVideo} queue={this.queue} axiosWrapper={this.props.axiosWrapper}/>} />
+                            <Route path='/main/collection/:collectionId' render={(props) => <CollectionScreen {...props} auth={this.props.auth} key={props.match.params.collectionId} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} queue={this.queue} dataAPI={this.dataAPI} playVideo={this.playVideo} />} />
+                            <Route path='/main/collection' render={(props) => <CollectionScreen {...props} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} />} />
+                            <Route path='/main/settings' render={(props) => <SettingsScreen {...props} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper}/>} />
+                            <Route path='/' render={(props) => <HomeScreen {...props} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper}/>} />
                         </Switch>
                     </Col>
                 </Row>
                 <Row id="bottom-container">
                     <div id='yt-player'></div>
-                    <Player 
+                    <Player
+                        user={this.props.user} 
                         initPlayerAPI={this.initPlayerAPI}
                         queue={this.queue}
                         playerAPI={this.playerAPI}
-                        isFavorited={this.isFavorited}                   
+                        handleUpdateUser={this.props.handleUpdateUser}
+                        axiosWrapper={this.props.axiosWrapper}          
                     />
                 </Row>
             </div>

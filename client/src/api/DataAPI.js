@@ -13,10 +13,18 @@ class DataAPI {
                     discoveryDocs: [youtube_data_api_discovery_doc],
                 }).then(() => {
                     this._dataAPIReady = true
-                    onLoad(...args)
+                    if (onLoad) {
+                        onLoad(...args)
+                    }
                 })
             })
         })
+    }
+
+    unescapeHTML = (html) => {
+        var doc = document.createElement("textarea");
+        doc.innerHTML = html;
+        return doc.value;
     }
 
     fetchVideoById = (id, snippet=false) => {
@@ -30,9 +38,9 @@ class DataAPI {
                     return {
                         id: obj.id,
                         type: "song",
-                        name: obj.snippet.title,
+                        name: this.unescapeHTML(obj.snippet.title),
                         creatorId: obj.snippet.channelId,
-                        creator: obj.snippet.channelTitle,
+                        creator: this.unescapeHTML(obj.snippet.channelTitle),
                         likes: parseInt(obj.statistics.likeCount),
                         image: obj.snippet.thumbnails.default ? obj.snippet.thumbnails.default.url : null,
                         image_high: obj.snippet.thumbnails.high ? obj.snippet.thumbnails.high.url : null,
@@ -84,9 +92,9 @@ class DataAPI {
         return {
             id: obj.id.videoId,
             type: "song",
-            name: obj.snippet.title,
+            name: this.unescapeHTML(obj.snippet.title),
             creatorId: obj.snippet.channelId,
-            creator: obj.snippet.channelTitle,
+            creator: this.unescapeHTML(obj.snippet.channelTitle),
             image: obj.snippet.thumbnails.default.url,
             image_high: obj.snippet.thumbnails.high.url,
             image_med: obj.snippet.thumbnails.medium.url

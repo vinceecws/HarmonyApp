@@ -1,6 +1,4 @@
-import { ThemeConsumer } from 'react-bootstrap/esm/ThemeProvider';
 import { repeatStates } from '../../const'
-import { icon_profile_image } from '../../graphics';
 const _ = require('lodash');
 
 class Queue {
@@ -30,7 +28,7 @@ class Queue {
             name: "",
             creatorId: "",
             creator: "",
-            image: icon_profile_image
+            image: null
         }
     }
 

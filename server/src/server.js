@@ -25,7 +25,6 @@ app.use(session({
         mongooseConnection: db
     }),
     cookie: {
-        sameSite: 'none',
         domain: null
     },
     secret: process.env.MONGO_STORE_SESSION_SECRET.split(' '),
@@ -57,10 +56,10 @@ app.use(passportCallbacks.isLoggedIn)
 */
 
 const authRouter = require('./routes/authRoutes.js')(passport)
-const mainRouter = require('./routes/mainRoutes.js')
+const apiRouter = require('./routes/apiRoutes.js')
 
-app.use('/', authRouter)
-app.use('/main', mainRouter)
+app.use('/auth', authRouter)
+app.use('/api', apiRouter)
 
 db.on('error', console.error.bind(console, "Error connecting to MongoDB Atlas Database:"))
 

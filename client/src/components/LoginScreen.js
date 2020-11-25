@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, Route } from 'react-router-dom'
+import { Link, Route, Redirect } from 'react-router-dom'
 import { icon_speak_2, icon_speak_1, icon_radio, icon_album, icon_disc_1, icon_disc_2, icon_music_album_1, icon_music_album_2, icon_sound_mixer_1, icon_sound_mixer_2 } from '../graphics'
 import { Form, Col, Button } from 'react-bootstrap'
 
@@ -17,14 +17,17 @@ class LoginScreen extends React.Component{
             login_username: "",
             login_password: "",
         }
+    }
+
+    componentDidMount = () => {
         this.checkCredentials()
     }
 
     checkCredentials = () => {
-        this.props.axiosWrapper.axiosGet('/login', (function(res, data) {
+        this.props.axiosWrapper.axiosGet('/auth', (function(res, data) {
             if (data.success) {
-                this.props.handleAuthenticate(data.data.user)
                 this.clearSignUpCredentials()
+                this.props.handleAuthenticate(data.data.user)
                 this.props.history.push("/main/home")
             }
         }).bind(this), true)
@@ -144,7 +147,7 @@ class LoginScreen extends React.Component{
     handleSignUp = (e) => {
         e.preventDefault()
         if (this.validateSignUp()) {
-            this.props.axiosWrapper.axiosPost('/login/signup', {
+            this.props.axiosWrapper.axiosPost('/auth/local/signup', {
                 username: this.state.signup_username,
                 password: this.state.signup_password
             }, (function(res, data) {
@@ -175,7 +178,7 @@ class LoginScreen extends React.Component{
 
     handleLogin = (e) => {
         e.preventDefault()
-        this.props.axiosWrapper.axiosPost('/login', {
+        this.props.axiosWrapper.axiosPost('/auth/local/login', {
             username: this.state.login_username,
             password: this.state.login_password
         }, (function(res, data) {
@@ -194,7 +197,7 @@ class LoginScreen extends React.Component{
 
     render(){
         if (this.props.auth) {
-            this.props.history.push('/main/home')
+            return <Redirect to='/main/home'/>
         }
         return (
             <div className='container' style={{backgroundColor: 'lightgreen', 
@@ -209,11 +212,6 @@ class LoginScreen extends React.Component{
                     <div className='col' style={{marginTop: '60px', marginLeft: '10%'}}>
 
                         <h2 style={{marginBottom: '20px'}}>Log-in</h2>
-                        {/* <div>
-                            <input type='text' name='username' placeholder='Username' style={{marginBottom: '5px'}} onChange={this.handleLoginUsernameChange} value={this.state.login_username}/><br/>
-                            <input type='password' name='password' placeholder='Password' onChange={this.handleLoginPasswordChange} value={this.state.login_password}/> <br/>
-                            <button style={{marginTop:'20px', boxShadow: '3px 3px'}} onClick={e => this.handleLogin(e)}>Log-In</button>
-                        </div> */}
                         <Form noValidate onSubmit={this.handleLogin}>
                             <Form.Row>
                                 <Form.Group as={Col} controlId="login-username">
