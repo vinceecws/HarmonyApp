@@ -6,7 +6,7 @@ import { icon_profile_image } from '../graphics';
 class AccountLink extends React.Component {
 
     handleLogOutAccount = () => {
-        this.props.axiosWrapper.axiosGet('/logout', (function(res, data) {
+        this.props.axiosWrapper.axiosGet('/auth/logout', (function(res, data) {
             if (data.success) {
                 this.props.handleLogOut()
                 this.props.history.push("/login")

@@ -5,7 +5,7 @@ class QueueComponent extends React.Component{
 	
     render(){
         var QueueEntries = this.props.initialQueue;
-        
+        console.log(QueueEntries);
         var QueueList = QueueEntries.map(item => <QueueEntry
                     artist={item.artist}
                     title={item.title}

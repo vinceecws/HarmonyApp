@@ -10,14 +10,11 @@ class SearchScreen extends React.Component {
 
     constructor(props) {
         super(props)
-        console.log(this.props.user)
         this.suggestions = new SuggestionsAPI()
         this.newCollectionNameMaxLength = 50
         this.state = {
+            user: this.props.user,
             query: "",
-            history: this.props.user ? this.props.user.history : [],
-            playlists: [],
-            likedSongs: this.props.user ? this.props.user.likedSongs : [],
             suggestions: [],
             res: {},
             newCollectionName: "",
@@ -25,6 +22,17 @@ class SearchScreen extends React.Component {
             showDropdown: false,
             showCreateCollectionModal: false
         }
+    }
+
+    componentDidUpdate = (prevProps, prevState) => {
+        if (prevState.user !== this.props.user) {
+            this.setState({
+                user: this.props.user
+            })
+        }
+    }
+
+    componentDidMount = () => {
         if (this.props.auth) {
             this.fetchPlaylists()
         }
@@ -44,7 +52,7 @@ class SearchScreen extends React.Component {
 
     handleCreateCollection = () => {
 		if (this.handleValidateNewCollectionName()){
-			this.props.axiosWrapper.axiosPost('main/search/createCollectionWithSong/' + this.state.newCollectionName + "&" + this.state.currentSongTarget, {}, (function(res, data){
+			this.props.axiosWrapper.axiosPost('main/api/createCollectionWithSong/' + this.state.newCollectionName + "&" + this.state.currentSongTarget, {}, (function(res, data){
 				if (data.success) {
                     this.props.handleUpdateUser(data.data.user)
 					this.props.history.push('/main/collection/' + data.data.collectionId)
@@ -96,21 +104,25 @@ class SearchScreen extends React.Component {
     }
 
     handleAddSongToFavorites = (songId, e) => {
-        this.props.axiosWrapper.axiosPost('/main/search/addSongToFavorites/' + songId, {}, (function(res, data) {
+        this.props.axiosWrapper.axiosPost('/api/addSongToFavorites/' + songId, {}, (function(res, data) {
             if (data.success) {
-                var newUser = _.cloneDeep(this.props.user)
-                newUser.likedSongs = data.data.likedSongs
-                this.props.handleUpdateUser(newUser)
+                this.props.handleUpdateUser(data.data.user)
             }
         }).bind(this), true)
     }
 
+    handleRemoveSongFromFavorites = (songId, e) => {
+		this.props.axiosWrapper.axiosPost('/api/removeSongFromFavorites/' + songId, {}, (function(res, data) {
+			if (data.success) {
+				this.props.handleUpdateUser(data.data.user)
+			}
+		}).bind(this), true)
+	}
+
     handleAddSongToCollection = (songId, collectionId, e) => {
-        this.props.axiosWrapper.axiosPost('/main/search/addSongToCollection/' + songId + '&' + collectionId, {}, (function(res, data) {
+        this.props.axiosWrapper.axiosPost('/api/addSongToCollection/' + songId + '&' + collectionId, {}, (function(res, data) {
             if (data.success) {
-                var newUser = _.cloneDeep(this.props.user)
-                newUser.likedSongs = data.data.likedSongs
-                this.props.handleUpdateUser(newUser)
+                this.props.handleUpdateUser(data.data.user)
             }
         }).bind(this), true)
     }
@@ -165,10 +177,10 @@ class SearchScreen extends React.Component {
 
     handleRemoveHistory = (e, index) => {
         e.stopPropagation()
-        var newHistory = this.reindexArray(this.state.history.filter(ele => ele.index !== index))
-        this.setState({
-            history: newHistory
-        })
+        // var newHistory = this.reindexArray(this.state.user.history.filter(ele => ele.index !== index))
+        // this.setState({
+        //     history: newHistory
+        // })
     }
 
     reindexArray = (array) => {
@@ -180,7 +192,7 @@ class SearchScreen extends React.Component {
     }
 
     fetchPlaylists = () => {
-        this.props.axiosWrapper.axiosGet('/main/search', (function(res, data) {
+        this.props.axiosWrapper.axiosGet('/api/search', (function(res, data) {
             if (data.success) {
                 this.setState({
                     playlists: data.data.playlists
@@ -198,7 +210,7 @@ class SearchScreen extends React.Component {
                     res: newRes
                 })
             })
-            this.props.axiosWrapper.axiosGet('/main/search/query=' + query, (function(res, data) {
+            this.props.axiosWrapper.axiosGet('/api/search/query=' + query, (function(res, data) {
                 if (data.success) {
                     var newRes = _.cloneDeep(this.state.res)
                     newRes.sessions = data.data.results.sessions
@@ -278,7 +290,7 @@ class SearchScreen extends React.Component {
                     }
                     <ListGroup>
                         {
-                            this.state.history.map((obj, ind) => 
+                            this.state.user.history.map((obj, ind) => 
                                 <ListGroup.Item className="search-screen-history-item" key={ind} onClick={e => this.handleGoToHistoryItem(e)} action>
                                     <div className="search-screen-history-item-type title color-contrasted">{obj.type.capitalize()}</div>
                                     <div className="search-screen-history-item-container">
@@ -340,12 +352,12 @@ class SearchScreen extends React.Component {
                                                                                     show={this.state.showDropdown}
                                                                                 >
                                                                                     {
-                                                                                        this.state.playlists.map((playlist, playlist_ind) => 
-                                                                                            <Dropdown.Item onClick={this.handleAddSongToCollection.bind(this, obj.id, playlist._id)}>{playlist.name}</Dropdown.Item>
+                                                                                        this.state.user.playlists.map((playlist, playlist_ind) => 
+                                                                                            <Dropdown.Item key={playlist_ind} onClick={this.handleAddSongToCollection.bind(this, obj.id, playlist._id)}>{playlist.name}</Dropdown.Item>
                                                                                         )
                                                                                     }
                                                                                     {
-                                                                                        this.state.playlists.length > 0 ?
+                                                                                        this.state.user.playlists.length > 0 ?
                                                                                         <Dropdown.Divider /> :
                                                                                         <div></div>
                                                                                     }
@@ -353,13 +365,17 @@ class SearchScreen extends React.Component {
                                                                                 </DropdownButton>
                                                                             </DropdownItem>
                                                                             {
-                                                                                !this.state.likedSongs.includes(obj.id) ? 
+                                                                                !this.state.user.likedSongs.includes(obj.id) ? 
                                                                                 <Dropdown.Item>
                                                                                     <Button onClick={this.handleAddSongToFavorites.bind(this, obj.id)}>
                                                                                         Save To Favorites
                                                                                     </Button>
                                                                                 </Dropdown.Item> :
-                                                                                <div></div>
+                                                                                <Dropdown.Item>
+                                                                                    <Button onClick={this.handleRemoveSongFromFavorites.bind(this, obj.id)}>
+                                                                                        Remove From Favorites
+                                                                                    </Button>
+                                                                                </Dropdown.Item>
                                                                             }
                                                                         </div>
                                                                         : <div></div>
@@ -387,7 +403,7 @@ class SearchScreen extends React.Component {
                                 }
                             </CardDeck>
                         </div> : 
-                        <div></div>)
+                        <div key={cat_ind}></div>)
                     }
                 </div>
             </div>

@@ -11,6 +11,7 @@ class Player extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            user: this.props.user,
             currentSong: this.props.queue.getCurrentSong(),
             currentTime: this.props.playerAPI.getCurrentTime()
         }
@@ -24,6 +25,14 @@ class Player extends React.Component {
                 currentTime: this.props.playerAPI.getCurrentTime() 
             })
         }, 1000)
+    }
+
+    componentDidUpdate = (prevProps, prevState) => {
+        if (prevState.user !== this.props.user) {
+            this.setState({
+                user: this.props.user
+            })
+        }
     }
 
     componentWillUnmount = () => {
@@ -110,12 +119,21 @@ class Player extends React.Component {
         }
     }
 
-    /*
-        In practice, there will not be a favorited state, 
-        and toggleFavorite will simply add/remove the song to/from the user's favorite songs list
-    */
-    handleToggleFavorite = () => {
-        
+    handleToggleFavorite = (songId) => {
+        if (this.state.user.likedSongs.includes(this.state.currentSong.id)) { //Unfavorite song
+            this.props.axiosWrapper.axiosPost('/api/removeSongFromFavorites/' + songId, {}, (function(res, data) {
+                if (data.success) {
+                    this.props.handleUpdateUser(data.data.user)
+                }
+            }).bind(this), true)
+        }
+        else { //Favorite song
+            this.props.axiosWrapper.axiosPost('/api/addSongToFavorites/' + songId, {}, (function(res, data) {
+                if (data.success) {
+                    this.props.handleUpdateUser(data.data.user)
+                }
+            }).bind(this), true)
+        }
     }
 
     getSongProgress = () => {
@@ -177,7 +195,7 @@ class Player extends React.Component {
     }
 
     getFavoriteButtonIconClass = () => {
-        return this.props.isFavorited() ? 'player-song-favorite-button-icon-on' : 'player-song-favorite-button-icon'
+        return this.state.user.likedSongs.includes(this.state.currentSong.id) ? 'player-song-favorite-button-icon-on' : 'player-song-favorite-button-icon'
     }
 
     render(){
@@ -195,7 +213,7 @@ class Player extends React.Component {
                                 {
                                     !this.props.queue.currentSongIsEmpty() ?
                                     <Button id="player-song-favorite-button">
-                                        <FavoriteButton className={this.getFavoriteButtonIconClass()} onClick={e => this.handleToggleFavorite()} />
+                                        <FavoriteButton className={this.getFavoriteButtonIconClass()} onClick={this.handleToggleFavorite.bind(this, this.state.currentSong.id)} />
                                     </Button> :
                                     <div></div>
                                 }
@@ -204,19 +222,19 @@ class Player extends React.Component {
                     </Col>
                     <Col id="player-controls">
                         <Row id="player-controls-main-container"> 
-                            <Button className="player-control-button" onClick={e => this.props.queue.toggleRepeat()}>
+                            <Button className="player-control-button" onClick={e => this.props.queue.toggleRepeat(e)}>
                                 <Image className={this.getRepeatButtonIconClass()} src={this.getRepeatButtonIcon()} roundedCircle/>
                             </Button>
-                            <Button className="player-control-button" onClick={e => this.handlePreviousSong()}>
+                            <Button className="player-control-button" onClick={e => this.handlePreviousSong(e)}>
                                 <Image className="player-control-button-icon" src={icon_previous} roundedCircle/>
                             </Button>
-                            <Button className="player-control-button" onClick={e => this.handleTogglePlay()}>
+                            <Button className="player-control-button" onClick={e => this.handleTogglePlay(e)}>
                                 <Image className="player-control-button-icon" src={this.getPlayButtonIcon()} roundedCircle/>
                             </Button>
-                            <Button className="player-control-button" onClick={e => this.handleNextSong()}>
+                            <Button className="player-control-button" onClick={e => this.handleNextSong(e)}>
                                 <Image className="player-control-button-icon" src={icon_next} roundedCircle/>
                             </Button>
-                            <Button className="player-control-button" onClick={e => this.props.queue.toggleShuffle()}>
+                            <Button className="player-control-button" onClick={e => this.props.queue.toggleShuffle(e)}>
                                 <Image className={this.getShuffleButtonIconClass()} src={icon_shuffle_arrows} roundedCircle/>
                             </Button>
                         </Row>
@@ -228,7 +246,7 @@ class Player extends React.Component {
                     </Col>
                     <Col id="player-volume-container">
                         <Row>
-                            <Button id="player-mute-button" className="player-control-button" onClick={e => this.handleToggleMute()}>
+                            <Button id="player-mute-button" className="player-control-button" onClick={e => this.handleToggleMute(e)}>
                                 <Image id="player-mute-button-icon" src={this.getMuteButtonIcon()} roundedCircle/>
                             </Button>
                             <div id="player-volume-bar-container">

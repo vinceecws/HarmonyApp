@@ -9,16 +9,20 @@ class SettingsScreen extends React.Component{
         super(props);
         this.state = {
 				username: "",
-                new_password:"",
                 password: "",
+                new_password:"",
                 confirm_password: "",
                 biography: "",
                 privateMode: false,
                 loading: true,
                 profileUser: null,
+                changeUsername_invalidPassword: false,
                 changeUsername_taken: false,
                 changeUsername_validated: false,
-                changePassword_validated: false
+                changePassword_validated: false,
+                changePassword_invalidPassword: false,
+                changeBiography_validated: false,
+                character_limit: 250
 
     		}
         this.fetchUser();
@@ -27,14 +31,15 @@ class SettingsScreen extends React.Component{
         this.setState({
             username: "",
             password: "",
-            confirm_password:""
+            changeUsername_validated: false
         })
     }
     clearPasswordCredentials = () => {
         this.setState({
             new_password: "",
             password: "",
-            confirm_password:""
+            confirm_password:"",
+            changePassword_validated: false
         })
     }
     handleCloseUsernameModal = () => {
@@ -56,22 +61,23 @@ class SettingsScreen extends React.Component{
     }
     handleUsernameChange = (e) => {
         this.setState({
-            username: e.target.value
+            username: e.target.value,
+            changeUsername_validated: false
         })
     }
-    handleBiographyChange = (e)=>{
-        const shouldSet = this.state.biography.length < 100;
-        if(shouldSet){
-            this.setState({
+    handleBiographyChange = (e) => {
+        //const shouldSet = this.state.biography.length < 500;
+        this.setState({
                 biography: e.target.value
-            })
-        }
+        })
         
     }
 
     handleChangeUsernamePassword = (e) => {
         this.setState({
-            password: e.target.value
+            password: e.target.value,
+            changeUsername_validated: false,
+            changePassword_validated: false
         })
     }
     handleChangeNewPassword = (e) => {
@@ -85,10 +91,13 @@ class SettingsScreen extends React.Component{
             confirm_password: e.target.value
         })
     }
+    handleValidateBiography = (e) =>{
+        return this.state.biography.length < this.state.character_limit;
+    }
     handleValidateUsername = (e) =>{
          if (this.state.username.trim() === ""){
             //Handle empty username, password or confirm password here
-            console.log("Username, password and confirm password must not be empty")
+            console.log("Username, password must not be empty")
             return false
         }
 
@@ -142,21 +151,21 @@ class SettingsScreen extends React.Component{
         return true
     }
     handleValidateChangePasswordConfirmPassword = (e) => {
-        if (this.handleValidatePassword() && this.state.password === this.state.confirm_password) {
+        if (this.handleValidateNewPassword() && this.state.new_password === this.state.confirm_password) {
             return true
         }
         return false
     }
 
-    handleInvalidateChangePasswordSignUpConfirmPassword = () => {
-        if (this.handleValidatePassword()  && !(this.state.password === this.state.confirm_password)) {
+    handleInvalidateChangePasswordConfirmPassword = () => {
+        if (this.handleValidateNewPassword()  && !(this.state.new_password === this.state.confirm_password)) {
             return true
         }
         return false
     }
 
     validateNewPassword = () => {
-        if (this.handleValidateNewPassword() && this.handleValidatePassword() && this.handleValidateChangePasswordConfirmPassword()) {
+        if (this.handleValidateNewPassword() && this.handleValidateChangePasswordConfirmPassword()) {
             return true
         }
         return false
@@ -168,66 +177,97 @@ class SettingsScreen extends React.Component{
         return false
     }
     handleUsername = (e) => {
+        //409 = Username Taken 422 = Incorrect Password
         e.preventDefault()
         if (this.validateNewUsername()) {
 
-            this.props.axiosWrapper.axiosPost('/main/settings/changeUsername', {
+            this.props.axiosWrapper.axiosPost('/api/settings/changeUsername', {
                     password: this.state.password,
                     username: this.state.username
                     
             }, (function(res, data) {
                 if (data.success) {
-                    
+                    console.log(data);
+                    this.props.handleUpdateUser(data.data.user);
+                    this.setState({
+                        
+                        changeUsername_taken: false,
+                        changeUsername_invalidPassword: false
+                    });
                     this.props.history.push('/main/settings')
                 
                     console.log(data.message)
                 }
                 else {
-                    this.setState({
-                        changeUsername_validated: true,
-                        changeUsername_taken: true
-                    })
+                    if(data.statusCode === 409){
+                        this.setState({
+                            changeUsername_validated: true,
+                            changeUsername_taken: true
+                        });
+                    }
+                    else if(data.statusCode === 422){
+                        this.setState({
+                            changeUsername_validated: true,
+                            changeUsername_invalidPassword: true,
+                        });
+                        console.log("set Invalid Password in handleUsername")
+                    }
+                    
                 }
             }).bind(this), true)
         }
         else {
             this.setState({
                 changeUsername_validated: true,
-                changeUsername_taken: false
+                changeUsername_taken: false,
+                changeUsername_invalidPassword: false
             })
         }
     }
     handleBiography = (e) => {
-        
+        e.preventDefault();
+        if(this.state.biography.length < this.state.character_limit){
+            this.props.axiosWrapper.axiosPost('/api/settings/changeBiography', {
+                    
+                    biography: this.state.biography
+                    
+            }, (function(res, data) {
+                if (data.success) {
+                    this.props.handleUpdateUser(data.data.user);
+                    this.props.history.push('/main/settings')
+                   
+                    this.setState({
+                        changeBiography_validated: true
+                    });
+                }
+                else {
+                    // Handle username taken prompting here
+                    console.log("Biography was not updated")
+                }
+            }).bind(this), true)
+        }
+        else{
+            this.setState({
+                changeBiography_validated: true
+            });
+        }
 
-        this.props.axiosWrapper.axiosPost('/main/settings/changeBiography', {
-                
-                biography: this.state.biography
-                
-        }, (function(res, data) {
-            if (data.success) {
-                
-                this.props.history.push('/main/settings')
-               
-                
-            }
-            else {
-                // Handle username taken prompting here
-                console.log("Biography was not updated")
-            }
-        }).bind(this), true)
+        
     }
     handlePassword = (e) => {
         e.preventDefault();
         if(this.validateNewPassword()){
-            this.props.axiosWrapper.axiosPost('/main/settings/changePassword', {
+            this.props.axiosWrapper.axiosPost('/api/settings/changePassword', {
                     
                     password: this.state.password,
                     new_password: this.state.new_password
                     
             }, (function(res, data) {
                 if (data.success) {
-                    
+                    this.props.handleUpdateUser(data.data.user);
+                    this.setState({
+                        changePassword_invalidPassword: false
+                    });
                     this.props.history.push('/main/settings')
                     this.clearPasswordCredentials();
                     
@@ -236,7 +276,8 @@ class SettingsScreen extends React.Component{
                     // Handle username taken prompting here
                     console.log("Password was not updated")
                     this.setState({
-                        changePassword_validated: true
+                        changePassword_validated: true,
+                        changePassword_invalidPassword: true
                     });
                     
                 }
@@ -255,7 +296,7 @@ class SettingsScreen extends React.Component{
     	return this.state.user.privateMode;
     }
     fetchUser = () => {
-        this.props.axiosWrapper.axiosGet('/main/settings', (function(res, data) {
+        this.props.axiosWrapper.axiosGet('/api/settings', (function(res, data) {
             console.log(data);
             if (data.success) {
                 console.log('Success!')
@@ -340,8 +381,8 @@ class SettingsScreen extends React.Component{
                                                         type="text"
                                                         placeholder="Username"
                                                         onChange={this.handleUsernameChange}
-                                                        isValid={this.handleValidateUsername()}
-                                                        isInvalid={this.state.changeUsername_validated && !this.handleValidateUsername()}
+                                                        isValid={this.handleValidateUsername() && !this.state.changeUsername_taken}
+                                                        isInvalid={this.state.changeUsername_taken && this.state.changeUsername_validated}
                                                     />
                                                     <Form.Text muted>
                                                         Your username must contain 6 to 12 alphanumerical characters.
@@ -361,16 +402,13 @@ class SettingsScreen extends React.Component{
                                                         type="password"
                                                         placeholder="Password"
                                                         onChange={this.handleChangeUsernamePassword}
-                                                        isValid={this.handleValidatePassword()}
-                                                        isInvalid={this.state.changePassword_validated && !this.handleValidatePassword()}
+                                                        isValid={!this.state.changeUsername_invalidPassword && this.state.changeUsername_validated}
+                                                        isInvalid={this.state.changeUsername_invalidPassword && this.state.changeUsername_validated}
                                                     />
-                                                    <Form.Text muted>
-                                                        Your password must contain 6 to 12 alphanumerical or special characters.
-                                                    </Form.Text>
                                                     <Form.Control.Feedback type="invalid">
-                                                        Invalid password.
+                                                        {this.state.changeUsername_invalidPassword ? "Wrong Password" : "Invalid password"}
                                                     </Form.Control.Feedback>
-                                                    <Form.Control.Feedback>OK!</Form.Control.Feedback>
+                                                    
                                                 </Form.Group>
                                             </Form.Row>
                                        
@@ -398,10 +436,26 @@ class SettingsScreen extends React.Component{
                                         </div>
                                         <div className="modal-body">
                                             <p>Update your Biography:</p>
-                                                <div onSubmit={e => this.handleBiography(e)}>
-                                                    <textarea rows={10} cols={30} name='biography' placeholder='Your Biography' style={{marginBottom: '5px'}} value={this.state.biography} onChange={this.handleBiographyChange}/><br/>
-                                                    <button style={{marginTop:'20px', boxShadow: '3px 3px'}} onClick={e => this.handleBiography(e)}>Submit</button>
-                                                </div>
+                                            <Form noValidate onSubmit={this.handleBiography}>
+                                                <Form.Row>
+                                                    <Form.Group as={Col} controlId="biography">
+                                                        <Form.Control as="textarea" rows={10} cols={30}
+                                                            required
+                                                            value={this.state.biography}
+                                                            type="biography"
+                                                            placeholder="Your Biography Here"
+                                                            onChange={this.handleBiographyChange}
+                                                            isValid={this.handleValidateBiography()}
+                                                            isInvalid={!this.handleValidateBiography()}
+                                                        />
+                                                        <Form.Control.Feedback type="invalid">
+                                                            {this.state.biography.length}/{this.state.character_limit}
+                                                        </Form.Control.Feedback>
+                                                        <Form.Control.Feedback>{this.state.biography.length}/{this.state.character_limit}</Form.Control.Feedback>
+                                                    </Form.Group>
+                                                </Form.Row>
+                                                <Button type="submit">Submit</Button>
+                                            </Form>  
                                         </div>
                                         <div className="modal-footer">
                                             <button type="button" className="btn btn-default" data-dismiss="modal" onClick={data => this.handleCloseBiographyModal(data)}>Close</button>
@@ -427,6 +481,23 @@ class SettingsScreen extends React.Component{
                                                 
                                                 <Form noValidate onSubmit={this.handlePassword}>
                                                     <Form.Row>
+                                                        <Form.Group as={Col} controlId="password">
+                                                            <Form.Label>Password</Form.Label>
+                                                            <Form.Control
+                                                                required
+                                                                value={this.state.password}
+                                                                type="password"
+                                                                placeholder="Password"
+                                                                onChange={this.handleChangeUsernamePassword}
+                                                                isValid={!this.state.changePassword_invalidPassword && this.state.changePassword_validated}
+                                                                isInvalid={this.state.changePassword_invalidPassword && this.state.changePassword_validated}
+                                                            />
+                                                            <Form.Control.Feedback type="invalid">
+                                                                {this.state.changePassword_invalidPassword ? "Wrong Password" : "Invalid password"}
+                                                            </Form.Control.Feedback>
+                                                        </Form.Group>
+                                                    </Form.Row>
+                                                    <Form.Row>
                                                         <Form.Group as={Col} controlId="new_password">
                                                             <Form.Label>New Password</Form.Label>
                                                             <Form.Control
@@ -448,47 +519,28 @@ class SettingsScreen extends React.Component{
                                                         </Form.Group>
                                                     </Form.Row>
                                                     <Form.Row>
-                                                        <Form.Group as={Col} controlId="password">
-                                                            <Form.Label>Password</Form.Label>
-                                                            <Form.Control
-                                                                required
-                                                                value={this.state.password}
-                                                                type="password"
-                                                                placeholder="Password"
-                                                                onChange={this.handleChangeUsernamePassword}
-                                                                isValid={this.handleValidatePassword()}
-                                                                isInvalid={this.state.changePassword_validated && !this.handleValidatePassword()}
-                                                            />
-                                                            <Form.Text muted>
-                                                                Your password must contain 6 to 12 alphanumerical characters.
-                                                            </Form.Text>
-                                                            <Form.Control.Feedback>OK!</Form.Control.Feedback>
-                                                            <Form.Control.Feedback type="invalid">
-                                                                Invalid Password.
-                                                            </Form.Control.Feedback>
-                                                        </Form.Group>
-                                                    </Form.Row>
-                                                    <Form.Row>
                                                         <Form.Group as={Col} controlId="confirm_password">
-                                                            <Form.Label>Confirm Password</Form.Label>
+                                                            <Form.Label>Confirm New Password</Form.Label>
                                                             <Form.Control
                                                                 required
                                                                 value={this.state.confirm_password}
                                                                 type="password"
-                                                                placeholder="Confirm Password"
+                                                                placeholder="New Password"
                                                                 onChange={this.handleChangeUsernameConfirmPassword}
                                                                 isValid={this.handleValidateChangePasswordConfirmPassword()}
-                                                                isInvalid={this.state.changePassword_validated && !this.handleInvalidateChangePasswordSignUpConfirmPassword()}
+                                                                isInvalid={this.state.changePassword_validated && this.handleInvalidateChangePasswordConfirmPassword()}
                                                             />
                                                             <Form.Text muted>
-                                                                Your password must contain 6 to 12 alphanumerical characters.
+                                                                Your new password must contain 6 to 12 alphanumerical characters.
                                                             </Form.Text>
                                                             <Form.Control.Feedback>OK!</Form.Control.Feedback>
                                                             <Form.Control.Feedback type="invalid">
-                                                                Invalid Password.
+                                                                Passwords do not match.
                                                             </Form.Control.Feedback>
                                                         </Form.Group>
                                                     </Form.Row>
+                                                    
+                                                    
                                                     <Button type="submit">Submit</Button>
                                                 </Form>
                                         <div className="modal-footer">
