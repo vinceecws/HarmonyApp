@@ -391,7 +391,7 @@ class ProfileScreen extends React.Component{
 								<div className='row' style={{padding:'1em'}}>
 									<div className='card-deck profile-screen-category-container'>
 										{
-											this.state.likedSongs_loading ? 
+											this.state.likedCollections_loading ? 
 											<Spinner/> :
 											this.state.likedCollections.map((collection, collection_ind) => 
 												<div key={collection_ind} className='card profile-screen-category-item-card'>

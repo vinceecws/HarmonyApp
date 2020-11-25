@@ -671,10 +671,20 @@ body, html {
   width: 25px;
 }
 
+.player-song-favorite-button-icon:hover {
+  height: 27px;
+  width: 27px;
+}
+
 .player-song-favorite-button-icon-on {
-  fill: lightgray;
+  fill: #00e400;
   height: 25px;
   width: 25px;
+}
+
+.player-song-favorite-button-icon-on:hover {
+  height: 27px;
+  width: 27px;
 }
 
 .player-control-button-icon {

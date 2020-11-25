@@ -119,8 +119,21 @@ class Player extends React.Component {
         }
     }
 
-    handleToggleFavorite = () => {
-        
+    handleToggleFavorite = (songId) => {
+        if (this.state.user.likedSongs.includes(this.state.currentSong.id)) { //Unfavorite song
+            this.props.axiosWrapper.axiosPost('/main/removeSongFromFavorites/' + songId, {}, (function(res, data) {
+                if (data.success) {
+                    this.props.handleUpdateUser(data.data.user)
+                }
+            }).bind(this), true)
+        }
+        else { //Favorite song
+            this.props.axiosWrapper.axiosPost('/main/addSongToFavorites/' + songId, {}, (function(res, data) {
+                if (data.success) {
+                    this.props.handleUpdateUser(data.data.user)
+                }
+            }).bind(this), true)
+        }
     }
 
     getSongProgress = () => {
@@ -186,6 +199,7 @@ class Player extends React.Component {
     }
 
     render(){
+        console.log(this.state.user)
         return(
             <Container id="player-container" fluid>
                 <Row>
@@ -200,7 +214,7 @@ class Player extends React.Component {
                                 {
                                     !this.props.queue.currentSongIsEmpty() ?
                                     <Button id="player-song-favorite-button">
-                                        <FavoriteButton className={this.getFavoriteButtonIconClass()} onClick={e => this.handleToggleFavorite(e)} />
+                                        <FavoriteButton className={this.getFavoriteButtonIconClass()} onClick={this.handleToggleFavorite.bind(this, this.state.currentSong.id)} />
                                     </Button> :
                                     <div></div>
                                 }

@@ -95,7 +95,8 @@ class MainApp extends React.Component {
                         initPlayerAPI={this.initPlayerAPI}
                         queue={this.queue}
                         playerAPI={this.playerAPI}
-                        handleUpdateUser={this.props.handleUpdateUser}          
+                        handleUpdateUser={this.props.handleUpdateUser}
+                        axiosWrapper={this.props.axiosWrapper}          
                     />
                 </Row>
             </div>

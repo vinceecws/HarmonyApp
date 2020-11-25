@@ -30,6 +30,108 @@ mainRouter.get('/', async (req, res) => {
     })
 })
 
+mainRouter.post('/addSongToFavorites/:songId', async (req, res) => {
+    let songId = req.params.songId
+
+    if (songId == null){
+        return res.status(401).json({
+            error: {
+                name: "Bad request",
+                message: "Invalid songId"
+            },
+            message: "Invalid songId",
+            statusCode: 401,
+            data: {
+                user: null
+            },
+            success: false
+        })
+    }
+    else if (!req.user) {
+        return res.status(401).json({
+            error: {
+                name: "Unauthorized",
+                message: "Unauthorized session"
+            },
+            message: "Unauthorized session",
+            statusCode: 401,
+            data: {
+                user: null
+            },
+            success: false
+        })
+    }
+    else {
+        let updatedUser = await mongooseQuery.updateUser(req.user._id, {
+            $push: {
+              likedSongs: songId 
+            }
+        }).catch(err => res.sendStatus(404))
+
+        return res.status(200).json({
+            message: "Update successful",
+            statusCode: 200,
+            data: {
+            	user: stripUser(updatedUser)
+            },
+            success: true
+        })
+        
+    }
+
+});
+
+mainRouter.post('/removeSongFromFavorites/:songId', async (req, res) => {
+    let songId = req.params.songId
+
+    if (songId == null){
+        return res.status(401).json({
+            error: {
+                name: "Bad request",
+                message: "Invalid songId"
+            },
+            message: "Invalid songId",
+            statusCode: 401,
+            data: {
+                user: null
+            },
+            success: false
+        })
+    }
+    else if (!req.user) {
+        return res.status(401).json({
+            error: {
+                name: "Unauthorized",
+                message: "Unauthorized session"
+            },
+            message: "Unauthorized session",
+            statusCode: 401,
+            data: {
+                user: null
+            },
+            success: false
+        })
+    }
+    else {
+        let updatedUser = await mongooseQuery.updateUser(req.user._id, {
+            $pull: {
+              likedSongs: songId 
+            }
+        }).catch(err => res.sendStatus(404))
+
+        return res.status(200).json({
+            message: "Update successful",
+            statusCode: 200,
+            data: {
+            	user: stripUser(updatedUser)
+            },
+            success: true
+        })
+        
+    }
+
+});
+
 mainRouter.get('/profile/:id', async (req, res) => {
     let id = req.params.id;
     if (id == null){
@@ -219,7 +321,8 @@ mainRouter.post('/profile/createCollection/:collectionName', async (req, res) =>
             message: "Invalid collection name",
             statusCode: 400,
             data: {
-                collection: null
+                user: null,
+                collectionId: null
             },
             success: false
         })
@@ -233,7 +336,8 @@ mainRouter.post('/profile/createCollection/:collectionName', async (req, res) =>
             message: "Unauthorized session",
             statusCode: 401,
             data: {
-                collection: null
+                user: null,
+				collectionId: null
             },
             success: false
         })
@@ -269,7 +373,7 @@ mainRouter.post('/profile/addSongToFavorites/:songId', async (req, res) => {
             message: "Invalid song id",
             statusCode: 400,
             data: {
-                collection: null
+                user: null
             },
             success: false
         })
@@ -283,7 +387,7 @@ mainRouter.post('/profile/addSongToFavorites/:songId', async (req, res) => {
             message: "Unauthorized session",
             statusCode: 401,
             data: {
-                collection: null
+                user: null
             },
             success: false
         })
@@ -320,7 +424,7 @@ mainRouter.post('/profile/addSongToCollection/:songId&collectionId', async (req,
             message: "Invalid song id or collection id",
             statusCode: 400,
             data: {
-                collection: null
+                user: null
             },
             success: false
         })
@@ -334,7 +438,7 @@ mainRouter.post('/profile/addSongToCollection/:songId&collectionId', async (req,
             message: "Unauthorized session",
             statusCode: 401,
             data: {
-                collection: null
+                user: null
             },
             success: false
         })
@@ -727,6 +831,7 @@ mainRouter.post('/search/createCollectionWithSong/:collectionName&:songId', asyn
             message: "Invalid name or song id",
             statusCode: 401,
             data: {
+                user: null,
                 collectionId: null
             },
             success: false
@@ -741,6 +846,7 @@ mainRouter.post('/search/createCollectionWithSong/:collectionName&:songId', asyn
             message: "Unauthorized session",
             statusCode: 401,
             data: {
+                user: null,
                 collectionId: null
             },
             success: false
@@ -779,7 +885,7 @@ mainRouter.post('/search/addSongToCollection/:songId&:collectionId', async (req,
             message: "Invalid songId or collectionId",
             statusCode: 401,
             data: {
-                collectionId: null
+                user: null
             },
             success: false
         })
@@ -793,7 +899,7 @@ mainRouter.post('/search/addSongToCollection/:songId&:collectionId', async (req,
             message: "Unauthorized session",
             statusCode: 401,
             data: {
-                collection: null
+                user: null
             },
             success: false
         })
@@ -833,7 +939,7 @@ mainRouter.post('/search/addSongToFavorites/:songId', async (req, res) => {
             message: "Invalid songId",
             statusCode: 401,
             data: {
-                likedSongs: null
+                user: null
             },
             success: false
         })
@@ -847,7 +953,7 @@ mainRouter.post('/search/addSongToFavorites/:songId', async (req, res) => {
             message: "Unauthorized session",
             statusCode: 401,
             data: {
-                likedSongs: null
+                user: null
             },
             success: false
         })
