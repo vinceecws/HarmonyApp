@@ -160,7 +160,7 @@ class ProfileScreen extends React.Component{
 			})
 		}
 		else {
-			return this.props.axiosWrapper.axiosGet('/main/profile/' + this.props.match.params.userId, (function(res, data) {
+			return this.props.axiosWrapper.axiosGet('/api/profile/' + this.props.match.params.userId, (function(res, data) {
 				if (data.success) {
 					this.setState({
 						profileUser: data.data.user,
@@ -173,7 +173,7 @@ class ProfileScreen extends React.Component{
 
 	fetchUserData = () => {
 		if (this.state.profileUser && this.state.profileUser.sessions.length > 0) {
-			this.props.axiosWrapper.axiosGet('/main/profile/' + this.props.match.params.userId + '/sessions', (function(res, data) {
+			this.props.axiosWrapper.axiosGet('/api/profile/' + this.props.match.params.userId + '/sessions', (function(res, data) {
 				if (data.success) {
 					this.setState({
 						sessions: data.data.sessions,
@@ -184,7 +184,7 @@ class ProfileScreen extends React.Component{
 		}
 
 		if (this.state.profileUser && this.state.profileUser.playlists.length > 0) {
-			this.props.axiosWrapper.axiosGet('/main/profile/' + this.props.match.params.userId + '/playlists', (function(res, data) {
+			this.props.axiosWrapper.axiosGet('/api/profile/' + this.props.match.params.userId + '/playlists', (function(res, data) {
 				if (data.success) {
 					this.setState({
 						playlists: data.data.playlists,
@@ -206,7 +206,7 @@ class ProfileScreen extends React.Component{
 		}
 
 		if (this.state.profileUser && this.state.profileUser.likedCollections.length > 0) {
-			this.props.axiosWrapper.axiosGet('/main/profile/' + this.props.match.params.userId + '/likedCollections', (function(res, data) {
+			this.props.axiosWrapper.axiosGet('/api/profile/' + this.props.match.params.userId + '/likedCollections', (function(res, data) {
 				if (data.success) {
 					this.setState({
 						likedCollections: data.data.likedCollections,

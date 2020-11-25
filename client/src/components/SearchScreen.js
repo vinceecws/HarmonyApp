@@ -192,7 +192,7 @@ class SearchScreen extends React.Component {
     }
 
     fetchPlaylists = () => {
-        this.props.axiosWrapper.axiosGet('/main/search', (function(res, data) {
+        this.props.axiosWrapper.axiosGet('/api/search', (function(res, data) {
             if (data.success) {
                 this.setState({
                     playlists: data.data.playlists
@@ -210,7 +210,7 @@ class SearchScreen extends React.Component {
                     res: newRes
                 })
             })
-            this.props.axiosWrapper.axiosGet('/main/search/query=' + query, (function(res, data) {
+            this.props.axiosWrapper.axiosGet('/api/search/query=' + query, (function(res, data) {
                 if (data.success) {
                     var newRes = _.cloneDeep(this.state.res)
                     newRes.sessions = data.data.results.sessions

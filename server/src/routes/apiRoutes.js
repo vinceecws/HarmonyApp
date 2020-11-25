@@ -4,7 +4,7 @@ const stripUser = require('./index').stripUser
 
 apiRouter = express.Router()
 
-apiRouter.get('/', async (req, res) => {
+apiRouter.get('/topSessions', async (req, res) => {
     let sessions = await mongooseQuery.getSessions()
         .catch(err => {
             return res.status(401).json({
