@@ -136,7 +136,7 @@ class CollectionScreen extends React.Component{
         console.log("DELETE SONG")
         let newSongList = [];
         for (let s of this.state.collection.songList){
-            if (s !== song.id){
+            if (s !== song._id){
                 newSongList.push(s);
             }
         }
@@ -188,7 +188,7 @@ class CollectionScreen extends React.Component{
                                 for (let song of s) {
                                     let songFaved = false
                                     for (let fav of this.state.user.likedSongs) {
-                                        if (fav === song.id) {
+                                        if (fav === song._id) {
                                             songFaved = true
                                         }
                                     }

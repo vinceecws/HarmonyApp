@@ -31,12 +31,12 @@ class DataAPI {
         if (this._dataAPIReady) {
             var res = window.gapi.client.youtube.videos.list({
                 part: snippet ? ["snippet", "statistics", "contentDetails"] : ["contentDetails"],
-                id: id
+                _id: id
             }).then((response) => {
                 var obj = response.result.items[0]
                 if (snippet) {
                     return {
-                        id: obj.id,
+                        _id: obj.id,
                         type: "song",
                         name: this.unescapeHTML(obj.snippet.title),
                         creatorId: obj.snippet.channelId,
@@ -52,7 +52,7 @@ class DataAPI {
                 } 
                 else {
                     return {
-                        id: obj.id,
+                        _id: obj.id,
                         duration: Date.parse(obj.contentDetails.duration)
                     }
                 }
@@ -90,7 +90,7 @@ class DataAPI {
 
     constructVideoResultObj = (obj) => {
         return {
-            id: obj.id.videoId,
+            _id: obj.id.videoId,
             type: "song",
             name: this.unescapeHTML(obj.snippet.title),
             creatorId: obj.snippet.channelId,

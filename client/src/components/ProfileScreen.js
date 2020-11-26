@@ -66,8 +66,13 @@ class ProfileScreen extends React.Component{
 		this.props.history.push('/main/collection/' + id)
 	}
 
-	handlePlayItem = (id, e) => {
-        this.props.playVideo(id)
+	handlePlayItem = (obj, e) => {
+		if (obj.type === "song") {
+			this.props.playVideo(obj._id)
+		}
+        else if (obj.type === "session") {
+			this.props.history.push('/main/session/' + obj._id)
+		}
     }
 
 	handleCreateCollection = () => {
@@ -362,7 +367,7 @@ class ProfileScreen extends React.Component{
                                                                                 >
                                                                                     {
                                                                                         this.state.playlists.map((playlist, playlist_ind) => 
-                                                                                            <Dropdown.Item key={playlist_ind} onClick={this.handleAddSongToCollection.bind(this, song.id, playlist._id)}>{playlist.name}</Dropdown.Item>
+                                                                                            <Dropdown.Item key={playlist_ind} onClick={this.handleAddSongToCollection.bind(this, song._id, playlist._id)}>{playlist.name}</Dropdown.Item>
                                                                                         )
                                                                                     }
                                                                                     {
@@ -370,18 +375,18 @@ class ProfileScreen extends React.Component{
                                                                                         <Dropdown.Divider /> :
                                                                                         <div></div>
                                                                                     }
-                                                                                    <Dropdown.Item onClick={this.handleShowCreateCollectionModal.bind(this, song.id)}>Create Playlist</Dropdown.Item>
+                                                                                    <Dropdown.Item onClick={this.handleShowCreateCollectionModal.bind(this, song._id)}>Create Playlist</Dropdown.Item>
                                                                                 </DropdownButton>
                                                                             </DropdownItem>
                                                                             {
-                                                                                this.state.user && !this.state.user.likedSongs.includes(song.id) ? 
+                                                                                this.state.user && !this.state.user.likedSongs.includes(song._id) ? 
                                                                                 <Dropdown.Item>
-                                                                                    <Button onClick={this.handleAddSongToFavorites.bind(this, song.id)}>
+                                                                                    <Button onClick={this.handleAddSongToFavorites.bind(this, song._id)}>
                                                                                         Save To Favorites
                                                                                     </Button>
                                                                                 </Dropdown.Item> :
                                                                                 <Dropdown.Item>
-																					<Button onClick={this.handleRemoveSongFromFavorites.bind(this, song.id)}>
+																					<Button onClick={this.handleRemoveSongFromFavorites.bind(this, song._id)}>
 																						Remove From Favorites
 																					</Button>
 																				</Dropdown.Item>
@@ -391,7 +396,7 @@ class ProfileScreen extends React.Component{
                                                                     }
                                                                 </Dropdown.Menu>
                                                             </Dropdown>
-                                                            <Button className="profile-screen-category-item-card-image-overlay-play-button" onClick={this.handlePlayItem.bind(this, song.id)}>
+                                                            <Button className="profile-screen-category-item-card-image-overlay-play-button" onClick={this.handlePlayItem.bind(this, song)}>
                                                                 <Image className="profile-screen-category-item-card-image-overlay-play-button-icon" src={icon_play_white_1} roundedCircle/>
                                                             </Button>
                                                         </div>
