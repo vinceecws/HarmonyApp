@@ -3,7 +3,7 @@ import Spinner from './Spinner'
 import {icon_music_1, icon_like, icon_play_2, icon_pause_3, icon_add_3, 
     icon_up_arrow, icon_down_arrow, menu_button_white, delete_button_white} from '../graphics'
 import { Image, Button, Dropdown, ButtonGroup, Modal } from 'react-bootstrap';
-import {Droppable, DragDropContext} from 'react-beautiful-dnd'
+import {Droppable, DragDropContext, Draggable} from 'react-beautiful-dnd'
 
 
 class CollectionScreen extends React.Component{
@@ -25,9 +25,11 @@ class CollectionScreen extends React.Component{
     }
 
     componentDidMount = () => {
+        console.log('CollectionScreen Mounted')
         this.fetchCollection();
     }
 
+    /*
     componentDidUpdate = (prevProps, prevState) => {
         if (prevState.user !== this.props.user) {
             this.setState({
@@ -35,6 +37,7 @@ class CollectionScreen extends React.Component{
             })
         }
     }
+    */
 
     onPressLikeCollection = () =>{
         if (this.state.user !== null){
@@ -60,7 +63,6 @@ class CollectionScreen extends React.Component{
                     console.log('Updated user: ', favoritedCollections);
                     this.props.handleUpdateUser(data.data.user);
                     this.setState({
-                        user: data.data.user,
                         favorited: !this.state.favorited});
                 }
             }).bind(this), true);
@@ -160,9 +162,6 @@ class CollectionScreen extends React.Component{
         {likedSongs: favedSongs}, (function(res, data){
             if(data.success){
                 this.props.handeUpdateUser(data.data.user);
-                this.setState({
-                    user: data.data.user
-                })
                 console.log('Updated favorited songs: ', data.data.user.likedSongs)
             }
         }).bind(this), true)
@@ -176,7 +175,8 @@ class CollectionScreen extends React.Component{
     fetchSongs = (songs) => {
         console.log("FETCH SONG")
         if (songs !== undefined){
-            let listSongs = [];
+
+            /* let listSongs = [];
             for (let s of songs){
                 this.props.dataAPI.fetchVideoById(s, true).then((song) => {
                     if (song.status === 403){
@@ -194,10 +194,31 @@ class CollectionScreen extends React.Component{
                             }
                         }
                         listSongs.push(song);
-                        //this.setState({ songList: listSongs });
                     }
                 });
-            }
+            } */
+            Promise.all(songs.map((songId) => {
+				return this.props.dataAPI.fetchVideoById(songId, true)
+			})).then((s) => {
+                if (this.state.user.likedSongs !== undefined){
+                    for (let song of s){
+                        let songFaved = false;
+                        for (let fav of this.state.user.likedSongs){
+                            if (fav === song.id){
+                                songFaved = true;
+                            }
+                        }
+                        song.favorited = songFaved;
+                    }
+                }
+                else {
+                    for (let song of s){
+                        song.favorited = false;
+                    }
+                }
+                this.setState({songList: s});
+                console.log('Songs: ', this.state.songList);
+			});
         }
     }
 
@@ -206,13 +227,49 @@ class CollectionScreen extends React.Component{
         if (this.props.match.params.collectionId) {
             this.props.axiosWrapper.axiosGet('/api/collection/' + this.props.match.params.collectionId, (function(res, data) {
                 if (data.success) {
-                    this.setState({
-                        collection: data.data.collection,
-                        loading: false,
-                        collectionName: data.data.collection.name
-                    });
-                    this.fetchSongs(data.data.collection.songList);
-                    this.isCollectionFavorited();
+                    let collectionFaved = this.isCollectionFavorited();
+                    let songs = data.data.collection.songList;
+                    console.log('Fetched Collection: ', data.data.collection);
+                    ////
+                    if (songs !== undefined){
+                        Promise.all(songs.map((songId) => {
+                            return this.props.dataAPI.fetchVideoById(songId, true)
+                        })).then((s) => {
+                            if (this.state.user.likedSongs !== undefined){
+                                for (let song of s){
+                                    let songFaved = false;
+                                    for (let fav of this.state.user.likedSongs){
+                                        if (fav === song.id){
+                                            songFaved = true;
+                                        }
+                                    }
+                                    song.favorited = songFaved;
+                                }
+                            }
+                            else {
+                                for (let song of s){
+                                    song.favorited = false;
+                                }
+                            }
+                            console.log('Setting collection state')
+                            this.setState({ collection: data.data.collection,
+                                            loading: false,
+                                            collectionName: data.data.collection.name,
+                                            favorited: collectionFaved,
+                                            songList: s
+                            });
+                        });
+                    }
+                    else {
+                        console.log('Not setting songList');
+                        this.setState({
+                            collection: data.data.collection,
+                            loading: false,
+                            collectionName: data.data.collection.name,
+                            favorited: collectionFaved,
+                        });
+                    }
+                    //this.fetchSongs(data.data.collection.songList);
                 }
             }).bind(this), true)
         }
@@ -274,8 +331,7 @@ class CollectionScreen extends React.Component{
         if (this.state.user !== null && this.state.user.likedCollections !== undefined){
             for (let c of this.state.user.likedCollections){
                 if (c === this.state.collection._id){
-                    this.setState({favorited: true});
-                    break;
+                    return true;
                 }
             }
         } 
@@ -286,6 +342,9 @@ class CollectionScreen extends React.Component{
             return <Spinner/>
         }
         else {
+            console.log('Collection: ', this.state.collection);
+            console.log('User: ', this.state.user);
+            console.log('Songs: ', this.state.songList);
             return (
                 <div className='container' style={{minWidth: '100%'}}>
                     <Modal show={this.state.showEditNameModal}>
