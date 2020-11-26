@@ -1,5 +1,6 @@
 import React from 'react';
 import RangeSlider from 'react-bootstrap-range-slider';
+import Ticker from 'react-ticker';
 import { Container, Row, Col, Image, Button } from 'react-bootstrap';
 import { icon_play_2, icon_pause_3, icon_previous, icon_next, icon_repeat_3, icon_repeat_1, icon_shuffle_arrows, icon_volume_up_1, icon_no_sound } from '../graphics';
 import { ReactComponent as FavoriteButton } from '../graphics/music_player_pack/035-like.svg'
@@ -12,6 +13,7 @@ class Player extends React.Component {
         super(props)
         this.state = {
             user: this.props.user,
+            showTitleTicker: false,
             currentSong: this.props.queue.getCurrentSong(),
             currentTime: this.props.playerAPI.getCurrentTime()
         }
@@ -43,6 +45,18 @@ class Player extends React.Component {
         
     }
 
+    handleShowTitleTicker = (e) => {
+        this.setState({
+            showTitleTicker: true
+        })
+    }
+
+    handleHideTitleTicker = (e) => {
+        this.setState({
+            showTitleTicker: false
+        })
+    }
+
     handlePlayerStateChange = (e) => {
         if (e.data === window.YT.PlayerState.ENDED) {
             this.handleNextSong()
@@ -62,8 +76,8 @@ class Player extends React.Component {
     handleNextSong = () => {
         this.props.queue.nextSong()
         var currentSong = this.props.queue.getCurrentSong()
-        if (currentSong.id !== "") {
-            this.props.playerAPI.loadVideoById(currentSong.id)
+        if (currentSong._id !== "") {
+            this.props.playerAPI.loadVideoById(currentSong._id)
         }
         else {
             this.props.playerAPI.stopVideo()
@@ -73,8 +87,8 @@ class Player extends React.Component {
     handlePreviousSong = () => {
         this.props.queue.previousSong()
         var currentSong = this.props.queue.getCurrentSong()
-        if (currentSong.id !== "") {
-            this.props.playerAPI.loadVideoById(currentSong.id)
+        if (currentSong._id !== "") {
+            this.props.playerAPI.loadVideoById(currentSong._id)
         }
     }
 
@@ -87,7 +101,7 @@ class Player extends React.Component {
 
             if (!this.props.queue.currentSongIsEmpty()) {
                 currentSong = this.props.queue.getCurrentSong()
-                this.props.playerAPI.initIFrameAPI(currentSong.id)
+                this.props.playerAPI.initIFrameAPI(currentSong._id)
             }
             return
         }
@@ -98,7 +112,7 @@ class Player extends React.Component {
 
                 currentSong = this.props.queue.getCurrentSong()
                 if (currentSong != null) {
-                    this.props.playerAPI.loadVideoById(currentSong.id)
+                    this.props.playerAPI.loadVideoById(currentSong._id)
                 }
             }
             else {
@@ -120,7 +134,7 @@ class Player extends React.Component {
     }
 
     handleToggleFavorite = (songId) => {
-        if (this.state.user.likedSongs.includes(this.state.currentSong.id)) { //Unfavorite song
+        if (this.state.user.likedSongs.includes(this.state.currentSong._id)) { //Unfavorite song
             this.props.axiosWrapper.axiosPost('/api/removeSongFromFavorites/' + songId, {}, (function(res, data) {
                 if (data.success) {
                     this.props.handleUpdateUser(data.data.user)
@@ -195,7 +209,7 @@ class Player extends React.Component {
     }
 
     getFavoriteButtonIconClass = () => {
-        return this.state.user.likedSongs.includes(this.state.currentSong.id) ? 'player-song-favorite-button-icon-on' : 'player-song-favorite-button-icon'
+        return this.state.user.likedSongs.includes(this.state.currentSong._id) ? 'player-song-favorite-button-icon-on' : 'player-song-favorite-button-icon'
     }
 
     render(){
@@ -208,12 +222,16 @@ class Player extends React.Component {
                                 <Image id="player-song-image" src={this.getSongImage()} thumbnail/>
                             </Col>
                             <Col id="player-song-title">
-                                <div className="body-text color-contrasted">{this.getSongName()}</div>
-                                <div className="tiny-text color-contrasted">{this.getArtist()}</div>
+
+                                <div className="fade-single-line-overflow" onMouseEnter={this.handleShowTitleTicker} onMouseLeave={this.handleHideTitleTicker}>
+                                    <Ticker speed={8} move={this.state.showTitleTicker}>{() => (<div className="body-text color-contrasted">{this.state.currentSong.name}</div>)}</Ticker>
+                                </div>
+                                <div className="fade-single-line-overflow body-text color-contrasted">{this.getSongName()}</div>
+                                <div className="fade-single-line-overflow tiny-text color-contrasted">{this.getArtist()}</div>
                                 {
                                     !this.props.queue.currentSongIsEmpty() ?
                                     <Button id="player-song-favorite-button">
-                                        <FavoriteButton className={this.getFavoriteButtonIconClass()} onClick={this.handleToggleFavorite.bind(this, this.state.currentSong.id)} />
+                                        <FavoriteButton className={this.getFavoriteButtonIconClass()} onClick={this.handleToggleFavorite.bind(this, this.state.currentSong._id)} />
                                     </Button> :
                                     <div></div>
                                 }

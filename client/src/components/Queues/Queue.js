@@ -18,12 +18,12 @@ class Queue {
     */
 
     currentSongIsEmpty = () => {
-        return this._currentSong.id === ""
+        return this._currentSong._id === ""
     }
 
     getEmptySong = () => {
         return {
-            id: "",
+            _id: "",
             type: "song",
             name: "",
             creatorId: "",
@@ -87,7 +87,7 @@ class Queue {
             console.log(song)
 
             if (this._shuffle) {
-                var ind = this._originalFutureQueue.findIndex(x => x.id === song.id)
+                var ind = this._originalFutureQueue.findIndex(x => x._id === song._id)
                 console.log(this._originalFutureQueue.splice(ind, 1)[0])
             }
         }
@@ -144,7 +144,7 @@ class Queue {
         this._futureQueue.splice(toIndex, 0, song)
 
         if (this._shuffle) {
-            var ind = this._originalFutureQueue.findIndex(x => x.id === song.id)
+            var ind = this._originalFutureQueue.findIndex(x => x._id === song._id)
             this._originalFutureQueue.splice(toIndex, 0, this._originalFutureQueue.splice(ind, 1)[0])
         }
     }
@@ -164,7 +164,7 @@ class Queue {
         var song = this._futureQueue.splice(index, 1)
 
         if (this._shuffle) {
-            var ind = this._originalFutureQueue.findIndex(x => x.id === song.id)
+            var ind = this._originalFutureQueue.findIndex(x => x._id === song._id)
             this._originalFutureQueue.splice(ind, 1)
         }
     }

@@ -1,129 +1,3 @@
-/* Reset script start */ 
-/* http://meyerweb.com/eric/tools/css/reset/ 
-   v2.0 | 20110126
-   License: none (public domain)
-*/
-
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
-}
-/* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
-footer, header, hgroup, menu, nav, section {
-	display: block;
-}
-body {
-	line-height: 1;
-}
-ol, ul {
-	list-style: none;
-}
-blockquote, q {
-	quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-	content: '';
-	content: none;
-}
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
-}
-
-/*
-  Reset script end
-*/
-
-body {
-  line-height:1;
-}
-
-article,aside,details,figcaption,figure, footer,header,hgroup,menu,nav,section{ 
-  display:block;
-}
-
-nav ul {
- list-style:none;
-}
-
-blockquote, q {
- quotes:none;
-}
-
-blockquote:before, blockquote:after, q:before, q:after {
- content:'';
- content:none;
-}
-
-a {
- margin:0;
- padding:0;
- font-size:100%;
- vertical-align:baseline;
- background:transparent;
-}
-
-/* change colors to suit your needs */
-ins {
- background-color:#ff9;
- color:#000;
- text-decoration:none;
-}
-
-/* change colors to suit your needs */
-mark {
- background-color:#ff9;
- color:#000; 
- font-style:italic;
- font-weight:bold;
-}
-
-del {
- text-decoration: line-through;
-}
-
-abbr[title], dfn[title] {
- border-bottom:1px dotted;
- cursor:help;
-}
-
-table {
- border-collapse:collapse;
- border-spacing:0;
-}
-
-/* change border color to suit your needs */
-hr {
- display:block;
- height:1px;
- border:0;   
- border-top:1px solid #cccccc;
- margin:1em 0;
- padding:0;
-}
-
-input, select {
- vertical-align:middle;
-}
-
 @font-face {
   font-family: BalsamiqSans;
   src: url(./graphics/balsamiq_sans/BalsamiqSans-Regular.ttf)
@@ -403,7 +277,31 @@ body, html {
   background-color: #7983ff;
 }
 
-/*General*/
+/* General */
+
+.fade-single-line-overflow {
+  position: relative;
+}
+
+.fade-single-line-overflow:after {
+  content: "";
+  text-align: right;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 30%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(80, 80, 80, 0), rgba(80, 80, 80, 1) 50%);
+}
+
+.ellipsis-multi-line-overflow {
+  line-height: var(--lh);
+  display: -webkit-box;
+  -webkit-line-clamp: var(--max-lines);
+  -webkit-box-orient: vertical;
+  max-height: calc(var(--lh) * var(--max-lines));
+  overflow: hidden;
+}
 
 .container.show .innerBox {
   display: block;
@@ -616,14 +514,12 @@ body, html {
 }
 
 #player-song-title div {
-  text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
 }
 
 #player-song-title div:hover {
   overflow: visible;
-  animation: marquee 5s linear 1;
   text-decoration: underline;
   cursor: default;
 }
@@ -1111,6 +1007,7 @@ body, html {
 }
 
 .search-screen-results-category-list-item-img-overlay-play-button:hover {
+  width: 46%;
   background-color: rgba(0, 0, 0, 0.5) !important;
 }
 
@@ -1119,22 +1016,36 @@ body, html {
   width: 100%;
 }
 
+.search-screen-results-category-list-item-img-overlay-join-button {
+  border-color: transparent !important;
+  border-width: 0px !important;
+  width: 60%;
+  height: 35%;
+}
+
+.search-screen-results-category-list-item-img-overlay-join-button:hover {
+  width: 63%;
+  height: 38%;
+}
+
 .search-screen-results-category-list-item-body {
-  display: block;
   overflow: hidden;
+  text-align: left;
 }
 
-.search-screen-results-category-list-item-body div{
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
+.search-screen-results-category-list-item-body-title {
+  --max-lines: 3;
+  --lh: 1.6rem;
 }
 
-.search-screen-results-category-list-item-body div:hover {
-  overflow: visible;
-  animation: marquee 3s linear 1;
+.search-screen-results-category-list-item-body-creator {
+  --max-lines: 1;
+  --lh: 1.4rem;
+}
+
+.search-screen-results-category-list-item-body-title:hover, .search-screen-results-category-list-item-body-creator:hover {
   text-decoration: underline;
-  cursor: default;
+  cursor: pointer;
 }
 
 .collection-page-text {

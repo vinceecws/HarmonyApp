@@ -132,6 +132,118 @@ apiRouter.post('/removeSongFromFavorites/:songId', async (req, res) => {
 
 });
 
+apiRouter.post('/addCollectionToFavorites/:collectionId', async (req, res) => {
+    let collectionId = req.params.collectionId
+
+    if (collectionId == null){
+        return res.status(401).json({
+            error: {
+                name: "Bad request",
+                message: "Invalid collectionId"
+            },
+            message: "Invalid collectionId",
+            statusCode: 401,
+            data: {
+                user: null
+            },
+            success: false
+        })
+    }
+    else if (!req.user) {
+        return res.status(401).json({
+            error: {
+                name: "Unauthorized",
+                message: "Unauthorized session"
+            },
+            message: "Unauthorized session",
+            statusCode: 401,
+            data: {
+                user: null
+            },
+            success: false
+        })
+    }
+    else {
+        let updatedUser = await mongooseQuery.updateUser(req.user._id, {
+            $push: {
+              likedCollections: collectionId 
+            }
+        }).catch(err => res.sendStatus(404))
+        await mongooseQuery.updateCollection(collectionId, {
+            $inc: { 
+                likes: 1 
+            }
+        }).catch(err => res.sendStatus(404))
+
+        return res.status(200).json({
+            message: "Update successful",
+            statusCode: 200,
+            data: {
+            	user: stripUser(updatedUser)
+            },
+            success: true
+        })
+        
+    }
+
+});
+
+apiRouter.post('/removeCollectionFromFavorites/:collectionId', async (req, res) => {
+    let collectionId = req.params.collectionId
+
+    if (collectionId == null){
+        return res.status(401).json({
+            error: {
+                name: "Bad request",
+                message: "Invalid collectionId"
+            },
+            message: "Invalid collectionId",
+            statusCode: 401,
+            data: {
+                user: null
+            },
+            success: false
+        })
+    }
+    else if (!req.user) {
+        return res.status(401).json({
+            error: {
+                name: "Unauthorized",
+                message: "Unauthorized session"
+            },
+            message: "Unauthorized session",
+            statusCode: 401,
+            data: {
+                user: null
+            },
+            success: false
+        })
+    }
+    else {
+        let updatedUser = await mongooseQuery.updateUser(req.user._id, {
+            $pull: {
+              likedCollections: collectionId 
+            }
+        }).catch(err => res.sendStatus(404))
+        await mongooseQuery.updateCollection(collectionId, {
+            $inc: { 
+                likes: -1 
+            }
+        }).catch(err => res.sendStatus(404))
+
+        return res.status(200).json({
+            message: "Update successful",
+            statusCode: 200,
+            data: {
+            	user: stripUser(updatedUser)
+            },
+            success: true
+        })
+        
+    }
+
+});
+
 apiRouter.post('/createCollection/:collectionName', async (req, res) => {
     let collectionName = req.params.collectionName;
     
@@ -528,7 +640,8 @@ apiRouter.get('/collection/:id', async (req, res) => {
         })
     }
     else{
-		let collection = await mongooseQuery.getCollection({'_id': req.params.id});
+        let collection = await mongooseQuery.getCollection({'_id': req.params.id});
+        console.log(collection)
         return res.status(200).json({
             message: "Fetch success",
             statusCode: 200,
@@ -915,11 +1028,28 @@ apiRouter.get('/search/query=:search', async (req, res) => {
 	let collectionMatches = await mongooseQuery.getCollectionsFromQuery(req.params.search)
 									.catch(err => res.sendStatus(404));	
 	let userMatches = await mongooseQuery.getUsersFromQuery(req.params.search)
-                                    .catch(err => res.sendStatus(404));	
+                                    .catch(err => res.sendStatus(404));
+
 	if (req.user == null){
-		return res.json({sessions: sessionMatches, 
-					collections: collectionMatches,
-					users: userMatches});
+        return res.status(200).json({
+            message: "Query successful",
+            statusCode: 200,
+            data: {
+                sessions: sessionMatches.map(session => {
+                    session.type = "session"
+                    return session
+                }), 
+                collections: collectionMatches.map(collection => {
+                    collection.type = "collection"
+                    return collection
+                }),
+                users: userMatches.map(user => {
+                    user.type = "user"
+                    return user
+                })
+            },
+            success: true
+        })
 	}
 	else {
 		let thisUser = await mongooseQuery.getUser({'_id': req.user})
@@ -945,17 +1075,29 @@ apiRouter.get('/search/query=:search', async (req, res) => {
 		}
 		for (let u of userMatches){
 			if (thisUser._id !== u._id){
-				let fetchedUser = {username: u.google.name === undefined ? u.local.username : u.google.name,
-					_id: u._id, biography: u.biography,
-					privateMode: u.privateMode, live: u.live,
-					playlists: u.playlists, sessions: u.sessions,
-					history: u.history, likedSongs: u.likedSongs,
-					likedCollections: u.likedCollections}
+				let fetchedUser = stripUser(u)
 				filteredUsers.push(fetchedUser);
 			} 
-		}
-		return res.json({sessions: filteredSessions, collections: filteredCollections,
-					users: filteredUsers});
+        }
+        return res.status(200).json({
+            message: "Query successful",
+            statusCode: 200,
+            data: {
+                sessions: filteredSessions.map(session => {
+                    session.type = "session"
+                    return session
+                }), 
+                collections: filteredCollections.map(collection => {
+                    collection.type = "collection"
+                    return collection
+                }),
+                users: filteredUsers.map(user => {
+                    user.type = "user"
+                    return user
+                })
+            },
+            success: true
+        })
 	}				
 });
 

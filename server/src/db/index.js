@@ -235,21 +235,24 @@ exports.deleteSession = async function(sessionObject){
 
 exports.getCollectionsFromQuery = async function(query){
   let collections = await connection.then(async () => {
-    return await Collection.find({name: query}).sort({likes: 1});
+    return await Collection.find({'name': {'$regex': query, '$options': 'i'}}).lean();
   }).catch(err => console.log(err));
   return collections;
 }
 
 exports.getUsersFromQuery = async function(query){
   let users = await connection.then(async () => {
-    return await User.find({'local.username': query});
+    return await User.find({'local.username': {'$regex': query, '$options': 'i'}}).lean();
   }).catch(err => console.log(err));
   return users;
 }
 
 exports.getSessionsFromQuery = async function(query){
   let sessions = await connection.then(async () => {
-    return await Session.find({name: query});
+    return await Session.find({'$or': [
+      {'name': {'$regex': query, '$options': 'i'}},
+      {'hostName': {'$regex': query, '$options': 'i'}}
+    ]}).lean();
   }).catch(error => {console.log(error)});
   return sessions;
 }

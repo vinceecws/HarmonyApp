@@ -36,18 +36,21 @@ class SessionScreen extends React.Component {
 		var session = null;
 		if(status === 200){
 			session = data.data.session;
-			console.log(session)
-            this.setState({
-        		loading:false,
-        		id: session._id,
-				hostId:session.hostId,
-				name : session.name,
-				startTime : session.startTime ,
-				endTime : session.endTime,
-				initialQueue: session.initialQueue,
-				actionLog : session.actionLog,
-				hostName : session.hostName
-        	})
+			Promise.all(session.initialQueue.map((songId) => {
+            	return this.props.fetchVideoById(songId, true)
+        	})).then((v) => {
+	            this.setState({
+	        		loading:false,
+	        		id: session._id,
+					hostId:session.hostId,
+					name : session.name,
+					startTime : session.startTime ,
+					endTime : session.endTime,
+					initialQueue: v,
+					actionLog : session.actionLog,
+					hostName : session.hostName
+	        	})
+	        })
             
         }
         else if(status === 404){
@@ -100,13 +103,13 @@ class SessionScreen extends React.Component {
 	        				Up Next
 	        			</div>
 	        			<div className='row' style={{height:'43%'}}>
-	        				<QueueComponent initialQueue={this.state.initialQueue}/>
+	        				<QueueComponent initialQueue={this.state.initialQueue} fetchVideoById={this.props.fetchVideoById}/>
 	        			</div>
 	        			<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
 	        				Previously Played
 	        			</div>
 	        			<div className='row' style={{height:'43%'}}>
-	        				<QueueComponent initialQueue={this.state.initialQueue} />
+	        				<QueueComponent initialQueue={this.state.initialQueue} fetchVideoById={this.props.fetchVideoById}/>
 	        			</div>
 	        		
 	        		</div>

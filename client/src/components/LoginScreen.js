@@ -197,7 +197,7 @@ class LoginScreen extends React.Component{
 
     render(){
         if (this.props.auth) {
-            return <Redirect to='/main/home'/>
+            return <Redirect to='/login'/>
         }
         return (
             <div className='container' style={{backgroundColor: 'lightgreen', 
