@@ -84,7 +84,7 @@ class CollectionScreen extends React.Component{
             }
         }
         else if (this.state.playing){
-            //pause music
+            //pause music again
         }
     }
 
@@ -175,7 +175,7 @@ class CollectionScreen extends React.Component{
         if (this.props.match.params.collectionId) {
             this.props.axiosWrapper.axiosGet('/api/collection/' + this.props.match.params.collectionId, (function(res, data) {
                 if (data.success) {
-                    let collectionFaved = this.isCollectionFavorited();
+                    let collectionFaved = this.isCollectionFavorited(data.data.collection);
                     let songs = data.data.collection.songList;
                     console.log('Fetched Collection: ', data.data.collection);
                     ////
@@ -275,10 +275,10 @@ class CollectionScreen extends React.Component{
         this.setState({ collectionDescription: e.target.value });
     }
 
-    isCollectionFavorited = () => {
+    isCollectionFavorited = (collection) => {
         if (this.state.user !== null && this.state.user.likedCollections !== undefined){
             for (let c of this.state.user.likedCollections){
-                if (c === this.state.collection._id){
+                if (c === collection._id){
                     return true;
                 }
             }
