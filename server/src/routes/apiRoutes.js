@@ -916,11 +916,28 @@ apiRouter.get('/search/query=:search', async (req, res) => {
 	let collectionMatches = await mongooseQuery.getCollectionsFromQuery(req.params.search)
 									.catch(err => res.sendStatus(404));	
 	let userMatches = await mongooseQuery.getUsersFromQuery(req.params.search)
-                                    .catch(err => res.sendStatus(404));	
+                                    .catch(err => res.sendStatus(404));
+
 	if (req.user == null){
-		return res.json({sessions: sessionMatches, 
-					collections: collectionMatches,
-					users: userMatches});
+        return res.status(200).json({
+            message: "Query successful",
+            statusCode: 200,
+            data: {
+                sessions: sessionMatches.map(session => {
+                    session.type = "session"
+                    return session
+                }), 
+                collections: collectionMatches.map(collection => {
+                    collection.type = "collection"
+                    return collection
+                }),
+                users: userMatches.map(user => {
+                    user.type = "user"
+                    return user
+                })
+            },
+            success: true
+        })
 	}
 	else {
 		let thisUser = await mongooseQuery.getUser({'_id': req.user})
@@ -946,17 +963,29 @@ apiRouter.get('/search/query=:search', async (req, res) => {
 		}
 		for (let u of userMatches){
 			if (thisUser._id !== u._id){
-				let fetchedUser = {username: u.google.name === undefined ? u.local.username : u.google.name,
-					_id: u._id, biography: u.biography,
-					privateMode: u.privateMode, live: u.live,
-					playlists: u.playlists, sessions: u.sessions,
-					history: u.history, likedSongs: u.likedSongs,
-					likedCollections: u.likedCollections}
+				let fetchedUser = stripUser(u)
 				filteredUsers.push(fetchedUser);
 			} 
-		}
-		return res.json({sessions: filteredSessions, collections: filteredCollections,
-					users: filteredUsers});
+        }
+        return res.status(200).json({
+            message: "Query successful",
+            statusCode: 200,
+            data: {
+                sessions: filteredSessions.map(session => {
+                    session.type = "session"
+                    return session
+                }), 
+                collections: filteredCollections.map(collection => {
+                    collection.type = "collection"
+                    return collection
+                }),
+                users: filteredUsers.map(user => {
+                    user.type = "user"
+                    return user
+                })
+            },
+            success: true
+        })
 	}				
 });
 

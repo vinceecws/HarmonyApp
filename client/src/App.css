@@ -497,7 +497,6 @@ body, html {
 
 #player-song-title div:hover {
   overflow: visible;
-  animation: marquee 5s linear 1;
   text-decoration: underline;
   cursor: default;
 }
@@ -1006,9 +1005,8 @@ body, html {
 
 .search-screen-results-category-list-item-body div:hover {
   overflow: visible;
-  animation: marquee 3s linear 1;
   text-decoration: underline;
-  cursor: default;
+  cursor: pointer;
 }
 
 .collection-page-text {

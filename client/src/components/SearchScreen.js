@@ -132,6 +132,18 @@ class SearchScreen extends React.Component {
         
     }
 
+    handleGoToResultItem = (obj, e) => {
+        if (obj.type === "session") {
+            this.props.history.push('/main/session/' + obj._id)
+        }
+        else if (obj.type === "collection") {
+            this.props.history.push('/main/collection/' + obj._id)
+        }
+        else if (obj.type === "user") {
+            this.props.history.push('/main/profile/' + obj._id)
+        }
+    }
+
     handlePlayItem = (id, e) => {
         this.props.playVideo(id)
     }
@@ -214,9 +226,9 @@ class SearchScreen extends React.Component {
             this.props.axiosWrapper.axiosGet('/api/search/query=' + query, (function(res, data) {
                 if (data.success) {
                     var newRes = _.cloneDeep(this.state.res)
-                    newRes.sessions = data.data.results.sessions
-                    newRes.collections = data.data.results.collections
-                    newRes.users = data.data.results.users
+                    newRes.sessions = data.data.sessions
+                    newRes.collections = data.data.collections
+                    newRes.users = data.data.users
                     this.setState({
                         res: newRes
                     })
@@ -393,7 +405,7 @@ class SearchScreen extends React.Component {
                                                     <Card.Img className="search-screen-results-category-list-item-img" src={obj.image_high ? obj.image_high : obj.image_med ? obj.image_med : obj.image_std ? obj.image_std : obj.image ? obj.image : icon_music_1} />
                                             }
                                             <Card.Body className="search-screen-results-category-list-item-body">
-                                                <div className="subtitle color-jet">{obj.name}</div>
+                                                <div className="subtitle color-jet" onClick={this.handleGoToResultItem.bind(this, obj)}>{obj.type === "user" ? obj.username : obj.name}</div>
                                                 <div className="body-text color-jet">{obj.creator}</div>
                                                 {obj.type === "user" && obj.live === true ? 
                                                     <Card.Text className="body-text color-accented">{obj.sessions[0].name}</Card.Text> :
