@@ -173,6 +173,7 @@ class CollectionScreen extends React.Component{
     }
 
     fetchSongs = (songs) => {
+        console.log("FETCH SONG")
         if (songs !== undefined){
 
             /* let listSongs = [];
@@ -222,6 +223,7 @@ class CollectionScreen extends React.Component{
     }
 
     fetchCollection = () => {
+        console.log("FETCH COLLECTION")
         if (this.props.match.params.collectionId) {
             this.props.axiosWrapper.axiosGet('/api/collection/' + this.props.match.params.collectionId, (function(res, data) {
                 if (data.success) {
