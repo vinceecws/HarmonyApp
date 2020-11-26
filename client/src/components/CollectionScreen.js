@@ -86,7 +86,7 @@ class CollectionScreen extends React.Component{
             }
         }
         else if (this.state.playing){
-            //pause music
+            //pause music again
         }
     }
 
