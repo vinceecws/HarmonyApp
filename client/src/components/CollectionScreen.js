@@ -29,15 +29,13 @@ class CollectionScreen extends React.Component{
         this.fetchCollection();
     }
 
-    /*
-    componentDidUpdate = (prevProps, prevState) => {
-        if (prevState.user !== this.props.user) {
-            this.setState({
-                user: this.props.user
-            })
-        }
-    }
-    */
+    // componentDidUpdate = (prevProps, prevState) => {
+    //     if (prevState.user !== this.props.user) {
+    //         this.setState({
+    //             user: this.props.user
+    //         })
+    //     }
+    // }
 
     onPressLikeCollection = () =>{
         if (this.state.user !== null){
@@ -172,56 +170,6 @@ class CollectionScreen extends React.Component{
         return this.state.favorited;
     }
 
-    fetchSongs = (songs) => {
-        console.log("FETCH SONG")
-        if (songs !== undefined){
-
-            /* let listSongs = [];
-            for (let s of songs){
-                this.props.dataAPI.fetchVideoById(s, true).then((song) => {
-                    if (song.status === 403){
-                        console.log('Youtube Query Quota Exceeded');
-                    }
-                    else{
-                        if (this.state.user.likedSongs !== undefined){
-                            for (let fav of this.state.user.likedSongs){
-                                if (fav === s){
-                                    song.favorited = true;
-                                }
-                                else {
-                                    song.favorited = false;
-                                }
-                            }
-                        }
-                        listSongs.push(song);
-                    }
-                });
-            } */
-            Promise.all(songs.map((songId) => {
-				return this.props.dataAPI.fetchVideoById(songId, true)
-			})).then((s) => {
-                if (this.state.user.likedSongs !== undefined){
-                    for (let song of s){
-                        let songFaved = false;
-                        for (let fav of this.state.user.likedSongs){
-                            if (fav === song.id){
-                                songFaved = true;
-                            }
-                        }
-                        song.favorited = songFaved;
-                    }
-                }
-                else {
-                    for (let song of s){
-                        song.favorited = false;
-                    }
-                }
-                this.setState({songList: s});
-                console.log('Songs: ', this.state.songList);
-			});
-        }
-    }
-
     fetchCollection = () => {
         console.log("FETCH COLLECTION")
         if (this.props.match.params.collectionId) {
@@ -338,13 +286,11 @@ class CollectionScreen extends React.Component{
     }
 
     render(){
+        console.log(this.state.songList)
         if (this.state.loading) {
             return <Spinner/>
         }
         else {
-            console.log('Collection: ', this.state.collection);
-            console.log('User: ', this.state.user);
-            console.log('Songs: ', this.state.songList);
             return (
                 <div className='container' style={{minWidth: '100%'}}>
                     <Modal show={this.state.showEditNameModal}>

@@ -72,7 +72,7 @@ class ProfileScreen extends React.Component{
 
 	handleCreateCollection = () => {
 		if (this.handleValidateNewCollectionName()){
-			this.props.axiosWrapper.axiosPost('main/api/createCollection/' + this.state.newCollectionName, {}, (function(res, data){
+			this.props.axiosWrapper.axiosPost('/api/createCollection/' + this.state.newCollectionName, {}, (function(res, data){
 				if (data.success) {
 					this.props.handleUpdateUser(data.data.user)
 					this.handleGoToCollection(data.data.collectionId)
