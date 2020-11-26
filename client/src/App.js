@@ -7,7 +7,6 @@ import { Container } from 'react-bootstrap';
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
-import './App.css';
 import AxiosWrapper from './components/axiosWrapper/axiosWrapper.js'
 axios.defaults.baseURL = 'http://localhost:3000'
 
