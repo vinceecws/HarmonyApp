@@ -1,5 +1,5 @@
 import React from 'react';
-
+import Ticker from 'react-ticker';
 class QueueEntry extends React.Component{
 	constructor(props){
 		super(props);
@@ -9,11 +9,19 @@ class QueueEntry extends React.Component{
 	handleEntryToggle = () => this.setState({showTicker : !this.state.showTicker});
 	render(){
 
-		let entry = <div>{this.props.title} -- {this.props.artist } &nbsp;&nbsp;&nbsp;</div>;
+		let entry;
+		if(this.state.showTicker){
+			entry = <Ticker speed={14} mode="await">
+							{({ index }) => (<div>{this.props.title} -- {this.props.artist}</div>)}
+					</Ticker>;
+		} else{
+			entry = <div>{this.props.title} -- {this.props.artist}</div>;
+		}
 		return(
 			<div onMouseEnter={this.handleEntryToggle} onMouseLeave={this.handleEntryToggle}>
 				<div className='list-group-item list-group-item-action'>
-					<h1 className='title'>{entry}</h1>
+					{entry}
+					
 					
 				</div>
 			</div>
