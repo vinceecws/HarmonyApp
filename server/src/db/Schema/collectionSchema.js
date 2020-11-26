@@ -7,8 +7,12 @@ const collectionSchema = new mongoose.Schema ({
         required: [true, 'Collection name is required']
     },
     ownerId:{
-        type:String,
-        default: ""
+        type: String,
+        required: [true, 'Owner id is required'],
+    },
+    ownerName: {
+        type: String,
+        required: [true, 'Owner name is required'],
     },
     description: {
         type: String,

@@ -25,7 +25,6 @@ class CollectionScreen extends React.Component{
     }
 
     componentDidMount = () => {
-        console.log('CollectionScreen Mounted')
         this.fetchCollection();
     }
 
@@ -53,12 +52,10 @@ class CollectionScreen extends React.Component{
                     }
                 }
             }
-            console.log('Sending Payload: ', favoritedCollections);
             
             this.props.axiosWrapper.axiosPost('/api/collection/updateUser/' + this.state.user._id,
             {likedCollections: favoritedCollections}, (function(res, data){
                 if (data.success){
-                    console.log('Updated user: ', favoritedCollections);
                     this.props.handleUpdateUser(data.data.user);
                     this.setState({
                         favorited: !this.state.favorited});
@@ -91,12 +88,10 @@ class CollectionScreen extends React.Component{
 
 
     onEditName = () => {
-        console.log("EDIT NAME")
         if (this.state.collectionName.trim() !== ''){
             this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.props.match.params.collectionId, 
             {name: this.state.collectionName}, (function(res, data){
                 if (data.success){
-                    console.log('Editing Name Success')
                     this.hideEditNameModal();
                     this.fetchCollection();
                 }
@@ -105,7 +100,6 @@ class CollectionScreen extends React.Component{
     }
 
     onEditDescription = () => {
-        console.log("EDIT DESCRIPTION")
         if (this.state.collectionName.trim() !== ''){
             this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.props.match.params.collectionId, 
             {description: this.state.collectionDescription}, (function(res, data){
@@ -134,7 +128,6 @@ class CollectionScreen extends React.Component{
     }
 
     onPressDeleteSong = (song) => {
-        console.log("DELETE SONG")
         let newSongList = [];
         for (let s of this.state.collection.songList){
             if (s !== song._id){
@@ -165,7 +158,6 @@ class CollectionScreen extends React.Component{
         {likedSongs: favedSongs}, (function(res, data){
             if(data.success){
                 this.props.handeUpdateUser(data.data.user);
-                console.log('Updated favorited songs: ', data.data.user.likedSongs)
             }
         }).bind(this), true)
     }
@@ -175,12 +167,7 @@ class CollectionScreen extends React.Component{
         return this.state.favorited;
     }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 3bf263adab4b8b456139d9ebdf8dbb89f7bd3fae
     fetchCollection = () => {
-        console.log("FETCH COLLECTION")
         if (this.props.match.params.collectionId) {
             this.props.axiosWrapper.axiosGet('/api/collection/' + this.props.match.params.collectionId, (function(res, data) {
                 if (data.success) {
@@ -283,7 +270,6 @@ class CollectionScreen extends React.Component{
     }
 
     render(){
-        console.log(this.state.songList)
         if (this.state.loading) {
             return <Spinner/>
         }

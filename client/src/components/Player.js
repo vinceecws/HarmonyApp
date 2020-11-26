@@ -209,7 +209,7 @@ class Player extends React.Component {
     }
 
     getFavoriteButtonIconClass = () => {
-        return this.state.user.likedSongs.includes(this.state.currentSong._id) ? 'player-song-favorite-button-icon-on' : 'player-song-favorite-button-icon'
+        return this.state.user && this.state.user.likedSongs.includes(this.state.currentSong._id) ? 'player-song-favorite-button-icon-on' : 'player-song-favorite-button-icon'
     }
 
     render(){
@@ -229,7 +229,7 @@ class Player extends React.Component {
                                 <div className="fade-single-line-overflow body-text color-contrasted">{this.getSongName()}</div>
                                 <div className="fade-single-line-overflow tiny-text color-contrasted">{this.getArtist()}</div>
                                 {
-                                    !this.props.queue.currentSongIsEmpty() ?
+                                    !this.props.queue.currentSongIsEmpty() && this.state.user ?
                                     <Button id="player-song-favorite-button">
                                         <FavoriteButton className={this.getFavoriteButtonIconClass()} onClick={this.handleToggleFavorite.bind(this, this.state.currentSong._id)} />
                                     </Button> :

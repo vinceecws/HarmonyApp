@@ -47,10 +47,11 @@ exports.updateUser = async function(userId, updatePayload) {
   return user;
 }
 
-exports.createCollection = async function(userId, name, description, songList) {
+exports.createCollection = async function(userId, userName, name, description, songList) {
   let collection = await new Collection({
     name: name,
     ownerId: userId,
+    ownerName: userName,
     description: description ? description : "",
     songList: songList ? songList : []
   }).save().catch(error => console.log(error));
