@@ -71,7 +71,7 @@ class CollectionScreen extends React.Component{
 
     onPressPlayQueue = () =>{
         if (this.state.songList.length > 0 && !this.state.playing){
-            this.setState({playing: !this.state.playing});
+            this.setState({playing: true});
             let futureQueue = this.state.collection.songList.slice(1);
             this.props.playVideo(this.state.collection.songList[0]);
             for (let s of futureQueue){
@@ -86,7 +86,8 @@ class CollectionScreen extends React.Component{
             }
         }
         else if (this.state.playing){
-            //pause music again
+            this.setState({playing: false});
+            this.props.playerAPI.pauseVideo();
         }
     }
 
@@ -151,12 +152,13 @@ class CollectionScreen extends React.Component{
     }
 
     onPressLikeSong = (song) => {
+        this.setState({favoritedSong: !this.state.favoritedSong});
         let favedSongs = this.state.user.likedSongs;
         if(favedSongs === undefined){
-            favedSongs = [song];
+            favedSongs = [song.id];
         }
         else{
-            favedSongs.push(song);
+            favedSongs.push(song.id);
         }
         this.props.axiosWrapper.axiosPost('/api/collection/updateUser/' + this.state.user._id, 
         {likedSongs: favedSongs}, (function(res, data){
@@ -172,55 +174,6 @@ class CollectionScreen extends React.Component{
         return this.state.favorited;
     }
 
-    fetchSongs = (songs) => {
-        console.log("FETCH SONG")
-        if (songs !== undefined){
-
-            /* let listSongs = [];
-            for (let s of songs){
-                this.props.dataAPI.fetchVideoById(s, true).then((song) => {
-                    if (song.status === 403){
-                        console.log('Youtube Query Quota Exceeded');
-                    }
-                    else{
-                        if (this.state.user.likedSongs !== undefined){
-                            for (let fav of this.state.user.likedSongs){
-                                if (fav === s){
-                                    song.favorited = true;
-                                }
-                                else {
-                                    song.favorited = false;
-                                }
-                            }
-                        }
-                        listSongs.push(song);
-                    }
-                });
-            } */
-            Promise.all(songs.map((songId) => {
-				return this.props.dataAPI.fetchVideoById(songId, true)
-			})).then((s) => {
-                if (this.state.user.likedSongs !== undefined){
-                    for (let song of s){
-                        let songFaved = false;
-                        for (let fav of this.state.user.likedSongs){
-                            if (fav === song.id){
-                                songFaved = true;
-                            }
-                        }
-                        song.favorited = songFaved;
-                    }
-                }
-                else {
-                    for (let song of s){
-                        song.favorited = false;
-                    }
-                }
-                this.setState({songList: s});
-                console.log('Songs: ', this.state.songList);
-			});
-        }
-    }
 
     fetchCollection = () => {
         console.log("FETCH COLLECTION")
@@ -269,7 +222,6 @@ class CollectionScreen extends React.Component{
                             favorited: collectionFaved,
                         });
                     }
-                    //this.fetchSongs(data.data.collection.songList);
                 }
             }).bind(this), true)
         }
@@ -459,10 +411,10 @@ class CollectionScreen extends React.Component{
                                     <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}}>
                                         {/* Fix during implementation */}
                                         <Image className='player-song-favorite-button-icon' src={icon_like} 
-                                                style={{maxHeight: '25px', maxWidth: '25px'}} onClick={e => this.onPressLikeSong(e)} roundedCircle/>
+                                                style={{maxHeight: '25px', maxWidth: '25px'}} onClick={() => this.onPressLikeSong(e)} roundedCircle/>
                                     </Button>
                                     <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}} 
-                                            onClick={this.onPressDeleteSong(e)}>
+                                            onClick={() => this.onPressDeleteSong(e)}>
                                         <img src={delete_button_white} style={{maxHeight: '25px', maxWidth: '25px'}}></img>
                                     </Button>
                                 </div>
