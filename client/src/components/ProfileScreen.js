@@ -36,7 +36,7 @@ class ProfileScreen extends React.Component{
 				user: this.props.user
 			})
 
-			if (this.state.profileUser._id === this.state.user._id) { //Refresh if user is viewing own profile
+			if (this.state.user && (this.state.profileUser._id === this.state.user._id)) { //Refresh if user is viewing own profile
 				this.fetchUser().then(() => {
 					this.fetchUserData()
 				})
@@ -150,7 +150,7 @@ class ProfileScreen extends React.Component{
     }
 
 	fetchUser () {
-		if (this.props.match.params.userId === this.state.user._id) {
+		if (this.state.user && (this.props.match.params.userId === this.state.user._id)) {
 			return new Promise((resolve) => {
 				this.setState({
 					profileUser: _.cloneDeep(this.state.user),
@@ -312,7 +312,7 @@ class ProfileScreen extends React.Component{
 										)
 								}
 								{
-									this.state.user._id === this.state.profileUser._id ? //Viewing own profile
+									this.state.user && (this.state.user._id === this.state.profileUser._id) ? //Viewing own profile
 									<div className='card profile-screen-create-collection-card' onClick={this.handleShowCreateCollectionModal}>
 										<img className="profile-screen-create-collection-card-img" src={plus_button}/>
 									</div> :
@@ -374,7 +374,7 @@ class ProfileScreen extends React.Component{
                                                                                 </DropdownButton>
                                                                             </DropdownItem>
                                                                             {
-                                                                                !this.state.user.likedSongs.includes(song.id) ? 
+                                                                                this.state.user && !this.state.user.likedSongs.includes(song.id) ? 
                                                                                 <Dropdown.Item>
                                                                                     <Button onClick={this.handleAddSongToFavorites.bind(this, song.id)}>
                                                                                         Save To Favorites

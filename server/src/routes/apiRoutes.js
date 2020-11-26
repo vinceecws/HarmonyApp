@@ -528,7 +528,8 @@ apiRouter.get('/collection/:id', async (req, res) => {
         })
     }
     else{
-		let collection = await mongooseQuery.getCollection({'_id': req.params.id});
+        let collection = await mongooseQuery.getCollection({'_id': req.params.id});
+        console.log(collection)
         return res.status(200).json({
             message: "Fetch success",
             statusCode: 200,

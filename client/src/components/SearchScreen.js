@@ -291,7 +291,7 @@ class SearchScreen extends React.Component {
                     }
                     <ListGroup>
                         {
-                            this.state.user.history.map((obj, ind) => 
+                            this.state.user ? this.state.user.history.map((obj, ind) => 
                                 <ListGroup.Item className="search-screen-history-item" key={ind} onClick={e => this.handleGoToHistoryItem(e)} action>
                                     <div className="search-screen-history-item-type title color-contrasted">{obj.type.capitalize()}</div>
                                     <div className="search-screen-history-item-container">
@@ -305,7 +305,8 @@ class SearchScreen extends React.Component {
                                         <Image className="search-screen-history-item-remove-button-icon" src={delete_cross_white}/>
                                     </div>
                                 </ListGroup.Item>
-                                )
+                                ) :
+                                <div></div>
                         }
                     </ListGroup>
                 </div>
@@ -366,7 +367,7 @@ class SearchScreen extends React.Component {
                                                                                 </DropdownButton>
                                                                             </DropdownItem>
                                                                             {
-                                                                                !this.state.user.likedSongs.includes(obj.id) ? 
+                                                                                this.state.user && !this.state.user.likedSongs.includes(obj.id) ? 
                                                                                 <Dropdown.Item>
                                                                                     <Button onClick={this.handleAddSongToFavorites.bind(this, obj.id)}>
                                                                                         Save To Favorites
