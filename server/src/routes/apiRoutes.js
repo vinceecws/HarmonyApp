@@ -505,13 +505,16 @@ apiRouter.get('/profile/:id/sessions', async (req, res) => {
     }
     else {
         let user = await mongooseQuery.getUser({'_id': id})
-        let sessions = await mongooseQuery.getSession(user.sessions)
+        let sessions = await mongooseQuery.getSession(user.sessions, true)
         
         return res.status(200).json({
             message: "Fetch success",
             statusCode: 200,
             data: {
-                sessions: sessions
+                sessions: sessions.map(session => {
+                    session.type = "session"
+                    return session
+                })
             },
             success: true
         })
@@ -536,13 +539,16 @@ apiRouter.get('/profile/:id/playlists', async (req, res) => {
     }
     else {
         let user = await mongooseQuery.getUser({'_id': id})
-        let playlists = await mongooseQuery.getCollection(user.playlists)
+        let playlists = await mongooseQuery.getCollection(user.playlists, true)
         
         return res.status(200).json({
             message: "Fetch success",
             statusCode: 200,
             data: {
-                playlists: playlists
+                playlists: playlists.map(playlist => {
+                    playlist.type = "collection"
+                    return playlist
+                })
             },
             success: true
         })
@@ -567,13 +573,16 @@ apiRouter.get('/profile/:id/likedCollections', async (req, res) => {
     }
     else {
         let user = await mongooseQuery.getUser({'_id': id})
-        let likedCollections = await mongooseQuery.getCollection(user.likedCollections)
+        let likedCollections = await mongooseQuery.getCollection(user.likedCollections, true)
         
         return res.status(200).json({
             message: "Fetch success",
             statusCode: 200,
             data: {
-                likedCollections: likedCollections
+                likedCollections: likedCollections.map(collection => {
+                    collection.type = "collection"
+                    return collection
+                })
             },
             success: true
         })
@@ -1022,11 +1031,13 @@ apiRouter.get('/search', async (req, res) => {
 })
 
 apiRouter.get('/search/query=:search', async (req, res) => {
-	let sessionMatches = await mongooseQuery.getSessionsFromQuery(req.params.search)
-									.catch(err => res.sendStatus(404));
-	let collectionMatches = await mongooseQuery.getCollectionsFromQuery(req.params.search)
-									.catch(err => res.sendStatus(404));	
-	let userMatches = await mongooseQuery.getUsersFromQuery(req.params.search)
+    let sessionMatches = await mongooseQuery.getSessionsFromQuery(req.params.search, true)
+                                    .catch(err => res.sendStatus(404));
+                                    
+    let collectionMatches = await mongooseQuery.getCollectionsFromQuery(req.params.search, true)
+                                    .catch(err => res.sendStatus(404));	
+                                    
+    let userMatches = await mongooseQuery.getUsersFromQuery(req.params.search, true)
                                     .catch(err => res.sendStatus(404));
 
 	if (req.user == null){

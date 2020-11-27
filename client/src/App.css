@@ -1201,6 +1201,7 @@ body, html {
 }
 
 .profile-screen-category-item-card-image-overlay-play-button:hover {
+  width: 46%;
   background-color: rgba(0, 0, 0, 0.5) !important;
 }
 
@@ -1248,27 +1249,17 @@ body, html {
   height: 20px;
 }
 
-.profile-screen-category-item-card-name, .profile-screen-category-item-card-creator {
-  margin: auto;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: fit-content;
-  max-width: 160px;
-  display: block;
-  line-height: 1em; 
-  max-height: 2em;
-  border-bottom: 1px solid transparent;
+.profile-screen-category-item-card-name {
+  --max-lines: 3;
+  --lh: 1.6rem;
+}
+
+.profile-screen-category-item-card-creator {
+  --max-lines: 1;
+  --lh: 1.4rem;
 }
 
 .profile-screen-category-item-card-name:hover, .profile-screen-category-item-card-creator:hover {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: fit-content;
-  display: block;
-  line-height: 1em; 
-  max-height: 2em;
-  border-bottom: 1px solid black;
+  text-decoration: underline;
   cursor: pointer;
 }
