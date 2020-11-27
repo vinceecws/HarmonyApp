@@ -6,20 +6,28 @@ class QueueEntry extends React.Component{
 		this.state = {showTicker: false}
 	}
 	
-	handleEntryToggle = () => this.setState({showTicker : !this.state.showTicker});
+	handleEntry = () => {
+		this.setState({showTicker : true});
+		
+	}
+	handleLeave = () => {
+		this.setState({showTicker : false});
+	}
 	render(){
-
+		console.log("render called");
 		let entry;
 		if(this.state.showTicker){
-			entry = <Ticker speed={14} mode="await">
-							{({ index }) => (<div>{this.props.title} -- {this.props.artist}</div>)}
-					</Ticker>;
+			entry = <div><Ticker speed={14} mode="await" >
+							{({ index }) => (<><h1 className='Session-Entry-Text body-text underline color-accented' >{this.props.title} -- {this.props.artist}</h1></>)}
+					</Ticker></div>;
+
 		} else{
-			entry = <div>{this.props.title} -- {this.props.artist}</div>;
+			entry = <div onMouseEnter={this.handleEntryToggle}><h1 className='Session-Entry-Text body-text underline color-accented'>{this.props.title} -- {this.props.artist}</h1></div>;
 		}
+		
 		return(
-			<div onMouseEnter={this.handleEntryToggle} onMouseLeave={this.handleEntryToggle}>
-				<div className='list-group-item list-group-item-action'>
+			<div  onMouseEnter={this.handleEntry} onMouseLeave={this.handleLeave} >
+				<div className='list-group-item' style={{width:"100%"}}>
 					{entry}
 					
 					
