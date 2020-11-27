@@ -4,6 +4,7 @@ import {icon_music_1, icon_like, icon_play_2, icon_pause_3, icon_add_3,
     icon_up_arrow, icon_down_arrow, menu_button_white, delete_button_white} from '../graphics'
 import { Image, Button, Dropdown, ButtonGroup, Modal } from 'react-bootstrap';
 import {Droppable, DragDropContext, Draggable} from 'react-beautiful-dnd'
+const _ = require('lodash');
 
 
 class CollectionScreen extends React.Component{
@@ -296,6 +297,16 @@ class CollectionScreen extends React.Component{
     handleOnDragEnd = (result) =>{
         console.log(result);
         if (result.destination !== null && result.source !== null){
+            //update frontend
+            /*
+            let newStateSongList = _.cloneDeep(this.state.songList);
+            let movedSong = newStateSongList[result.source];
+            newStateSongList.splice(result.source.index, 1);
+            newStateSongList.splice(result.destination.index, 0, movedSong);
+            this.setState({songList: newStateSongList});
+            */
+
+            //update backend
             let newSongList = this.state.collection.songList;
             newSongList.splice(result.source.index, 1);
             newSongList.splice(result.destination.index, 0, result.draggableId);
