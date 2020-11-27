@@ -32,25 +32,36 @@ exports.createUserGoogle = async function(id, token, email, name){
   return newUser;
 }
 
-exports.getUser = async function(userObject) { //User CRUD methods: Retrieve
+exports.getUser = async function(userObject, lean=false) { //User CRUD methods: Retrieve
   let user = await connection.then(async () => {
-    return await User.findOne(userObject)
+    if (lean) {
+      return await User.findOne(userObject).lean()
+    }
+    else {
+      return await User.findOne(userObject)
+    }
   }).catch(error => {console.log(error)});
   return user;
 }
 
 
-exports.updateUser = async function(userId, updatePayload) {
+exports.updateUser = async function(userId, updatePayload, lean=false) {
   let user = await connection.then(async () => {
-    return await User.findOneAndUpdate({'_id': userId}, updatePayload, {new: true});
+    if (lean) {
+      return await User.findOneAndUpdate({'_id': userId}, updatePayload, {new: true}).lean()
+    }
+    else {
+      return await User.findOneAndUpdate({'_id': userId}, updatePayload, {new: true})
+    }
   }).catch(error => console.log(error));
   return user;
 }
 
-exports.createCollection = async function(userId, name, description, songList) {
+exports.createCollection = async function(userId, userName, name, description, songList) {
   let collection = await new Collection({
     name: name,
     ownerId: userId,
+    ownerName: userName,
     description: description ? description : "",
     songList: songList ? songList : []
   }).save().catch(error => console.log(error));
@@ -65,31 +76,49 @@ exports.createCollection = async function(userId, name, description, songList) {
   return collection
 }
  
-exports.getCollection = async function(collectionObject) {
+exports.getCollection = async function(collectionObject, lean=false) {
   
   var collection
   if (Array.isArray(collectionObject)) {
     collection = await connection.then(async () => {
-      return await Collection.find({
-        '_id': { $in: collectionObject
-        }
-      }).catch(error => {
-        console.log(error)
-      })
+      if (lean) {
+        return await Collection.find({
+          '_id': { $in: collectionObject
+          }
+        }).lean()
+      }
+      else {
+        return await Collection.find({
+          '_id': { $in: collectionObject
+          }
+        })
+      }
+    }).catch(error => {
+      console.log(error)
     })
   }
   else {
     collection = await connection.then(async () => {
-      return await Collection.findOne(collectionObject);
+      if (lean) {
+        return await Collection.findOne(collectionObject).lean()
+      }
+      else {
+        return await Collection.findOne(collectionObject)
+      }
     }).catch(error => {console.log(error)});
   }
 
   return collection;
 }
 
-exports.updateCollection = async function(collectionId, updateFieldsObject){
+exports.updateCollection = async function(collectionId, updateFieldsObject, lean=false){
   let collection = await connection.then(async () => {
-    return await Collection.findOneAndUpdate({_id: collectionId}, updateFieldsObject, {new: true});
+    if (lean) {
+      return await Collection.findOneAndUpdate({_id: collectionId}, updateFieldsObject, {new: true}).lean()
+    }
+    else {
+      return await Collection.findOneAndUpdate({_id: collectionId}, updateFieldsObject, {new: true})
+    }
   }).catch(error => console.log(error));
 
   return collection
@@ -160,10 +189,15 @@ exports.changePassword= async function(userObject, updateFieldsObject){
 }
 //updateCollection({'_id': '5faaa7f7f098b317d81e5585'}, {name: 'the bigger crunch'});
 
-exports.deleteCollection = async function(collectionObject){
+exports.deleteCollection = async function(collectionObject, lean=false){
   console.log('delete collection')
   let collection = await connection.then(async () => {
-    return await Collection.findOneAndRemove(collectionObject);
+    if (lean) {
+      return await Collection.findOneAndRemove(collectionObject).lean()
+    }
+    else {
+      return await Collection.findOneAndRemove(collectionObject)
+    }
   }).catch(error => console.log(error));
   
 }
@@ -186,21 +220,34 @@ exports.createSession = async function(hostId, hostName, name, startTime, endTim
   return session;
 }
 
-exports.getSession = async function(sessionObject) {
+exports.getSession = async function(sessionObject, lean=false) {
   var session
   if (Array.isArray(sessionObject)) {
     session = await connection.then(async () => {
-      return await Session.find({
-        '_id': { $in: sessionObject
-        }
-      }).catch(error => {
-        console.log(error)
-      })
+      if (lean) {
+        return await Session.find({
+          '_id': { $in: sessionObject
+          }
+        }).lean()
+      }
+      else {
+        return await Session.find({
+          '_id': { $in: sessionObject
+          }
+        })
+      }
+    }).catch(error => {
+      console.log(error)
     })
   }
   else {
     session = await connection.then(async () => {
-      return await Session.findOne(sessionObject);
+      if (lean) {
+        return await Session.findOne(sessionObject).lean()
+      }
+      else {
+        return await Session.findOne(sessionObject)
+      }
     }).catch(error => {console.log(error)});
   }
 
@@ -215,44 +262,72 @@ exports.getSessions = async function(){
 }
 
 
-exports.updateSession = async function(sessionID, updateObject){
+exports.updateSession = async function(sessionID, updateObject, lean=false){
   console.log('Update session');
   let session = await connection.then(async () => {
-    return await Session.findOneAndUpdate({'_id': sessionID}, updateObject, {new: true});
+    if (lean) {
+      return await Session.findOneAndUpdate({'_id': sessionID}, updateObject, {new: true}).lean()
+    }
+    else {
+      return await Session.findOneAndUpdate({'_id': sessionID}, updateObject, {new: true})
+    }
   });
   
   return session;
 }
 
-exports.deleteSession = async function(sessionObject){
+exports.deleteSession = async function(sessionObject, lean=false){
   console.log('Delete session');
   let session = await connection.then(async () => {
-    return await Session.findOneAndRemove(sessionObject);
+    if (lean) {
+      return await Session.findOneAndRemove(sessionObject).lean()
+    }
+    else {
+      return await Session.findOneAndRemove(sessionObject)
+    }
   }).catch(error => {console.log(error)});
 
 }
 
 
-exports.getCollectionsFromQuery = async function(query){
+exports.getCollectionsFromQuery = async function(query, lean=false){
   let collections = await connection.then(async () => {
-    return await Collection.find({'name': {'$regex': query, '$options': 'i'}}).lean();
+    if (lean) {
+      return await Collection.find({'name': {'$regex': query, '$options': 'i'}}).lean()
+    }
+    else {
+      return await Collection.find({'name': {'$regex': query, '$options': 'i'}})
+    }
   }).catch(err => console.log(err));
   return collections;
 }
 
-exports.getUsersFromQuery = async function(query){
+exports.getUsersFromQuery = async function(query, lean=false){
   let users = await connection.then(async () => {
-    return await User.find({'local.username': {'$regex': query, '$options': 'i'}}).lean();
+    if (lean) {
+      return await User.find({'local.username': {'$regex': query, '$options': 'i'}}).lean()
+    }
+    else {
+      return await User.find({'local.username': {'$regex': query, '$options': 'i'}})
+    }
   }).catch(err => console.log(err));
   return users;
 }
 
-exports.getSessionsFromQuery = async function(query){
+exports.getSessionsFromQuery = async function(query, lean=false){
   let sessions = await connection.then(async () => {
-    return await Session.find({'$or': [
-      {'name': {'$regex': query, '$options': 'i'}},
-      {'hostName': {'$regex': query, '$options': 'i'}}
-    ]}).lean();
+    if (lean) {
+      return await Session.find({'$or': [
+        {'name': {'$regex': query, '$options': 'i'}},
+        {'hostName': {'$regex': query, '$options': 'i'}}
+      ]}).lean()
+    }
+    else {
+      return await Session.find({'$or': [
+        {'name': {'$regex': query, '$options': 'i'}},
+        {'hostName': {'$regex': query, '$options': 'i'}}
+      ]})
+    }
   }).catch(error => {console.log(error)});
   return sessions;
 }

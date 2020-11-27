@@ -24,7 +24,6 @@ class CollectionScreen extends React.Component{
     }
 
     componentDidMount = () => {
-        console.log('CollectionScreen Mounted')
         this.fetchCollection();
     }
 
@@ -102,12 +101,10 @@ class CollectionScreen extends React.Component{
 
 
     onEditName = () => {
-        console.log("EDIT NAME")
         if (this.state.collectionName.trim() !== ''){
             this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.props.match.params.collectionId, 
             {name: this.state.collectionName}, (function(res, data){
                 if (data.success){
-                    console.log('Editing Name Success')
                     this.hideEditNameModal();
                     this.fetchCollection();
                 }
@@ -116,7 +113,6 @@ class CollectionScreen extends React.Component{
     }
 
     onEditDescription = () => {
-        console.log("EDIT DESCRIPTION")
         if (this.state.collectionName.trim() !== ''){
             this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.props.match.params.collectionId, 
             {description: this.state.collectionDescription}, (function(res, data){
@@ -145,7 +141,6 @@ class CollectionScreen extends React.Component{
     }
 
     onPressDeleteSong = (song) => {
-        console.log("DELETE SONG")
         let newSongList = [];
         for (let s of this.state.collection.songList){
             if (s !== song._id){
@@ -200,7 +195,6 @@ class CollectionScreen extends React.Component{
     }
 
     fetchCollection = () => {
-        console.log("FETCH COLLECTION")
         if (this.props.match.params.collectionId) {
             this.props.axiosWrapper.axiosGet('/api/collection/' + this.props.match.params.collectionId, (function(res, data) {
                 if (data.success) {

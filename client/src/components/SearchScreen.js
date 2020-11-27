@@ -168,6 +168,15 @@ class SearchScreen extends React.Component {
         }
     }
 
+    handleGoToResultCreator = (obj, e) => {
+        if (obj.type === "session") {
+            this.props.history.push('/main/profile/' + obj.hostId)
+        }
+        else if (obj.type === "collection") {
+            this.props.history.push('/main/profile/' + obj.ownerId)
+        }
+    }
+
     handlePlayItem = (obj, e) => {
         if (obj.type === "song") {
             this.props.playVideo(obj._id)
@@ -494,7 +503,7 @@ class SearchScreen extends React.Component {
                                             }
                                             <Card.Body className="search-screen-results-category-list-item-body">
                                                 <div className="search-screen-results-category-list-item-body-title ellipsis-multi-line-overflow subtitle color-jet" onClick={this.handleGoToResultItem.bind(this, obj)}>{obj.type === "user" ? obj.username : obj.name}</div>
-                                                <div className="search-screen-results-category-list-item-body-creator ellipsis-multi-line-overflow body-text color-jet">{obj.type === "session" ? obj.hostName : obj.creator}</div>
+                                                <div className="search-screen-results-category-list-item-body-creator ellipsis-multi-line-overflow body-text color-jet" onClick={this.handleGoToResultCreator.bind(this, obj)}>{obj.type === "session" ? obj.hostName : obj.type === "collection" ? obj.ownerName : obj.type === "song" ? obj.creator : ""}</div>
                                                 {obj.type === "user" && obj.live === true ? 
                                                     <Card.Text className="body-text color-accented">{obj.sessions[0].name}</Card.Text> :
                                                     <div></div>

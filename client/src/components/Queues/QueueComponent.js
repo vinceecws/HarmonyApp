@@ -9,13 +9,13 @@ class QueueComponent extends React.Component{
         
         QueueList = QueueEntries.map(item => <QueueEntry
             artist={item.creator}
-            title={item.name}
+            title={item.name} 
         /> );
                
         
         
     	return(
-    		<div className='list-group list-group-sessionScreen'>
+    		<div className='list-group list-group-sessionScreen' style={{width: '100%', minWidth: '150px'}}>
     			{QueueList}
         	</div>
         );
