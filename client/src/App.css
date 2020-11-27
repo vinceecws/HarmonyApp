@@ -303,6 +303,8 @@ body, html {
   overflow: hidden;
 }
 
+
+
 .container.show .innerBox {
   display: block;
 }
@@ -519,9 +521,28 @@ body, html {
 }
 
 #player-song-title div:hover {
-  overflow: visible;
   text-decoration: underline;
   cursor: default;
+}
+
+.collection-song-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  width: 120px;
+  text-align: left;
+  overflow: hidden;
+  color: lightgrey;
+  font-family: BalsamiqSans;
+  --max-lines: 1;
+  --lh: 1.4rem;
+}
+
+
+.collection-song-title:hover {
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 #player-controls {

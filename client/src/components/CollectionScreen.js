@@ -124,19 +124,18 @@ class CollectionScreen extends React.Component{
         }
     }
 
-    onPressPlaySong = (song_ind) => {
-        let futureQueue = this.state.collection.songList.slice(song_ind + 1);
-        this.props.playVideo(this.state.collection.songList[song_ind]);
+    onPressPlaySong = (song, index) => {
+        let futureQueue = this.state.collection.songList.slice(index + 1);
+        this.props.playVideo(song);
         for (let s of futureQueue){
-            this.props.dataAPI.fetchVideoById(s, true).then((song) => {
-                if (song.status === 403){
+            this.props.dataAPI.fetchVideoById(s, true).then((s) => {
+                if (s.status === 403){
                     console.log('Youtube Query Quota Exceeded');
                 }
                 else{
-                    this.props.queue.addSongToFutureQueue(song);
+                    this.props.queue.addSongToFutureQueue(s);
                 }  
             })
-            
         }
     }
 
@@ -189,11 +188,6 @@ class CollectionScreen extends React.Component{
         }).bind(this), true)
     }
 
-    //Update later
-    favoritedSong = (song) => {
-        return this.state.favorited;
-    }
-
     fetchCollection = () => {
         if (this.props.match.params.collectionId) {
             this.props.axiosWrapper.axiosGet('/api/collection/' + this.props.match.params.collectionId, (function(res, data) {
@@ -235,7 +229,8 @@ class CollectionScreen extends React.Component{
     }
 
     getDurationString(duration){
-        return String(duration / 60).padStart(2, '0') + ':' + String(duration % 60)
+        console.log(duration);
+        //return String(duration / 60).padStart(2, '0') + ':' + String(duration % 60)
     }
 
     getDateAdded(date){
@@ -300,15 +295,17 @@ class CollectionScreen extends React.Component{
     //reorder songlist (persistant)
     handleOnDragEnd = (result) =>{
         console.log(result);
-        let newSongList = this.state.collection.songList;
-        newSongList.splice(result.source.index, 1);
-        newSongList.splice(result.destination.index, 0, result.draggableId);
-        this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.props.match.params.collectionId, 
-        {songList: newSongList}, (function(res, data){
-            if(data.success){
-                this.fetchCollection();
-            }
-        }).bind(this), true)
+        if (result.destination !== null && result.source !== null){
+            let newSongList = this.state.collection.songList;
+            newSongList.splice(result.source.index, 1);
+            newSongList.splice(result.destination.index, 0, result.draggableId);
+            this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.props.match.params.collectionId, 
+            {songList: newSongList}, (function(res, data){
+                if(data.success){
+                    this.fetchCollection();
+                }
+            }).bind(this), true)
+        }
     }
 
     render(){
@@ -350,7 +347,7 @@ class CollectionScreen extends React.Component{
 
                     {/* Header */}
                     <div className='row' style={{backgroundColor: 'grey', border: '2px solid black', }}>
-                        <div className='col' style={{maxWidth: '20%', paddingTop: '10px'}}>
+                        <div className='col' style={{maxWidth: '20%', paddingTop: '10px', paddingBottom: '10px'}}>
                             <img src={icon_music_1} style={{maxHeight: '100px'}}></img>
                         </div>
 
@@ -399,12 +396,10 @@ class CollectionScreen extends React.Component{
                                         </Dropdown.Item>
                                     </Dropdown.Menu>
                                 </Dropdown>
-                                <Button className="player-control-button" onClick={this.onPressPlayQueue}>
-                                    <Image className="player-control-button-icon" src={this.state.playing ? icon_pause_3 : icon_play_2}  style={{minHeight: '40px', minWidth: '40px'}} roundedCircle/>
-                                </Button>
+                                
                             </div>
                             <div className='row'>
-                                <Button id='player-song-favorite-button' style={{position: 'relative'}}>
+                                <Button id='player-song-favorite-button' style={{position: 'relative',  paddingTop: '5%'}}>
                                     <Image className={'player-song-favorite-button-icon'} onClick={this.onPressLikeCollection} src={icon_like} 
                                             style={{minHeight: '40px', minWidth: '40px', marginTop: '20px', backgroundColor: this.state.favorited ? '#00e400' : 'transparent'}} roundedCircle/>
                                 </Button>
@@ -433,10 +428,10 @@ class CollectionScreen extends React.Component{
                                         {(provided) => 
                                         (<li className="collection-page-rows" style={{minWidth: '90vw'}} {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
                                             <div style={{display: 'flex', alignItems: 'center'}}>
-                                                <div id='player-song-title' style={{display: 'inline-block', marginLeft: '15px', marginRight: '2.5%', width: '27%'}}><div>{e.name}</div></div>
-                                                <div id='player-song-title' style={{display: 'inline-block', width: '20%', marginRight: '2%'}}><div>{e.creator}</div></div>
-                                                <div className='collection-page-text' style={{display: 'inline-block', marginRight: '10.5%'}}>{d => this.getDateAdded(d)}</div>
-                                                <div className='collection-page-text' style={{display: 'inline-block', marginRight: '5%'}}>{d => this.getDurationString(d)} </div>
+                                                <div className='collection-song-title ellipsis-multi-line-overflow'  style={{display: 'inline-block', marginLeft: '15px', marginRight: '2.5%', width: '27%'}}><div>{e.name}</div></div>
+                                                <div className='collection-song-title ellipsis-multi-line-overflow' style={{display: 'inline-block', width: '20%', marginRight: '2%'}}><div>{e.creator}</div></div>
+                                                <div className='collection-page-text' style={{display: 'inline-block', marginRight: '10.5%'}}>{() => this.getDateAdded()}</div>
+                                                <div className='collection-page-text' style={{display: 'inline-block', marginRight: '5%'}}>{() => this.getDurationString(e.duration, i)} </div>
                                                 <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}}>
                                                     {/* Fix during implementation */}
                                                     <Image className='player-song-favorite-button-icon' src={icon_like} 
