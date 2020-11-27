@@ -573,7 +573,7 @@ body, html {
 }
 
 #player-song-favorite-button {
-  background: transparent !important;
+  background: transparent;
   border: none !important;
   box-shadow: none !important;
   position: absolute;
