@@ -921,7 +921,7 @@ apiRouter.post('/collection/updateUser/:id', async (req, res) => {
         return res.status(200).json({
             message: 'User Updated',
             statusCode: 200,
-            data: {user: updatedUser},
+            data: {user: stripUser(updatedUser)},
             success: true
         })
     }

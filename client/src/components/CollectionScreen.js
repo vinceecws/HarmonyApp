@@ -4,6 +4,7 @@ import {icon_music_1, icon_like, icon_play_2, icon_pause_3, icon_add_3,
     icon_up_arrow, icon_down_arrow, menu_button_white, delete_button_white} from '../graphics'
 import { Image, Button, Dropdown, ButtonGroup, Modal } from 'react-bootstrap';
 import {Droppable, DragDropContext, Draggable} from 'react-beautiful-dnd'
+const _ = require('lodash');
 
 
 class CollectionScreen extends React.Component{
@@ -20,7 +21,6 @@ class CollectionScreen extends React.Component{
             collectionDescription: '',
             playing: false,
             favorited: false,
-            favoritedSong: false
         }
     }
 
@@ -34,17 +34,21 @@ class CollectionScreen extends React.Component{
                 user: this.props.user
             })
         }
+        console.log('Component user updated: ', this.state.user);
     }
 
     onPressLikeCollection = () =>{
         if (this.state.user !== null){
             let favoritedCollections = this.state.user.likedCollections;
+            let numLikes = this.state.collection.likes;
             if (!this.state.favorited){
+                numLikes++;
                 this.state.user.likedCollections === undefined ? 
                             favoritedCollections = [this.state.collection._id] :
                             favoritedCollections.push(this.state.collection._id);
             }
             else if (this.state.user.likedCollections !== undefined){
+                if (numLikes > 0){numLikes--;}
                 favoritedCollections = [];
                 for (let c of this.state.user.likedCollections){
                     if (c !== this.props.match.params.collectionId){
@@ -52,15 +56,25 @@ class CollectionScreen extends React.Component{
                     }
                 }
             }
-            
-            this.props.axiosWrapper.axiosPost('/api/collection/updateUser/' + this.state.user._id,
-            {likedCollections: favoritedCollections}, (function(res, data){
+
+            //update collection
+            this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/'+ this.props.match.params.collectionId,
+            {likes: numLikes}, (function(res, data){
                 if (data.success){
-                    this.props.handleUpdateUser(data.data.user);
-                    this.setState({
-                        favorited: !this.state.favorited});
+                    console.log('Updated collection');
+
+                    //update user
+                    this.props.axiosWrapper.axiosPost('/api/collection/updateUser/' + this.state.user._id,
+                    {likedCollections: favoritedCollections}, (function(res, data){
+                        if (data.success){
+                            console.log('Updated user: ', data.data.user);
+                            this.props.handleUpdateUser(data.data.user);
+                            this.fetchCollection();
+                        }
+                    }).bind(this), true);
                 }
             }).bind(this), true);
+
         }
     }
 
@@ -111,19 +125,18 @@ class CollectionScreen extends React.Component{
         }
     }
 
-    onPressPlaySong = (song_ind) => {
-        let futureQueue = this.state.collection.songList.slice(song_ind + 1);
-        this.props.playVideo(this.state.collection.songList[song_ind]);
+    onPressPlaySong = (song, index) => {
+        let futureQueue = this.state.collection.songList.slice(index + 1);
+        this.props.playVideo(song);
         for (let s of futureQueue){
-            this.props.dataAPI.fetchVideoById(s, true).then((song) => {
-                if (song.status === 403){
+            this.props.dataAPI.fetchVideoById(s, true).then((s) => {
+                if (s.status === 403){
                     console.log('Youtube Query Quota Exceeded');
                 }
                 else{
-                    this.props.queue.addSongToFutureQueue(song);
+                    this.props.queue.addSongToFutureQueue(s);
                 }  
             })
-            
         }
     }
 
@@ -146,25 +159,34 @@ class CollectionScreen extends React.Component{
     }
 
     onPressLikeSong = (song) => {
-        this.setState({favoritedSong: !this.state.favoritedSong});
         let favedSongs = this.state.user.likedSongs;
-        if(favedSongs === undefined){
-            favedSongs = [song.id];
+        if (song.favorited){
+            song.favorited = false;
+            favedSongs = [];
+            for(let s of this.state.user.likedSongs){
+                if (s !== song._id){
+                    favedSongs.push(s);
+                }
+            }
         }
         else{
-            favedSongs.push(song.id);
+            song.favorited = true;
+            if(favedSongs === undefined){
+                favedSongs = [song._id];
+            }
+            else{
+                favedSongs.push(song._id);
+            }
         }
+        
         this.props.axiosWrapper.axiosPost('/api/collection/updateUser/' + this.state.user._id, 
         {likedSongs: favedSongs}, (function(res, data){
             if(data.success){
-                this.props.handeUpdateUser(data.data.user);
+                this.props.handleUpdateUser(data.data.user);
+                console.log('Updated favorited songs: ', data.data.user.likedSongs)
+                this.fetchCollection();
             }
         }).bind(this), true)
-    }
-
-    //Update later
-    favoritedSong = (song) => {
-        return this.state.favorited;
     }
 
     fetchCollection = () => {
@@ -208,7 +230,8 @@ class CollectionScreen extends React.Component{
     }
 
     getDurationString(duration){
-        return String(duration / 60).padStart(2, '0') + ':' + String(duration % 60)
+        console.log(duration);
+        //return String(duration / 60).padStart(2, '0') + ':' + String(duration % 60)
     }
 
     getDateAdded(date){
@@ -267,9 +290,37 @@ class CollectionScreen extends React.Component{
                 }
             }
         } 
+        return false;
+    }
+
+    //reorder songlist (persistant)
+    handleOnDragEnd = (result) =>{
+        console.log(result);
+        if (result.destination !== null && result.source !== null){
+            //update frontend
+            /*
+            let newStateSongList = _.cloneDeep(this.state.songList);
+            let movedSong = newStateSongList[result.source];
+            newStateSongList.splice(result.source.index, 1);
+            newStateSongList.splice(result.destination.index, 0, movedSong);
+            this.setState({songList: newStateSongList});
+            */
+
+            //update backend
+            let newSongList = this.state.collection.songList;
+            newSongList.splice(result.source.index, 1);
+            newSongList.splice(result.destination.index, 0, result.draggableId);
+            this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.props.match.params.collectionId, 
+            {songList: newSongList}, (function(res, data){
+                if(data.success){
+                    this.fetchCollection();
+                }
+            }).bind(this), true)
+        }
     }
 
     render(){
+        console.log('Current State: ', this.state);
         if (this.state.loading) {
             return <Spinner/>
         }
@@ -307,7 +358,7 @@ class CollectionScreen extends React.Component{
 
                     {/* Header */}
                     <div className='row' style={{backgroundColor: 'grey', border: '2px solid black', }}>
-                        <div className='col' style={{maxWidth: '20%', paddingTop: '10px'}}>
+                        <div className='col' style={{maxWidth: '20%', paddingTop: '10px', paddingBottom: '10px'}}>
                             <img src={icon_music_1} style={{maxHeight: '100px'}}></img>
                         </div>
 
@@ -349,16 +400,19 @@ class CollectionScreen extends React.Component{
                                                 Edit Description
                                             </Button>
                                         </Dropdown.Item>
+                                        <Dropdown.Item>
+                                            <Button onClick={() => {}}>
+                                                Delete Collection
+                                            </Button>
+                                        </Dropdown.Item>
                                     </Dropdown.Menu>
                                 </Dropdown>
-                                <Button className="player-control-button" onClick={this.onPressPlayQueue}>
-                                    <Image className="player-control-button-icon" src={this.state.playing ? icon_pause_3 : icon_play_2}  style={{minHeight: '40px', minWidth: '40px'}} roundedCircle/>
-                                </Button>
+                                
                             </div>
                             <div className='row'>
-                                <Button id='player-song-favorite-button' style={{position: 'relative'}} onClick={this.onPressLikeCollection}>
-                                    <Image className={this.state.favorited ? 'player-song-favorite-button-icon-on' : 'player-song-favorite-button-icon'} src={icon_like} 
-                                            style={{minHeight: '40px', minWidth: '40px', marginTop: '20px'}} onClick={this.toggleFavorite} roundedCircle/>
+                                <Button id='player-song-favorite-button' style={{position: 'relative',  paddingTop: '5%'}}>
+                                    <Image className={'player-song-favorite-button-icon'} onClick={this.onPressLikeCollection} src={icon_like} 
+                                            style={{minHeight: '40px', minWidth: '40px', marginTop: '20px', backgroundColor: this.state.favorited ? '#00e400' : 'transparent'}} roundedCircle/>
                                 </Button>
                             </div>
                         </div>
@@ -375,29 +429,38 @@ class CollectionScreen extends React.Component{
 
                     {/* Songs */}
                     <div className='row'>
-                        <DragDropContext onDragEnd={() => {}}> 
-                        <ul style={{listStyleType: 'none', padding: '0', border: '2px solid black'}}>
-                        {this.state.songList.length > 0 ? 
-                        (this.state.songList.map((e, i) => 
-                            <li className="collection-page-rows" style={{minWidth: '90vw'}}>
-                                <div style={{display: 'flex', alignItems: 'center'}}>
-                                    <div id='player-song-title' style={{display: 'inline-block', marginLeft: '15px', marginRight: '2.5%', width: '27%'}}><div>{e.name}</div></div>
-                                    <div id='player-song-title' style={{display: 'inline-block', width: '20%', marginRight: '2%'}}><div>{e.creator}</div></div>
-                                    <div className='collection-page-text' style={{display: 'inline-block', marginRight: '10.5%'}}>{d => this.getDateAdded(d)}</div>
-                                    <div className='collection-page-text' style={{display: 'inline-block', marginRight: '5%'}}>{d => this.getDurationString(d)} </div>
-                                    <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}}>
-                                        {/* Fix during implementation */}
-                                        <Image className='player-song-favorite-button-icon' src={icon_like} 
-                                                style={{maxHeight: '25px', maxWidth: '25px'}} onClick={() => this.onPressLikeSong(e)} roundedCircle/>
-                                    </Button>
-                                    <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}} 
-                                            onClick={() => this.onPressDeleteSong(e)}>
-                                        <img src={delete_button_white} style={{maxHeight: '25px', maxWidth: '25px'}}></img>
-                                    </Button>
-                                </div>
-                            </li>)) : <div></div>
-                        }
-                        </ul>
+                        <DragDropContext onDragEnd={this.handleOnDragEnd} style={{minWidth: '100%'}}> 
+                            <Droppable droppableId={this.state.collection.name}>        
+                                {(provided) =>                 
+                                (<ul style={{listStyleType: 'none', padding: '0', border: '2px solid black', minWidth: '100%'}} {...provided.droppableProps} ref={provided.innerRef}>
+                                {this.state.songList.length > 0 ? 
+                                (this.state.songList.map((e, i) => 
+                                    (<Draggable key={e._id} draggableId={e._id} index={i} style={{minWidth: '100%'}}>
+                                        {(provided) => 
+                                        (<li className="collection-page-rows" style={{minWidth: '90vw'}} {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
+                                            <div style={{display: 'flex', alignItems: 'center'}}>
+                                                <div className='collection-song-title ellipsis-multi-line-overflow'  style={{display: 'inline-block', marginLeft: '15px', marginRight: '2.5%', width: '27%'}}><div>{e.name}</div></div>
+                                                <div className='collection-song-title ellipsis-multi-line-overflow' style={{display: 'inline-block', width: '20%', marginRight: '2%'}}><div>{e.creator}</div></div>
+                                                <div className='collection-page-text' style={{display: 'inline-block', marginRight: '10.5%'}}>{() => this.getDateAdded()}</div>
+                                                <div className='collection-page-text' style={{display: 'inline-block', marginRight: '5%'}}>{() => this.getDurationString(e.duration, i)} </div>
+                                                <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}}>
+                                                    {/* Fix during implementation */}
+                                                    <Image className='player-song-favorite-button-icon' src={icon_like} 
+                                                            style={{maxHeight: '25px', maxWidth: '25px', backgroundColor: e.favorited ? '#00e400' : 'transparent'}} 
+                                                            onClick={() => this.onPressLikeSong(e)} roundedCircle/>
+                                                </Button>
+                                                <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}} 
+                                                        onClick={() => this.onPressDeleteSong(e)}>
+                                                    <img src={delete_button_white} style={{maxHeight: '25px', maxWidth: '25px'}}></img>
+                                                </Button>
+                                            </div>
+                                        </li>)}
+                                    </Draggable>)
+                                    )
+                                ) : <div></div>}
+                                {provided.placeholder}
+                                </ul>)}
+                            </Droppable>
                         </DragDropContext>
                     </div>
                 </div>
