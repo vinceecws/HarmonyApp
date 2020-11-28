@@ -226,48 +226,70 @@ class ProfileScreen extends React.Component{
 	}
 
 	fetchUserData = () => {
-		if (this.state.profileUser && this.state.profileUser.sessions.length > 0) {
-			this.props.axiosWrapper.axiosGet('/api/profile/' + this.props.match.params.userId + '/sessions', (function(res, data) {
-				if (data.success) {
-					this.setState({
-						sessions: data.data.sessions,
-						sessions_loading: false
-					})
-				}
-			}).bind(this), true)
-		}
-
-		if (this.state.profileUser && this.state.profileUser.playlists.length > 0) {
-			this.props.axiosWrapper.axiosGet('/api/profile/' + this.props.match.params.userId + '/playlists', (function(res, data) {
-				if (data.success) {
-					this.setState({
-						playlists: data.data.playlists,
-						playlists_loading: false
-					})
-				}
-			}).bind(this), true)
-		}
-
-		if (this.state.profileUser && this.state.profileUser.likedSongs.length > 0) {
-			Promise.all(this.state.profileUser.likedSongs.map((songId) => {
-				return this.props.fetchVideoById(songId, true)
-			})).then((likedSongs) => {
+		if (this.state.profileUser) {
+			if (this.state.profileUser.sessions.length > 0) {
+				this.props.axiosWrapper.axiosGet('/api/profile/' + this.props.match.params.userId + '/sessions', (function(res, data) {
+					if (data.success) {
+						this.setState({
+							sessions: data.data.sessions,
+							sessions_loading: false
+						})
+					}
+				}).bind(this), true)
+			}
+			else if (this.state.sessions_loading) {
 				this.setState({
-					likedSongs: likedSongs,
+					sessions_loading: false
+				})
+			}
+
+			if (this.state.profileUser.playlists.length > 0) {
+				this.props.axiosWrapper.axiosGet('/api/profile/' + this.props.match.params.userId + '/playlists', (function(res, data) {
+					if (data.success) {
+						this.setState({
+							playlists: data.data.playlists,
+							playlists_loading: false
+						})
+					}
+				}).bind(this), true)
+			}
+			else if (this.state.playlists_loading) {
+				this.setState({
+					playlists_loading: false
+				})
+			}
+
+			if (this.state.profileUser.likedSongs.length > 0) {
+				Promise.all(this.state.profileUser.likedSongs.map((songId) => {
+					return this.props.fetchVideoById(songId, true)
+				})).then((likedSongs) => {
+					this.setState({
+						likedSongs: likedSongs,
+						likedSongs_loading: false
+					})
+				})
+			}
+			else if (this.state.likedSongs_loading) {
+				this.setState({
 					likedSongs_loading: false
 				})
-			})
-		}
+			}
 
-		if (this.state.profileUser && this.state.profileUser.likedCollections.length > 0) {
-			this.props.axiosWrapper.axiosGet('/api/profile/' + this.props.match.params.userId + '/likedCollections', (function(res, data) {
-				if (data.success) {
-					this.setState({
-						likedCollections: data.data.likedCollections,
-						likedCollections_loading: false
-					})
-				}
-			}).bind(this), true)
+			if (this.state.profileUser.likedCollections.length > 0) {
+				this.props.axiosWrapper.axiosGet('/api/profile/' + this.props.match.params.userId + '/likedCollections', (function(res, data) {
+					if (data.success) {
+						this.setState({
+							likedCollections: data.data.likedCollections,
+							likedCollections_loading: false
+						})
+					}
+				}).bind(this), true)
+			}
+			else if (this.state.likedCollections_loading) {
+				this.setState({
+					likedCollections_loading: false
+				})
+			}
 		}
 	}
 
@@ -314,7 +336,37 @@ class ProfileScreen extends React.Component{
 						</div>
 					</div>
 					<div id='profile-screen-bottom-container'>
-					{ this.state.profileUser.sessions !== undefined && this.state.profileUser.sessions.length > 0 ?
+					{
+						
+						[this.state.profileUser.sessions,
+						this.state.profileUser.playlists,
+						this.state.profileUser.likedSongs,
+						this.state.profileUser.likedCollections
+						].every(arr => arr.length === 0) ?
+
+						<div className="profile-screen-empty-notice-container">
+						{
+							this.state.user && (this.state.user._id === this.state.profileUser._id) ?
+							<div className="profile-screen-empty-notice-container-box">
+								<div className="profile-screen-empty-notice subtitle color-accented">
+									Your profile seems to be empty.
+								</div>
+								<div className="profile-screen-empty-notice-create-collection-button-container">
+									<Button className="profile-screen-empty-notice-create-collection-button bg-color-harmony" onClick={this.handleShowCreateCollectionModal}>
+										<div className="subtitle color-accented">
+											Create A Playlist
+										</div>
+									</Button>
+								</div>
+							</div> :
+							<div className="profile-screen-empty-notice subtitle color-accented">
+								Looks like {this.state.profileUser.username} has not customized their profile yet.<br/>
+							</div>
+						} 
+						</div> :
+						<div>
+						{ 
+							this.state.profileUser.sessions && (this.state.profileUser.sessions.length > 0) ?
 							<div>	
 								<div className='row' style={{padding:'1em'}}>
 									<div style={{color: 'white', fontSize:'35px'}}>
@@ -342,78 +394,83 @@ class ProfileScreen extends React.Component{
 								</div>
 							</div> :
 							<div></div>
-					}
-					<div>	
-						<div className='row' style={{padding:'1em'}}>
-							<div style={{color: 'white', fontSize:'35px'}}>
-								{this.state.profileUser.username}'s Playlists
-							</div>
-						</div>
-						<div className='row' style={{padding:'1em'}}>
-							<div className='card-deck profile-screen-category-container'>
-								{
-									this.state.playlists_loading ? 
-									<Spinner/> :
-									this.state.playlists.map((playlist, playlist_ind) => 
-										<div key={playlist_ind} className='card profile-screen-category-item-card'>
-											<div className="profile-screen-category-item-card-image-overlay-trigger">
-												<div className="profile-screen-category-item-card-image-overlay-container">
-													<Dropdown className="profile-screen-category-item-card-image-overlay-dropdown" as={ButtonGroup}>
-														<Dropdown.Toggle split className="profile-screen-category-item-card-image-overlay-dropdown-button no-caret">
-															<Image className="profile-screen-category-item-card-image-overlay-dropdown-button-icon" src={menu_button_white} />
-														</Dropdown.Toggle>
-														<Dropdown.Menu className="profile-screen-category-item-card-image-overlay-dropdown-menu">
-															<Dropdown.Item>
-																<Button onClick={this.handleAddCollectionToFutureQueue.bind(this, playlist)}>
-																	Add To Queue
-																</Button>
-															</Dropdown.Item>
-															{
-																this.props.auth ?
-																<div>
+						}
+						{
+							this.state.profileUser.playlists && (this.state.profileUser.playlists.length > 0 || (this.state.profileUser._id === this.state.user._id)) ?
+							<div>	
+								<div className='row' style={{padding:'1em'}}>
+									<div style={{color: 'white', fontSize:'35px'}}>
+										{this.state.profileUser.username}'s Playlists
+									</div>
+								</div>
+								<div className='row' style={{padding:'1em'}}>
+									<div className='card-deck profile-screen-category-container'>
+										{
+											this.state.playlists_loading ? 
+											<Spinner/> :
+											this.state.playlists.map((playlist, playlist_ind) => 
+												<div key={playlist_ind} className='card profile-screen-category-item-card'>
+													<div className="profile-screen-category-item-card-image-overlay-trigger">
+														<div className="profile-screen-category-item-card-image-overlay-container">
+															<Dropdown className="profile-screen-category-item-card-image-overlay-dropdown" as={ButtonGroup}>
+																<Dropdown.Toggle split className="profile-screen-category-item-card-image-overlay-dropdown-button no-caret">
+																	<Image className="profile-screen-category-item-card-image-overlay-dropdown-button-icon" src={menu_button_white} />
+																</Dropdown.Toggle>
+																<Dropdown.Menu className="profile-screen-category-item-card-image-overlay-dropdown-menu">
+																	<Dropdown.Item>
+																		<Button onClick={this.handleAddCollectionToFutureQueue.bind(this, playlist)}>
+																			Add To Queue
+																		</Button>
+																	</Dropdown.Item>
 																	{
-																		this.state.user && !this.state.user.likedCollections.includes(playlist._id) ? 
-																		<Dropdown.Item>
-																			<Button onClick={this.handleAddCollectionToFavorites.bind(this, playlist._id)}>
-																				Save To Favorites
-																			</Button>
-																		</Dropdown.Item> :
-																		<Dropdown.Item>
-																			<Button onClick={this.handleRemoveCollectionFromFavorites.bind(this, playlist._id)}>
-																				Remove From Favorites
-																			</Button>
-																		</Dropdown.Item>
+																		this.props.auth ?
+																		<div>
+																			{
+																				this.state.user && !this.state.user.likedCollections.includes(playlist._id) ? 
+																				<Dropdown.Item>
+																					<Button onClick={this.handleAddCollectionToFavorites.bind(this, playlist._id)}>
+																						Save To Favorites
+																					</Button>
+																				</Dropdown.Item> :
+																				<Dropdown.Item>
+																					<Button onClick={this.handleRemoveCollectionFromFavorites.bind(this, playlist._id)}>
+																						Remove From Favorites
+																					</Button>
+																				</Dropdown.Item>
+																			}
+																		</div>
+																		: <div></div>
 																	}
-																</div>
-																: <div></div>
-															}
-														</Dropdown.Menu>
-													</Dropdown>
-													<Button className="profile-screen-category-item-card-image-overlay-play-button" onClick={this.handlePlayItem.bind(this, playlist)}>
-														<Image className="profile-screen-category-item-card-image-overlay-play-button-icon" src={icon_play_white_1} roundedCircle/>
-													</Button>
+																</Dropdown.Menu>
+															</Dropdown>
+															<Button className="profile-screen-category-item-card-image-overlay-play-button" onClick={this.handlePlayItem.bind(this, playlist)}>
+																<Image className="profile-screen-category-item-card-image-overlay-play-button-icon" src={icon_play_white_1} roundedCircle/>
+															</Button>
+														</div>
+														<Card.Img className="profile-screen-category-item-card-image" src={playlist.image ? playlist.image : icon_playlist_2} />
+													</div>
+													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
+														<h1 className="card-title profile-screen-category-item-card-name ellipsis-multi-line-overflow subtitle color-jet" onClick={this.handleGoToItem.bind(this, playlist)}>{playlist.name}</h1>
+														<p className="profile-screen-category-item-card-creator ellipsis-multi-line-overflow body-text color-jet">{playlist.ownerName}</p>
+														<p className="profile-screen-category-item-card-likes">{this.formatCount(playlist.likes)} <img src={icon_like} className='profile-screen-category-item-card-likes-icon'/></p>
+													</div>
 												</div>
-												<Card.Img className="profile-screen-category-item-card-image" src={playlist.image ? playlist.image : icon_playlist_2} />
-											</div>
-											<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
-												<h1 className="card-title profile-screen-category-item-card-name ellipsis-multi-line-overflow subtitle color-jet" onClick={this.handleGoToItem.bind(this, playlist)}>{playlist.name}</h1>
-												<p className="profile-screen-category-item-card-creator ellipsis-multi-line-overflow body-text color-jet">{playlist.ownerName}</p>
-												<p className="profile-screen-category-item-card-likes">{this.formatCount(playlist.likes)} <img src={icon_like} className='profile-screen-category-item-card-likes-icon'/></p>
-											</div>
-										</div>
-									)
-								}
-								{
-									this.state.user && (this.state.user._id === this.state.profileUser._id) ? //Viewing own profile
-									<div className='card profile-screen-create-collection-card' onClick={this.handleShowCreateCollectionModal}>
-										<img className="profile-screen-create-collection-card-img" src={plus_button}/>
-									</div> :
-									<div></div>
-								}
-							</div>
-						</div>
-					</div>
-						{ this.state.profileUser.likedSongs !== undefined && this.state.profileUser.likedSongs.length > 0 ?
+											)
+										}
+										{
+											this.state.user && (this.state.user._id === this.state.profileUser._id) ? //Viewing own profile
+											<div className='card profile-screen-create-collection-card' onClick={this.handleShowCreateCollectionModal}>
+												<img className="profile-screen-create-collection-card-img" src={plus_button}/>
+											</div> :
+											<div></div>
+										}
+									</div>
+								</div>
+							</div> :
+							<div></div>
+						}
+						{ 
+							this.state.profileUser.likedSongs && (this.state.profileUser.likedSongs.length > 0) ?
 							<div>
 								<div className='row' style={{padding:'1em'}}>
 									<div style={{color: 'white', fontSize:'35px'}}>
@@ -428,67 +485,67 @@ class ProfileScreen extends React.Component{
 											this.state.likedSongs.map((song, song_ind) => 
 												<div key={song_ind} className='card profile-screen-category-item-card'>
 													<div className="profile-screen-category-item-card-image-overlay-trigger">
-                                                        <div className="profile-screen-category-item-card-image-overlay-container">
-                                                            <Dropdown className="profile-screen-category-item-card-image-overlay-dropdown" as={ButtonGroup}>
-                                                                <Dropdown.Toggle split className="profile-screen-category-item-card-image-overlay-dropdown-button no-caret">
-                                                                    <Image className="profile-screen-category-item-card-image-overlay-dropdown-button-icon" src={menu_button_white} />
-                                                                </Dropdown.Toggle>
-                                                                <Dropdown.Menu className="profile-screen-category-item-card-image-overlay-dropdown-menu">
-                                                                    <Dropdown.Item>
-                                                                        <Button onClick={this.props.queue.addSongToFutureQueue.bind(this, song)}>
-                                                                            Add To Queue
-                                                                        </Button>
-                                                                    </Dropdown.Item>
-                                                                    {
-                                                                        this.props.auth ?
-                                                                        <div>
-                                                                            <DropdownItem onMouseEnter={this.handleMouseEnterDropdown} onMouseLeave={this.handleMouseLeaveDropdown}>
-                                                                                <DropdownButton
-                                                                                    as={ButtonGroup}
-                                                                                    key="right"
-                                                                                    className="profile-screen-category-item-card-image-overlay-dropdown-menu-collection"
-                                                                                    drop="right"
-                                                                                    variant="secondary"
-                                                                                    title="Add To Playlist"
-                                                                                    show={this.state.showDropdown}
-                                                                                >
-                                                                                    {
-                                                                                        this.state.playlists.map((playlist, playlist_ind) => 
-                                                                                            <Dropdown.Item key={playlist_ind} onClick={this.handleAddSongToCollection.bind(this, song._id, playlist._id)}>{playlist.name}</Dropdown.Item>
-                                                                                        )
-                                                                                    }
-                                                                                    {
-                                                                                        this.state.playlists.length > 0 ?
-                                                                                        <Dropdown.Divider /> :
-                                                                                        <div></div>
-                                                                                    }
-                                                                                    <Dropdown.Item onClick={this.handleShowCreateCollectionModal.bind(this, song._id)}>Create Playlist</Dropdown.Item>
-                                                                                </DropdownButton>
-                                                                            </DropdownItem>
-                                                                            {
-                                                                                this.state.user && !this.state.user.likedSongs.includes(song._id) ? 
-                                                                                <Dropdown.Item>
-                                                                                    <Button onClick={this.handleAddSongToFavorites.bind(this, song._id)}>
-                                                                                        Save To Favorites
-                                                                                    </Button>
-                                                                                </Dropdown.Item> :
-                                                                                <Dropdown.Item>
+														<div className="profile-screen-category-item-card-image-overlay-container">
+															<Dropdown className="profile-screen-category-item-card-image-overlay-dropdown" as={ButtonGroup}>
+																<Dropdown.Toggle split className="profile-screen-category-item-card-image-overlay-dropdown-button no-caret">
+																	<Image className="profile-screen-category-item-card-image-overlay-dropdown-button-icon" src={menu_button_white} />
+																</Dropdown.Toggle>
+																<Dropdown.Menu className="profile-screen-category-item-card-image-overlay-dropdown-menu">
+																	<Dropdown.Item>
+																		<Button onClick={this.props.queue.addSongToFutureQueue.bind(this, song)}>
+																			Add To Queue
+																		</Button>
+																	</Dropdown.Item>
+																	{
+																		this.props.auth ?
+																		<div>
+																			<DropdownItem onMouseEnter={this.handleMouseEnterDropdown} onMouseLeave={this.handleMouseLeaveDropdown}>
+																				<DropdownButton
+																					as={ButtonGroup}
+																					key="right"
+																					className="profile-screen-category-item-card-image-overlay-dropdown-menu-collection"
+																					drop="right"
+																					variant="secondary"
+																					title="Add To Playlist"
+																					show={this.state.showDropdown}
+																				>
+																					{
+																						this.state.playlists.map((playlist, playlist_ind) => 
+																							<Dropdown.Item key={playlist_ind} onClick={this.handleAddSongToCollection.bind(this, song._id, playlist._id)}>{playlist.name}</Dropdown.Item>
+																						)
+																					}
+																					{
+																						this.state.playlists.length > 0 ?
+																						<Dropdown.Divider /> :
+																						<div></div>
+																					}
+																					<Dropdown.Item onClick={this.handleShowCreateCollectionModal.bind(this, song._id)}>Create Playlist</Dropdown.Item>
+																				</DropdownButton>
+																			</DropdownItem>
+																			{
+																				this.state.user && !this.state.user.likedSongs.includes(song._id) ? 
+																				<Dropdown.Item>
+																					<Button onClick={this.handleAddSongToFavorites.bind(this, song._id)}>
+																						Save To Favorites
+																					</Button>
+																				</Dropdown.Item> :
+																				<Dropdown.Item>
 																					<Button onClick={this.handleRemoveSongFromFavorites.bind(this, song._id)}>
 																						Remove From Favorites
 																					</Button>
 																				</Dropdown.Item>
-                                                                            }
-                                                                        </div>
-                                                                        : <div></div>
-                                                                    }
-                                                                </Dropdown.Menu>
-                                                            </Dropdown>
-                                                            <Button className="profile-screen-category-item-card-image-overlay-play-button" onClick={this.handlePlayItem.bind(this, song)}>
-                                                                <Image className="profile-screen-category-item-card-image-overlay-play-button-icon" src={icon_play_white_1} roundedCircle/>
-                                                            </Button>
-                                                        </div>
-                                                        <Card.Img className="profile-screen-category-item-card-image" src={song.image_high ? song.image_high : song.image_med ? song.image_med : song.image_std ? song.image_std : song.image ? song.image : icon_music_1} />
-                                                    </div>
+																			}
+																		</div>
+																		: <div></div>
+																	}
+																</Dropdown.Menu>
+															</Dropdown>
+															<Button className="profile-screen-category-item-card-image-overlay-play-button" onClick={this.handlePlayItem.bind(this, song)}>
+																<Image className="profile-screen-category-item-card-image-overlay-play-button-icon" src={icon_play_white_1} roundedCircle/>
+															</Button>
+														</div>
+														<Card.Img className="profile-screen-category-item-card-image" src={song.image_high ? song.image_high : song.image_med ? song.image_med : song.image_std ? song.image_std : song.image ? song.image : icon_music_1} />
+													</div>
 													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
 														<h1 className="card-title profile-screen-category-item-card-name ellipsis-multi-line-overflow subtitle color-jet">{song.name}</h1>
 														<p className="profile-screen-category-item-card-creator ellipsis-multi-line-overflow body-text color-jet">{song.creator}</p>
@@ -502,7 +559,8 @@ class ProfileScreen extends React.Component{
 							</div> : 
 							<div></div>
 						}
-						{ this.state.profileUser.likedCollections !== undefined && this.state.profileUser.likedCollections.length > 0 ?
+						{ 
+							this.state.profileUser.likedCollections && (this.state.profileUser.likedCollections.length > 0) ?
 							<div>
 								<div className='row' style={{padding:'1em'}}>
 									<div style={{color: 'white', fontSize:'35px'}}>
@@ -565,13 +623,12 @@ class ProfileScreen extends React.Component{
 										}
 									</div>
 								</div>
-							</div> 
-							: <div></div>
-							
+							</div> :
+							<div></div>
 						}
-                    		
+						</div>
+					}
 					</div>
-
 				</div>
 			);
 		}

@@ -30,7 +30,7 @@ app.use(session({
     },
     secret: process.env.MONGO_STORE_SESSION_SECRET.split(' '),
     resave: false, 
-    saveUninitialized: true 
+    saveUninitialized: false 
 }))
 
 passport.serializeUser(passportCallbacks.serialize)

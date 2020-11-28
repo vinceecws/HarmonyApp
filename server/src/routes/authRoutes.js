@@ -47,7 +47,6 @@ module.exports = function(passport) {
             }
 
             req.logIn(user, function(err) {
-                req.session.save()
                 if (err) {
                     return next(err)
                 }

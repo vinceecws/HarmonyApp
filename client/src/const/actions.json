@@ -1,18 +1,19 @@
 [    
     /* Chat object */
     {
-        "type": "chat",
+        "class": "chat",
         "timestamp": 0,
         "username": "abcd",
         "userId": "1234",
         "data": {
-            "message": "hello"
+            "action": "text", /* text */
+            "message": "hello" /* text */
         }
     },
 
     /* Player action object */
     {
-        "type": "player",
+        "class": "player",
         "timestamp": 0,
         "username": "abcd",
         "userId": "1234",
@@ -23,7 +24,7 @@
 
     /* Queue action object */
     {
-        "type": "queue",
+        "class": "queue",
         "timestamp": 0,
         "username": "abcd",
         "userId": "1234",
@@ -39,13 +40,14 @@
 
     /* Session action object */
     {
-    	"type": "session",
+    	"class": "session",
     	"timestamp": 0,
         "username": "abcd",
         "userId": "1234",
         "data": {
-        	"action": "end_session", /* end_session, change_name */
-        	"newName": "lo-fi 24/8" /* change_name */
+        	"action": "end_session", /* end_session, change_name, player_time */
+            "newName": "lo-fi 24/8", /* change_name */
+            "time": "01:50" /* player_time */
         }
     }
 ]

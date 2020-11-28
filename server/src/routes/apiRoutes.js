@@ -1040,7 +1040,7 @@ apiRouter.get('/search/query=:search', async (req, res) => {
     let userMatches = await mongooseQuery.getUsersFromQuery(req.params.search, true)
                                     .catch(err => res.sendStatus(404));
 
-	if (req.user == null){
+	if (!req.user){
         return res.status(200).json({
             message: "Query successful",
             statusCode: 200,
@@ -1054,15 +1054,16 @@ apiRouter.get('/search/query=:search', async (req, res) => {
                     return collection
                 }),
                 users: userMatches.map(user => {
-                    user.type = "user"
-                    return user
+                    var strippedUser = stripUser(user)
+                    strippedUser.type = "user"
+                    return strippedUser
                 })
             },
             success: true
         })
 	}
 	else {
-		let thisUser = await mongooseQuery.getUser({'_id': req.user})
+		let thisUser = await mongooseQuery.getUser({'_id': req.user._id})
 							.catch(err => {console.log('User not found')});
 		let filteredSessions = [];
 		let filteredCollections = [];

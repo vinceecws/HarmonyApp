@@ -1092,13 +1092,49 @@ body, html {
   background-color: #505050 !important;
 }
 
+.profile-screen-empty-notice-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.profile-screen-empty-notice-container-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.profile-screen-empty-notice {
+  text-align: center;
+  padding: 20px 20px 0px 20px;
+}
+
+.profile-screen-empty-notice-create-collection-button-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  width: 100%;
+}
+
+.profile-screen-empty-notice-create-collection-button {
+  border-color: transparent !important;
+  border-width: 0px !important;
+  width: 60%;
+  height: 45%;
+  max-width: 500px;
+}
+
+.profile-screen-empty-notice-create-collection-button:hover {
+  width: 63%;
+  height: 48%;
+}
+
 #profile-screen-username {
   font-family: BalsamiqSans;
   font-size: 40px;
-}
-
-#profile-screen-biography {
-
 }
 
 #profile-screen-summary {
@@ -1107,16 +1143,8 @@ body, html {
   left: 30px;
 }
 
-#profile-screen-summary-text {
-
-}
-
 #profile-screen-bottom-container {
   padding: 20px;
-}
-
-.profile-screen-category-container {
-  
 }
 
 .profile-screen-category-item-card {
@@ -1240,6 +1268,7 @@ body, html {
   flex: 0 0 auto !important;
   margin-top: 20px;
   width: 200px;
+  min-height: 250px;
   background-color: whitesmoke !important;
 }
 

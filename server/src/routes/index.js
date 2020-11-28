@@ -1,7 +1,7 @@
 exports.stripUser = function(user) {
 
     var strippedUser = {
-        username: user.google.name === undefined ? user.local.username : user.google.name,
+        username: user.local ? user.local.username : user.google.name,
         _id: user._id, 
         biography: user.biography,
         privateMode: user.privateMode, 
