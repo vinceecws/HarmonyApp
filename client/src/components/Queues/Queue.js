@@ -79,16 +79,12 @@ class Queue {
         }
 
         if (this._futureQueue.length > 0) {
-            console.log(this._futureQueue)
-            console.log(this._originalFutureQueue)
             this._pastQueue.push(this._currentSong)
             var song = this._futureQueue.shift()
             this.setCurrentSong(song)
-            console.log(song)
-
             if (this._shuffle) {
                 var ind = this._originalFutureQueue.findIndex(x => x._id === song._id)
-                console.log(this._originalFutureQueue.splice(ind, 1)[0])
+                this._originalFutureQueue.splice(ind, 1)
             }
         }
         else if (this._repeat === repeatStates.QUEUE) {
@@ -146,6 +142,23 @@ class Queue {
         if (this._shuffle) {
             var ind = this._originalFutureQueue.findIndex(x => x._id === song._id)
             this._originalFutureQueue.splice(toIndex, 0, this._originalFutureQueue.splice(ind, 1)[0])
+        }
+    }
+
+    /*
+        moveSongFromPastQueue allows the manual moving of a song from the past queue to the future queue by the user.
+        This is used in Sessions to support replaying an already played song. The function presumes that fromIndex represents
+        the index of the target song inside the past queue, while toIndex represents the target index inside the future queue.
+        
+        Like moveSongInFutureQueue, this function prioritizes user-defined order (e.g. moves made when shuffle is on will be 
+        persist even when shuffle is turned off)
+    */
+    moveSongFromPastQueue = (fromIndex, toIndex) => {
+        var song = this._pastQueue.splice(fromIndex, 1)[0]
+        this._futureQueue.splice(toIndex, 0, song)
+
+        if (this._shuffle) {
+            this._originalFutureQueue.splice(toIndex, 0, song)
         }
     }
 
