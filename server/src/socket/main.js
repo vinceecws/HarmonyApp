@@ -8,6 +8,8 @@ module.exports = function (io, ...arguments) {
     arguments.forEach(arg => socket.use(wrap(arg)))
 
     socket.on('connect', async (socket) => {
+        /* Access equivalent of PassportJS's "req.user" here as "socket.request.user" */
+
         let sessions = await mongooseQuery.getSessions().catch(err => {
             socket.emit('error')
         })
