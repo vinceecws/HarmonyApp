@@ -99,7 +99,7 @@ const sessionSchema = new mongoose.Schema({
         }
     },
     queueState: {
-        type: [{
+        type: {
             pastQueue: {
                 type: [String]
             },
@@ -109,7 +109,7 @@ const sessionSchema = new mongoose.Schema({
             futureQueue: {
                 type: [String]
             }
-        }]
+        }
     }
 })
 

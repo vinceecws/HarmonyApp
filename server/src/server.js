@@ -55,12 +55,19 @@ passport.use('local-signup', new LocalStrategy({
 
 app.use(passportCallbacks.isLoggedIn)
 
+/*  
+    Socket.IO
+*/
+
+const mainSocket = require('./socket/main.js')(io, mongoSession, passport.initialize(), passport.session())
+const sessionSocket = require('./socket/session.js')(io, mongoSession, passport.initialize(), passport.session())
+
 /*
     Express.js routes
 */
 
 const authRouter = require('./routes/authRoutes.js')(passport)
-const apiRouter = require('./routes/apiRoutes.js')
+const apiRouter = require('./routes/apiRoutes.js')(mainSocket, sessionSocket)
 
 app.use('/auth', authRouter)
 app.use('/api', apiRouter)
@@ -73,8 +80,6 @@ app.use(express.static(path.resolve(__dirname, '..', '..', 'client', 'build')))
 // app.get('/', (req, res, next) => {
 //     res.sendFile(path.resolve(__dirname, '..', '..', 'client', 'build', 'index.html'));
 // });
-
-const mainSocket = require('./socket/main.js')(io, mongoSession, passport.initialize(), passport.session())
 
 db.on('error', console.error.bind(console, "Error connecting to MongoDB Atlas Database:"))
 

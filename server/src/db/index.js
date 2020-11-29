@@ -153,7 +153,7 @@ exports.changeUsername = async function(userObject, updateFieldsObject){
   return user;
   
 }
-exports.changeBiography= async function(userObject, updateFieldsObject){
+exports.changeBiography = async function(userObject, updateFieldsObject){
   console.log('update biography for user');
   
   /*let user = await connection.then(async () => {
@@ -167,7 +167,7 @@ exports.changeBiography= async function(userObject, updateFieldsObject){
   return user;
   
 }
-exports.changePassword= async function(userObject, updateFieldsObject){
+exports.changePassword = async function(userObject, updateFieldsObject){
   console.log('update password for user');
   /*let user = await connection.then(async () => {
     return await User.findOneAndUpdate(userObject, {$set:{'local.username':updateFieldsObject.username}}, {new: true});
@@ -202,21 +202,15 @@ exports.deleteCollection = async function(collectionObject, lean=false){
   
 }
 
-exports.createSession = async function(hostId, hostName, name, startTime, endTime, streams, likes, live, initialQueue, actionLog){
+exports.createSession = async function(hostId, hostName, name, startTime, initialQueue){
   let session = await new Session({
-    hostid, 
-    hostName,
-    name, 
-    startTime, 
-    endTime, 
-    streams, 
-    likes, 
-    live,
-    initialQueue, 
-    actionLog
+    hostId: hostId,
+    hostName: hostName,
+    name: name,
+    startTime: startTime, 
+    initialQueue: initialQueue
   }).save().catch(error => {console.log(error)});
   
-  console.log('connection closed');
   return session;
 }
 
@@ -263,7 +257,7 @@ exports.getSessions = async function(){
 
 
 exports.updateSession = async function(sessionID, updateObject, lean=false){
-  console.log('Update session');
+
   let session = await connection.then(async () => {
     if (lean) {
       return await Session.findOneAndUpdate({'_id': sessionID}, updateObject, {new: true}).lean()
