@@ -11,28 +11,32 @@ class SessionSideList extends React.Component{
             loading: true,
             sessions: []
         }
+        this.initSocket()
     }
 
-    componentDidMount = () => {
-        this.fetchSessions()
+    initSocket = () => {
+        if (this.props.mainSocket) {
+            this.props.mainSocket.on('connect', () => {
+                console.log('connected')
+            })
+
+            this.props.mainSocket.on('top-sessions', (topSessions, callback) => {
+                if (topSessions) {
+                    this.setState({
+                        loading: false,
+                        sessions: topSessions
+                    })
+                }
+                callback({
+                    status: 200
+                })
+            })
+        }
     }
 
     handleGoToItem = () => {
 
     }
-    
-    fetchSessions = () => {
-        this.props.axiosWrapper.axiosGet('/api/topSessions', (function(res, data) {
-            if (data.success) {
-                this.setState({
-                    loading: false,
-                    sessions: data.data.sessions.sessions
-                })
-            }
-        }).bind(this), true)
-    }
-
-
 
     render(){
         if (this.state.loading) {

@@ -1,0 +1,22 @@
+const mongooseQuery = require('../db')
+
+module.exports = function (io, ...arguments) {
+    
+    const socket = io.of('/main')
+    const wrap = middleware => (socket, next) => middleware(socket.request, {}, next)
+    
+    arguments.forEach(arg => socket.use(wrap(arg)))
+
+    socket.on('connect', async (socket) => {
+        let sessions = await mongooseQuery.getSessions().catch(err => {
+            socket.emit('error')
+        })
+        socket.emit('top-sessions', sessions, (response) => {
+            if (response.status === 200) {
+                console.log("Sessions acknowledged")
+            }
+        })
+    })
+
+    return socket
+}

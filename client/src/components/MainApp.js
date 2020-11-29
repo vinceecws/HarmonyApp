@@ -13,9 +13,11 @@ import ProfileScreen from './ProfileScreen.js'
 import SessionScreen from './SessionScreen.js'
 import CollectionScreen from './CollectionScreen.js'
 
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap'
 import { Route, Switch } from 'react-router-dom'
-import Queue from './Queues/Queue';
+import Queue from './Queues/Queue'
+
+import { io } from 'socket.io-client'
 
 class MainApp extends React.Component {
 
@@ -24,6 +26,12 @@ class MainApp extends React.Component {
         this.queue = new Queue()
         this.playerAPI = new PlayerAPI()
         this.dataAPI = new DataAPI()
+        this.initSockets()
+    }
+
+    initSockets = () => {
+        this.mainSocket = io('/main')
+        this.sessionSocket = io('/session')
     }
 
     isFavorited = () => {
@@ -73,7 +81,7 @@ class MainApp extends React.Component {
                 <Row id="mid-container" style={{marginLeft:'0px'}}>
                     <Col id="side-list-container" sm={2} md={2} lg={2} xl={2}>
                     <header className='Session-Side-List'>
-                        <SessionSideList axiosWrapper={this.props.axiosWrapper} />
+                        <SessionSideList axiosWrapper={this.props.axiosWrapper} mainSocket={this.mainSocket} />
                     </header>
                     </Col>
                     <Col id="screen-container">
