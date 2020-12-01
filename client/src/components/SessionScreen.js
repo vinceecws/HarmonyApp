@@ -21,7 +21,7 @@ class SessionScreen extends React.Component {
 			currentSong: null,
 			prevQueue: [],
 			nextQueue: [],
-			chatLog: null,
+			chatLog: [],
 			messageText: "",
 			hostName: null
 		}
@@ -94,7 +94,7 @@ class SessionScreen extends React.Component {
 					startTime : session.startTime ,
 					endTime : session.endTime,
 					initialQueue: session.initialQueue,
-					nextQueue: v,
+					nextQueue: this.props.queue.getFutureQueue(),
 					currentSong: this.props.queue.getCurrentSong(),
 					chatLog : session.actionLog,
 					hostName : session.hostName
@@ -116,7 +116,7 @@ class SessionScreen extends React.Component {
     	
     	
     	let renderContainer = false
-    	if(!this.state.loading && !this.state.error){
+    	if(!this.state.loading && !this.state.error && this.props.user != null){
     		renderContainer = 
     			<div style={{fontFamily: 'BalsamiqSans', marginLeft:'15px', height:'100%'}}>
         		<div className='row' style={{height:'100%'}}>
@@ -182,6 +182,72 @@ class SessionScreen extends React.Component {
         		
         	</div>
 
+    	}
+    	else if(!this.state.loading && !this.state.error && this.props.user == null){
+    		renderContainer = 
+    			<div style={{fontFamily: 'BalsamiqSans', marginLeft:'15px', height:'100%'}}>
+        		<div className='row' style={{height:'100%'}}>
+        			<div className='col-sm-8' style={{height:'100%'}}>
+	        			<div className='row' style={{height:'22%', border: '3px solid black', borderRadius: '25px'}}>
+	        				<div className='col' style={{maxWidth:'35%', height:'100%', padding:'1em'}}>
+	        					<img src={icon_profile_image} style={{backgroundColor:'white',display: 'block', margin: 'auto', height:'90%',
+	        									 border: '3px solid black'}}/>
+	        				</div>
+	        				<div className='col' style={{maxWidth:'50%', minWidth:'50%', padding:'1em', color:'white'}}>
+	        					<div className='title session-title-text'>
+	        						{this.state.name}
+
+	        					</div>
+	        					<div className='body-text' style={{marginTop:'30px', margin: 'auto'}}>
+	        						{this.state.hostName}
+	        					</div>
+	        				</div>
+	        				<div className='col' style={{maxWidth:'25%', textAlign: 'right', padding:'1em', minWidth:'10%',color:'white',  float:'right'}}>
+	        					<div className='body-text'>LIVE<img src={icon_radio} style={{width:'30px'}}/></div>
+	        					{this.state.startTime}
+
+	        				</div>
+	        			</div>
+	        			<div className='row bg-color-contrasted' style={{height:'calc(78%-40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
+	        				<ChatFeed actionLog={this.state.chatLog} user={this.props.user}  />
+	        			</div>
+	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
+	        				<input type='text' disabled={true} name='MessageSender' placeholder='Send your message here...' onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
+	        				
+	        			</div>
+	        		</div>
+	        		<div className='col-sm-4' style={{height:'100%'}}>
+	        			
+	        			
+	        				
+	        					 <DragDropContext onDragEnd={this.handleOnDragEnd}>
+	        					 	<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
+				        				Up Next
+				        			</div>
+	        					 	<div className='row' style={{height:'43%'}}>
+						                <Droppable droppableId="nextQueue">
+						                    {(provided) => ( 
+						                    	<QueueComponent Queue={this.state.nextQueue} fetchVideoById={this.props.fetchVideoById} provided={provided} />
+						        			 )}
+						        			   
+						                </Droppable>
+					                </div>
+						            <div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
+				        				Previously Played
+				        			</div>
+				        			<div className='row' style={{height:'43%'}}>
+					        			<Droppable droppableId="prevQueue">
+						                    {(provided) => ( 
+		        								<QueueComponent Queue={this.state.prevQueue} fetchVideoById={this.props.fetchVideoById} provided={provided} />
+		        							)}
+		        							
+						                </Droppable>
+				        			</div>
+					            </DragDropContext>
+	        		</div>
+        		</div>
+        		
+        	</div>
     	}
     	else if (this.state.loading && !this.state.error){
     		renderContainer = <Spinner/>
