@@ -1,9 +1,11 @@
-import React, {useState} from 'react';
+import React from 'react';
 import { icon_profile_image, icon_radio } from '../graphics';
 import ChatFeed from './Chat/ChatFeed.js';
 import QueueComponent from './Queues/QueueComponent.js';
 import Spinner from './Spinner';
-import {Droppable, DragDropContext, Draggable} from 'react-beautiful-dnd'
+import { Droppable, DragDropContext, Draggable } from 'react-beautiful-dnd'
+
+const _ = require('lodash')
 
 class SessionScreen extends React.Component {
 	constructor(props){
@@ -12,18 +14,16 @@ class SessionScreen extends React.Component {
 		this.state = {
 			loading: true,
 			error: false,
-			id: null,
-			hostId:null,
+			_id: null,
+			hostId: null,
+			hostName: null,
 			name: null,
 			startTime: null,
-			endTime: null,
-			initialQueue: null,
 			currentSong: null,
 			prevQueue: [],
-			nextQueue: [],
+			futureQueue: [],
 			chatLog: [],
 			messageText: "",
-			hostName: null
 		}
 		//this.props.sessionClient.joinSession(this.props.match.params.sessionId)
 	}
@@ -63,50 +63,47 @@ class SessionScreen extends React.Component {
 	handleOnDragEnd = (e) =>{
 		if(!e.destination) return;
 		console.log(e);
-		if(e.destination.droppableId === "nextQueue"){
-			const items = Array.from(this.state.nextQueue);
+		if(e.destination.droppableId === "futureQueue"){
+			const items = Array.from(this.state.futureQueue);
 			const [reorderedItem] = items.splice(e.source.index, 1);
 			items.splice(e.destination.index, 0, reorderedItem);
 
 			this.setState({
-				nextQueue: items
+				futureQueue: items
 			});
 		}
 		
 	}
-	handleGetSession = (status,data) =>{
-		var session = null;
-		if(status === 200){
-			session = data.data.session;
+	handleGetSession = (status,data) => {
 
-			this.props.playVideo(session.initialQueue.shift());
-			Promise.all(session.initialQueue.map((songId) => {
+		if (status === 200) {
+			var session = data.data.session
+			var initialQueue = _.cloneDeep(data.data.session.initialQueue);
+			this.props.playVideo(initialQueue.shift());
+
+			Promise.all(initialQueue.map((songId) => {
             	return this.props.fetchVideoById(songId, true) //Initial queue of song objects
-        	})).then((v) => {
-				console.log(v);
-        		v.forEach(song => this.props.queue.addSongToFutureQueue(song));
-	        	console.log(this.props.queue);
+        	})).then((fetchedSongs) => {
+				fetchedSongs.forEach(song => {
+					this.props.queue.addSongToFutureQueue(song)
+				})
+
             	this.setState({
-	        		loading:false,
+	        		loading: false,
 	        		id: session._id,
-					hostId:session.hostId,
-					name : session.name,
-					startTime : session.startTime ,
-					endTime : session.endTime,
-					initialQueue: session.initialQueue,
-					nextQueue: this.props.queue.getFutureQueue(),
+					hostId: session.hostId,
+					hostName : session.hostName,
+					name: session.name,
+					startTime: session.startTime,
+					futureQueue: this.props.queue.getFutureQueue(),
 					currentSong: this.props.queue.getCurrentSong(),
-					chatLog : session.actionLog,
-					hostName : session.hostName
 	        	})
 	        })
             
         }
-        else if(status === 404){
-        	console.log(status);
-        	console.log(data);
+        else if (status === 404) {
         	this.setState({
-        		loading:false,
+        		loading: false,
         		error: true
         	})
         }
@@ -158,9 +155,9 @@ class SessionScreen extends React.Component {
 				        				Up Next
 				        			</div>
 	        					 	<div className='row' style={{height:'43%'}}>
-						                <Droppable droppableId="nextQueue">
+						                <Droppable droppableId="futureQueue">
 						                    {(provided) => ( 
-						                    	<QueueComponent Queue={this.state.nextQueue} fetchVideoById={this.props.fetchVideoById} provided={provided} />
+						                    	<QueueComponent Queue={this.state.futureQueue} fetchVideoById={this.props.fetchVideoById} provided={provided} />
 						        			 )}
 						        			   
 						                </Droppable>
