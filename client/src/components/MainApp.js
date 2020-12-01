@@ -1,6 +1,4 @@
 import React from 'react';
-import DataAPI from '../api/DataAPI'
-import PlayerAPI from '../api/PlayerAPI'
 
 import TabComponent from './TabComponent.js'
 import Player from './Player.js'
@@ -24,9 +22,9 @@ class MainApp extends React.Component {
 
     constructor(props) {
         super(props)
+        this.playerAPI = this.props.playerAPI
+        this.dataAPI = this.props.dataAPI
         this.queue = new Queue()
-        this.playerAPI = new PlayerAPI()
-        this.dataAPI = new DataAPI()
         this.initSockets()
     }
 

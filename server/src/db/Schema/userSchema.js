@@ -41,6 +41,10 @@ const userSchema = new mongoose.Schema({
   likedCollections: {
     type: [mongoose.Schema.Types.ObjectId],
     ref: "Collection"
+  },
+  currentSession: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Session"
   }
 })
 
