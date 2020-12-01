@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { icon_profile_image, icon_radio } from '../graphics';
 import ChatFeed from './Chat/ChatFeed.js';
 import QueueComponent from './Queues/QueueComponent.js';
 import Spinner from './Spinner';
+import {Droppable, DragDropContext, Draggable} from 'react-beautiful-dnd'
 
 class SessionScreen extends React.Component {
 	constructor(props){
@@ -14,10 +15,14 @@ class SessionScreen extends React.Component {
 			id: null,
 			hostId:null,
 			name: null,
-			startTime: null ,
+			startTime: null,
 			endTime: null,
 			initialQueue: null,
+			currentSong: null,
+			prevQueue: null,
+			nextQueue: null,
 			actionLog: null,
+			messageText: "",
 			hostName: null
 		}
 		
@@ -31,15 +36,57 @@ class SessionScreen extends React.Component {
 			// Render suggestions to start a session?
 		}
 	}
+	handleTextChange = (e) => {
+		if(this.state.messageText.length <= 250 && !(e.target.value.length > 250)){
+			this.setState({
+				messageText: e.target.value
+			});
+		}
+		
+	}
+	onKeyPress = (e) => {
 
+		if(e.key === "Enter" && this.state.messageText.length <= 250){
+			
+			
+			//console.log(this.props.user);
+			/*Adjust new object for new action types*/
+			const obj = {'type':"message", 'object':{'username':this.props.user.username, 'message':this.state.messageText, 'timestamp':(this.state.actionLog[this.state.actionLog.length-1].object.timestamp)+1}};
+			this.setState({
+				actionLog: this.state.actionLog.concat(obj),
+				messageText: ""
+
+			})
+		}
+
+	}
+	handleOnDragEnd = (e) =>{
+		if(!e.destination) return;
+		console.log(e);
+		if(e.destination.droppableId === "nextQueue"){
+			const items = Array.from(this.state.nextQueue);
+			const [reorderedItem] = items.splice(e.source.index, 1);
+			items.splice(e.destination.index, 0, reorderedItem);
+
+			this.setState({
+				nextQueue: items
+			});
+		}
+		
+	}
 	handleGetSession = (status,data) =>{
 		var session = null;
 		if(status === 200){
 			session = data.data.session;
 			Promise.all(session.initialQueue.map((songId) => {
-            	return this.props.fetchVideoById(songId, true)
+            	return this.props.fetchVideoById(songId, true) //Initial queue of song objects
         	})).then((v) => {
-	            this.setState({
+
+        		let nextQueue = v.slice(1);
+	            //this.props.playVideo(v[0]._id);
+	        	v.forEach(song => this.props.queue.addSongToFutureQueue(song));
+	        	this.props.queue.nextSong();
+            	this.setState({
 	        		loading:false,
 	        		id: session._id,
 					hostId:session.hostId,
@@ -47,6 +94,8 @@ class SessionScreen extends React.Component {
 					startTime : session.startTime ,
 					endTime : session.endTime,
 					initialQueue: v,
+					nextQueue: nextQueue,
+					currentSong: this.props.queue.getCurrentSong(),
 					actionLog : session.actionLog,
 					hostName : session.hostName
 	        	})
@@ -64,7 +113,8 @@ class SessionScreen extends React.Component {
 	}
 
     render(){
-
+    	
+    	
     	let renderContainer = false
     	if(!this.state.loading && !this.state.error){
     		renderContainer = 
@@ -92,26 +142,41 @@ class SessionScreen extends React.Component {
 	        				</div>
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
-	        				<ChatFeed actionLog={this.state.actionLog} />
+	        				<ChatFeed actionLog={this.state.actionLog} user={this.props.user}  />
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
-	        				<input type='text' name='MessageSender' placeholder='Send your message here...' style={{width:'100%', display:'block'}}/>
+	        				<input type='text' name='MessageSender' placeholder='Send your message here...' onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
+	        				<div style={{width:'5%', display:'block', textAlign:'center'}}>{this.state.messageText.length}/250</div>
 	        			</div>
 	        		</div>
 	        		<div className='col-sm-4' style={{height:'100%'}}>
-	        			<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
-	        				Up Next
-	        			</div>
-	        			<div className='row' style={{height:'43%'}}>
-	        				<QueueComponent initialQueue={this.state.initialQueue} fetchVideoById={this.props.fetchVideoById}/>
-	        			</div>
-	        			<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
-	        				Previously Played
-	        			</div>
-	        			<div className='row' style={{height:'43%'}}>
-	        				<QueueComponent initialQueue={this.state.initialQueue} fetchVideoById={this.props.fetchVideoById}/>
-	        			</div>
-	        		
+	        			
+	        			
+	        				
+	        					 <DragDropContext onDragEnd={this.handleOnDragEnd}>
+	        					 	<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
+				        				Up Next
+				        			</div>
+	        					 	<div className='row' style={{height:'43%'}}>
+						                <Droppable droppableId="nextQueue">
+						                    {(provided) => ( 
+						                    	<QueueComponent Queue={this.state.nextQueue} fetchVideoById={this.props.fetchVideoById} provided={provided} />
+						        			 )}
+						        			   
+						                </Droppable>
+					                </div>
+						            <div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
+				        				Previously Played
+				        			</div>
+				        			<div className='row' style={{height:'43%'}}>
+					        			<Droppable droppableId="prevQueue">
+						                    {(provided) => ( 
+		        								<QueueComponent Queue={this.state.prevQueue} fetchVideoById={this.props.fetchVideoById} provided={provided} />
+		        							)}
+		        							
+						                </Droppable>
+				        			</div>
+					            </DragDropContext>
 	        		</div>
         		</div>
         		

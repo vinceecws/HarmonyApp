@@ -1,6 +1,6 @@
 import React from 'react';
-import RangeSlider from 'react-bootstrap-range-slider';
 import Ticker from 'react-ticker';
+import RangeSlider from 'react-bootstrap-range-slider';
 import { Container, Row, Col, Image, Button } from 'react-bootstrap';
 import { icon_play_2, icon_pause_3, icon_previous, icon_next, icon_repeat_3, icon_repeat_1, icon_shuffle_arrows, icon_volume_up_1, icon_no_sound } from '../graphics';
 import { ReactComponent as FavoriteButton } from '../graphics/music_player_pack/035-like.svg'
@@ -45,13 +45,13 @@ class Player extends React.Component {
         
     }
 
-    handleShowTitleTicker = (e) => {
+    handleShowTitleTicker = () => {
         this.setState({
             showTitleTicker: true
         })
     }
 
-    handleHideTitleTicker = (e) => {
+    handleHideTitleTicker = () => {
         this.setState({
             showTitleTicker: false
         })
@@ -213,6 +213,9 @@ class Player extends React.Component {
     }
 
     render(){
+        let entry =  <div><Ticker speed={8}>
+                        {({index}) => (<h1 className="body-text color-contrasted">{this.getSongName()}</h1>)}
+                     </Ticker></div>;
         return(
             <Container id="player-container" fluid>
                 <Row>
@@ -224,7 +227,7 @@ class Player extends React.Component {
                             <Col id="player-song-title">
 
                                 <div className="fade-single-line-overflow" onMouseEnter={this.handleShowTitleTicker} onMouseLeave={this.handleHideTitleTicker}>
-                                    <Ticker speed={8} move={this.state.showTitleTicker}>{() => (<div className="body-text color-contrasted">{this.state.currentSong.name}</div>)}</Ticker>
+                                        {entry}
                                 </div>
                                 <div className="fade-single-line-overflow body-text color-contrasted">{this.getSongName()}</div>
                                 <div className="fade-single-line-overflow tiny-text color-contrasted">{this.getArtist()}</div>

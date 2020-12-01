@@ -1,5 +1,6 @@
 import React from 'react';
 import Ticker from 'react-ticker';
+import {Droppable, DragDropContext, Draggable} from 'react-beautiful-dnd'
 class QueueEntry extends React.Component{
 	constructor(props){
 		super(props);
@@ -17,21 +18,31 @@ class QueueEntry extends React.Component{
 		console.log("render called");
 		let entry;
 		if(this.state.showTicker){
-			entry = <div><Ticker speed={14} mode="await" >
-							{({ index }) => (<><h1 className='Session-Entry-Text body-text underline color-accented' >{this.props.title} -- {this.props.artist}</h1></>)}
-					</Ticker></div>;
+			entry = <Ticker speed={14} height={27.2} mode="await" >
+							{({ index }) => (<><h1 className='Session-Entry-Text body-text color-accented' >{this.props.index+1} : {this.props.title} -- {this.props.artist}</h1></>)}
+					</Ticker>;
 
 		} else{
-			entry = <div onMouseEnter={this.handleEntryToggle}><h1 className='Session-Entry-Text body-text underline color-accented'>{this.props.title} -- {this.props.artist}</h1></div>;
+			entry = <h1 className='Session-Entry-Text body-text color-accented'>{this.props.index+1} : {this.props.title} -- {this.props.artist}</h1>;
 		}
 		
 		return(
-			<div  onMouseEnter={this.handleEntry} onMouseLeave={this.handleLeave} >
-				<div className='list-group-item' style={{width:"100%"}}>
-					{entry}
-					
-					
-				</div>
+			<div  onMouseEnter={this.handleEntry} onMouseLeave={this.handleLeave} style={{width:"100%"}}>
+				
+				<Draggable key={this.props.id} draggableId={this.props.id} index={this.props.index} >
+	            	{(provided) => (
+					<div className='list-group-item'  {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
+						<div>
+						{entry}
+						</div>
+
+						
+						
+					</div>
+					)} 
+
+	        	</Draggable>
+
 			</div>
 		);
 	}
