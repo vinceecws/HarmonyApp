@@ -25,7 +25,7 @@ class SessionScreen extends React.Component {
 			messageText: "",
 			hostName: null
 		}
-		this.props.sessionClient.joinSession(this.props.match.params.sessionId)
+		//this.props.sessionClient.joinSession(this.props.match.params.sessionId)
 	}
 
 	getSession = () => { 
