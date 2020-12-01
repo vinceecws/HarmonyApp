@@ -18,6 +18,7 @@ import { Route, Switch } from 'react-router-dom'
 import Queue from './Queues/Queue'
 
 import { io } from 'socket.io-client'
+import SessionClient from '../api/SessionClient.js'
 
 class MainApp extends React.Component {
 
@@ -31,7 +32,7 @@ class MainApp extends React.Component {
 
     initSockets = () => {
         this.mainSocket = io('/main')
-        this.sessionSocket = io('/session')
+        this.sessionClient = new SessionClient(io('/session'))
     }
 
     isFavorited = () => {

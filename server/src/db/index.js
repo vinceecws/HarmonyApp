@@ -16,7 +16,7 @@ const db = mongoose.connection
 exports.createUserLocal = async function(name, password) { //User CRUD methods: Create
   let newUser = await new User({
     local: {name, password}
-  }).save().catch(error => console.log(error));
+  }).save().catch(error => {return error});
   console.log('New user: ', newUser, newUser.google.id === undefined);
   return newUser;
 }
@@ -26,7 +26,7 @@ exports.createUserLocal = async function(name, password) { //User CRUD methods: 
 exports.createUserGoogle = async function(id, token, email, name){
   let newUser = await new User({
     google: {id, token, email, name}
-  }).save().catch(error => console.log(error));
+  }).save().catch(error => {return error});
   console.log('New user: ', newUser);
   
   return newUser;
@@ -40,7 +40,7 @@ exports.getUser = async function(userObject, lean=false) { //User CRUD methods: 
     else {
       return await User.findOne(userObject)
     }
-  }).catch(error => {console.log(error)});
+  }).catch(error => {return error});
   return user;
 }
 
@@ -53,7 +53,7 @@ exports.updateUser = async function(userId, updatePayload, lean=false) {
     else {
       return await User.findOneAndUpdate({'_id': userId}, updatePayload, {new: true})
     }
-  }).catch(error => console.log(error));
+  }).catch(error => {return error});
   return user;
 }
 
@@ -64,7 +64,7 @@ exports.createCollection = async function(userId, userName, name, description, s
     ownerName: userName,
     description: description ? description : "",
     songList: songList ? songList : []
-  }).save().catch(error => console.log(error));
+  }).save().catch(error => {return error});
 
   let res = await User.update({
     _id: userId
@@ -94,7 +94,7 @@ exports.getCollection = async function(collectionObject, lean=false) {
         })
       }
     }).catch(error => {
-      console.log(error)
+      return error
     })
   }
   else {
@@ -105,7 +105,7 @@ exports.getCollection = async function(collectionObject, lean=false) {
       else {
         return await Collection.findOne(collectionObject)
       }
-    }).catch(error => {console.log(error)});
+    }).catch(error => {return error});
   }
 
   return collection;
@@ -119,7 +119,7 @@ exports.updateCollection = async function(collectionId, updateFieldsObject, lean
     else {
       return await Collection.findOneAndUpdate({_id: collectionId}, updateFieldsObject, {new: true})
     }
-  }).catch(error => console.log(error));
+  }).catch(error => {return error});
 
   return collection
 }
@@ -129,16 +129,16 @@ exports.changeUsername = async function(userObject, updateFieldsObject){
 
   /*let user = await connection.then(async () => {
     return await User.findOneAndUpdate(userObject, {$set:{'local.username':updateFieldsObject.username}}, {new: true});
-  }).catch(error => console.log(error));*/
+  }).catch(error => {return error});*/
   let user = await connection.then(async () => {
     return await User.findOne({'local.username':updateFieldsObject.username});
-  }).catch(error => console.log(error));
+  }).catch(error => {return error});
   if(user){
     return 409;
   }
   user = await connection.then(async () => {
     return await User.findOne(userObject);
-  }).catch(error => console.log(error));
+  }).catch(error => {return error});
   console.log(user);
   if (!user.authenticateLocal(user.local.username, updateFieldsObject.password)) {
       console.log("incorrect password");
@@ -149,7 +149,7 @@ exports.changeUsername = async function(userObject, updateFieldsObject){
   user = await User.updateOne(userObject, {$set:{'local.username':updateFieldsObject.username}}, {new: true});
   user = await connection.then(async () => {
     return await User.findOne(userObject);
-  }).catch(error => console.log(error));
+  }).catch(error => {return error});
   return user;
   
 }
@@ -158,11 +158,11 @@ exports.changeBiography = async function(userObject, updateFieldsObject){
   
   /*let user = await connection.then(async () => {
     return await User.findOneAndUpdate(userObject, {$set:{'local.username':updateFieldsObject.username}}, {new: true});
-  }).catch(error => console.log(error));*/
+  }).catch(error => {return error});*/
   
   let user = await connection.then(async () => {
     return await User.findOneAndUpdate(userObject, {$set:{'biography':updateFieldsObject.biography}}, {new: true});
-  }).catch(error => console.log(error));
+  }).catch(error => {return error});
   
   return user;
   
@@ -171,11 +171,11 @@ exports.changePassword = async function(userObject, updateFieldsObject){
   console.log('update password for user');
   /*let user = await connection.then(async () => {
     return await User.findOneAndUpdate(userObject, {$set:{'local.username':updateFieldsObject.username}}, {new: true});
-  }).catch(error => console.log(error));*/
+  }).catch(error => {return error});*/
   
   user = await connection.then(async () => {
     return await User.findOne(userObject);
-  }).catch(error => console.log(error));
+  }).catch(error => {return error});
   if (!user.authenticateLocal(user.local.username, updateFieldsObject.password)) {
       console.log("incorrect password");
       return false;
@@ -198,7 +198,7 @@ exports.deleteCollection = async function(collectionObject, lean=false){
     else {
       return await Collection.findOneAndRemove(collectionObject)
     }
-  }).catch(error => console.log(error));
+  }).catch(error => {return error});
   
 }
 
@@ -209,7 +209,7 @@ exports.createSession = async function(hostId, hostName, name, startTime, initia
     name: name,
     startTime: startTime, 
     initialQueue: initialQueue
-  }).save().catch(error => {console.log(error)});
+  }).save().catch(error => {return error});
   
   return session;
 }
@@ -231,7 +231,7 @@ exports.getSession = async function(sessionObject, lean=false) {
         })
       }
     }).catch(error => {
-      console.log(error)
+      return error
     })
   }
   else {
@@ -242,7 +242,7 @@ exports.getSession = async function(sessionObject, lean=false) {
       else {
         return await Session.findOne(sessionObject)
       }
-    }).catch(error => {console.log(error)});
+    }).catch(error => {return error});
   }
 
   return session;
@@ -251,7 +251,7 @@ exports.getSession = async function(sessionObject, lean=false) {
 exports.getSessions = async function(){
   let sessions = await connection.then(async () => {
     return await Session.find({});
-  }).catch(error => {console.log(error)});
+  }).catch(error => {return error});
   return sessions;
 }
 
@@ -260,10 +260,14 @@ exports.updateSession = async function(sessionID, updateObject, lean=false){
 
   let session = await connection.then(async () => {
     if (lean) {
-      return await Session.findOneAndUpdate({'_id': sessionID}, updateObject, {new: true}).lean()
+      return await Session.findOneAndUpdate({'_id': sessionID}, updateObject, {new: true}).lean().catch(error => {
+        return error
+      })
     }
     else {
-      return await Session.findOneAndUpdate({'_id': sessionID}, updateObject, {new: true})
+      return await Session.findOneAndUpdate({'_id': sessionID}, updateObject, {new: true}).catch(error => {
+        return error
+      })
     }
   });
   
@@ -279,7 +283,7 @@ exports.deleteSession = async function(sessionObject, lean=false){
     else {
       return await Session.findOneAndRemove(sessionObject)
     }
-  }).catch(error => {console.log(error)});
+  }).catch(error => {return error});
 
 }
 
@@ -322,7 +326,7 @@ exports.getSessionsFromQuery = async function(query, lean=false){
         {'hostName': {'$regex': query, '$options': 'i'}}
       ]})
     }
-  }).catch(error => {console.log(error)});
+  }).catch(error => {return error});
   return sessions;
 }
 
