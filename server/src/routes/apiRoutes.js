@@ -1149,20 +1149,20 @@ module.exports = function(mainSocket, sessionSocket) {
 
             console.log(thisUser);
             for (let s of sessionMatches){
-                if (thisUser.google.name === undefined && s.hostName !== thisUser.local.username){
+                if (thisUser.google.name === undefined && String(s.hostName) !== String(thisUser.local.username)){
                     filteredSessions.push(s);
                 }
-                else if (s.hostName !== thisUser.google.name){
+                else if (String(s.hostName) !== String(thisUser.google.name)){
                         filteredSessions.push(s);
                 }
             }
             for (let c of collectionMatches){
-                if (!(c._id in thisUser.playlists)){
+                if (!(thisUser.playlists.map(e => String(e)).includes(c._id))){
                     filteredCollections.push(c);
                 }
             }
             for (let u of userMatches){
-                if (thisUser._id !== u._id){
+                if (String(thisUser._id) !== String(u._id)){
                     let fetchedUser = stripUser(u)
                     filteredUsers.push(fetchedUser);
                 } 
