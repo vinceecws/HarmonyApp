@@ -78,14 +78,15 @@ class SessionScreen extends React.Component {
 		var session = null;
 		if(status === 200){
 			session = data.data.session;
+			this.props.playVideo(session.initialQueue.shift());
 			Promise.all(session.initialQueue.map((songId) => {
             	return this.props.fetchVideoById(songId, true) //Initial queue of song objects
         	})).then((v) => {
 
-        		let nextQueue = v.slice(1);
-	            //this.props.playVideo(v[0]._id);
-	        	v.forEach(song => this.props.queue.addSongToFutureQueue(song));
-	        	this.props.queue.nextSong();
+        		let nextQueue = v;
+	            
+	        	nextQueue.forEach(song => this.props.queue.addSongToFutureQueue(song));
+	        	//this.props.queue.nextSong();
             	this.setState({
 	        		loading:false,
 	        		id: session._id,
