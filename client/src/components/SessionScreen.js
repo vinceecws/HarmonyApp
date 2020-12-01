@@ -87,7 +87,6 @@ class SessionScreen extends React.Component {
 				fetchedSongs.forEach(song => {
 					this.props.queue.addSongToFutureQueue(song)
 				})
-
             	this.setState({
 	        		loading: false,
 	        		id: session._id,

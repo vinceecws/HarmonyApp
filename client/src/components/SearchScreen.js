@@ -274,6 +274,7 @@ class SearchScreen extends React.Component {
             this.props.axiosWrapper.axiosGet('/api/search/query=' + query, (function(res, data) {
                 if (data.success) {
                     var newRes = _.cloneDeep(this.state.res)
+                    console.log(newRes)
                     newRes.sessions = data.data.sessions
                     newRes.collections = data.data.collections
                     newRes.users = data.data.users

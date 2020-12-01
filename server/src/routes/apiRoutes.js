@@ -1168,6 +1168,7 @@ module.exports = function(mainSocket, sessionSocket) {
                     filteredUsers.push(fetchedUser);
                 } 
             }
+
             return res.status(200).json({
                 message: "Query successful",
                 statusCode: 200,
