@@ -592,7 +592,6 @@ module.exports = function(mainSocket, sessionSocket) {
     });
 
     apiRouter.get('/settings', async (req, res) => {
-        console.log(req.user);
         if(req.user == null){
             return res.status(404).json({
                 error: {
