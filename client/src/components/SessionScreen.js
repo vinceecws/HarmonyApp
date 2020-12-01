@@ -19,9 +19,9 @@ class SessionScreen extends React.Component {
 			endTime: null,
 			initialQueue: null,
 			currentSong: null,
-			prevQueue: null,
-			nextQueue: null,
-			actionLog: null,
+			prevQueue: [],
+			nextQueue: [],
+			chatLog: null,
 			messageText: "",
 			hostName: null
 		}
@@ -53,7 +53,7 @@ class SessionScreen extends React.Component {
 			/*Adjust new object for new action types*/
 			const obj = {'type':"message", 'object':{'username':this.props.user.username, 'message':this.state.messageText, 'timestamp':(this.state.actionLog[this.state.actionLog.length-1].object.timestamp)+1}};
 			this.setState({
-				actionLog: this.state.actionLog.concat(obj),
+				chatLog: this.state.actionLog.concat(obj),
 				messageText: ""
 
 			})
@@ -78,15 +78,14 @@ class SessionScreen extends React.Component {
 		var session = null;
 		if(status === 200){
 			session = data.data.session;
+
 			this.props.playVideo(session.initialQueue.shift());
 			Promise.all(session.initialQueue.map((songId) => {
             	return this.props.fetchVideoById(songId, true) //Initial queue of song objects
         	})).then((v) => {
-
-        		let nextQueue = v;
-	            
-	        	nextQueue.forEach(song => this.props.queue.addSongToFutureQueue(song));
-	        	//this.props.queue.nextSong();
+				console.log(v);
+        		v.forEach(song => this.props.queue.addSongToFutureQueue(song));
+	        	console.log(this.props.queue);
             	this.setState({
 	        		loading:false,
 	        		id: session._id,
@@ -94,10 +93,10 @@ class SessionScreen extends React.Component {
 					name : session.name,
 					startTime : session.startTime ,
 					endTime : session.endTime,
-					initialQueue: v,
-					nextQueue: nextQueue,
+					initialQueue: session.initialQueue,
+					nextQueue: v,
 					currentSong: this.props.queue.getCurrentSong(),
-					actionLog : session.actionLog,
+					chatLog : session.actionLog,
 					hostName : session.hostName
 	        	})
 	        })
@@ -143,7 +142,7 @@ class SessionScreen extends React.Component {
 	        				</div>
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
-	        				<ChatFeed actionLog={this.state.actionLog} user={this.props.user}  />
+	        				<ChatFeed actionLog={this.state.chatLog} user={this.props.user}  />
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
 	        				<input type='text' name='MessageSender' placeholder='Send your message here...' onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
