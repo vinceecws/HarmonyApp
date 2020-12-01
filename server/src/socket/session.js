@@ -1,5 +1,5 @@
 const mongooseQuery = require('../db')
-const SessionManager = require('./SessionManager.js')
+const SessionServer = require('./SessionServer.js')
 
 module.exports = function (io, ...middlewares) {
     
@@ -8,7 +8,7 @@ module.exports = function (io, ...middlewares) {
     
     middlewares.forEach(arg => socket.use(wrap(arg)))
 
-    const manager = new SessionManager(socket)
+    const manager = new SessionServer(socket)
 
     return socket
 }

@@ -18,6 +18,7 @@ import { Route, Switch } from 'react-router-dom'
 import Queue from './Queues/Queue'
 
 import { io } from 'socket.io-client'
+import SessionClient from '../api/SessionClient.js'
 
 class MainApp extends React.Component {
 
@@ -31,7 +32,7 @@ class MainApp extends React.Component {
 
     initSockets = () => {
         this.mainSocket = io('/main')
-        this.sessionSocket = io('/session')
+        this.sessionClient = new SessionClient(io('/session'))
     }
 
     isFavorited = () => {
@@ -87,7 +88,7 @@ class MainApp extends React.Component {
                     <Col id="screen-container">
                         <Switch>
                             <Route path='/main/search' render={(props) => <SearchScreen {...props} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} fetchVideoById={this.fetchVideoById} queryVideos={this.queryVideos} playVideo={this.playVideo} queue={this.queue} axiosWrapper={this.props.axiosWrapper}/>} />
-                            <Route path={['/main/session/:sessionId', '/main/session']} render={(props) => <SessionScreen {...props} auth={this.props.auth} user={this.props.user} key={props.match.params.sessionId} handleUpdateUser={this.props.handleUpdateUser} fetchVideoById={this.fetchVideoById} queue={this.queue} axiosWrapper={this.props.axiosWrapper} sessionSocket={this.sessionSocket}/>} />
+                            <Route path={['/main/session/:sessionId', '/main/session']} render={(props) => <SessionScreen {...props} auth={this.props.auth} user={this.props.user} key={props.match.params.sessionId} handleUpdateUser={this.props.handleUpdateUser} fetchVideoById={this.fetchVideoById} queue={this.queue} axiosWrapper={this.props.axiosWrapper} sessionClient={this.sessionClient}/>} />
                             <Route path='/main/profile/:userId' render={(props) => <ProfileScreen {...props} auth={this.props.auth} key={props.match.params.userId} handleUpdateUser={this.props.handleUpdateUser} fetchVideoById={this.fetchVideoById} user={this.props.user} playVideo={this.playVideo} queue={this.queue} axiosWrapper={this.props.axiosWrapper}/>} />
                             <Route path='/main/collection/:collectionId' render={(props) => <CollectionScreen {...props} auth={this.props.auth} key={props.match.params.collectionId} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} queue={this.queue} dataAPI={this.dataAPI} playVideo={this.playVideo} playerAPI={this.playerAPI}/>} />
                             <Route path='/main/collection' render={(props) => <CollectionScreen {...props} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} />} />
