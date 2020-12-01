@@ -17,7 +17,8 @@ class ChatFeed extends React.Component{
         var ChatEntries = this.props.actionLog; //in the future sort these out for message actions
         
         var ChatList = ChatEntries.map(item => {
-            if(item.type === "message"){
+            if(item.type === "message" && this.props.user != null){
+
                 if(item.object.username === this.props.user.username){
                     return <div style={{overflowWrap: 'break-word', padding:'1em', textAlign:'right'}}>
                         <div className='body-text color-accented'>You</div>
