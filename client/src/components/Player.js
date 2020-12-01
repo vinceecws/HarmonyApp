@@ -20,6 +20,8 @@ class Player extends React.Component {
     }
 
     componentDidMount = () => {
+        this.playerActionListener = this.props.sessionClient.subscribeToAction("player", this.handleUpdatePlayerState.bind(this))
+        this.queueActionListener = this.props.sessionClient.subscribeToAction("queue", this.handleUpdatePlayerState.bind(this))
         this.props.playerAPI.subscribeToEvent("onPlayerStateChange", this.handlePlayerStateChange.bind(this))
         setInterval(() => {
             this.setState({
@@ -38,6 +40,8 @@ class Player extends React.Component {
     }
 
     componentWillUnmount = () => {
+        this.playerActionListener = this.props.sessionClient.unsubscribeFromAction("player", this.playerActionListener)
+        this.queueActionListener = this.props.sessionClient.unsubscribeFromAction("queue", this.queueActionListener)
         this.props.playerAPI.unsubscribeFromEvent("onPlayerStateChange")
     }
 
@@ -55,6 +59,37 @@ class Player extends React.Component {
         this.setState({
             showTitleTicker: false
         })
+    }
+
+    handleUpdatePlayerState = (actionObj) => {
+        if (actionObj.action === "player") {
+            switch (actionObj.data.subaction) {
+                case "play":
+                    this.handleSetPlay(true)
+                    break
+                case "pause":
+                    this.handleSetPlay(false)
+                    break
+                case "next_song":
+                    this.handleNextSong()
+                    break
+                case "prev_song":
+                    this.handlePreviousSong()
+                    break
+                default:
+                    console.log("Invalid subaction")
+            }
+        }
+        if (actionObj.action === "queue") {
+            switch (actionObj.data.subaction) {
+                case "set_shuffle":
+                    this.props.queue.setShuffle(actionObj.data.state)
+                case "set_repeat":
+                    this.props.queue.setRepeat(actionObj.data.state)
+                default:
+                    break
+            }
+        }
     }
 
     handlePlayerStateChange = (e) => {
@@ -92,9 +127,15 @@ class Player extends React.Component {
         }
     }
 
+    handleSetPlay = (val) => {
+        if (this.playerAPI.isPaused() !== val) {
+            this.handleTogglePlay()
+        }
+    }
+
     handleTogglePlay = () => {
         var currentSong
-        if (this.props.playerAPI.isPlayerInit() === false) { //Initialize on first use
+        if (!this.props.playerAPI.isPlayerInit()) { //Initialize on first use
             if (this.props.queue.currentSongIsEmpty()) {
                 this.props.queue.nextSong()
             }

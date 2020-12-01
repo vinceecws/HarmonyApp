@@ -1,14 +1,42 @@
+class ActionHandler { 
+    constructor(handler) {
+        this.handler = handler
+    }
+
+    setHandler = (handler) => {
+        this.handler = handler
+    }
+
+    call(...args) {
+        this.handler(...args)
+    }
+
+    destroy() {
+        this.handler = null
+        return null
+    }
+}
+
 class SessionClient {
 
     constructor(socket) {
         this.socket = socket
+        this.onActions = {
+            rcvdChat: [],
+            rcvdPlayer: [],
+            rcvdQueue: [],
+            rcvdSession: []
+        }
         this.initSocket()
     }
 
     initSocket = () => {
-        this.socket.on('connect', async (socket) => {
+        this.socket.on('connect', (socket) => {
             console.log("Connected to Session namespace")
+        })
 
+        this.socket.on('disconnect', (socket) => {
+            console.log("Disconnected from Session namespace")
         })
 
         this.socket.onAny((event, ...args) => {
@@ -16,17 +44,140 @@ class SessionClient {
         })
     }
 
-    joinSession = (id) => {
+    createActionObj = (action, username, userId, data) => {
+        return {
+            action: action,
+            username: username,
+            userId: userId,
+            data: data
+        }
+    }
+
+    subscribeToAction = (action, callback, prepend=false) => {
+        if (action in this.onActions) {
+            var handler = new ActionHandler(callback)
+            if (prepend) {
+                this.onActions[action].unshift(handler)
+            }
+            else {
+                this.onActions[action].append(handler)
+            }
+            return handler
+        }
+    }
+
+    unsubscribeFromAction = (action, handler) => {
+        if (action in this.onActions) {
+            var ind = this.onActions[action].findIndex(x => x == handler)
+            if (ind > -1) {
+                var handler = this.onActions.splice(ind, 1)[0]
+                return handler.destroy()
+            }
+            else {
+                return null
+            }
+        }
+    }
+
+    /*
+        Action receivers
+    */
+    parseAction = (action, ...args) => {
+        switch (action) {
+            case "chat":
+                this.receiveChat(args[0])
+                break
+            case "player":
+                this.receivePlayer(args[0])
+                break
+            case "queue":
+                this.receiveQueue(args[0])
+                break
+            case "session":
+                this.receiveSession(args[0])
+                break
+            default:
+                console.log("Invalid action")
+        }
+    }
+
+    receiveChat = (chatObj) => {
+        this.onActions.rcvdChat.forEach(handler => handler.call(chatObj))
+    }
+
+    receivePlayer = (playerObj) => {
+        this.onActions.rcvdPlayer.forEach(handler => handler.call(playerObj))
+    }
+
+    receiveQueue = (queueObj) => {
+        this.onActions.rcvdQueue.forEach(handler => handler.call(queueObj))
+    }
+
+    receiveSession = (sessionObj) => {
+        this.onActions.rcvdSession.forEach(handler => handler.call(sessionObj))
+    }
+
+    /*
+        Action emitters
+    */
+    joinSession = (id, callback) => {
         this.socket.emit("join", id, (response) => {
             if (response.status === 200) {
                 console.log("Session joined")
             }
+            
+            if (callback) {
+                callback(response)
+            }
         })
     }
 
-    parseAction = (action, ...args) => {
-        console.log(action)
-        console.log(args)
+    leaveSession = (callback) => {
+        this.socket.emit("leave", (response) => {
+            if (response.status === 200) {
+                console.log("Session joined")
+            }
+            
+            if (callback) {
+                callback(response)
+            }
+        })
+    }
+
+    emitChat = (username, userId, data, callback) => {
+        var actionObj = this.createActionObj("chat", username, userId, data)
+        this.socket.emit("chat", actionObj, (response, chatObj) => {
+            if (callback) {
+                callback(response, chatObj)
+            }
+        })
+    }
+
+    emitPlayer = (username, userId, data, callback) => {
+        var actionObj = this.createActionObj("player", username, userId, data)
+        this.socket.emit("player", actionObj, (response, playerObj) => {
+            if (callback) {
+                callback(response, playerObj)
+            }
+        })
+    }
+
+    emitQueue = (username, userId, data, callback) => {
+        var actionObj = this.createActionObj("queue", username, userId, data)
+        this.socket.emit("queue", actionObj, (response, queueObj) => {
+            if (callback) {
+                callback(response, queueObj)
+            }
+        })
+    }
+
+    emitSession = (username, userId, data, callback) => {
+        var actionObj = this.createActionObj("session", username, userId, data)
+        this.socket.emit("session", actionObj, (response, sessionObj) => {
+            if (callback) {
+                callback(response, sessionObj)
+            }
+        })
     }
 }
 

@@ -5,7 +5,6 @@ class SessionServer {
     constructor(socket) {
         this.socket = socket
         this.initSocket()
-        
     }
 
     initSocket = () => {

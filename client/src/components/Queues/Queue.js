@@ -211,7 +211,22 @@ class Queue {
         and that the developer is well aware of the states before and after calling set
     */
     setRepeat = (val) => {
+        if (!(Object.values(repeatStates).indexOf(val) > -1)) {
+            return
+        }
         this._repeat = val
+    }
+
+    setShuffle = (val) => {
+        if (!(val === false || val === true)) {
+            return
+        }
+        if ((this._shuffle && val) || !(this._shuffle || val)) { //If current state is not equal to target state
+            return
+        }
+        else {
+            this.toggleShuffle()
+        }
     }
 }
 

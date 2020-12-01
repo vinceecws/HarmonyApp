@@ -1,51 +1,51 @@
 [    
     /* Chat object */
     {
-        "class": "chat",
+        "action": "chat",
         "timestamp": 0,
         "username": "abcd",
         "userId": "1234",
         "data": {
-            "action": "text", /* text */
+            "subaction": "text", /* text */
             "message": "hello" /* text */
         }
     },
 
     /* Player action object */
     {
-        "class": "player",
+        "action": "player",
         "timestamp": 0,
         "username": "abcd",
         "userId": "1234",
         "data": {
-            "action": "play" /* play, pause, next_song, prev_song */
+            "subaction": "play" /* play, pause, next_song, prev_song */
         }
     },
 
     /* Queue action object */
     {
-        "class": "queue",
+        "action": "queue",
         "timestamp": 0,
         "username": "abcd",
         "userId": "1234",
         "data": {
-            "action": "move_song", /* move_song, move_song_from_past, add_song, del_song, toggle_shuffle, toggle_repeat */
+            "subaction": "move_song", /* move_song, move_song_from_past, add_song, del_song, set_shuffle, set_repeat */
             "from": 0, /* move_song, move_song_from_past */
             "to": 1, /* move_song, move_song_from_past */
             "index": 3, /* del_song */
             "songId": "dY7nv3mK2", /* add_song */
-            "state": 0 /* toggle_shuffle, toggle_repeat */
+            "state": 0 /* set_shuffle, set_repeat */
         }
     },
 
     /* Session action object */
     {
-    	"class": "session",
+    	"action": "session",
     	"timestamp": 0,
         "username": "abcd",
         "userId": "1234",
         "data": {
-        	"action": "end_session", /* end_session, change_name, player_time */
+        	"subaction": "end_session", /* end_session, change_name, player_time */
             "newName": "lo-fi 24/8", /* change_name */
             "time": "01:50" /* player_time */
         }

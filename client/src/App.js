@@ -24,7 +24,6 @@ class App extends React.Component {
       auth: false,
       user: null
     }
-    console.log("CONSTRUCTOR")
   }
   
 
