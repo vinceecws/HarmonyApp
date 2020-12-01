@@ -375,7 +375,7 @@ class SettingsScreen extends React.Component{
                         {/* Modal */}
                         <Route path={'/main/settings/changeUsername'} render={() => { 
                             return(
-                            <div id="changeUsernameModal" style={{position: 'relative', transform: 'translate(0, -40%)'}}>
+                            <div id="changeUsernameModal" style={{position: 'relative', transform: 'translate(0, -60%)'}}>
                                 <div className="modal-dialog">
                                     {/* Modal Content */}
                                     <div className="modal-content">
