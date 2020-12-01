@@ -35,9 +35,9 @@ const mongoSession = session({
 //app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+app.use(mongoSession)
 app.use(passport.initialize())
 app.use(passport.session())
-app.use(mongoSession)
 
 passport.serializeUser(passportCallbacks.serialize)
 passport.deserializeUser(passportCallbacks.deserialize)
@@ -67,7 +67,7 @@ const sessionSocket = require('./socket/session.js')(io, mongoSession, passport.
 */
 
 const authRouter = require('./routes/authRoutes.js')(passport)
-const apiRouter = require('./routes/apiRoutes.js')(mainSocket, sessionSocket)
+const apiRouter = require('./routes/apiRoutes.js')()
 
 app.use('/auth', authRouter)
 app.use('/api', apiRouter)
