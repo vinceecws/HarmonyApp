@@ -51,12 +51,23 @@ class SessionScreen extends React.Component {
 			
 			//console.log(this.props.user);
 			/*Adjust new object for new action types*/
-			const obj = {'type':"message", 'object':{'username':this.props.user.username, 'message':this.state.messageText, 'timestamp':(this.state.actionLog[this.state.actionLog.length-1].object.timestamp)+1}};
-			this.setState({
-				chatLog: this.state.actionLog.concat(obj),
-				messageText: ""
+			if(this.state.chatLog.length > 0){
+				const obj = {'type':"message", 'object':{'username':this.props.user.username, 'message':this.state.messageText, 'timestamp':(this.state.chatLog[this.state.chatLog.length-1].object.timestamp)+1}};
+				this.setState({
+					chatLog: this.state.chatLog.concat(obj),
+					messageText: ""
 
-			})
+				})
+			}
+			else{
+				const obj = {'type':"message", 'object':{'username':this.props.user.username, 'message':this.state.messageText, 'timestamp':100}};
+				this.setState({
+					chatLog: this.state.chatLog.concat(obj),
+					messageText: ""
+
+				})
+			}
+			
 		}
 
 	}
@@ -97,6 +108,7 @@ class SessionScreen extends React.Component {
 					startTime: session.startTime,
 					futureQueue: this.props.queue.getFutureQueue(),
 					currentSong: this.props.queue.getCurrentSong(),
+					chatLog: session.actionLog
 	        	})
 	        })
             
@@ -157,7 +169,7 @@ class SessionScreen extends React.Component {
 	        					 	<div className='row' style={{height:'43%'}}>
 						                <Droppable droppableId="futureQueue">
 						                    {(provided) => ( 
-						                    	<QueueComponent Queue={this.state.futureQueue} fetchVideoById={this.props.fetchVideoById} provided={provided} />
+						                    	<QueueComponent Queue={this.state.futureQueue} fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.props.user}/>
 						        			 )}
 						        			   
 						                </Droppable>
@@ -168,7 +180,7 @@ class SessionScreen extends React.Component {
 				        			<div className='row' style={{height:'43%'}}>
 					        			<Droppable droppableId="prevQueue">
 						                    {(provided) => ( 
-		        								<QueueComponent Queue={this.state.prevQueue} fetchVideoById={this.props.fetchVideoById} provided={provided} />
+		        								<QueueComponent Queue={this.state.prevQueue} fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.props.user}/>
 		        							)}
 		        							
 						                </Droppable>
@@ -180,7 +192,7 @@ class SessionScreen extends React.Component {
         	</div>
 
     	}
-    	else if(!this.state.loading && !this.state.error && this.props.user == null){
+    	else if(!this.state.loading && !this.state.error && this.props.user === null){
     		renderContainer = 
     			<div style={{fontFamily: 'BalsamiqSans', marginLeft:'15px', height:'100%'}}>
         		<div className='row' style={{height:'100%'}}>
@@ -205,11 +217,11 @@ class SessionScreen extends React.Component {
 
 	        				</div>
 	        			</div>
-	        			<div className='row bg-color-contrasted' style={{height:'calc(78%-40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
+	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
 	        				<ChatFeed actionLog={this.state.chatLog} user={this.props.user}  />
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
-	        				<input type='text' disabled={true} name='MessageSender' placeholder='Send your message here...' onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
+	        				<input type='text' disabled={true} name='MessageSender' placeholder='Log in or Sign up to send a message...' onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'100%', display:'block'}}/>
 	        				
 	        			</div>
 	        		</div>
@@ -217,30 +229,28 @@ class SessionScreen extends React.Component {
 	        			
 	        			
 	        				
-	        					 <DragDropContext onDragEnd={this.handleOnDragEnd}>
+	        					 
 	        					 	<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
 				        				Up Next
 				        			</div>
 	        					 	<div className='row' style={{height:'43%'}}>
-						                <Droppable droppableId="nextQueue">
-						                    {(provided) => ( 
-						                    	<QueueComponent Queue={this.state.nextQueue} fetchVideoById={this.props.fetchVideoById} provided={provided} />
-						        			 )}
+						                
+						                    	<QueueComponent Queue={this.state.futureQueue} fetchVideoById={this.props.fetchVideoById}/>
+						        			
 						        			   
-						                </Droppable>
+						                
 					                </div>
 						            <div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
 				        				Previously Played
 				        			</div>
 				        			<div className='row' style={{height:'43%'}}>
-					        			<Droppable droppableId="prevQueue">
-						                    {(provided) => ( 
-		        								<QueueComponent Queue={this.state.prevQueue} fetchVideoById={this.props.fetchVideoById} provided={provided} />
-		        							)}
+					        			
+		        								<QueueComponent Queue={this.state.prevQueue} fetchVideoById={this.props.fetchVideoById}/>
 		        							
-						                </Droppable>
+		        							
+						                
 				        			</div>
-					            </DragDropContext>
+					            
 	        		</div>
         		</div>
         		
