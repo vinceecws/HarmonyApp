@@ -1147,6 +1147,7 @@ module.exports = function(mainSocket, sessionSocket) {
             let filteredCollections = [];
             let filteredUsers = [];
 
+            console.log(thisUser);
             for (let s of sessionMatches){
                 if (thisUser.google.name === undefined && s.hostName !== thisUser.local.username){
                     filteredSessions.push(s);
@@ -1156,10 +1157,8 @@ module.exports = function(mainSocket, sessionSocket) {
                 }
             }
             for (let c of collectionMatches){
-                for (let p of thisUser.playlists){
-                    if (c._id !== p){
-                        filteredCollections.push(c);
-                    }
+                if (!(c._id in thisUser.playlists)){
+                    filteredCollections.push(c);
                 }
             }
             for (let u of userMatches){

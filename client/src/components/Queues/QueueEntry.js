@@ -25,9 +25,9 @@ class QueueEntry extends React.Component{
 		} else{
 			entry = <h1 className='Session-Entry-Text body-text color-accented'>{this.props.index+1} : {this.props.title} -- {this.props.artist}</h1>;
 		}
-		
-		return(
-			<div  onMouseEnter={this.handleEntry} onMouseLeave={this.handleLeave} style={{width:"100%"}}>
+		let renderStuff;
+		if(this.props.user != null){
+			renderStuff =<div  onMouseEnter={this.handleEntry} onMouseLeave={this.handleLeave} style={{width:"100%"}}>
 				
 				<Draggable key={this.props.id} draggableId={this.props.id} index={this.props.index} >
 	            	{(provided) => (
@@ -44,6 +44,25 @@ class QueueEntry extends React.Component{
 	        	</Draggable>
 
 			</div>
+		}
+		else{
+			renderStuff = <div  onMouseEnter={this.handleEntry} onMouseLeave={this.handleLeave} style={{width:"100%"}}>
+				
+				
+					<div className='list-group-item' >
+						<div>
+						{entry}
+						</div>
+
+						
+						
+					</div>
+					
+
+			</div>
+		}
+		return(
+			renderStuff
 		);
 	}
 }
