@@ -17,20 +17,28 @@ class ChatFeed extends React.Component{
         var ChatEntries = this.props.actionLog; //in the future sort these out for message actions
         
         var ChatList = ChatEntries.map(item => {
-            if(item.type === "message" && this.props.user != null){
-
-                if(item.object.username === this.props.user.username){
-                    return <div style={{overflowWrap: 'break-word', padding:'1em', textAlign:'right'}}>
-                        <div className='body-text color-accented'>You</div>
-                        <div style={{display: 'inline-block',maxWidth:'55%', padding:'1em',backgroundColor:'white', border: '3px solid black', borderRadius: '25px'}}>{item.object.message}</div>
-                        </div>
+            if(item.type === "message"){
+                if(this.props.user != null){
+                    if(item.object.username === this.props.user.username){
+                        return <div style={{overflowWrap: 'break-word', padding:'1em', textAlign:'right'}}>
+                            <div className='body-text color-accented'>You</div>
+                            <div style={{display: 'inline-block',maxWidth:'55%', padding:'1em',backgroundColor:'white', border: '3px solid black', borderRadius: '25px'}}>{item.object.message}</div>
+                            </div>
+                    }
+                    else{
+                        return <div style={{overflowWrap: 'break-word', padding:'1em'}}>
+                            <div className='body-text color-accented'>{item.object.username}</div>
+                            <div style={{display: 'inline-block',maxWidth:'55%', padding:'1em',backgroundColor:'white', border: '3px solid black', borderRadius: '25px'}}>{item.object.message}</div>
+                            </div>
+                    }
                 }
                 else{
                     return <div style={{overflowWrap: 'break-word', padding:'1em'}}>
-                        <div className='body-text color-accented'>{item.object.username}</div>
-                        <div style={{display: 'inline-block',maxWidth:'55%', padding:'1em',backgroundColor:'white', border: '3px solid black', borderRadius: '25px'}}>{item.object.message}</div>
-                        </div>
+                            <div className='body-text color-accented'>{item.object.username}</div>
+                            <div style={{display: 'inline-block',maxWidth:'55%', padding:'1em',backgroundColor:'white', border: '3px solid black', borderRadius: '25px'}}>{item.object.message}</div>
+                            </div>
                 }
+                
                 
             }
         });

@@ -6,6 +6,7 @@ class QueueComponent extends React.Component{
     render(){
         var QueueEntries = this.props.Queue;
         var QueueList;
+        let renderStuff;
         if(QueueEntries!= null){
             QueueList = QueueEntries.map((item, index) => 
 
@@ -15,20 +16,30 @@ class QueueComponent extends React.Component{
                 title={item.name} 
                 index={index}
                 id={item._id}
+                user={this.props.user}
             />
 
             ); 
         }
         
                
-        
+        if(this.props.user != null){
+            renderStuff = <div className='list-group list-group-sessionScreen' style={{width: '100%', minWidth: '150px'}} {...this.props.provided.droppableProps} ref={this.props.provided.innerRef}>
+                {QueueList}
+                {this.props.provided.placeholder}
+            </div>
+        }
+        else{
+            renderStuff = 
+            <div className='list-group list-group-sessionScreen' style={{width: '100%', minWidth: '150px'}}>
+                {QueueList}
+                            
+            </div>
+        }
         
     	return(
-           
-                		<div className='list-group list-group-sessionScreen' style={{width: '100%', minWidth: '150px'}} {...this.props.provided.droppableProps} ref={this.props.provided.innerRef}>
-                            {QueueList}
-                            {this.props.provided.placeholder}
-                    	</div>
+            renderStuff
+                		
            
         );
         
