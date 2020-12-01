@@ -4,6 +4,8 @@ import {icon_profile_image, icon_calendar} from '../graphics';
 import { Link, Route } from 'react-router-dom'
 import { Form, Col, Button } from 'react-bootstrap'
 
+const _ = require('lodash')
+
 class SettingsScreen extends React.Component{
 	constructor (props) {
         super(props);
@@ -60,36 +62,49 @@ class SettingsScreen extends React.Component{
         this.clearPasswordCredentials()
     }
     handleUsernameChange = (e) => {
-        this.setState({
-            username: e.target.value,
-            changeUsername_validated: false
-        })
+        if(!(e.target.value.length > this.state.character_limit)){
+            this.setState({
+                username: e.target.value,
+                changeUsername_validated: false
+            })
+        }
+
     }
     handleBiographyChange = (e) => {
         //const shouldSet = this.state.biography.length < 500;
-        this.setState({
+        if(!(e.target.value.length > this.state.character_limit)){
+            this.setState({
                 biography: e.target.value
-        })
+            })
+        }
+        
         
     }
 
     handleChangeUsernamePassword = (e) => {
-        this.setState({
-            password: e.target.value,
-            changeUsername_validated: false,
-            changePassword_validated: false
-        })
+        if(!(e.target.value.length > this.state.character_limit)){
+            this.setState({
+                password: e.target.value,
+                changeUsername_validated: false,
+                changePassword_validated: false
+            })
+        }
     }
     handleChangeNewPassword = (e) => {
-        this.setState({
-            new_password: e.target.value
-        })
+        if(!(e.target.value.length > this.state.character_limit)){
+            this.setState({
+                new_password: e.target.value
+            })
+        }
     }
 
     handleChangeUsernameConfirmPassword = (e) => {
-        this.setState({
+        if(!(e.target.value.length > this.state.character_limit)){
+            this.setState({
             confirm_password: e.target.value
-        })
+            })
+        }
+        
     }
     handleValidateBiography = (e) =>{
         return this.state.biography.length < this.state.character_limit;

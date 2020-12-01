@@ -592,6 +592,7 @@ module.exports = function(mainSocket, sessionSocket) {
     });
 
     apiRouter.get('/settings', async (req, res) => {
+        console.log(req.user);
         if(req.user == null){
             return res.status(404).json({
                 error: {
@@ -610,7 +611,7 @@ module.exports = function(mainSocket, sessionSocket) {
         if (id == null){
             return res.status(404).json({
                 error: {
-                    name: "Invalid session",
+                    name: "User not found",
                     message: "Not found"
                 },
                 message: "Not found",
