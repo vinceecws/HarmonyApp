@@ -5,6 +5,7 @@ class SessionServer {
     constructor(socket) {
         this.socket = socket
         this.initSocket()
+        
     }
 
     initSocket = () => {
@@ -61,6 +62,14 @@ class SessionServer {
         }).catch(error => {
             return error
         })
+        /*
+        mongooseQuery.updateSession(sessionId, {
+            
+        
+        }).catch(error => {
+            return error
+        })
+        */
     }
 
     /*

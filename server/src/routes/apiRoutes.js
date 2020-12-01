@@ -1155,9 +1155,9 @@ module.exports = function(mainSocket, sessionSocket) {
                         filteredSessions.push(s);
                 }
             }
-            for (let p of thisUser.playlists){
-                for (let c of collectionMatches){
-                    if (c._id !== p._id){
+            for (let c of collectionMatches){
+                for (let p of thisUser.playlists){
+                    if (c._id !== p){
                         filteredCollections.push(c);
                     }
                 }
