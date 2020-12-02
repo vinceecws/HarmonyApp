@@ -10,8 +10,6 @@ const _ = require('lodash')
 class SessionScreen extends React.Component {
 	constructor(props){
 		super(props);
-		this.getSession()
-		this.initSessionClient()
 		this.state = {
 			loading: true,
 			error: false,
@@ -26,9 +24,14 @@ class SessionScreen extends React.Component {
 			chatLog: [],
 			messageText: "",
 		}
+		this.getSession()
+		
+		
 		//this.props.sessionClient.joinSession(this.props.match.params.sessionId)
 	}
-
+	initSessionClient = () =>{
+		this.props.sessionClient.joinSession(this.state._id, this.setState({loading: false}));
+	}
 	getSession = () => { 
 		if (this.props.match.params.sessionId){
 			this.props.axiosWrapper.axiosGet("/api/session/" + this.props.match.params.sessionId, this.handleGetSession, true)
@@ -75,7 +78,7 @@ class SessionScreen extends React.Component {
 	handleOnDragEnd = (e) =>{
 		if(!e.destination) return;
 		console.log(e);
-		if(e.destination.droppableId === "futureQueue"){
+		if(e.destination.droppableId === "futureQueue" && e.source.droppableId === "futureQueue"){
 			const items = Array.from(this.state.futureQueue);
 			const [reorderedItem] = items.splice(e.source.index, 1);
 			items.splice(e.destination.index, 0, reorderedItem);
@@ -83,6 +86,7 @@ class SessionScreen extends React.Component {
 			this.setState({
 				futureQueue: items
 			});
+			this.props.queue.moveSongInFutureQueue(e.source.index,e.destination.index);
 		}
 		
 	}
@@ -91,16 +95,20 @@ class SessionScreen extends React.Component {
 		if (status === 200) {
 			var session = data.data.session
 			var initialQueue = _.cloneDeep(data.data.session.initialQueue);
-			this.props.playVideo(initialQueue.shift());
+			if(initialQueue.length > 0){
+				this.props.playVideo(initialQueue.shift());
+			}
+			
 
 			Promise.all(initialQueue.map((songId) => {
             	return this.props.fetchVideoById(songId, true) //Initial queue of song objects
         	})).then((fetchedSongs) => {
 				fetchedSongs.forEach(song => {
-					this.props.queue.addSongToFutureQueue(song)
-				})
+					console.log(song);
+					this.props.queue.addSongToFutureQueue(song);
+				});
             	this.setState({
-	        		loading: false,
+	        		
 	        		id: session._id,
 					hostId: session.hostId,
 					hostName : session.hostName,
@@ -110,6 +118,7 @@ class SessionScreen extends React.Component {
 					currentSong: this.props.queue.getCurrentSong(),
 					chatLog: session.actionLog
 	        	})
+	        	this.initSessionClient();
 	        })
             
         }
@@ -122,7 +131,7 @@ class SessionScreen extends React.Component {
 	}
 
     render(){
-    	
+    	console.log(this.props.queue);
     	
     	let renderContainer = false
     	if(!this.state.loading && !this.state.error && this.props.user != null){
