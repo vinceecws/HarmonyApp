@@ -75,10 +75,10 @@ app.use('/api', apiRouter)
 /*
     Serve static build of React app in production
 */
-app.use(express.static(path.resolve(__dirname, '..', '..', 'client', 'build')))
+app.use(express.static(path.resolve(__dirname, '..', '..', 'build')))
 
 // app.get('/', (req, res, next) => {
-//     res.sendFile(path.resolve(__dirname, '..', '..', 'client', 'build', 'index.html'));
+//     res.sendFile(path.resolve(__dirname, '..', '..', 'build', 'index.html'));
 // });
 
 db.on('error', console.error.bind(console, "Error connecting to MongoDB Atlas Database:"))
