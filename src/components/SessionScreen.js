@@ -15,6 +15,7 @@ class SessionScreen extends React.Component {
 			loading: true,
 			error: false,
 			_id: null,
+			live: "private",
 			hostId: null,
 			hostName: null,
 			name: null,
@@ -117,7 +118,8 @@ class SessionScreen extends React.Component {
 					startTime: session.startTime,
 					futureQueue: this.props.queue.getFutureQueue(),
 					currentSong: this.props.queue.getCurrentSong(),
-					chatLog: session.actionLog
+					chatLog: session.actionLog,
+					live: session.live
 	        	})
 	        	this.initSessionClient();
 	        })
@@ -130,12 +132,37 @@ class SessionScreen extends React.Component {
         	})
         }
 	}
-
+	isHost = () => {
+        if (this.props.user) { //Logged-in
+            if (this.props.currentSession) { //In a live Session
+                if (this.props.user.live) { //Hosting
+                    return true 
+                }
+                else { //Participating
+                    return false
+                }
+            }
+            else { //Private session or no session
+                return true
+            }
+        }
+        else { //Guest
+            if (this.props.currentSession) { //In a live Session, participating
+                return false
+            }
+            else {
+                return true //Offline session or no session
+            }
+        }
+    }
+    isGuest = () =>{
+    	return !this.props.user;
+    }
     render(){
     	
     	
     	let renderContainer = false
-    	if(!this.state.loading && !this.state.error && this.props.user != null){
+    	if(!this.state.loading && !this.state.error && this.isHost){
     		renderContainer = 
     			<div style={{fontFamily: 'BalsamiqSans', marginLeft:'15px', height:'100%'}}>
         		<div className='row' style={{height:'100%'}}>
@@ -155,7 +182,7 @@ class SessionScreen extends React.Component {
 	        					</div>
 	        				</div>
 	        				<div className='col' style={{maxWidth:'25%', textAlign: 'right', padding:'1em', minWidth:'10%',color:'white',  float:'right'}}>
-	        					<div className='body-text'>LIVE<img src={icon_radio} style={{width:'30px'}}/></div>
+	        					<div className='body-text'>{this.state.live}<img src={icon_radio} style={{width:'30px'}}/></div>
 	        					{this.state.startTime}
 
 	        				</div>
@@ -164,8 +191,8 @@ class SessionScreen extends React.Component {
 	        				<ChatFeed actionLog={this.state.chatLog} user={this.props.user}  />
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
-	        				<input type='text' name='MessageSender' placeholder='Send your message here...' onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
-	        				<div style={{width:'5%', display:'block', textAlign:'center'}}>{this.state.messageText.length}/250</div>
+	        				<input disable={this.props.currentSession} type='text' name='MessageSender' placeholder='Send your message here...' onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
+	        				<div disable={this.props.currentSession} style={{width:'5%', display:'block', textAlign:'center'}}>{this.state.messageText.length}/250</div>
 	        			</div>
 	        		</div>
 	        		<div className='col-sm-4' style={{height:'100%'}}>
@@ -202,7 +229,7 @@ class SessionScreen extends React.Component {
         	</div>
 
     	}
-    	else if(!this.state.loading && !this.state.error && this.props.user === null){
+    	else if(!this.state.loading && !this.state.error && !this.isHost){
     		renderContainer = 
     			<div style={{fontFamily: 'BalsamiqSans', marginLeft:'15px', height:'100%'}}>
         		<div className='row' style={{height:'100%'}}>
@@ -222,17 +249,17 @@ class SessionScreen extends React.Component {
 	        					</div>
 	        				</div>
 	        				<div className='col' style={{maxWidth:'25%', textAlign: 'right', padding:'1em', minWidth:'10%',color:'white',  float:'right'}}>
-	        					<div className='body-text'>LIVE<img src={icon_radio} style={{width:'30px'}}/></div>
+	        					<div className='body-text'>{this.state.live}<img src={icon_radio} style={{width:'30px'}}/></div>
 	        					{this.state.startTime}
 
 	        				</div>
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
-	        				<ChatFeed actionLog={this.state.chatLog} user={this.props.user}  />
+	        				<ChatFeed  actionLog={this.state.chatLog} user={this.props.user}  />
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
-	        				<input type='text' disabled={true} name='MessageSender' placeholder='Log in or Sign up to send a message...' onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'100%', display:'block'}}/>
-	        				
+	        				<input type='text' disabled={this.isGuest} name='MessageSender' placeholder='Log in or Sign up to send a message...' onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'100%', display:'block'}}/>
+	        				<div disable={this.isGuest} style={{width:'5%', display:'block', textAlign:'center'}}>{this.state.messageText.length}/250</div>
 	        			</div>
 	        		</div>
 	        		<div className='col-sm-4' style={{height:'100%'}}>
