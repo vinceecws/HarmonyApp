@@ -20,8 +20,8 @@ class Player extends React.Component {
     }
 
     componentDidMount = () => {
-        this.playerActionListener = this.props.sessionClient.subscribeToAction("player", this.handleUpdatePlayerState.bind(this))
-        this.queueActionListener = this.props.sessionClient.subscribeToAction("queue", this.handleUpdatePlayerState.bind(this))
+        this.playerActionListener = this.props.sessionClient.subscribeToAction("player", this.handleApplyPlayerState.bind(this))
+        this.queueActionListener = this.props.sessionClient.subscribeToAction("queue", this.handleApplyPlayerState.bind(this))
         this.props.playerAPI.subscribeToEvent("onPlayerStateChange", this.handlePlayerStateChange.bind(this))
         setInterval(() => {
             this.setState({
@@ -61,7 +61,31 @@ class Player extends React.Component {
         })
     }
 
-    handleUpdatePlayerState = (actionObj) => {
+    handleEmitPlayerState = (action, subaction, ...args) => {
+        if (!(this.props.currentSession && this.isHost())) {
+            return
+        }
+
+        var username = this.props.user.username
+        var userId = this.props.user._id
+        var data = {}
+        
+        if (action === "player") {
+            data.subaction = subaction
+            this.sessionClient.emitPlayer(username, userId, data)
+        }
+        else if (action === "queue") {
+            data.subaction = subaction
+            data.state = args[0]
+            this.sessionClient.emitQueue(username, userId, data)
+        }
+    }
+
+    handleApplyPlayerState = (actionObj) => {
+        if (this.props.currentSession && this.isHost()) {
+            return
+        }
+
         if (actionObj.action === "player") {
             switch (actionObj.data.subaction) {
                 case "play":
@@ -80,7 +104,7 @@ class Player extends React.Component {
                     console.log("Invalid subaction")
             }
         }
-        if (actionObj.action === "queue") {
+        else if (actionObj.action === "queue") {
             switch (actionObj.data.subaction) {
                 case "set_shuffle":
                     this.props.queue.setShuffle(actionObj.data.state)
@@ -109,6 +133,7 @@ class Player extends React.Component {
     }
 
     handleNextSong = () => {
+        this.handleEmitPlayerState("player", "next_song")
         this.props.queue.nextSong()
         var currentSong = this.props.queue.getCurrentSong()
         if (currentSong._id !== "") {
@@ -120,6 +145,7 @@ class Player extends React.Component {
     }
 
     handlePreviousSong = () => {
+        this.handleEmitPlayerState("player", "prev_song")
         this.props.queue.previousSong()
         var currentSong = this.props.queue.getCurrentSong()
         if (currentSong._id !== "") {
@@ -136,6 +162,7 @@ class Player extends React.Component {
     handleTogglePlay = () => {
         var currentSong
         if (!this.props.playerAPI.isPlayerInit()) { //Initialize on first use
+            this.handleEmitPlayerState("player", "play")
             if (this.props.queue.currentSongIsEmpty()) {
                 this.props.queue.nextSong()
             }
@@ -148,6 +175,7 @@ class Player extends React.Component {
         }
 
         if (this.props.playerAPI.isPaused()) {
+            this.handleEmitPlayerState("player", "play")
             if (this.props.queue.currentSongIsEmpty()) {
                 this.props.queue.nextSong()
 
@@ -161,6 +189,7 @@ class Player extends React.Component {
             }
         }
         else {
+            this.handleEmitPlayerState("player", "pause")
             this.props.playerAPI.pauseVideo()
         }
     }
@@ -189,6 +218,16 @@ class Player extends React.Component {
                 }
             }).bind(this), true)
         }
+    }
+
+    handleToggleShuffle = (e) => {
+        this.props.queue.toggleShuffle()
+        this.handleEmitPlayerState("queue", "shuffle", this.props.queue.getShuffle())
+    }
+
+    handleToggleRepeat = (e) => {
+        this.props.queue.toggleRepeat()
+        this.handleEmitPlayerState("queue", "repeat", this.props.queue.getRepeat())
     }
 
     getSongProgress = () => {
@@ -253,6 +292,43 @@ class Player extends React.Component {
         return this.state.user && this.state.user.likedSongs.includes(this.state.currentSong._id) ? 'player-song-favorite-button-icon-on' : 'player-song-favorite-button-icon'
     }
 
+    getPlayerControlsDisabled = () => {
+        return this.props.currentSession && !this.isHost() //In a live Session and not the host
+    }
+
+    getSeekDisabled = () => {
+        return this.props.currentSession //In a live Session
+    }
+
+    /*
+        Is user hosting their own session?
+        True, if logged-in user is hosting a live Session, logged-in user is hosting a private Session, or guest user is hosting an offline Session
+        False, if logged-in user is participating in a live Session, or guest user is participating in a live Session
+    */
+    isHost = () => {
+        if (this.props.user) { //Logged-in
+            if (this.props.currentSession) { //In a live Session
+                if (this.props.user.live) { //Hosting
+                    return true 
+                }
+                else { //Participating
+                    return false
+                }
+            }
+            else { //Private session or no session
+                return true
+            }
+        }
+        else { //Guest
+            if (this.props.currentSession) { //In a live Session, participating
+                return false
+            }
+            else {
+                return true //Offline session or no session
+            }
+        }
+    }
+
     render(){
         let entry =  <div><Ticker speed={8}>
                         {({index}) => (<h1 className="body-text color-contrasted">{this.getSongName()}</h1>)}
@@ -284,25 +360,25 @@ class Player extends React.Component {
                     </Col>
                     <Col id="player-controls">
                         <Row id="player-controls-main-container"> 
-                            <Button className="player-control-button" onClick={e => this.props.queue.toggleRepeat(e)}>
+                            <Button className="player-control-button" onClick={e => this.handleToggleRepeat(e)} disabled={this.getPlayerControlsDisabled()}>
                                 <Image className={this.getRepeatButtonIconClass()} src={this.getRepeatButtonIcon()} roundedCircle/>
                             </Button>
-                            <Button className="player-control-button" onClick={e => this.handlePreviousSong(e)}>
+                            <Button className="player-control-button" onClick={e => this.handlePreviousSong(e)} disabled={this.getPlayerControlsDisabled()}>
                                 <Image className="player-control-button-icon" src={icon_previous} roundedCircle/>
                             </Button>
-                            <Button className="player-control-button" onClick={e => this.handleTogglePlay(e)}>
+                            <Button className="player-control-button" onClick={e => this.handleTogglePlay(e)} disabled={this.getPlayerControlsDisabled()}>
                                 <Image className="player-control-button-icon" src={this.getPlayButtonIcon()} roundedCircle/>
                             </Button>
-                            <Button className="player-control-button" onClick={e => this.handleNextSong(e)}>
+                            <Button className="player-control-button" onClick={e => this.handleNextSong(e)} disabled={this.getPlayerControlsDisabled()}>
                                 <Image className="player-control-button-icon" src={icon_next} roundedCircle/>
                             </Button>
-                            <Button className="player-control-button" onClick={e => this.props.queue.toggleShuffle(e)}>
+                            <Button className="player-control-button" onClick={e => this.handleToggleShuffle(e)} disabled={this.getPlayerControlsDisabled()}>
                                 <Image className={this.getShuffleButtonIconClass()} src={icon_shuffle_arrows} roundedCircle/>
                             </Button>
                         </Row>
                         <Row id="player-progress-bar-container">
                             <div className="player-progress-display body-text">{this.getSongProgress()}</div>
-                            <RangeSlider className="player-progress-bar" variant="dark" tooltip="off" value={this.state.currentTime} onChange={e => this.handleMoveSlider(e.target.value)} onAfterChange={e => this.handleSeek(e.target.value)} min={0} max={this.props.playerAPI.getDuration()}/>
+                            <RangeSlider className="player-progress-bar" variant="dark" tooltip="off" value={this.state.currentTime} onChange={e => this.handleMoveSlider(e.target.value)} onAfterChange={e => this.handleSeek(e.target.value)} min={0} max={this.props.playerAPI.getDuration()} disabled={this.getSeekDisabled()}/>
                             <div className="player-progress-display body-text">{this.getSongDuration()}</div>
                         </Row>
                     </Col>

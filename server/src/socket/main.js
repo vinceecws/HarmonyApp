@@ -7,17 +7,24 @@ module.exports = function (io, ...middlewares) {
     
     middlewares.forEach(arg => socket.use(wrap(arg)))
 
-    socket.on('connect', async (socket) => {
+    socket.on('connect', (socket) => {
         /* Access equivalent of PassportJS's "req.user" here as "socket.request.user" */
+        console.log('Connected to Main namespace')
 
-        let sessions = await mongooseQuery.getSessions().catch(err => {
-            socket.emit('error')
+        socket.on('get-top-sessions', async () => {
+            let sessions = await mongooseQuery.getSessions().catch(err => {
+                socket.emit('error')
+            })
+            socket.emit('top-sessions', sessions, (response) => {
+                if (response.status === 200) {
+                    console.log("Sessions acknowledged")
+                }
+            })
         })
-        socket.emit('top-sessions', sessions, (response) => {
-            if (response.status === 200) {
-                console.log("Sessions acknowledged")
-            }
-        })
+    })
+
+    socket.on('disconnect', (socket) => {
+        console.log('Disconnected from Main namespace')
     })
 
     return socket

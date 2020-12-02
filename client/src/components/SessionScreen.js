@@ -11,7 +11,6 @@ class SessionScreen extends React.Component {
 	constructor(props){
 		super(props);
 		this.getSession()
-		this.initSessionClient()
 		this.state = {
 			loading: true,
 			error: false,

@@ -16,10 +16,6 @@ class SessionSideList extends React.Component{
 
     initSocket = () => {
         if (this.props.mainSocket) {
-            this.props.mainSocket.on('connect', () => {
-                console.log('connected')
-            })
-
             this.props.mainSocket.on('top-sessions', (topSessions, callback) => {
                 if (topSessions) {
                     this.setState({
@@ -31,11 +27,8 @@ class SessionSideList extends React.Component{
                     status: 200
                 })
             })
+            this.props.mainSocket.emit('get-top-sessions')
         }
-    }
-
-    handleGoToItem = () => {
-
     }
 
     render(){

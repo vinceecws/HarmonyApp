@@ -93,101 +93,108 @@ class PlayerAPI {
         }
     }
 
+    destroyIFrameAPI = () => {
+        if (this.player) {
+            this.player.destroy()
+        }
+        return null
+    }
+
     loadVideoById = (id) => {
-        if (this.player != null) {
+        if (this.player) {
             this.player.loadVideoById(id)
             this.player.playVideo()
         }
     }
 
     playVideo = () => {
-        if (this._playerReady && this.player != null) {
+        if (this._playerReady && this.player) {
             this.player.playVideo()
         }
     }
 
     pauseVideo = () => {
-        if (this._playerReady && this.player != null) {
+        if (this._playerReady && this.player) {
             this.player.pauseVideo()
         }
     }
 
     stopVideo = () => {
-        if (this._playerReady && this.player != null) {
+        if (this._playerReady && this.player) {
             this.player.stopVideo()
         }
     }
 
     seekTo = (time) => {
-        if (this._playerReady && this.player != null) {
+        if (this._playerReady && this.player) {
             this.player.seekTo(time)
         }
     }
 
     nextVideo = () => {
-        if (this._playerReady && this.player != null) {
+        if (this._playerReady && this.player) {
             this.player.nextVideo()
         }
     }
 
     previousVideo = () => {
-        if (this._playerReady && this.player != null) {
+        if (this._playerReady && this.player) {
             this.player.previousVideo()
         }
     }
 
     mute = () => {
-        if (this._playerReady && this.player != null) {
+        if (this._playerReady && this.player) {
             this.player.mute()
         }
     }
 
     unMute = () => {
-        if (this._playerReady && this.player != null) {
+        if (this._playerReady && this.player) {
             this.player.unMute()
         }
     }
 
     setVolume = (volume) => {
-        if (this._playerReady && this.player != null) {
+        if (this._playerReady && this.player) {
             this.player.setVolume(volume)
         }
     }
 
     setLoop = (loop) => {
-        if (this._playerReady && this.player != null) {
+        if (this._playerReady && this.player) {
             this.player.setLoop(loop)
         }
     }
 
     setShuffle = (shuffle) => {
-        if (this._playerReady && this.player != null) {
+        if (this._playerReady && this.player) {
             this.player.setVolume(shuffle)
         }
     }
 
     isPaused = () => {
-        if (this._playerReady && this.player != null) {
+        if (this._playerReady && this.player) {
             return this.player.getPlayerState() === window.YT.PlayerState.PAUSED
         }
         return true
     }
 
     isMuted = () => {
-        if (this._playerReady && this.player != null) {
+        if (this._playerReady && this.player) {
             return this.player.isMuted()
         }
         return false
     }
 
     getPlayerState = () => {
-        if (this._playerReady && this.player != null) {
+        if (this._playerReady && this.player) {
             return this.player.getPlayerState()
         }
     }
 
     getPlaylistIndex = () => {
-        if (this._playerReady && this.player != null) {
+        if (this._playerReady && this.player) {
             this.player.getPlaylistIndex()
         }
     }
@@ -199,21 +206,21 @@ class PlayerAPI {
     }
 
     getVolume = () => {
-        if (this._playerReady && this.player != null) {
+        if (this._playerReady && this.player) {
             return this.player.getVolume()
         }
         return 50
     }
 
     getCurrentTime = () => {
-        if (this._playerReady && this.player != null) {
+        if (this._playerReady && this.player) {
             return parseInt(this.player.getCurrentTime())
         }
         return 0
     }
 
     getDuration = () => {
-        if (this._playerReady && this.player != null) {
+        if (this._playerReady && this.player) {
             return parseInt(this.player.getDuration())
         }
         return 0

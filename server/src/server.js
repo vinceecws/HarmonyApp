@@ -67,7 +67,7 @@ const sessionSocket = require('./socket/session.js')(io, mongoSession, passport.
 */
 
 const authRouter = require('./routes/authRoutes.js')(passport)
-const apiRouter = require('./routes/apiRoutes.js')()
+const apiRouter = require('./routes/apiRoutes.js')(mainSocket, sessionSocket)
 
 app.use('/auth', authRouter)
 app.use('/api', apiRouter)
