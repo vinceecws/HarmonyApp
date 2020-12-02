@@ -27,8 +27,7 @@
   },
   "scripts": {
     "start-client": "react-scripts start",
-    "start": "npm run build && (cd ../server && npm start)",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false (cd client && npm install) && (cd ../server && npm install)",
+    "start": "npm run build && (cd ./server && npm start)",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

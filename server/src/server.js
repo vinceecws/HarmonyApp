@@ -14,7 +14,8 @@ const io = require('socket.io')(server)
 const session = require("express-session")
 const path = require('path')
 const db = require('./db').db
-const apiPort = process.env.PORT || 3000
+// const apiPort = process.env.PORT || 3000
+const apiPort = 80
 
 const MongoStore = require('connect-mongo')(session)
 const mongoSession = session({
@@ -75,10 +76,10 @@ app.use('/api', apiRouter)
 /*
     Serve static build of React app in production
 */
-app.use(express.static(path.resolve(__dirname, '..', '..', 'client', 'build')))
+app.use(express.static(path.resolve(__dirname, '..', '..', 'build')))
 
 // app.get('/', (req, res, next) => {
-//     res.sendFile(path.resolve(__dirname, '..', '..', 'client', 'build', 'index.html'));
+//     res.sendFile(path.resolve(__dirname, '..', '..', 'build', 'index.html'));
 // });
 
 db.on('error', console.error.bind(console, "Error connecting to MongoDB Atlas Database:"))
