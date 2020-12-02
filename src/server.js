@@ -10,11 +10,31 @@ const cors = require('cors')
 const express = require("express")
 const app = express()
 const server = require("http").createServer(app)
-const io = require('socket.io')(server)
 const session = require("express-session")
 const path = require('path')
 const db = require('./db').db
-const apiPort = process.env.PORT || 3000
+var io
+var apiPort
+
+if (process.env.REACT_APP_NODE_ENV === 'development') {
+    io = require('socket.io')(server, {
+        cors: {
+            origin: "http://localhost:3000",
+            methods: ["GET", "POST"],
+            credentials: true
+        }
+    })
+    apiPort = 4000
+}
+else if (process.env.NODE_ENV === 'production') {
+    io = require('socket.io')(server)
+    apiPort = process.env.PORT
+}
+else {
+    io = require('socket.io')(server)
+    apiPort = process.env.PORT || 3000
+}
+
 
 const MongoStore = require('connect-mongo')(session)
 const mongoSession = session({
@@ -32,7 +52,10 @@ const mongoSession = session({
     Express.js configurations
 */
 
-//app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
+if (process.env.REACT_APP_NODE_ENV === 'development') {
+    app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
+}
+
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(mongoSession)
@@ -73,13 +96,18 @@ app.use('/auth', authRouter)
 app.use('/api', apiRouter)
 
 /*
-    Serve static build of React app in production
+    Serve static build of React app if in production
 */
-app.use(express.static(path.resolve(__dirname, '..', 'client', 'build')))
+if (process.env.REACT_APP_NODE_ENV === 'development') {
 
-app.get('*', (req, res, next) => {
-    res.sendFile(path.resolve(__dirname, '..', 'client', 'build', 'index.html'));
-});
+}
+else if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.resolve(__dirname, '..', 'client', 'build')))
+
+    app.get('*', (req, res, next) => {
+        res.sendFile(path.resolve(__dirname, '..', 'client', 'build', 'index.html'));
+    });
+}
 
 db.on('error', console.error.bind(console, "Error connecting to MongoDB Atlas Database:"))
 

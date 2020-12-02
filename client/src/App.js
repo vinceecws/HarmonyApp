@@ -15,13 +15,16 @@ import { Container } from 'react-bootstrap';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
 import AxiosWrapper from './components/axiosWrapper/axiosWrapper.js'
-if (process.env.NODE_ENV === 'production') {
+
+if (process.env.REACT_APP_NODE_ENV === 'development') {
+    axios.defaults.baseURL = 'http://localhost:4000'
+}
+else if (process.env.NODE_ENV === 'production') {
     axios.defaults.baseURL = 'https://harmo-ny.herokuapp.com/'
 }
 else {
     axios.defaults.baseURL = 'http://localhost:3000'
 }
-
 
 class App extends React.Component {
 
@@ -31,8 +34,18 @@ class App extends React.Component {
         this.playerAPI = new PlayerAPI()
         this.dataAPI = new DataAPI()
         this.queue = new Queue()
-        this.mainSocket = io('/main')
-        this.sessionClient = new SessionClient(io('/session'))
+        if (process.env.REACT_APP_NODE_ENV === 'development') {
+            this.mainSocket = io('http://localhost:4000/main', {
+                withCredentials: true
+            })
+            this.sessionClient = new SessionClient(io('http://localhost:4000/session', {
+                withCredentials: true
+            }))
+        }
+        else {
+            this.mainSocket = io('/main')
+            this.sessionClient = new SessionClient(io('/session'))
+        }
         this.state = {
             auth: false,
             user: null,
