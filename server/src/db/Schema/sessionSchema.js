@@ -84,32 +84,6 @@ const sessionSchema = new mongoose.Schema({
                 required: [true, "Action must have data as payload"]
             }
         }]
-    },
-    playerState: {
-        type: {
-            play: {
-                type: Boolean
-            },
-            shuffle: {
-                type: Boolean
-            },
-            repeat: {
-                type: Number
-            }
-        }
-    },
-    queueState: {
-        type: {
-            pastQueue: {
-                type: [String]
-            },
-            currentSong: {
-                type: String
-            },
-            futureQueue: {
-                type: [String]
-            }
-        }
     }
 })
 

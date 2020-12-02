@@ -1,6 +1,25 @@
 import { repeatStates } from '../../const'
 const _ = require('lodash');
 
+class ChangeHandler { 
+    constructor(handler) {
+        this.handler = handler
+    }
+
+    setHandler = (handler) => {
+        this.handler = handler
+    }
+
+    call(...args) {
+        this.handler(...args)
+    }
+
+    destroy() {
+        this.handler = null
+        return null
+    }
+}
+
 class Queue {
 
     constructor(pastQueue, futureQueue, currentSong, repeat=repeatStates.OFF, shuffle=false) {
@@ -11,6 +30,40 @@ class Queue {
         this._shuffle = shuffle
 
         this._originalFutureQueue = []
+
+        this.onChange = {
+            currentSongChange: [],
+            futureQueueChange: [],
+            pastQueueChange: [],
+            repeatStateChange: [],
+            shuffleStateChange: [],
+        }
+    }
+
+    subscribeToEvent = (event, callback, prepend=false) => {
+        if (event in this.onChange) {
+            var handler = new ChangeHandler(callback)
+            if (prepend) {
+                this.onChange[event].unshift(handler)
+            }
+            else {
+                this.onChange[event].append(handler)
+            }
+            return handler
+        }
+    }
+
+    unsubscribeFromEvent = (event, handler) => {
+        if (event in this.onChange) {
+            var ind = this.onChange[event].findIndex(x => x == handler)
+            if (ind > -1) {
+                var handler = this.onChange.splice(ind, 1)[0]
+                return handler.destroy()
+            }
+            else {
+                return null
+            }
+        }
     }
 
     /*
@@ -71,6 +124,7 @@ class Queue {
     */
     setCurrentSong = (song) => {
         this._currentSong = song
+        this.onChange.currentSongChange.forEach(handler => handler.call(this.getCurrentSong()))
     }
 
     nextSong = () => {
@@ -86,11 +140,20 @@ class Queue {
                 var ind = this._originalFutureQueue.findIndex(x => x._id === song._id)
                 this._originalFutureQueue.splice(ind, 1)
             }
+
+            this.onChange.currentSongChange.forEach(handler => handler.call(this.getCurrentSong()))
+            this.onChange.futureQueueChange.forEach(handler => handler.call(this.getFutureQueue()))
+            this.onChange.pastQueueChange.forEach(handler => handler.call(this.getPastQueue()))
+
             return true
         }
         else if (this._repeat === repeatStates.QUEUE) {
             this._pastQueue.push(this._currentSong)
             this.setCurrentSong(this._pastQueue.shift())
+
+            this.onChange.currentSongChange.forEach(handler => handler.call(this.getCurrentSong()))
+            this.onChange.pastQueueChange.forEach(handler => handler.call(this.getPastQueue()))
+
             return true
         }
 
@@ -111,6 +174,11 @@ class Queue {
             }
 
             this.setCurrentSong(this._pastQueue.pop())
+
+            this.onChange.currentSongChange.forEach(handler => handler.call(this.getCurrentSong()))
+            this.onChange.futureQueueChange.forEach(handler => handler.call(this.getFutureQueue()))
+            this.onChange.pastQueueChange.forEach(handler => handler.call(this.getPastQueue()))
+
             return true
         }
         else if (this._repeat === repeatStates.QUEUE) {
@@ -121,6 +189,10 @@ class Queue {
             }
 
             this.setCurrentSong(this._futureQueue.pop())
+
+            this.onChange.currentSongChange.forEach(handler => handler.call(this.getCurrentSong()))
+            this.onChange.futureQueueChange.forEach(handler => handler.call(this.getFutureQueue()))
+
             return true
         }
 
@@ -133,6 +205,7 @@ class Queue {
         if (this._shuffle) {
             this.toggleShuffle()
         }
+        this.onChange.futureQueueChange.forEach(handler => handler.call(this.getFutureQueue()))
     }
 
     /*
@@ -147,6 +220,7 @@ class Queue {
             var ind = this._originalFutureQueue.findIndex(x => x._id === song._id)
             this._originalFutureQueue.splice(toIndex, 0, this._originalFutureQueue.splice(ind, 1)[0])
         }
+        this.onChange.futureQueueChange.forEach(handler => handler.call(this.getFutureQueue()))
     }
 
     /*
@@ -164,6 +238,8 @@ class Queue {
         if (this._shuffle) {
             this._originalFutureQueue.splice(toIndex, 0, song)
         }
+        this.onChange.pastQueueChange.forEach(handler => handler.call(this.getPastQueue()))
+        this.onChange.futureQueueChange.forEach(handler => handler.call(this.getFutureQueue()))
     }
 
     addSongToFutureQueue = (song) => {
@@ -178,6 +254,7 @@ class Queue {
             console.log("pushed song to nonshuffled futureQueue")
             console.log(this._futureQueue);
         }
+        this.onChange.futureQueueChange.forEach(handler => handler.call(this.getFutureQueue()))
     }
 
     removeSongFromFutureQueue = (index) => {
@@ -187,10 +264,12 @@ class Queue {
             var ind = this._originalFutureQueue.findIndex(x => x._id === song._id)
             this._originalFutureQueue.splice(ind, 1)
         }
+        this.onChange.futureQueueChange.forEach(handler => handler.call(this.getFutureQueue()))
     }
 
     toggleRepeat = () => {
         this._repeat = this._repeat === repeatStates.QUEUE ? repeatStates.OFF : this._repeat + 1
+        this.onChange.repeatStateChange.forEach(handler => handler.call(this.getRepeat()))
     }
 
 
@@ -210,6 +289,8 @@ class Queue {
             this._futureQueue = this._originalFutureQueue
             this._originalFutureQueue = []
         }
+        this.onChange.shuffleStateChange.forEach(handler => handler.call(this.getShuffle()))
+        this.onChange.futureQueueChange.forEach(handler => handler.call(this.getFutureQueue()))
     }
 
     /*
@@ -222,6 +303,7 @@ class Queue {
             return
         }
         this._repeat = val
+        this.onChange.repeatStateChange.forEach(handler => handler.call(this.getRepeat()))
     }
 
     setShuffle = (val) => {

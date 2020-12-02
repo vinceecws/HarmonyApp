@@ -45,9 +45,27 @@
         "username": "abcd",
         "userId": "1234",
         "data": {
-        	"subaction": "end_session", /* end_session, change_name, player_time */
+        	"subaction": "end_session", /* end_session, change_name, player_time, session_state */
             "newName": "lo-fi 24/8", /* change_name */
-            "time": "01:50" /* player_time */
+            "time": "01:50", /* player_time */
+            "queue_state": { /* session_state */
+                "past_queue": [
+                    "dY7nv3mK2",
+                    "dY7nv3mK3",
+                    "dY7nv3mK4"
+                ],
+                "current_song": "dY7nv3mK1",
+                "future_queue": [
+                    "dY7nv3mK5",
+                    "dY7nv3mK6",
+                    "dY7nv3mK7"
+                ]
+            },
+            "player_state": { /* session_state */
+                "play": 0,
+                "shuffle": 0,
+                "repeat": 1
+            }
         }
     }
 ]
