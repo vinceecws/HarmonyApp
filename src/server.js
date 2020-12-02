@@ -14,8 +14,7 @@ const io = require('socket.io')(server)
 const session = require("express-session")
 const path = require('path')
 const db = require('./db').db
-// const apiPort = process.env.PORT || 3000
-const apiPort = 80
+const apiPort = process.env.PORT || 3000
 
 const MongoStore = require('connect-mongo')(session)
 const mongoSession = session({
