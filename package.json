@@ -2,7 +2,7 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "./src/server.js",
+  "main": "src/server.js",
   "scripts": {
     "build-start": "(cd ./client && npm run build) && npm start",
     "start": "node src/server.js",
