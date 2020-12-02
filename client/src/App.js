@@ -15,7 +15,13 @@ import { Container } from 'react-bootstrap';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
 import AxiosWrapper from './components/axiosWrapper/axiosWrapper.js'
-axios.defaults.baseURL = 'http://localhost:3000'
+if (process.env.NODE_ENV === 'production') {
+    axios.defaults.baseURL = 'https://harmo-ny.herokuapp.com/'
+}
+else {
+    axios.defaults.baseURL = 'http://localhost:3000'
+}
+
 
 class App extends React.Component {
 
