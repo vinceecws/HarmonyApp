@@ -5,7 +5,7 @@
   "main": "./src/server.js",
   "scripts": {
     "build-start": "(cd ./client && npm run build) && npm start",
-    "start": "node ./src/server.js",
+    "start": "node src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
