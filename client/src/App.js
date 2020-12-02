@@ -15,7 +15,7 @@ import { Container } from 'react-bootstrap';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
 import AxiosWrapper from './components/axiosWrapper/axiosWrapper.js'
-axios.defaults.baseURL = 'https://harmony-demo-d7285.web.app'
+axios.defaults.baseURL = 'http://localhost:3000'
 
 class App extends React.Component {
 
