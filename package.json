@@ -1,53 +1,32 @@
 {
-  "name": "harmony",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "axios": "^0.21.0",
-    "bootstrap": "^4.5.3",
-    "dotenv": "^8.2.0",
-    "jquery": "^3.5.1",
-    "load-script2": "^2.0.6",
-    "lodash": "^4.17.20",
-    "popper.js": "^1.16.1",
-    "react": "^16.14.0",
-    "react-beautiful-dnd": "^13.0.0",
-    "react-bootstrap": "^1.4.0",
-    "react-bootstrap-range-slider": "^2.0.2",
-    "react-calendar": "^3.2.1",
-    "react-dom": "^16.14.0",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.3",
-    "react-strap": "0.0.1",
-    "react-ticker": "^1.2.2",
-    "socket.io-client": "^3.0.3"
-  },
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/server.js",
   "scripts": {
-    "start-client": "react-scripts start",
-    "start": "npm run build && (cd ./server && npm start)",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "build-start": "(cd ./client && npm run build) && npm start",
+    "start": "node ./src/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "engines": {
-       "node": "10.16.0"
-   }
+
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "body-parser": "^1.19.0",
+    "connect-mongo": "^3.2.0",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "mongoose": "^5.10.9",
+    "nodemon": "^2.0.6",
+    "passport": "^0.4.1",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-local": "^1.0.0",
+    "socket.io": "^3.0.3"
+  }
+
 }
