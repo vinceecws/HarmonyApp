@@ -186,13 +186,15 @@ class SearchScreen extends React.Component {
         }
         else if (obj.type === "collection") {
             var songList = _.cloneDeep(obj.songList)
-            this.props.playVideo(songList.shift())
+            if (songList.length > 0) {
+                this.props.playVideo(songList.shift())
 
-            Promise.all(songList.map((songId) => {
-                return this.props.fetchVideoById(songId, true)
-            })).then((songs) => {
-                songs.forEach(song => this.props.queue.addSongToFutureQueue(song))
-            })
+                Promise.all(songList.map((songId) => {
+                    return this.props.fetchVideoById(songId, true)
+                })).then((songs) => {
+                    songs.forEach(song => this.props.queue.addSongToFutureQueue(song))
+                })
+            }
         }
     }
 

@@ -131,7 +131,8 @@ class Queue {
         if (this._repeat === repeatStates.SONG) {
             return true
         }
-
+        console.log(this._futureQueue)
+        console.log(this._futureQueue.length)
         if (this._futureQueue.length > 0) {
             this._pastQueue.push(this._currentSong)
             var song = this._futureQueue.shift()
@@ -140,6 +141,7 @@ class Queue {
                 var ind = this._originalFutureQueue.findIndex(x => x._id === song._id)
                 this._originalFutureQueue.splice(ind, 1)
             }
+
 
             this.onChange.currentSongChange.forEach(handler => handler.call(this.getCurrentSong()))
             this.onChange.futureQueueChange.forEach(handler => handler.call(this.getFutureQueue()))
@@ -247,12 +249,9 @@ class Queue {
             var ind = Math.floor(Math.random() * this._futureQueue.length - 1)
             this._futureQueue.splice(ind, 0, song)
             this._originalFutureQueue.push(song)
-            console.log("pushed song to shuffled futureQueue")
         }
         else {
             this._futureQueue.push(song)
-            console.log("pushed song to nonshuffled futureQueue")
-            console.log(this._futureQueue);
         }
         this.onChange.futureQueueChange.forEach(handler => handler.call(this.getFutureQueue()))
     }

@@ -98,10 +98,7 @@ app.use('/api', apiRouter)
 /*
     Serve static build of React app if in production
 */
-if (process.env.REACT_APP_NODE_ENV === 'development') {
-
-}
-else if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.resolve(__dirname, '..', 'client', 'build')))
 
     app.get('*', (req, res, next) => {
