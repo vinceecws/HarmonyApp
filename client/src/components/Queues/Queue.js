@@ -167,9 +167,12 @@ class Queue {
             var ind = Math.floor(Math.random() * this._futureQueue.length - 1)
             this._futureQueue.splice(ind, 0, song)
             this._originalFutureQueue.push(song)
+            console.log("pushed song to shuffled futureQueue")
         }
         else {
             this._futureQueue.push(song)
+            console.log("pushed song to nonshuffled futureQueue")
+            console.log(this._futureQueue);
         }
     }
 
