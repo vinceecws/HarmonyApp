@@ -15,7 +15,6 @@ class QueueEntry extends React.Component{
 		this.setState({showTicker : false});
 	}
 	render(){
-		console.log("render called");
 		let entry;
 		if(this.state.showTicker){
 			entry = <Ticker speed={14} height={27.2} mode="await" >

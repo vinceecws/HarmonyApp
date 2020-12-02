@@ -25,10 +25,14 @@ class SessionScreen extends React.Component {
 			chatLog: [],
 			messageText: "",
 		}
-		this.getSession();
+		
 		
 		
 		//this.props.sessionClient.joinSession(this.props.match.params.sessionId)
+	}
+	componentDidMount = () =>{
+		this.getSession();
+		console.log("componentDidMount");
 	}
 	initSessionClient = () =>{
 		this.props.sessionClient.joinSession(this.state._id, this.setState({loading: false}));
@@ -36,6 +40,7 @@ class SessionScreen extends React.Component {
 	getSession = () => { 
 		if (this.props.match.params.sessionId){
 			this.props.axiosWrapper.axiosGet("/api/session/" + this.props.match.params.sessionId, this.handleGetSession, true)
+			console.log("session fetched");
 		}
 		else {
 			// Render suggestions to start a session?
@@ -193,7 +198,7 @@ class SessionScreen extends React.Component {
 	        				<div disable={this.props.currentSession} style={{width:'5%', display:'block', textAlign:'center'}}>{this.state.messageText.length}/250</div>
 	        			</div>
 	        		</div>
-	        		<div className='col-sm-4' style={{height:'100%'}}>
+	        		<div className='col-sm-4' style={{height:'100%', overflow:'auto'}}>
 	        			
 	        			
 	        				
@@ -201,7 +206,7 @@ class SessionScreen extends React.Component {
 	        					 	<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
 				        				Up Next
 				        			</div>
-	        					 	<div className='row' style={{height:'43%'}}>
+	        					 	<div className='row' style={{height:'43%', overflow:'auto'}}>
 						                <Droppable droppableId="futureQueue">
 						                    {(provided) => ( 
 						                    	<QueueComponent Queue={this.state.futureQueue} fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.props.user}/>
@@ -212,7 +217,7 @@ class SessionScreen extends React.Component {
 						            <div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
 				        				Previously Played
 				        			</div>
-				        			<div className='row' style={{height:'43%'}}>
+				        			<div className='row' style={{height:'43%', overflow:'auto'}}>
 					        			<Droppable droppableId="prevQueue">
 						                    {(provided) => ( 
 		        								<QueueComponent Queue={this.state.prevQueue} fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.props.user}/>
