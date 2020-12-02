@@ -44,6 +44,11 @@ class SessionClient {
         })
     }
 
+    disconnect = () => {
+        this.leaveSession()
+        this.socket.disconnect()
+    }
+
     createActionObj = (action, username, userId, data) => {
         return {
             action: action,

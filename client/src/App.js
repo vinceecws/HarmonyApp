@@ -1,8 +1,12 @@
 import React from 'react';
 import axios from 'axios';
 
+import { io } from 'socket.io-client'
+import SessionClient from './api/SessionClient.js'
+
 import DataAPI from './api/DataAPI'
 import PlayerAPI from './api/PlayerAPI'
+import Queue from './components/Queues/Queue'
 
 import MainApp from './components/MainApp.js'
 import LoginScreen from './components/LoginScreen.js'
@@ -15,52 +19,92 @@ axios.defaults.baseURL = 'http://localhost:3000'
 
 class App extends React.Component {
 
-  constructor(props) {
-    super(props)
-    this.axiosWrapper = new AxiosWrapper()
-    this.playerAPI = new PlayerAPI()
-    this.dataAPI = new DataAPI()
-    this.state = {
-      auth: false,
-      user: null
+    constructor(props) {
+        super(props)
+        this.axiosWrapper = new AxiosWrapper()
+        this.playerAPI = new PlayerAPI()
+        this.dataAPI = new DataAPI()
+        this.queue = new Queue()
+        this.mainSocket = io('/main')
+        this.sessionClient = new SessionClient(io('/session'))
+        this.state = {
+            auth: false,
+            user: null,
+            currentSession: null
+        }
     }
-  }
-  
+    
+    componentDidUpdate = (prevProps, prevState) => {
+        if (this.state.user && !prevState.user || !this.state.user && prevState.user) {
+            this.sessionClient.disconnect()
+            this.sessionClient = new SessionClient(io('/session'))
 
-  handleLogOut = () => {
-    this.setState({
-      auth: false,
-      user: null
-    })
-  }
+            this.playerAPI = this.playerAPI.destroyIFrameAPI()
+            this.playerAPI = new PlayerAPI()
+            
+            this.queue = new Queue()
+        }
+    }
 
-  handleAuthenticate = (user) => {
-    this.setState({
-      auth: true,
-      user: user
-    })
-  }
+    handleLogOut = () => {
+        this.setState({
+            auth: false,
+            user: null
+        })
+    }
 
-  handleUpdateUser = (updatedUser) => {
-    this.setState({
-      auth: true,
-      user: updatedUser
-    });
-  }
+    handleAuthenticate = (user) => {
+        this.setState({
+            auth: true,
+            user: user
+        })
+    }
 
+    handleUpdateUser = (updatedUser) => {
+        this.setState({
+            auth: true,
+            user: updatedUser
+        });
+    }
 
-  render() {
-    return (
-      <Container id="app-container">
-        <Router>
-          <Switch>
-            <Route path={['/main']} render={(props) => <MainApp {...props} auth={this.state.auth} user={this.state.user} handleLogOut={this.handleLogOut} handleUpdateUser={this.handleUpdateUser} playerAPI={this.playerAPI} dataAPI={this.dataAPI} axiosWrapper={this.axiosWrapper}/>} />
-            <Route path={['/', '/login']} render={(props) => <LoginScreen {...props} auth={this.state.auth} handleAuthenticate={this.handleAuthenticate} axiosWrapper={this.axiosWrapper} />} />
-          </Switch>
-        </Router>
-      </Container>
-    );
-  }
+    handleUpdateCurrentSession = (currentSession) => {
+        this.setState({
+            currentSession: currentSession
+        })
+    }
+
+    render() {
+        return (
+            <Container id="app-container">
+                <Router>
+                    <Switch>
+                        <Route path={['/main']} render={(props) => <MainApp {...props} 
+                            auth={this.state.auth} 
+                            user={this.state.user} 
+                            currentSession={this.state.currentSession}
+                            mainSocket={this.mainSocket}
+                            sessionClient={this.sessionClient} 
+                            playerAPI={this.playerAPI} 
+                            dataAPI={this.dataAPI} 
+                            queue={this.queue}
+                            handleLogOut={this.handleLogOut} 
+                            handleUpdateUser={this.handleUpdateUser} 
+                            handleUpdateCurrentSession={this.handleUpdateCurrentSession} 
+                            axiosWrapper={this.axiosWrapper}/>} 
+                        />
+                        <Route path={['/', '/login']} render={(props) => <LoginScreen {...props} 
+                            auth={this.state.auth} 
+                            user={this.state.user} 
+                            currentSession={this.state.currentSession} 
+                            handleAuthenticate={this.handleAuthenticate} 
+                            handleUpdateCurrentSession={this.handleUpdateCurrentSession}
+                            axiosWrapper={this.axiosWrapper} />} 
+                        />
+                    </Switch>
+                </Router>
+            </Container>
+        );
+    }
 
 }
 

@@ -28,7 +28,13 @@ class LoginScreen extends React.Component{
             if (data.success) {
                 this.clearSignUpCredentials()
                 this.props.handleAuthenticate(data.data.user)
-                this.props.history.push("/main/home")
+                if (data.data.user.currentSession) {
+                    this.props.handleUpdateCurrentSession(data.data.user.currentSession)
+                    this.props.history.push("/main/session/" + data.data.user.currentSession)
+                }
+                else {
+                    this.props.history.push("/main/home")
+                }
             }
         }).bind(this), true)
     }
@@ -185,7 +191,14 @@ class LoginScreen extends React.Component{
             if (data.success) {
                 this.clearLoginCredentials()
                 this.props.handleAuthenticate(data.data.user)
-                this.props.history.push("/main/home")
+                this.props.handleUpdateCurrentSession(data.data.user.currentSession)
+                if (data.data.user.currentSession) {
+                    this.props.handleUpdateCurrentSession(data.data.user.currentSession)
+                    this.props.history.push("/main/session/" + data.data.user.currentSession)
+                }
+                else {
+                    this.props.history.push("/main/home")
+                }
             }
             else {
                 this.setState({

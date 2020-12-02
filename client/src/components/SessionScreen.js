@@ -10,6 +10,7 @@ const _ = require('lodash')
 class SessionScreen extends React.Component {
 	constructor(props){
 		super(props);
+
 		this.state = {
 			loading: true,
 			error: false,
@@ -131,10 +132,11 @@ class SessionScreen extends React.Component {
 	}
 
     render(){
-    	console.log(this.props.queue);
+    	
     	
     	let renderContainer = false
     	if(!this.state.loading && !this.state.error && this.props.user != null){
+    		console.log(this.props.queue);
     		renderContainer = 
     			<div style={{fontFamily: 'BalsamiqSans', marginLeft:'15px', height:'100%'}}>
         		<div className='row' style={{height:'100%'}}>
