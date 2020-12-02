@@ -6,6 +6,7 @@ class PlayerAPI {
 
     constructor() {
         this._playerReady = false
+        this.script = null
         this.player = null
         this.subscribedEvents = {
             onPlayerReady: null,
@@ -66,13 +67,33 @@ class PlayerAPI {
     }
 
     isPlayerInit = () => {
-        return this.player != null
+        return !!this.player
     }
 
     initIFrameAPI = (id) => {
-        if (this.player == null) {
-            loadScript(youtube_iframe_api_src)
-            window.onYouTubeIframeAPIReady = (() => {
+        if (!this.player) {
+            if (!this.script) {
+                this.script = loadScript(youtube_iframe_api_src)
+                window.onYouTubeIframeAPIReady = (() => {
+                    this.player = new window.YT.Player('yt-player', {
+                        videoId: id,
+                        playerVars: {
+                            origin: window.location.origin,
+                            autoplay: 1,
+                            enablejsapi: 1
+                        },
+                        events: {
+                            onReady: this.onPlayerReady.bind(this),
+                            onStateChange: this.onPlayerStateChange.bind(this),
+                            onPlaybackQualityChange: this.onPlayerPlaybackQualityChange.bind(this),
+                            onPlaybackRateChange: this.onPlayerPlaybackRateChange.bind(this),
+                            onError: this.onPlayerError.bind(this),
+                            onApiChange: this.onPlayerApiChange.bind(this)
+                        }
+                    })
+                })
+            }
+            else {
                 this.player = new window.YT.Player('yt-player', {
                     videoId: id,
                     playerVars: {
@@ -89,7 +110,7 @@ class PlayerAPI {
                         onApiChange: this.onPlayerApiChange.bind(this)
                     }
                 })
-            })
+            }
         }
     }
 
@@ -97,6 +118,7 @@ class PlayerAPI {
         if (this.player) {
             this.player.destroy()
             this.player = null
+            this._playerReady = false
         }
         return null
     }

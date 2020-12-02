@@ -11,8 +11,11 @@ class SessionSideList extends React.Component{
             loading: true,
             sessions: []
         }
-        this.initSocket()
     }
+
+    componentDidMount = () => {
+        this.initSocket()
+    } 
 
     initSocket = () => {
         if (this.props.mainSocket) {
