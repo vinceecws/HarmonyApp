@@ -41,7 +41,7 @@ class App extends React.Component {
 
             this.playerAPI = this.playerAPI.destroyIFrameAPI()
             this.playerAPI = new PlayerAPI()
-            
+
             this.queue = new Queue()
         }
     }

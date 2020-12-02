@@ -75,7 +75,7 @@ class Queue {
 
     nextSong = () => {
         if (this._repeat === repeatStates.SONG) {
-            return
+            return true
         }
 
         if (this._futureQueue.length > 0) {
@@ -86,21 +86,21 @@ class Queue {
                 var ind = this._originalFutureQueue.findIndex(x => x._id === song._id)
                 this._originalFutureQueue.splice(ind, 1)
             }
+            return true
         }
         else if (this._repeat === repeatStates.QUEUE) {
             this._pastQueue.push(this._currentSong)
             this.setCurrentSong(this._pastQueue.shift())
+            return true
         }
-        else {
-            this._pastQueue.push(this._currentSong)
-            this.setCurrentSong(this.getEmptySong())
-        }
+
+        return false
         
     }
 
     previousSong = () => {
         if (this._repeat === repeatStates.SONG) {
-            return
+            return true
         }
 
         if (this._pastQueue.length > 0) {
@@ -111,6 +111,7 @@ class Queue {
             }
 
             this.setCurrentSong(this._pastQueue.pop())
+            return true
         }
         else if (this._repeat === repeatStates.QUEUE) {
             this._futureQueue.unshift(this._currentSong)
@@ -120,7 +121,10 @@ class Queue {
             }
 
             this.setCurrentSong(this._futureQueue.pop())
+            return true
         }
+
+        return false
     }
 
     clearFutureQueue = () => {

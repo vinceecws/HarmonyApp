@@ -5,6 +5,7 @@ import { Container, Row, Col, Image, Button } from 'react-bootstrap';
 import { icon_play_2, icon_pause_3, icon_previous, icon_next, icon_repeat_3, icon_repeat_1, icon_shuffle_arrows, icon_volume_up_1, icon_no_sound } from '../graphics';
 import { ReactComponent as FavoriteButton } from '../graphics/music_player_pack/035-like.svg'
 import { repeatStates } from '../const'
+import { times } from 'lodash';
 
 
 class Player extends React.Component {
@@ -15,7 +16,8 @@ class Player extends React.Component {
             user: this.props.user,
             showTitleTicker: false,
             currentSong: this.props.queue.getCurrentSong(),
-            currentTime: this.props.playerAPI.getCurrentTime()
+            currentTime: this.props.playerAPI.getCurrentTime(),
+            seeking: false
         }
     }
 
@@ -25,9 +27,13 @@ class Player extends React.Component {
         this.props.playerAPI.subscribeToEvent("onPlayerStateChange", this.handlePlayerStateChange.bind(this))
         setInterval(() => {
             this.setState({
-                currentSong: this.props.queue.getCurrentSong(),
-                currentTime: this.props.playerAPI.getCurrentTime() 
+                currentSong: this.props.queue.getCurrentSong()
             })
+            if (!this.state.seeking) {
+                this.setState({
+                    currentTime: this.props.playerAPI.getCurrentTime() 
+                })
+            }
         }, 1000)
     }
 
@@ -118,38 +124,50 @@ class Player extends React.Component {
 
     handlePlayerStateChange = (e) => {
         if (e.data === window.YT.PlayerState.ENDED) {
+            this.setState({
+                seeking: false
+            })
             this.handleNextSong()
         }
     }
 
     handleSeek = (value) => {
         this.props.playerAPI.seekTo(value)
+        this.setState({
+            seeking: false
+        })
     }
 
     handleMoveSlider = (value) => {
         this.setState({
-            currentTime: value
+            currentTime: value,
+            seeking: true
         })
     }
 
     handleNextSong = () => {
         this.handleEmitPlayerState("player", "next_song")
-        this.props.queue.nextSong()
-        var currentSong = this.props.queue.getCurrentSong()
-        if (currentSong._id !== "") {
+        var hasNext = this.props.queue.nextSong()
+        if (hasNext) {
+            var currentSong = this.props.queue.getCurrentSong()
             this.props.playerAPI.loadVideoById(currentSong._id)
         }
         else {
-            this.props.playerAPI.stopVideo()
+            this.props.playerAPI.pauseVideo()
+            this.props.playerAPI.seekTo(0)
         }
     }
 
     handlePreviousSong = () => {
         this.handleEmitPlayerState("player", "prev_song")
-        this.props.queue.previousSong()
-        var currentSong = this.props.queue.getCurrentSong()
-        if (currentSong._id !== "") {
+        var hasPrev = this.props.queue.previousSong()
+        if (hasPrev) {
+            var currentSong = this.props.queue.getCurrentSong()
             this.props.playerAPI.loadVideoById(currentSong._id)
+        }
+        else {
+            this.props.playerAPI.pauseVideo()
+            this.props.playerAPI.seekTo(0)
         }
     }
 

@@ -96,6 +96,7 @@ class PlayerAPI {
     destroyIFrameAPI = () => {
         if (this.player) {
             this.player.destroy()
+            this.player = null
         }
         return null
     }
