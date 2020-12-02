@@ -100,7 +100,6 @@ class SessionScreen extends React.Component {
 				this.props.playVideo(initialQueue.shift());
 			}
 			
-
 			Promise.all(initialQueue.map((songId) => {
             	return this.props.fetchVideoById(songId, true) //Initial queue of song objects
         	})).then((fetchedSongs) => {

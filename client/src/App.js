@@ -57,10 +57,6 @@ class App extends React.Component {
         if (this.state.user && !prevState.user || !this.state.user && prevState.user) {
             this.sessionClient.disconnect()
             this.sessionClient = new SessionClient(io('/session'))
-
-            this.playerAPI = this.playerAPI.destroyIFrameAPI()
-            this.playerAPI = new PlayerAPI()
-
             this.queue = new Queue()
         }
     }
@@ -113,7 +109,8 @@ class App extends React.Component {
                         />
                         <Route path={['/', '/login']} render={(props) => <LoginScreen {...props} 
                             auth={this.state.auth} 
-                            user={this.state.user} 
+                            user={this.state.user}
+                            playerAPI={this.playerAPI}  
                             currentSession={this.state.currentSession} 
                             handleAuthenticate={this.handleAuthenticate} 
                             handleUpdateCurrentSession={this.handleUpdateCurrentSession}

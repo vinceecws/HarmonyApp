@@ -36,6 +36,7 @@ class MainApp extends React.Component {
         desired song 
     */
     playVideo = (id) => {
+        console.log(this.props.playerAPI.player)
         this.queue.clearFutureQueue()
         this.fetchVideoById(id, true).then((song) => {
             this.queue.setCurrentSong(song)

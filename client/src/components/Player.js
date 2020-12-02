@@ -347,9 +347,15 @@ class Player extends React.Component {
     }
 
     render(){
-        let entry =  <div><Ticker speed={8}>
+        var title
+        if (this.state.showTitleTicker) {
+            title =  <Ticker speed={6} mode="await">
                         {({index}) => (<h1 className="body-text color-contrasted">{this.getSongName()}</h1>)}
-                     </Ticker></div>;
+                     </Ticker>;
+        }
+        else {
+            title = <h1 className="body-text color-contrasted">{this.getSongName()}</h1>
+        }
         return(
             <Container id="player-container" fluid>
                 <Row>
@@ -360,10 +366,9 @@ class Player extends React.Component {
                             </Col>
                             <Col id="player-song-title">
 
-                                <div className="fade-single-line-overflow" onMouseEnter={this.handleShowTitleTicker} onMouseLeave={this.handleHideTitleTicker}>
-                                        {entry}
+                                <div className="fade-single-line-overflow body-text color-contrasted" onMouseEnter={this.handleShowTitleTicker} onMouseLeave={this.handleHideTitleTicker}>
+                                    {title}
                                 </div>
-                                <div className="fade-single-line-overflow body-text color-contrasted">{this.getSongName()}</div>
                                 <div className="fade-single-line-overflow tiny-text color-contrasted">{this.getArtist()}</div>
                                 {
                                     !this.props.queue.currentSongIsEmpty() && this.state.user ?
