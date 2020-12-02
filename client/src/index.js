@@ -21,8 +21,6 @@ String.prototype.capitalize = function() {
 ReactDOM.render(
 
   <React.StrictMode>
-	<script src="/__/firebase/8.0.0/firebase-app.js"></script>
-	<script src="/__/firebase/init.js"></script>
     <App/>
   </React.StrictMode>,
   document.getElementById('root')

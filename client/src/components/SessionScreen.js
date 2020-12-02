@@ -20,12 +20,12 @@ class SessionScreen extends React.Component {
 			name: null,
 			startTime: null,
 			currentSong: null,
-			prevQueue: [],
+			pastQueue: [],
 			futureQueue: [],
 			chatLog: [],
 			messageText: "",
 		}
-		this.getSession()
+		this.getSession();
 		
 		
 		//this.props.sessionClient.joinSession(this.props.match.params.sessionId)
@@ -136,7 +136,6 @@ class SessionScreen extends React.Component {
     	
     	let renderContainer = false
     	if(!this.state.loading && !this.state.error && this.props.user != null){
-    		console.log(this.props.queue);
     		renderContainer = 
     			<div style={{fontFamily: 'BalsamiqSans', marginLeft:'15px', height:'100%'}}>
         		<div className='row' style={{height:'100%'}}>
