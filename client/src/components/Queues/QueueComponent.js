@@ -17,6 +17,7 @@ class QueueComponent extends React.Component{
                 index={index}
                 id={item._id}
                 user={this.props.user}
+                queueType={this.props.queueType}
             />
 
             ); 
