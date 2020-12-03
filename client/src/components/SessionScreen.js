@@ -157,7 +157,12 @@ class SessionScreen extends React.Component {
 	}
 	initSessionClient = () =>{
 		this.props.sessionClient.joinSession(this.state._id, this.setState({loading: false}));
-		this.props.sessionClient.emitSession("session","get_session_state");
+		if(this.props.user){
+			if(this.props.user._id !== this.state.hostId){
+				this.props.sessionClient.emitSession("session","get_session_state");
+			}
+		}
+		
 	}
 
 	getSession = () => { 
@@ -326,36 +331,53 @@ class SessionScreen extends React.Component {
 	handleGetSession = (status,data) => {
 
 		if (status === 200) {
-			var session = data.data.session
-			if(data.data.user !== undefined){
-				this.props.handleUpdateUser(data.data.user)
+			var session = data.data.session;
+			if(session.hostId === this.props.user._id){
+				if(data.data.user !== undefined){
+					this.props.handleUpdateUser(data.data.user)
+				}
+				var initialQueue = _.cloneDeep(data.data.session.initialQueue);
+				if(initialQueue.length > 0){
+					this.props.playVideo(initialQueue.shift());
+				}
+				
+				Promise.all(initialQueue.map((songId) => {
+	            	return this.props.fetchVideoById(songId, true) //Initial queue of song objects
+	        	})).then((fetchedSongs) => {
+					fetchedSongs.forEach(song => {
+						console.log(song);
+						this.props.queue.addSongToFutureQueue(song);
+					});
+	            	this.setState({
+		        		
+		        		id: session._id,
+						hostId: session.hostId,
+						hostName : session.hostName,
+						name: session.name,
+						startTime: session.startTime,
+						futureQueue: this.props.queue.getFutureQueue(),
+						currentSong: this.props.queue.getCurrentSong(),
+						pastQueue: this.props.queue.getPastQueue(),
+						
+		        	})
+		        	this.initSessionClient();
+		        })
 			}
-			var initialQueue = _.cloneDeep(data.data.session.initialQueue);
-			if(initialQueue.length > 0){
-				this.props.playVideo(initialQueue.shift());
+			else{
+				this.setState({
+		        		
+		        		id: session._id,
+						hostId: session.hostId,
+						hostName : session.hostName,
+						name: session.name,
+						startTime: session.startTime,
+				});
+				this.initSessionClient();
+				if(data.data.user !== undefined){
+					this.props.handleUpdateUser(data.data.user);
+				}
 			}
 			
-			Promise.all(initialQueue.map((songId) => {
-            	return this.props.fetchVideoById(songId, true) //Initial queue of song objects
-        	})).then((fetchedSongs) => {
-				fetchedSongs.forEach(song => {
-					console.log(song);
-					this.props.queue.addSongToFutureQueue(song);
-				});
-            	this.setState({
-	        		
-	        		id: session._id,
-					hostId: session.hostId,
-					hostName : session.hostName,
-					name: session.name,
-					startTime: session.startTime,
-					futureQueue: this.props.queue.getFutureQueue(),
-					currentSong: this.props.queue.getCurrentSong(),
-					pastQueue: this.props.queue.getPastQueue(),
-					
-	        	})
-	        	this.initSessionClient();
-	        })
             
         }
         else if (status === 404) {
