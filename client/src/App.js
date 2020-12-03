@@ -56,7 +56,14 @@ class App extends React.Component {
     componentDidUpdate = (prevProps, prevState) => {
         if ((this.state.user && !prevState.user) || (!this.state.user && prevState.user)) {
             this.sessionClient.disconnect()
-            this.sessionClient = new SessionClient(io('/session'))
+            if (process.env.REACT_APP_NODE_ENV === 'development') {
+                this.sessionClient = new SessionClient(io('http://localhost:4000/session', {
+                    withCredentials: true
+                }))
+            }
+            else {
+                this.sessionClient = new SessionClient(io('/session'))
+            }
             this.queue = new Queue()
         }
     }
