@@ -338,6 +338,11 @@ class SessionScreen extends React.Component {
 	        					{this.state.startTime}
 
 	        				</div>
+	        				<div className='col' style={{maxWidth:'25%', textAlign: 'right', padding:'1em', minWidth:'10%',color:'white',  float:'right'}}>
+	        					<div className='body-text'>{this.state.live}<img src={icon_radio} style={{width:'30px'}}/></div>
+	        					{this.state.startTime}
+
+	        				</div>
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
 	        				<ChatFeed actionLog={this.state.chatLog} user={this.props.user}  />
