@@ -74,20 +74,20 @@ class SessionScreen extends React.Component {
 
 	handleApplySessionState = (actionObj) => {
 		if (actionObj.action === 'session'){
-			switch(actionObj.subaction){
-				case 'end-session':
+			switch(actionObj.data.subaction){
+				case 'end_session':
 					this.props.sessionClient.disconnect();
 					break;
-				case 'change-name':
+				case 'change_name':
 					this.handleChangeName(actionObj.data.newName);
 					break;
-				case 'player-time':
+				case 'player_time':
 					this.handleSetPlayerTime(actionObj.data.time);
 					break;
-				case 'session-state':
+				case 'session_state':
 					this.handleSetSessionState(actionObj.data.queue_state, actionObj.data.player_state);
 					break;
-				case 'get-session-state':
+				case 'get_session_state':
 					if(this.state.hostId === this.props.user._id){this.handleSendSessionState();}
 					break;
 				case 'like_session':
@@ -145,8 +145,17 @@ class SessionScreen extends React.Component {
 		}
 	}
 
-	changeSessionName = (newName) => {
-		let actionObj = {action: 'session', }
+	onChangeSessionName = (changedName) => {
+		let data = {subaction: 'change_name', newName: changedName}
+		this.props.sessionClient.emitSession(this.props.user.username, this.props.user._id, data);
+		this.setState({ name: changedName });
+	}
+
+	//for host ending session
+	onEndSession = () => {
+		if (this.isHost()){
+			
+		}
 	}
 
 	initSessionClient = () =>{

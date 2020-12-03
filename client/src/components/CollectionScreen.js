@@ -230,7 +230,7 @@ class CollectionScreen extends React.Component{
     }
 
     getDurationString(duration){
-        console.log(duration);
+        console.log('Duration: ', duration);
         //return String(duration / 60).padStart(2, '0') + ':' + String(duration % 60)
     }
 
@@ -446,8 +446,8 @@ class CollectionScreen extends React.Component{
                                             <div style={{display: 'flex', alignItems: 'center'}}>
                                                 <div className='collection-song-title ellipsis-multi-line-overflow'  style={{display: 'inline-block', marginLeft: '15px', marginRight: '2.5%', width: '27%'}} onClick={() => this.onPressPlaySong(e, i)}>{e.name}</div>
                                                 <div className='collection-song-title ellipsis-multi-line-overflow' style={{display: 'inline-block', width: '20%', marginRight: '2%'}}><div>{e.creator}</div></div>
-                                                <div className='collection-page-text' style={{display: 'inline-block', marginRight: '10.5%'}}>{() => this.getDateAdded()}</div>
-                                                <div className='collection-page-text' style={{display: 'inline-block', marginRight: '5%'}}>{() => this.getDurationString(e.duration, i)} </div>
+                                                <div className='collection-page-text' style={{display: 'inline-block', marginRight: '10.5%'}}>{this.getDateAdded()}</div>
+                                                <div className='collection-page-text' style={{display: 'inline-block', marginRight: '5%'}}>{this.getDurationString(e.duration, i)} </div>
                                                 <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}}>
                                                     {/* Fix during implementation */}
                                                     <Image className='player-song-favorite-button-icon' src={icon_like} 

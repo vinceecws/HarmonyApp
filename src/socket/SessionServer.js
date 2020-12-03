@@ -71,7 +71,9 @@ class SessionServer {
     joinSession = (clientSocket, sessionId) => {
         if (!clientSocket.rooms[1]) { //If not already in a Session
             clientSocket.join(sessionId);
-            clientSocket.rooms[1].emit("get-session-state");
+            let getData = {subaction: 'get_session_state'}
+            let getSessionStateObj = {action: 'session', data: getData }
+            this.socket.to(clientSocket.rooms[1]).emit("session", getSessionStateObj);
         }
         else {
             clientSocket.emit("session-error", "Client is already in a Session")
