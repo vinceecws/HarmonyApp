@@ -41,6 +41,7 @@ class SessionScreen extends React.Component {
 		this.sessionActionListener = this.props.sessionClient.subscribeToAction("session", this.handleApplySessionState.bind(this))
 
 		this.futureQueueChangeListener = this.props.queue.subscribeToEvent("futureQueueChange", this.handleQueueStateChange.bind(this));
+		this.pastQueueChangeListener = this.props.queue.subscribeToEvent("pastQueueChange", this.handleQueueStateChange.bind(this));
 	}
 
 	componentWillUnmount = () => {
@@ -151,7 +152,14 @@ class SessionScreen extends React.Component {
 			
 		}
 	}
-
+	placeholderChatMsg = () =>{
+		if(this.props.user){
+			return('Send your message here...');
+		}
+		else{
+			return('Login or Signup to send a message');
+		}
+	}
 	initSessionClient = () =>{
 		this.props.sessionClient.joinSession(this.state._id, this.setState({loading: false}));
 	}
@@ -182,6 +190,11 @@ class SessionScreen extends React.Component {
 					futureQueue: newState
 				})
 				break
+			case "pastQueueChange":
+				this.setState({
+					pastQueue: newState
+				})
+				break
 			default:
 				break
 		}
@@ -193,13 +206,17 @@ class SessionScreen extends React.Component {
         }
 
         if (actionObj.action === "queue") {
-
+        	/* move_song, move_song_from_past, add_song, del_song*/
             switch (actionObj.data.subaction) {
 				// listen to only subactions that are not listened in Player.js
-                // case "set_shuffle":
-                //     this.props.queue.setShuffle(actionObj.data.state)
-                // case "set_repeat":
-                //     this.props.queue.setRepeat(actionObj.data.state)
+                 case "move_song":
+                     this.props.queue.moveSongInFutureQueue(actionObj.data.from,actionObj.data.to);
+                 case "move_song_from_past":
+                     this.props.queue.moveSongFromPastQueue(actionObj.data.from,actionObj.data.to);
+                 case "add_song":
+                     this.props.queue.addSongToFutureQueue(actionObj.data.songId);
+                 case "del_song":
+                     this.props.queue.removeSongFromFutureQueue(actionObj.data.index);
                 default:
                     break
             }
@@ -209,7 +226,7 @@ class SessionScreen extends React.Component {
 	
 	onKeyPress = (e) => {
 
-		if(e.key === "Enter" && this.state.messageText.length <= 250){
+		if(e.key === "Enter" && this.state.messageText.length <= 250 && this.props.user){
 			let data = {subaction: 'text', message: this.state.messageText};
 			this.props.sessionClient.emitChat(this.props.user.username, this.props.user._id, data);
 			
@@ -318,6 +335,7 @@ class SessionScreen extends React.Component {
         }
     }
     isGuest = () =>{
+    	console.log("Guest checked");
     	return !this.props.user;
     }
     render(){
@@ -354,8 +372,8 @@ class SessionScreen extends React.Component {
 	        				<ChatFeed actionLog={this.state.chatLog} user={this.props.user}  />
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
-	        				<input disable={this.props.currentSession} type='text' name='MessageSender' placeholder='Send your message here...' onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
-	        				<div disable={this.props.currentSession} style={{width:'5%', display:'block', textAlign:'center'}}>{this.state.messageText.length}/250</div>
+	        				<input disabled={!this.props.user} type='text' name='MessageSender' placeholder={this.placeholderChatMsg()} onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
+	        				<div style={{width:'5%', display:'block', textAlign:'center', marginTop:'5px'}}>{this.state.messageText.length}/250</div>
 	        			</div>
 	        		</div>
 	        		<div className='col-sm-4' style={{height:'100%', overflow:'auto'}}>
@@ -421,8 +439,8 @@ class SessionScreen extends React.Component {
 	        				<ChatFeed  actionLog={this.state.chatLog} user={this.props.user}  />
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
-	        				<input type='text' disabled={this.isGuest} name='MessageSender' placeholder='Log in or Sign up to send a message...' onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'100%', display:'block'}}/>
-	        				<div disable={this.isGuest} style={{width:'5%', display:'block', textAlign:'center'}}>{this.state.messageText.length}/250</div>
+	        				<input type='text' disabled={!this.props.user} name='MessageSender' placeholder={this.placeholderChatMsg()} onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'100%', display:'block'}}/>
+	        				<div  style={{width:'5%', display:'block', textAlign:'center', marginTop:'5px'}}>{this.state.messageText.length}/250</div>
 	        			</div>
 	        		</div>
 	        		<div className='col-sm-4' style={{height:'100%'}}>

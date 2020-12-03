@@ -81,7 +81,6 @@ class Player extends React.Component {
             initialQueue: initialQueue
         }, (function(res, data) {
 			if (data.success) {
-                this.props.handleUpdateUser(data.data.user)
                 this.props.history.push('/main/session/' + data.data.sessionId)
 			}
 		}).bind(this), true)
