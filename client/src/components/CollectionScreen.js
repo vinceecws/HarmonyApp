@@ -293,6 +293,11 @@ class CollectionScreen extends React.Component{
         return false;
     }
 
+
+    deleteCollection = () => {
+
+    }
+
     //reorder songlist (persistant)
     handleOnDragEnd = (result) =>{
         console.log(result);
@@ -401,7 +406,7 @@ class CollectionScreen extends React.Component{
                                             </Button>
                                         </Dropdown.Item>
                                         <Dropdown.Item>
-                                            <Button onClick={() => {}}>
+                                            <Button onClick={() => this.deleteCollection}>
                                                 Delete Collection
                                             </Button>
                                         </Dropdown.Item>
@@ -439,7 +444,7 @@ class CollectionScreen extends React.Component{
                                         {(provided) => 
                                         (<li className="collection-page-rows" style={{minWidth: '90vw'}} {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
                                             <div style={{display: 'flex', alignItems: 'center'}}>
-                                                <div className='collection-song-title ellipsis-multi-line-overflow'  style={{display: 'inline-block', marginLeft: '15px', marginRight: '2.5%', width: '27%'}}><div>{e.name}</div></div>
+                                                <div className='collection-song-title ellipsis-multi-line-overflow'  style={{display: 'inline-block', marginLeft: '15px', marginRight: '2.5%', width: '27%'}} onClick={() => this.onPressPlaySong(e, i)}>{e.name}</div>
                                                 <div className='collection-song-title ellipsis-multi-line-overflow' style={{display: 'inline-block', width: '20%', marginRight: '2%'}}><div>{e.creator}</div></div>
                                                 <div className='collection-page-text' style={{display: 'inline-block', marginRight: '10.5%'}}>{() => this.getDateAdded()}</div>
                                                 <div className='collection-page-text' style={{display: 'inline-block', marginRight: '5%'}}>{() => this.getDurationString(e.duration, i)} </div>

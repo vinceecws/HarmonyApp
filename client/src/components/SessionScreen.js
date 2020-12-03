@@ -75,16 +75,16 @@ class SessionScreen extends React.Component {
 	handleApplySessionState = (actionObj) => {
 		if (actionObj.action === 'session'){
 			switch(actionObj.subaction){
-				case 'end_session':
+				case 'end-session':
 					this.props.sessionClient.disconnect();
 					break;
-				case 'change_name':
+				case 'change-name':
 					this.handleChangeName(actionObj.data.newName);
 					break;
-				case 'player_time':
+				case 'player-time':
 					this.handleSetPlayerTime(actionObj.data.time);
 					break;
-				case 'session_state':
+				case 'session-state':
 					this.handleSetSessionState(actionObj.data.queue_state, actionObj.data.player_state);
 					break;
 				case 'get-session-state':
@@ -216,7 +216,8 @@ class SessionScreen extends React.Component {
 	onKeyPress = (e) => {
 
 		if(e.key === "Enter" && this.state.messageText.length <= 250){
-			
+			let data = {subaction: 'text', message: this.state.messageText};
+			this.props.sessionClient.emitChat(this.props.user.username, this.props.user._id, data);
 			
 			//console.log(this.props.user);
 			/*Adjust new object for new action types*/
@@ -225,7 +226,6 @@ class SessionScreen extends React.Component {
 				this.setState({
 					chatLog: this.state.chatLog.concat(obj),
 					messageText: ""
-
 				})
 			}
 			else{
@@ -233,7 +233,6 @@ class SessionScreen extends React.Component {
 				this.setState({
 					chatLog: this.state.chatLog.concat(obj),
 					messageText: ""
-
 				})
 			}
 			
