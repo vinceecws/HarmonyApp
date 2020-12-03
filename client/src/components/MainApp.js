@@ -98,7 +98,8 @@ class MainApp extends React.Component {
                         playerAPI={this.playerAPI}
                         handleUpdateUser={this.props.handleUpdateUser}
                         sessionClient={this.props.sessionClient}
-                        axiosWrapper={this.props.axiosWrapper}          
+                        axiosWrapper={this.props.axiosWrapper} 
+                        shouldStartSession={this.shouldStartSession}         
                     />
                 </Row>
             </div>

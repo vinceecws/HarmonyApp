@@ -2,7 +2,8 @@ import { repeatStates } from '../../const'
 const _ = require('lodash');
 
 class ChangeHandler { 
-    constructor(handler) {
+    constructor(event, handler) {
+        this.event = event
         this.handler = handler
     }
 
@@ -11,7 +12,7 @@ class ChangeHandler {
     }
 
     call(...args) {
-        this.handler(...args)
+        this.handler(this.event, ...args)
     }
 
     destroy() {
@@ -42,12 +43,12 @@ class Queue {
 
     subscribeToEvent = (event, callback, prepend=false) => {
         if (event in this.onChange) {
-            var handler = new ChangeHandler(callback)
+            var handler = new ChangeHandler(event, callback)
             if (prepend) {
                 this.onChange[event].unshift(handler)
             }
             else {
-                this.onChange[event].append(handler)
+                this.onChange[event].push(handler)
             }
             return handler
         }
@@ -57,7 +58,7 @@ class Queue {
         if (event in this.onChange) {
             var ind = this.onChange[event].findIndex(x => x == handler)
             if (ind > -1) {
-                var handler = this.onChange.splice(ind, 1)[0]
+                var handler = this.onChange[event].splice(ind, 1)[0]
                 return handler.destroy()
             }
             else {
