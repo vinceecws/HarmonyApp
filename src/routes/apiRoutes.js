@@ -956,11 +956,7 @@ module.exports = function(mainSocket, sessionSocket) {
             })
             /* Add support for emitting session creation to all listening sockets */
             
-            mainSocket.emit('top-sessions', sessions, (response) => {
-                if (response.status === 200) {
-                    console.log("Sessions acknowledged")
-                }
-            })
+            mainSocket.emit('top-sessions', sessions)
 
             return res.status(200).json({
                 message: "Session created",
@@ -1071,11 +1067,7 @@ module.exports = function(mainSocket, sessionSocket) {
                 let sessions = await mongooseQuery.getSessions().catch(err => {
                     mainSocket.emit('error')
                 })
-                mainSocket.emit('top-sessions', sessions, (response) => {
-                    if (response.status === 200) {
-                        console.log("Sessions acknowledged")
-                    }
-                })
+                mainSocket.emit('top-sessions', sessions)
 
                 return res.status(200).json({
                     message: "Fetch successful",
