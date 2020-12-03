@@ -55,7 +55,7 @@ class SessionServer {
     }
 
     updateSessionState = async (sessionId, actionObj) => {
-        await mongooseQuery.updateSession(sessionId, {
+        mongooseQuery.updateSession(sessionId, {
                 $push: {
                     actionLog: actionObj
                 }
@@ -90,7 +90,7 @@ class SessionServer {
     likeSession = async (clientSocket, sessionId, likes) => {
         if (clientSocket.rooms[1] && clientSocket.rooms[1] === sessionId){
             this.socket.to(clientSocket.rooms[1]).emit("likes", likes);
-            await mongooseQuery.updateSession(sessionId, {likes: likes});
+            mongooseQuery.updateSession(sessionId, {likes: likes});
         }
         else {
             clientSocket.emit("session-error", "Client is not in a Session or client is not associated with the sessionId")
@@ -101,18 +101,18 @@ class SessionServer {
         if (clientSocket.request.user) {
             var newChatObj = this.createActionObj("chat", chatObj.username, chatObj.userId, chatObj.data)
             this.socket.to(clientSocket.rooms[1]).emit("chat", newChatObj)
-            await this.updateSessionState(clientSocket.rooms[1], newChatObj)
+            this.updateSessionState(clientSocket.rooms[1], newChatObj)
         }
         else {
             clientSocket.emit("session-error", "Client is not authenticated")
         }
     }
 
-    emitPlayer = async (clientSocket, playerObj) => {
+    emitPlayer = (clientSocket, playerObj) => {
         if (clientSocket.request.user) {
             var newPlayerObj = this.createActionObj("player", playerObj.username, playerObj.userId, playerObj.data)
             this.socket.to(clientSocket.rooms[1]).emit("player", newPlayerObj)
-            await this.updateSessionState(clientSocket.rooms[1], newPlayerObj)
+            this.updateSessionState(clientSocket.rooms[1], newPlayerObj)
         }
         else {
             clientSocket.emit("session-error", "Client is not authenticated or client is not the Session host")
@@ -123,7 +123,7 @@ class SessionServer {
         if (clientSocket.request.user) {
             var newQueueObj = this.createActionObj("queue", queueObj.username, queueObj.userId, queueObj.data)
             this.socket.to(clientSocket.rooms[1]).emit("queue", newQueueObj)
-            await this.updateSessionState(clientSocket.rooms[1], newQueueObj)
+            this.updateSessionState(clientSocket.rooms[1], newQueueObj)
         }
         else {
             clientSocket.emit("session-error", "Client is not authenticated or client is not the Session host")
@@ -134,7 +134,7 @@ class SessionServer {
         if (clientSocket.request.user) {
             var newSessionObj = this.createActionObj("session", sessionObj.username, sessionObj.userId, sessionObj.data)
             this.socket.to(clientSocket.rooms[1]).emit("session", newSessionObj)
-            await this.updateSessionState(clientSocket.rooms[1], newSessionObj)
+            this.updateSessionState(clientSocket.rooms[1], newSessionObj)
         }
         else {
             clientSocket.emit("session-error", "Client is not authenticated or client is not the Session host")
