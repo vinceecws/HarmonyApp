@@ -155,8 +155,8 @@ class SessionScreen extends React.Component {
 			return('Login or Signup to send a message');
 		}
 	}
-	initSessionClient = () =>{
-		this.props.sessionClient.joinSession(this.state._id, this.setState({loading: false}));
+	initSessionClient = (sessionId) =>{
+		this.props.sessionClient.joinSession(sessionId, this.setState({loading: false}));
 		if(this.props.user){
 			if(this.props.user._id === this.state.hostId){
 				console.log("session will be ready");
@@ -367,7 +367,7 @@ class SessionScreen extends React.Component {
 							pastQueue: this.props.queue.getPastQueue(),
 							
 			        	})
-			        	this.initSessionClient();
+			        	this.initSessionClient(sessionId);
 			        })
 				}
 				else{
@@ -379,7 +379,7 @@ class SessionScreen extends React.Component {
 							name: session.name,
 							startTime: session.startTime,
 					});
-					this.initSessionClient();
+					this.initSessionClient(sessionId);
 					if(data.data.user !== undefined){
 						this.props.handleUpdateUser(data.data.user);
 					}
@@ -394,7 +394,7 @@ class SessionScreen extends React.Component {
 							name: session.name,
 							startTime: session.startTime,
 					});
-					this.initSessionClient();
+					this.initSessionClient(sessionId);
 					
 			}
 			
