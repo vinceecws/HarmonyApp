@@ -126,6 +126,17 @@ class SessionClient {
     /*
         Action emitters
     */
+    readySession = (callback) => {
+        this.socket.emit("ready", (response) => {
+            if (response.status === 200) {
+                console.log("Session ready")
+            }
+            
+            if (callback) {
+                callback(response)
+            }
+        })
+    }
     joinSession = (id, callback) => {
         this.socket.emit("join", id, (response) => {
             if (response.status === 200) {

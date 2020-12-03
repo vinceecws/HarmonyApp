@@ -939,26 +939,24 @@ module.exports = function(mainSocket, sessionSocket) {
                 message: "Unauthorized",
                 statusCode: 401,
                 data: {
-                    session: null
+                    sessionId: null
                 },
                 success: false
             })
         }
         else {
-            let user = stripUser(req.user)
-            let sessionId = await mongooseQuery.createSession(user._id, user.username, req.body.name, Date.now(), req.body.initialQueue).catch(err => res.sendStatus(404))
-            let sessions = await mongooseQuery.getSessions().catch(err => {
+            var user = stripUser(req.user)
+            var session = await mongooseQuery.createSession(user._id, user.username, req.body.name, Date.now(), req.body.initialQueue).catch(err => res.sendStatus(404))
+            var sessions = await mongooseQuery.getSessions().catch(err => {
                 mainSocket.emit('error')
             })
             /* Add support for emitting session creation to all listening sockets */
-            
-            mainSocket.emit('top-sessions', sessions)
 
             return res.status(200).json({
                 message: "Session created",
                 statusCode: 200,
                 data: {
-                    session: sessionId,
+                    sessionId: session._id,
                 },
                 success:true
             })
@@ -982,10 +980,10 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else{
-            let session = await mongooseQuery.getSession({'_id': req.params.id});
+            var session = await mongooseQuery.getSession({'_id': req.params.id});
             if (req.user){
-                let user = stripUser(req.user)
-                let updatedUser = user._id === session.hostId ? 
+                var user = stripUser(req.user)
+                var updatedUser = user._id === session.hostId ? 
                     (await mongooseQuery.updateUser(user._id, {
                         live: true,
                         currentSession: session._id

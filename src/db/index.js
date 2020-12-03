@@ -207,6 +207,7 @@ exports.createSession = async function(hostId, hostName, name, startTime, initia
         hostId: hostId,
         hostName: hostName,
         name: name,
+        live: false,
         startTime: startTime, 
         initialQueue: initialQueue
     }).save().catch(error => {return error});

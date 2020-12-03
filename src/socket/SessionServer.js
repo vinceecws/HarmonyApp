@@ -2,7 +2,8 @@ const mongooseQuery = require('../db');
 
 class SessionServer {
 
-    constructor(socket) {
+    constructor(mainSocket, socket) {
+        this.mainSocket = mainSocket
         this.socket = socket
         this.initSocket()
     }
@@ -10,7 +11,6 @@ class SessionServer {
     initSocket = () => {
         this.socket.on('connect', async (socket) => {
             /* Access equivalent of PassportJS's "req.user" here as "socket.request.user" */
-
             socket.onAny((event, ...args) => {
                 this.parseAction(event, socket, ...args)
             })
@@ -18,7 +18,11 @@ class SessionServer {
     }
 
     parseAction = (action, clientSocket, ...args) => {
+        console.log(action)
         switch (action) {
+            case "ready":
+                this.readySession(clientSocket)
+                break
             case "join":
                 this.joinSession(clientSocket, args[0])
                 break
@@ -68,6 +72,18 @@ class SessionServer {
         clientSocket is the socket associated with the emitting client, which has an id that is different from the user id.
         sessionId is the id of the Socket IO room of the Session, same as the session id.
     */
+    readySession = (clientSocket) => {
+        if (clientSocket.request.user) {
+            mongooseQuery.updateSession(clientSocket.rooms[1], {live: true}).then(async () => {
+                var sessions = await mongooseQuery.getSessions()
+                this.mainSocket.emit('top-sessions', sessions)
+            })
+        }
+        else {
+            clientSocket.emit("session-error", "Client is not authenticated")
+        }
+    }
+
     joinSession = (clientSocket, sessionId) => {
         if (!clientSocket.rooms[1]) { //If not already in a Session
             clientSocket.join(sessionId);

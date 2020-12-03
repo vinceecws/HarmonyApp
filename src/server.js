@@ -83,7 +83,7 @@ app.use(passportCallbacks.isLoggedIn)
 */
 
 const mainSocket = require('./socket/main.js')(io, mongoSession, passport.initialize(), passport.session())
-const sessionSocket = require('./socket/session.js')(io, mongoSession, passport.initialize(), passport.session())
+const sessionSocket = require('./socket/session.js')(mainSocket, io, mongoSession, passport.initialize(), passport.session())
 
 /*
     Express.js routes
