@@ -104,7 +104,7 @@ class SessionScreen extends React.Component {
 			this.props.queue.setShuffle(playerState.shuffle);
 			this.props.queue.setRepeat(playerState.repeat);
 			if (playerState.play){
-				this.props.playVideo();
+				this.props.playVideo(queueState.current_song);
 			}
 			else {
 				this.props.playerAPI.pauseVideo();
