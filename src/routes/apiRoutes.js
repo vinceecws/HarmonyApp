@@ -947,10 +947,6 @@ module.exports = function(mainSocket, sessionSocket) {
         else {
             let user = stripUser(req.user)
             let sessionId = await mongooseQuery.createSession(user._id, user.username, req.body.name, Date.now(), req.body.initialQueue).catch(err => res.sendStatus(404))
-            let updatedUser = await mongooseQuery.updateUser(user._id, {
-                live: true,
-                currentSession: sessionId
-            }).catch(err => res.sendStatus(404))
             let sessions = await mongooseQuery.getSessions().catch(err => {
                 mainSocket.emit('error')
             })
@@ -963,7 +959,6 @@ module.exports = function(mainSocket, sessionSocket) {
                 statusCode: 200,
                 data: {
                     session: sessionId,
-                    user: stripUser(updatedUser)
                 },
                 success:true
             })
@@ -988,12 +983,26 @@ module.exports = function(mainSocket, sessionSocket) {
         }
         else{
             let session = await mongooseQuery.getSession({'_id': req.params.id});
-
+            let user = stripUser(req.user)
+            let updatedUser;
+            if (user._id === session.hostId){
+                updatedUser = await mongooseQuery.updateUser(user._id, {
+                    live: true,
+                    currentSession: sessionId
+                }).catch(err => res.sendStatus(404))
+            }
+            else {
+                updatedUser = await mongooseQuery.updateUser(user._id, {
+                    currentSession: sessionId
+                }).catch(err => res.sendStatus(404))
+            }
+            
             return res.status(200).json({
                 message: "Fetch success",
                 statusCode: 200,
                 data: {
-                    session: session
+                    session: session,
+                    user: stripUser(updatedUser)
                 },
                 success: true
             })
