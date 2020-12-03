@@ -20,7 +20,6 @@ class SessionScreen extends React.Component {
 			hostName: null,
 			name: null,
 			startTime: null,
-			currentSong: null,
 			pastQueue: [],
 			futureQueue: [],
 			chatLog: [],
@@ -95,22 +94,23 @@ class SessionScreen extends React.Component {
 	}
 
 	handleSetSessionState = (queueState, playerState, time) => {
-		if (!this.isHost()){
-			//set player state?
+		if (!this.isHost() && this.state.loading){
+
 			this.props.queue.setShuffle(playerState.shuffle);
 			this.props.queue.setRepeat(playerState.repeat);
 			if (playerState.play){
-				this.props.playVideo(queueState.current_song);
+				this.props.playVideo(queueState.current_song._id);
 			}
 			else {
+				this.props.playVideo(queueState.current_song._id);
 				this.props.playerAPI.pauseVideo();
 			}
+			this.props.playerAPI.seekTo(time);
 			this.setState({
-				currentSong: queueState.current_song,
 				prevQueue: queueState.past_queue,
 				futureQueue: queueState.future_queue,
+				loading: false
 			});
-			this.props.playerAPI.seekTo(time);
 		}
 	}
 
@@ -122,7 +122,6 @@ class SessionScreen extends React.Component {
 			repeat: this.props.queue.getRepeat()
 		}
 		data.queue_state = {
-			current_song: this.props.queue.getCurrentSong(),
 			past_queue: this.props.queue.getPastQueue(),
 			future_queue: this.props.queue.getFutureQueue()
 		}
@@ -157,10 +156,14 @@ class SessionScreen extends React.Component {
 		}
 	}
 	initSessionClient = (sessionId, hostId) =>{
-		this.props.sessionClient.joinSession(sessionId, this.setState({loading: false}));
+		this.props.sessionClient.joinSession(sessionId);
 		if(this.props.user){
 			if(this.props.user._id === hostId){
-				this.props.sessionClient.readySession();
+				this.props.sessionClient.readySession((() => {
+					this.setState({
+						loading: false
+					})
+				}).bind(this));
 			}
 			else {
 				var data =  {
@@ -186,7 +189,6 @@ class SessionScreen extends React.Component {
 		        		
 		        		
 						futureQueue: this.props.queue.getFutureQueue(),
-						currentSong: this.props.queue.getCurrentSong(),
 						pastQueue: this.props.queue.getPastQueue(),
 						loading:false
 						
@@ -199,7 +201,6 @@ class SessionScreen extends React.Component {
 	        		
 	        		
 					futureQueue: this.props.queue.getFutureQueue(),
-					currentSong: this.props.queue.getCurrentSong(),
 					pastQueue: this.props.queue.getPastQueue(),
 					loading:false
 	        	});
@@ -368,7 +369,6 @@ class SessionScreen extends React.Component {
 							name: session.name,
 							startTime: session.startTime,
 							futureQueue: this.props.queue.getFutureQueue(),
-							currentSong: this.props.queue.getCurrentSong(),
 							pastQueue: this.props.queue.getPastQueue(),
 							
 			        	})
