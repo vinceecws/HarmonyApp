@@ -14,6 +14,9 @@ class Player extends React.Component {
         this.state = {
             user: this.props.user,
             showTitleTicker: false,
+            paused: this.props.playerAPI.isPaused(),
+            repeat: this.props.queue.getRepeat(),
+            shuffle: this.props.queue.getShuffle(),
             currentSong: this.props.queue.getCurrentSong(),
             currentTime: this.props.playerAPI.getCurrentTime(),
             seeking: false
@@ -23,11 +26,14 @@ class Player extends React.Component {
     componentDidMount = () => {
         this.playerActionListener = this.props.sessionClient.subscribeToAction("player", this.handleApplyPlayerState.bind(this))
         this.queueActionListener = this.props.sessionClient.subscribeToAction("queue", this.handleApplyPlayerState.bind(this))
+
+        this.currentSongChangeListener = this.props.queue.subscribeToEvent("currentSongChange", this.handleQueueStateChange.bind(this))
+        this.repeatStateChangeListener = this.props.queue.subscribeToEvent("repeatStateChange", this.handleQueueStateChange.bind(this))
+        this.shuffleStateChangeListener = this.props.queue.subscribeToEvent("shuffleStateChange", this.handleQueueStateChange.bind(this))
+
         this.props.playerAPI.subscribeToEvent("onPlayerStateChange", this.handlePlayerStateChange.bind(this))
+
         setInterval(() => {
-            this.setState({
-                currentSong: this.props.queue.getCurrentSong()
-            })
             if (!this.state.seeking) {
                 this.setState({
                     currentTime: this.props.playerAPI.getCurrentTime() 
@@ -47,11 +53,12 @@ class Player extends React.Component {
     componentWillUnmount = () => {
         this.playerActionListener = this.props.sessionClient.unsubscribeFromAction("player", this.playerActionListener)
         this.queueActionListener = this.props.sessionClient.unsubscribeFromAction("queue", this.queueActionListener)
-        this.props.playerAPI.unsubscribeFromEvent("onPlayerStateChange")
-    }
 
-    handleGoToItem = (e) => {
-        
+        this.currentSongChangeListener = this.props.queue.unsubscribeFromEvent("currentSongChange", this.currentSongChangeListener)
+        this.repeatStateChangeListener = this.props.queue.unsubscribeFromEvent("repeatStateChange", this.repeatStateChangeListener)
+        this.shuffleStateChangeListener = this.props.queue.unsubscribeFromEvent("shuffleStateChange", this.shuffleStateChangeListener)
+
+        this.props.playerAPI.unsubscribeFromEvent("onPlayerStateChange")
     }
 
     handleShowTitleTicker = () => {
@@ -98,7 +105,29 @@ class Player extends React.Component {
         }
     }
 
-    handleApplyPlayerState = (actionObj) => {
+    handleQueueStateChange = (event, newState) => {
+        switch (event) {
+            case "currentSongChange":
+                this.setState({
+                    currentSong: newState
+                })
+                break
+            case "repeatStateChange":
+                this.setState({
+                    repeat: newState
+                })
+                break
+            case "shuffleStateChange":
+                this.setState({
+                    shuffle: newState
+                })
+                break
+            default:
+                break
+        }
+    }
+
+    handleApplyPlayerState = (action, actionObj) => {
         if (this.props.currentSession && this.isHost()) {
             return
         }
@@ -134,11 +163,27 @@ class Player extends React.Component {
     }
 
     handlePlayerStateChange = (e) => {
-        if (e.data === window.YT.PlayerState.ENDED) {
-            this.setState({
-                seeking: false
-            })
-            this.handleNextSong()
+        switch (e.data) {
+            case window.YT.PlayerState.ENDED:
+                this.setState({
+                    seeking: false
+                })
+                this.handleNextSong()
+                break
+            case window.YT.PlayerState.PAUSED:
+                console.log("PAUSED")
+                this.setState({
+                    paused: true
+                })
+                break
+            case window.YT.PlayerState.PLAYING:
+                console.log("PLAYING")
+                this.setState({
+                    paused: false
+                })
+                break
+            default:
+                break
         }
     }
 
@@ -209,7 +254,7 @@ class Player extends React.Component {
             return
         }
 
-        if (this.props.playerAPI.isPaused()) {
+        if (this.state.paused) {
             this.handleEmitPlayerState("player", "play")
             if (this.props.queue.currentSongIsEmpty()) {
                 hasNext = this.props.queue.nextSong()
@@ -314,19 +359,19 @@ class Player extends React.Component {
     }
 
     getPlayButtonIcon = () => {
-        return this.props.playerAPI.isPaused() ? icon_play_2 : icon_pause_3;
+        return this.state.paused ? icon_play_2 : icon_pause_3;
     }
 
     getRepeatButtonIcon = () => {
-        return this.props.queue.getRepeat() === repeatStates.QUEUE ? icon_repeat_3 : icon_repeat_1;
+        return this.state.repeat === repeatStates.QUEUE ? icon_repeat_3 : icon_repeat_1;
     }
     
     getRepeatButtonIconClass = () => {
-        return this.props.queue.getRepeat() === repeatStates.OFF ? 'player-control-button-icon' : 'player-control-button-icon-on';
+        return this.state.repeat === repeatStates.OFF ? 'player-control-button-icon' : 'player-control-button-icon-on';
     }
 
     getShuffleButtonIconClass = () => {
-        return this.props.queue.getShuffle() ? 'player-control-button-icon-on' : 'player-control-button-icon';
+        return this.state.shuffle ? 'player-control-button-icon-on' : 'player-control-button-icon';
     }
 
     getMuteButtonIcon = () => {

@@ -1,5 +1,6 @@
 class ActionHandler { 
-    constructor(handler) {
+    constructor(event, handler) {
+        this.event = event
         this.handler = handler
     }
 
@@ -8,7 +9,7 @@ class ActionHandler {
     }
 
     call(...args) {
-        this.handler(...args)
+        this.handler(this.event, ...args)
     }
 
     destroy() {
@@ -60,12 +61,12 @@ class SessionClient {
 
     subscribeToAction = (action, callback, prepend=false) => {
         if (action in this.onActions) {
-            var handler = new ActionHandler(callback)
+            var handler = new ActionHandler(action, callback)
             if (prepend) {
                 this.onActions[action].unshift(handler)
             }
             else {
-                this.onActions[action].append(handler)
+                this.onActions[action].push(handler)
             }
             return handler
         }

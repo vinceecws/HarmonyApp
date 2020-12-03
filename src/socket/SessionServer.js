@@ -97,7 +97,6 @@ class SessionServer {
         if (clientSocket.request.user) {
             var newChatObj = this.createActionObj("chat", chatObj.username, chatObj.userId, chatObj.data)
             this.socket.to(clientSocket.rooms[1]).emit("chat", newChatObj)
-            this.updateSessionState(newChatObj)
         }
         else {
             clientSocket.emit("session-error", "Client is not authenticated")
@@ -108,7 +107,6 @@ class SessionServer {
         if (clientSocket.request.user) {
             var newPlayerObj = this.createActionObj("player", playerObj.username, playerObj.userId, playerObj.data)
             this.socket.to(clientSocket.rooms[1]).emit("player", newPlayerObj)
-            this.updateSessionState(newPlayerObj)
         }
         else {
             clientSocket.emit("session-error", "Client is not authenticated or client is not the Session host")
@@ -119,7 +117,6 @@ class SessionServer {
         if (clientSocket.request.user) {
             var newQueueObj = this.createActionObj("queue", queueObj.username, queueObj.userId, queueObj.data)
             this.socket.to(clientSocket.rooms[1]).emit("queue", newQueueObj)
-            this.updateSessionState(newQueueObj)
         }
         else {
             clientSocket.emit("session-error", "Client is not authenticated or client is not the Session host")
@@ -130,7 +127,6 @@ class SessionServer {
         if (clientSocket.request.user) {
             var newSessionObj = this.createActionObj("session", sessionObj.username, sessionObj.userId, sessionObj.data)
             this.socket.to(clientSocket.rooms[1]).emit("session", newSessionObj)
-            this.updateSessionState(newSessionObj)
         }
         else {
             clientSocket.emit("session-error", "Client is not authenticated or client is not the Session host")
