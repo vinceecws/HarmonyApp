@@ -30,6 +30,107 @@ class SessionScreen extends React.Component {
 		
 		//this.props.sessionClient.joinSession(this.props.match.params.sessionId)
 	}
+
+
+	componentDidMount = () => {
+		this.chatActionListener = this.props.sessionClient.subscribeToAction("chat", this.handleApplyChatLog.bind(this))
+		this.sessionActionListener = this.props.sessionClient.subscribeToAction("session", this.handleApplySessionState.bind(this))
+	}
+
+	componentWillUnmount = () => {
+		this.playerActionListener = this.props.sessionClient.unsubscribeFromAction("chat", this.chatActionListener)
+        this.queueActionListener = this.props.sessionClient.unsubscribeFromAction("session", this.sessionActionListener)
+	}
+
+
+	handleApplyChatLog = (actionObj) =>{
+		if (actionObj.action === 'chat'){
+			let chatObj = {'type': 'text', 'object': {'username':actionObj.username, 
+													'message':actionObj.data.message, 
+													'timestamp':actionObj.timestamp}};
+			this.setState({chatLog: this.state.chatLog.concat(chatObj)});
+		}
+	}
+
+
+	handleApplySessionState = (actionObj) => {
+		if (actionObj.action === 'session'){
+			switch(actionObj.subaction){
+				case 'end_session':
+					this.props.sessionClient.disconnect();
+					break;
+				case 'change_name':
+					this.handleChangeName(actionObj.data.newName);
+					break;
+				case 'player_time':
+					this.handleSetPlayerTime(actionObj.data.time);
+					break;
+				case 'session_state':
+					this.handleSetSessionState(actionObj.data.queue_state, actionObj.data.player_state);
+					break;
+				case 'get-session-state':
+					if(this.state.hostId === this.props.user._id){this.handleSendSessionState();}
+					break;
+				case 'like_session':
+					break;
+				default:
+					console.log('Invalid subaction');
+			}
+		}
+	}
+
+	handleSetSessionState = (queueState, playerState) => {
+		if (!this.isHost()){
+			this.setState({
+				currentSong: queueState.current_song,
+				prevQueue: queueState.past_queue,
+				futureQueue: queueState.future_queue,
+			});
+			//set player state?
+			this.props.queue.setShuffle(playerState.shuffle);
+			this.props.queue.setRepeat(playerState.repeat);
+			if (playerState.play){
+				this.props.playVideo();
+			}
+			else {
+				this.props.playerAPI.pauseVideo();
+			}
+		}
+	}
+
+	handleSendSessionState = () => {
+		let data = {}
+		data.player_state = {
+			play: !this.props.playerAPI.isPaused(),
+			shuffle: this.props.queue.getShuffle(),
+			repeat: this.props.queue.getRepeat()
+		}
+		data.queue_state = {
+			current_song: this.props.queue.getCurrentSong(),
+			past_queue: this.props.queue.getPastQueue(),
+			future_queue: this.props.queue.getFutureQueue()
+		}
+		data.time = this.props.playerAPI.getSongTime();
+		this.props.sessionClient.emitSession(this.props.username, this.props.user._id, data)
+	}
+
+	handleChangeName = (newName) =>{
+		if (this.state.hostId !== this.props.user._id){
+			this.setState({name: newName});
+		}
+	}
+
+	handleSetPlayerTime = (time) => {
+		if (this.state.hostId !== this.props.user._id){
+			this.props.playerAPI.seekTo(time);
+		}
+	}
+
+	changeSessionName = (newName) => {
+		let actionObj = {action: 'session', }
+	}
+
+
 	initSessionClient = () =>{
 		this.props.sessionClient.joinSession(this.state._id, this.setState({loading: false}));
 	}
