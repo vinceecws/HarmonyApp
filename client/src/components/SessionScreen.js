@@ -33,7 +33,27 @@ class SessionScreen extends React.Component {
 	componentDidMount = () =>{
 		this.getSession();
 		console.log("componentDidMount");
+		this.playerActionListener = this.props.sessionClient.subscribeToAction("player", this.handleApplyQueueState.bind(this));
+        this.queueActionListener = this.props.sessionClient.subscribeToAction("queue", this.handleApplyQueueState.bind(this));
+        setInterval(() => {
+            this.setState({
+                currentSong: this.props.queue.getCurrentSong()
+            })
+            
+        }, 1000);
 	}
+	componentDidUpdate = (prevProps, prevState) => {
+        if (prevState.user !== this.props.user) {
+            this.setState({
+                user: this.props.user
+            })
+        }
+    }
+    componentWillUnmount = () => {
+        this.playerActionListener = this.props.sessionClient.unsubscribeFromAction("player", this.playerActionListener);
+        this.queueActionListener = this.props.sessionClient.unsubscribeFromAction("queue", this.queueActionListener);
+        
+    }
 	initSessionClient = () =>{
 		this.props.sessionClient.joinSession(this.state._id, this.setState({loading: false}));
 	}
@@ -54,6 +74,50 @@ class SessionScreen extends React.Component {
 		}
 		
 	}
+	handleApplyQueueState = (actionObj) => {
+        if (this.props.currentSession && this.isHost()) {
+            return
+        }
+
+        if (actionObj.action === "player") {
+            switch (actionObj.data.subaction) {
+                case "next_song":
+                    this.handleNextSong()
+                    break
+                case "prev_song":
+                    this.handlePreviousSong()
+                    break
+                default:
+                    console.log("Invalid subaction")
+            }
+        }
+        else if (actionObj.action === "queue") {
+            switch (actionObj.data.subaction) {
+                case "set_shuffle":
+                    this.props.queue.setShuffle(actionObj.data.state)
+                case "set_repeat":
+                    this.props.queue.setRepeat(actionObj.data.state)
+                default:
+                    break
+            }
+        }
+    }
+    handleNextSong = () => {
+    	this.setState({
+    		futureQueue: this.props.queue.getFutureQueue(),
+			currentSong: this.props.queue.getCurrentSong(),
+			pastQueue: this.props.queue.getPastQueue(),
+    	})
+    }
+    handlePreviousSong = () => {
+    	this.setState({
+    		futureQueue: this.props.queue.getFutureQueue(),
+			currentSong: this.props.queue.getCurrentSong(),
+			pastQueue: this.props.queue.getPastQueue(),
+    	})
+    }
+    
+	
 	onKeyPress = (e) => {
 
 		if(e.key === "Enter" && this.state.messageText.length <= 250){
@@ -121,6 +185,7 @@ class SessionScreen extends React.Component {
 					startTime: session.startTime,
 					futureQueue: this.props.queue.getFutureQueue(),
 					currentSong: this.props.queue.getCurrentSong(),
+					pastQueue: this.props.queue.getPastQueue(),
 					chatLog: session.actionLog
 	        	})
 	        	this.initSessionClient();
