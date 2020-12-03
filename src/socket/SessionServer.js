@@ -75,6 +75,7 @@ class SessionServer {
     readySession = (clientSocket) => {
         if (clientSocket.request.user) {
             console.log("READYING NOW")
+            console.log(clientSocket.rooms[1])
             mongooseQuery.updateSession(clientSocket.rooms[1], {live: true}).then(async () => {
                 var sessions = await mongooseQuery.getSessions()
                 console.log(sessions)
@@ -88,6 +89,7 @@ class SessionServer {
 
     joinSession = (clientSocket, sessionId) => {
         if (!clientSocket.rooms[1]) { //If not already in a Session
+            console.log("JOINING SESSION")
             clientSocket.join(sessionId);
             let getData = {subaction: 'get_session_state'}
             let getSessionStateObj = {action: 'session', data: getData }

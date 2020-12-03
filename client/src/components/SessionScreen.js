@@ -25,6 +25,7 @@ class SessionScreen extends React.Component {
 			futureQueue: [],
 			chatLog: [],
 			messageText: "",
+			user: this.props.user,
 		}
 		
 		
@@ -155,13 +156,14 @@ class SessionScreen extends React.Component {
 			return('Login or Signup to send a message');
 		}
 	}
-	initSessionClient = () =>{
-		console.log('initsession called')
-		this.props.sessionClient.joinSession(this.state._id, this.setState({loading: false}));
+	initSessionClient = (sessionId) =>{
+		this.props.sessionClient.joinSession(sessionId, this.setState({loading: false}));
 		if(this.props.user){
 			console.log('user logged in')
 			if(this.props.user._id === this.state.hostId){
+				console.log("session will be ready");
 				this.props.sessionClient.readySession();
+				console.log("session is ready");
 			}
 			else {
 				this.props.sessionClient.emitSession("session","get_session_state");
@@ -187,6 +189,7 @@ class SessionScreen extends React.Component {
 						futureQueue: this.props.queue.getFutureQueue(),
 						currentSong: this.props.queue.getCurrentSong(),
 						pastQueue: this.props.queue.getPastQueue(),
+						loading:false
 						
 		        	});
 		        	
@@ -199,7 +202,7 @@ class SessionScreen extends React.Component {
 					futureQueue: this.props.queue.getFutureQueue(),
 					currentSong: this.props.queue.getCurrentSong(),
 					pastQueue: this.props.queue.getPastQueue(),
-					
+					loading:false
 	        	});
 	        	
 			}
@@ -244,13 +247,17 @@ class SessionScreen extends React.Component {
             switch (actionObj.data.subaction) {
 				// listen to only subactions that are not listened in Player.js
                  case "move_song":
-                     this.props.queue.moveSongInFutureQueue(actionObj.data.from,actionObj.data.to);
+					 this.props.queue.moveSongInFutureQueue(actionObj.data.from,actionObj.data.to);
+					 break;
                  case "move_song_from_past":
-                     this.props.queue.moveSongFromPastQueue(actionObj.data.from,actionObj.data.to);
+					 this.props.queue.moveSongFromPastQueue(actionObj.data.from,actionObj.data.to);
+					 break;
                  case "add_song":
-                     this.props.queue.addSongToFutureQueue(actionObj.data.songId);
+					 this.props.queue.addSongToFutureQueue(actionObj.data.songId);
+					 break;
                  case "del_song":
-                     this.props.queue.removeSongFromFutureQueue(actionObj.data.index);
+					 this.props.queue.removeSongFromFutureQueue(actionObj.data.index);
+					 break;
                 default:
                     break
             }
@@ -336,56 +343,69 @@ class SessionScreen extends React.Component {
 	handleGetSession = (status,data) => {
 		console.log('handleGetSession', status, data)
 		if (status === 200) {
-			console.log('Valid status')
 			var session = data.data.session;
-			if(session.hostId === this.props.user._id){
-				console.log('is host')
-				if(data.data.user !== undefined){
-					this.props.handleUpdateUser(data.data.user)
-					console.log('User updated')
+			if(this.props.user){
+				if(session.hostId === this.props.user._id){
+					if(data.data.user !== undefined){
+						this.props.handleUpdateUser(data.data.user)
+					}
+					var initialQueue = _.cloneDeep(data.data.session.initialQueue);
+					if(initialQueue.length > 0){
+						this.props.playVideo(initialQueue.shift());
+					}
+					
+					Promise.all(initialQueue.map((songId) => {
+		            	return this.props.fetchVideoById(songId, true) //Initial queue of song objects
+		        	})).then((fetchedSongs) => {
+						fetchedSongs.forEach(song => {
+							console.log(song);
+							this.props.queue.addSongToFutureQueue(song);
+						});
+		            	this.setState({
+			        		
+			        		id: session._id,
+							hostId: session.hostId,
+							hostName : session.hostName,
+							name: session.name,
+							startTime: session.startTime,
+							futureQueue: this.props.queue.getFutureQueue(),
+							currentSong: this.props.queue.getCurrentSong(),
+							pastQueue: this.props.queue.getPastQueue(),
+							
+			        	})
+			        	this.initSessionClient(session._id);
+			        })
 				}
-				var initialQueue = _.cloneDeep(data.data.session.initialQueue);
-				if(initialQueue.length > 0){
-					this.props.playVideo(initialQueue.shift());
-				}
-				
-				Promise.all(initialQueue.map((songId) => {
-	            	return this.props.fetchVideoById(songId, true) //Initial queue of song objects
-	        	})).then((fetchedSongs) => {
-					fetchedSongs.forEach(song => {
-						console.log(song);
-						this.props.queue.addSongToFutureQueue(song);
+				else{
+					console.log('logged in but not host')
+					this.setState({
+			        		
+			        		id: session._id,
+							hostId: session.hostId,
+							hostName : session.hostName,
+							name: session.name,
+							startTime: session.startTime,
 					});
-	            	this.setState({
-		        		
-		        		id: session._id,
-						hostId: session.hostId,
-						hostName : session.hostName,
-						name: session.name,
-						startTime: session.startTime,
-						futureQueue: this.props.queue.getFutureQueue(),
-						currentSong: this.props.queue.getCurrentSong(),
-						pastQueue: this.props.queue.getPastQueue(),
-						
-		        	})
-		        	this.initSessionClient();
-		        })
+					if(data.data.user !== undefined){
+						this.props.handleUpdateUser(data.data.user);
+					}
+					this.initSessionClient(session._id);
+				}
 			}
 			else{
-				console.log('not host')
+				console.log('not logged in')
 				this.setState({
-		        		
-		        		id: session._id,
-						hostId: session.hostId,
-						hostName : session.hostName,
-						name: session.name,
-						startTime: session.startTime,
-				});
-				this.initSessionClient();
-				if(data.data.user !== undefined){
-					this.props.handleUpdateUser(data.data.user);
-				}
+			        		
+			        		id: session._id,
+							hostId: session.hostId,
+							hostName : session.hostName,
+							name: session.name,
+							startTime: session.startTime,
+					});
+				this.initSessionClient(session._id);
+					
 			}
+			
 			
             
         }
