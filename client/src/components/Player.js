@@ -171,13 +171,11 @@ class Player extends React.Component {
                 this.handleNextSong()
                 break
             case window.YT.PlayerState.PAUSED:
-                console.log("PAUSED")
                 this.setState({
                     paused: true
                 })
                 break
             case window.YT.PlayerState.PLAYING:
-                console.log("PLAYING")
                 this.setState({
                     paused: false
                 })
@@ -241,6 +239,9 @@ class Player extends React.Component {
             if (this.props.queue.currentSongIsEmpty()) {
                 hasNext = this.props.queue.nextSong()
             }
+            else {
+                hasNext = true
+            }
 
             if (hasNext) {
                 currentSong = this.props.queue.getCurrentSong()
@@ -270,6 +271,7 @@ class Player extends React.Component {
                 }
             }
             else {
+                currentSong = this.props.queue.getCurrentSong()
                 if (this.props.shouldStartSession()) {
                     this.handleCreateSession(currentSong._id)
                 }

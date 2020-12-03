@@ -58,7 +58,7 @@ class Queue {
         if (event in this.onChange) {
             var ind = this.onChange[event].findIndex(x => x == handler)
             if (ind > -1) {
-                var handler = this.onChange.splice(ind, 1)[0]
+                var handler = this.onChange[event].splice(ind, 1)[0]
                 return handler.destroy()
             }
             else {
