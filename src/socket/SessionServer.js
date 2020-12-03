@@ -74,6 +74,7 @@ class SessionServer {
     readySession = (clientSocket) => {
         if (clientSocket.request.user) {
             console.log("READYING NOW")
+            console.log(clientSocket.rooms[1])
             mongooseQuery.updateSession(clientSocket.rooms[1], {live: true}).then(async () => {
                 var sessions = await mongooseQuery.getSessions()
                 console.log(sessions)
