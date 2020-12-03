@@ -482,7 +482,7 @@ class SessionScreen extends React.Component {
 	        					 	<div className='row' style={{height:'43%', overflow:'auto'}}>
 						                <Droppable droppableId="futureQueue">
 						                    {(provided) => ( 
-						                    	<QueueComponent Queue={this.state.futureQueue} fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.props.user}/>
+						                    	<QueueComponent Queue={this.state.futureQueue} 	queueType="future" isHost={this.isHost} fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.props.user}/>
 						        			 )}
 						        			   
 						                </Droppable>
@@ -493,7 +493,7 @@ class SessionScreen extends React.Component {
 				        			<div className='row' style={{height:'43%', overflow:'auto'}}>
 					        			<Droppable droppableId="pastQueue">
 						                    {(provided) => ( 
-		        								<QueueComponent Queue={this.state.pastQueue} fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.props.user}/>
+		        								<QueueComponent Queue={this.state.pastQueue} isHost={this.isHost} queueType="past"  fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.props.user}/>
 		        							)}
 		        							
 						                </Droppable>

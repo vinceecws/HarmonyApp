@@ -25,10 +25,10 @@ class QueueEntry extends React.Component{
 			entry = <h1 className='Session-Entry-Text body-text color-accented'>{this.props.index+1} : {this.props.title} -- {this.props.artist}</h1>;
 		}
 		let renderStuff;
-		if(this.props.user != null){
+		if(this.props.isHost){
 			renderStuff =<div  onMouseEnter={this.handleEntry} onMouseLeave={this.handleLeave} style={{width:"100%"}}>
 				
-				<Draggable key={this.props.id} draggableId={this.props.id} index={this.props.index} >
+				<Draggable key={this.props.index+this.props.id+this.props.queueType} draggableId={this.props.id+this.props.index+this.props.queueType} index={this.props.index} >
 	            	{(provided) => (
 					<div className='list-group-item'  {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
 						<div>
