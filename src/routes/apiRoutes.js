@@ -986,12 +986,12 @@ module.exports = function(mainSocket, sessionSocket) {
             if (req.user){
                 let user = stripUser(req.user)
                 let updatedUser = user._id === session.hostId ? 
-                    (updatedUser = await mongooseQuery.updateUser(user._id, {
+                    (await mongooseQuery.updateUser(user._id, {
                         live: true,
                         currentSession: session._id
                     }).catch(err => res.sendStatus(404)))
                         :
-                    (updatedUser = await mongooseQuery.updateUser(user._id, {
+                    (await mongooseQuery.updateUser(user._id, {
                         currentSession: session._id
                     }).catch(err => res.sendStatus(404)))
 
