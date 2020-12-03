@@ -21,6 +21,7 @@ class CollectionScreen extends React.Component{
             collectionDescription: '',
             playing: false,
             favorited: false,
+            songPlaying: null
         }
     }
 

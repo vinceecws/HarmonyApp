@@ -984,18 +984,15 @@ module.exports = function(mainSocket, sessionSocket) {
         else{
             let session = await mongooseQuery.getSession({'_id': req.params.id});
             let user = stripUser(req.user)
-            let updatedUser;
-            if (user._id === session.hostId){
-                updatedUser = await mongooseQuery.updateUser(user._id, {
+            let updatedUser = user._id === session.hostId ? 
+                (updatedUser = await mongooseQuery.updateUser(user._id, {
                     live: true,
                     currentSession: sessionId
-                }).catch(err => res.sendStatus(404))
-            }
-            else {
-                updatedUser = await mongooseQuery.updateUser(user._id, {
+                }).catch(err => res.sendStatus(404)))
+                    :
+                (updatedUser = await mongooseQuery.updateUser(user._id, {
                     currentSession: sessionId
-                }).catch(err => res.sendStatus(404))
-            }
+                }).catch(err => res.sendStatus(404)))
             
             return res.status(200).json({
                 message: "Fetch success",
