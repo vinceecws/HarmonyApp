@@ -166,13 +166,38 @@ class SessionScreen extends React.Component {
 
 	getSession = () => { 
 		if (this.props.match.params.sessionId){
-			this.props.axiosWrapper.axiosGet("/api/session/" + this.props.match.params.sessionId, this.handleGetSession, true)
+			this.props.axiosWrapper.axiosGet("/api/session/" + this.props.match.params.sessionId, this.handleGetSession, true);
 			console.log("new session fetched");
 		}
 		else {
-			if(this.props.currentSession){
-				this.props.axiosWrapper.axiosGet("/api/session/" + this.props.user.currentSession, this.handleGetSession, true)
+			if(this.props.user){
+				if(this.props.user.currentSession){
+					this.props.axiosWrapper.axiosGet("/api/session/" + this.props.user.currentSession, this.handleGetSession, true);
+				}
+				else{ //Logged in
+					this.setState({
+		        		
+		        		
+						futureQueue: this.props.queue.getFutureQueue(),
+						currentSong: this.props.queue.getCurrentSong(),
+						pastQueue: this.props.queue.getPastQueue(),
+						
+		        	});
+		        	this.initSessionClient();
+				}
 			}
+			else{ //Not logged in
+				this.setState({
+	        		
+	        		
+					futureQueue: this.props.queue.getFutureQueue(),
+					currentSong: this.props.queue.getCurrentSong(),
+					pastQueue: this.props.queue.getPastQueue(),
+					
+	        	});
+	        	this.initSessionClient();
+			}
+			
 			
 		}
 	}
@@ -264,8 +289,19 @@ class SessionScreen extends React.Component {
         
         if (action === "queue") {
             data.subaction = subaction
-            data.state = args[0]
-            this.sessionClient.emitQueue(username, userId, data)
+            if(subaction === "move_song" || subaction === "move_song_from_past"){
+            	data.from = args[0];
+            	data.to = args[1];
+            }
+            else if(subaction === "add_song"){
+            	data.songId = args[0];
+            
+            }
+            else if(subaction === "del_song"){
+            	data.index = args[0];
+            }
+            
+            this.sessionClient.emitQueue(username, userId, data);
         }
     }
 	handleOnDragEnd = (e) =>{
