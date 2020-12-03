@@ -15,11 +15,7 @@ module.exports = function (io, ...middlewares) {
             let sessions = await mongooseQuery.getSessions().catch(err => {
                 socket.emit('error')
             })
-            socket.emit('top-sessions', sessions, (response) => {
-                if (response.status === 200) {
-                    console.log("Sessions acknowledged")
-                }
-            })
+            socket.emit('top-sessions', sessions)
         })
     })
 

@@ -3,6 +3,7 @@ import { icon_profile_image, icon_radio } from '../graphics';
 import ChatFeed from './Chat/ChatFeed.js';
 import QueueComponent from './Queues/QueueComponent.js';
 import Spinner from './Spinner';
+import {Button} from 'react-bootstrap';
 import { Droppable, DragDropContext, Draggable } from 'react-beautiful-dnd'
 
 const _ = require('lodash')
@@ -34,24 +35,20 @@ class SessionScreen extends React.Component {
 
 	componentDidMount = () => {
 		this.getSession();
-		console.log("componentDidMount");
-		this.playerActionListener = this.props.sessionClient.subscribeToAction("player", this.handleApplyQueueState.bind(this));
+
 		this.queueActionListener = this.props.sessionClient.subscribeToAction("queue", this.handleApplyQueueState.bind(this));
 		this.chatActionListener = this.props.sessionClient.subscribeToAction("chat", this.handleApplyChatLog.bind(this))
 		this.sessionActionListener = this.props.sessionClient.subscribeToAction("session", this.handleApplySessionState.bind(this))
-        setInterval(() => {
-            this.setState({
-                currentSong: this.props.queue.getCurrentSong()
-            })
-            
-        }, 1000);
+
+		this.futureQueueChangeListener = this.props.queue.subscribeToEvent("futureQueueChange", this.handleQueueStateChange.bind(this));
 	}
 
 	componentWillUnmount = () => {
 		this.chatActionListener = this.props.sessionClient.unsubscribeFromAction("chat", this.chatActionListener)
 		this.sessionActionListener = this.props.sessionClient.unsubscribeFromAction("session", this.sessionActionListener)
-		this.playerActionListener = this.props.sessionClient.unsubscribeFromAction("player", this.playerActionListener);
-        this.queueActionListener = this.props.sessionClient.unsubscribeFromAction("queue", this.queueActionListener);
+		this.queueActionListener = this.props.sessionClient.unsubscribeFromAction("queue", this.queueActionListener);
+		
+		this.futureQueueChangeListener = this.props.queue.unsubscribeFromEvent("futureQueueChange", this.futureQueueChangeListener)
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
@@ -62,7 +59,7 @@ class SessionScreen extends React.Component {
         }
     }
 
-	handleApplyChatLog = (actionObj) =>{
+	handleApplyChatLog = (action, actionObj) =>{
 		if (actionObj.action === 'chat'){
 			let chatObj = {'type': 'text', 'object': {'username':actionObj.username, 
 													'message':actionObj.data.message, 
@@ -72,7 +69,7 @@ class SessionScreen extends React.Component {
 	}
 
 
-	handleApplySessionState = (actionObj) => {
+	handleApplySessionState = (action, actionObj) => {
 		if (actionObj.action === 'session'){
 			switch(actionObj.data.subaction){
 				case 'end_session':
@@ -80,9 +77,6 @@ class SessionScreen extends React.Component {
 					break;
 				case 'change_name':
 					this.handleChangeName(actionObj.data.newName);
-					break;
-				case 'player_time':
-					this.handleSetPlayerTime(actionObj.data.time);
 					break;
 				case 'session_state':
 					this.handleSetSessionState(actionObj.data.queue_state, actionObj.data.player_state);
@@ -161,6 +155,7 @@ class SessionScreen extends React.Component {
 	initSessionClient = () =>{
 		this.props.sessionClient.joinSession(this.state._id, this.setState({loading: false}));
 	}
+
 	getSession = () => { 
 		if (this.props.match.params.sessionId){
 			this.props.axiosWrapper.axiosGet("/api/session/" + this.props.match.params.sessionId, this.handleGetSession, true)
@@ -170,6 +165,7 @@ class SessionScreen extends React.Component {
 			// Render suggestions to start a session?
 		}
 	}
+
 	handleTextChange = (e) => {
 		if(this.state.messageText.length <= 250 && !(e.target.value.length > 250)){
 			this.setState({
@@ -178,49 +174,38 @@ class SessionScreen extends React.Component {
 		}
 		
 	}
-	handleApplyQueueState = (actionObj) => {
+
+	handleQueueStateChange = (event, newState) => {
+		switch (event) {
+			case "futureQueueChange":
+				this.setState({
+					futureQueue: newState
+				})
+				break
+			default:
+				break
+		}
+	}
+
+	handleApplyQueueState = (action, actionObj) => {
         if (this.props.currentSession && this.isHost()) {
             return
         }
 
-        if (actionObj.action === "player") {
+        if (actionObj.action === "queue") {
+
             switch (actionObj.data.subaction) {
-                case "next_song":
-                    this.handleNextSong()
-                    break
-                case "prev_song":
-                    this.handlePreviousSong()
-                    break
-                default:
-                    console.log("Invalid subaction")
-            }
-        }
-        else if (actionObj.action === "queue") {
-            switch (actionObj.data.subaction) {
-                case "set_shuffle":
-                    this.props.queue.setShuffle(actionObj.data.state)
-                case "set_repeat":
-                    this.props.queue.setRepeat(actionObj.data.state)
+				// listen to only subactions that are not listened in Player.js
+                // case "set_shuffle":
+                //     this.props.queue.setShuffle(actionObj.data.state)
+                // case "set_repeat":
+                //     this.props.queue.setRepeat(actionObj.data.state)
                 default:
                     break
             }
+
         }
     }
-    handleNextSong = () => {
-    	this.setState({
-    		futureQueue: this.props.queue.getFutureQueue(),
-			currentSong: this.props.queue.getCurrentSong(),
-			pastQueue: this.props.queue.getPastQueue(),
-    	})
-    }
-    handlePreviousSong = () => {
-    	this.setState({
-    		futureQueue: this.props.queue.getFutureQueue(),
-			currentSong: this.props.queue.getCurrentSong(),
-			pastQueue: this.props.queue.getPastQueue(),
-    	})
-    }
-    
 	
 	onKeyPress = (e) => {
 
@@ -251,7 +236,7 @@ class SessionScreen extends React.Component {
 	handleOnDragEnd = (e) =>{
 		if(!e.destination) return;
 		console.log(e);
-		if(e.destination.droppableId === "futureQueue" && e.source.droppableId === "futureQueue"){
+		if(e.destination.droppableId === "futureQueue"){
 			const items = Array.from(this.state.futureQueue);
 			const [reorderedItem] = items.splice(e.source.index, 1);
 			items.splice(e.destination.index, 0, reorderedItem);
@@ -259,7 +244,13 @@ class SessionScreen extends React.Component {
 			this.setState({
 				futureQueue: items
 			});
-			this.props.queue.moveSongInFutureQueue(e.source.index,e.destination.index);
+			if(e.source.droppableId ==="futureQueue"){
+				this.props.queue.moveSongInFutureQueue(e.source.index,e.destination.index);
+			}
+			else if(e.source.droppableId === "pastQueue"){
+				this.props.queue.moveSongFromPastQueue(e.source.index,e.destination.index);
+			}
+			
 		}
 		
 	}
@@ -342,7 +333,7 @@ class SessionScreen extends React.Component {
 	        					<img src={icon_profile_image} style={{backgroundColor:'white',display: 'block', margin: 'auto', height:'90%',
 	        									 border: '3px solid black'}}/>
 	        				</div>
-	        				<div className='col' style={{maxWidth:'50%', minWidth:'50%', padding:'1em', color:'white'}}>
+	        				<div className='col' style={{maxWidth:'50%', minWidth:'50%',height:'100%', padding:'1em', color:'white'}}>
 	        					<div className='title session-title-text'>
 	        						{this.state.name}
 
@@ -351,11 +342,12 @@ class SessionScreen extends React.Component {
 	        						{this.state.hostName}
 	        					</div>
 	        				</div>
-	        				<div className='col' style={{maxWidth:'25%', textAlign: 'right', padding:'1em', minWidth:'10%',color:'white',  float:'right'}}>
-	        					<div className='body-text'>{this.state.live}<img src={icon_radio} style={{width:'30px'}}/></div>
-	        					{this.state.startTime}
-
+	        				<div className='col' style={{maxWidth:'15%', textAlign: 'right',height:'100%', padding:'1em', minWidth:'5%',color:'white',  float:'right'}}>
+	        					<div className='row body-text' style={{height:'30%', display:'block', textAlign:'center'}}>{this.state.live}<img src={icon_radio} style={{width:'30px'}}/></div>
+	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}>{this.state.startTime}</div>
+	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}><Button variant="primary" onClick={this.endSession}>End Session</Button></div>
 	        				</div>
+
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
 	        				<ChatFeed actionLog={this.state.chatLog} user={this.props.user}  />
@@ -385,7 +377,7 @@ class SessionScreen extends React.Component {
 				        				Previously Played
 				        			</div>
 				        			<div className='row' style={{height:'43%', overflow:'auto'}}>
-					        			<Droppable droppableId="prevQueue">
+					        			<Droppable droppableId="pastQueue">
 						                    {(provided) => ( 
 		        								<QueueComponent Queue={this.state.pastQueue} fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.props.user}/>
 		        							)}
@@ -418,10 +410,10 @@ class SessionScreen extends React.Component {
 	        						{this.state.hostName}
 	        					</div>
 	        				</div>
-	        				<div className='col' style={{maxWidth:'25%', textAlign: 'right', padding:'1em', minWidth:'10%',color:'white',  float:'right'}}>
-	        					<div className='body-text'>{this.state.live}<img src={icon_radio} style={{width:'30px'}}/></div>
-	        					{this.state.startTime}
-
+	        				<div className='col' style={{maxWidth:'15%', textAlign: 'right',height:'100%', padding:'1em', minWidth:'5%',color:'white',  float:'right'}}>
+	        					<div className='row body-text' style={{height:'30%', display:'block', textAlign:'center'}}>{this.state.live}<img src={icon_radio} style={{width:'30px'}}/></div>
+	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}>{this.state.startTime}</div>
+	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}><Button variant="primary" onClick={this.leaveSession}>Leave Session</Button></div>
 	        				</div>
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
