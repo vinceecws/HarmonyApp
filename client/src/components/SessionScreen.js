@@ -58,7 +58,7 @@ class SessionScreen extends React.Component {
         }
     }
 
-	handleApplyChatLog = (actionObj) =>{
+	handleApplyChatLog = (action, actionObj) =>{
 		if (actionObj.action === 'chat'){
 			let chatObj = {'type': 'text', 'object': {'username':actionObj.username, 
 													'message':actionObj.data.message, 
@@ -68,7 +68,7 @@ class SessionScreen extends React.Component {
 	}
 
 
-	handleApplySessionState = (actionObj) => {
+	handleApplySessionState = (action, actionObj) => {
 		if (actionObj.action === 'session'){
 			switch(actionObj.subaction){
 				case 'end_session':
