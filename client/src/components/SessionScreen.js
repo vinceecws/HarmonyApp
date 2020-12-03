@@ -180,27 +180,10 @@ class SessionScreen extends React.Component {
 	handleApplyQueueState = (action, actionObj) => {
         if (this.props.currentSession && this.isHost()) {
             return
-<<<<<<< HEAD
         }
 
-        if (actionObj.action === "player") {
-            switch (actionObj.data.subaction) {
-                case "next_song":
-                    this.handleNextSong()
-                    break
-                case "prev_song":
-                    this.handlePreviousSong()
-                    break
-                default:
-                    console.log("Invalid subaction")
-            }
-        }
-        /*else if (actionObj.action === "queue") {
-=======
-		}
-		
         if (actionObj.action === "queue") {
->>>>>>> 70a569a4ae95e5acafc632cb8a936b51c7462a61
+
             switch (actionObj.data.subaction) {
 				// listen to only subactions that are not listened in Player.js
                 // case "set_shuffle":
@@ -210,28 +193,9 @@ class SessionScreen extends React.Component {
                 default:
                     break
             }
-<<<<<<< HEAD
-        }*/
-    }
-    handleNextSong = () => {
-    	this.setState({
-    		futureQueue: this.props.queue.getFutureQueue(),
-			currentSong: this.props.queue.getCurrentSong(),
-			pastQueue: this.props.queue.getPastQueue(),
-    	}).then(console.log("moved song forward"));
-    }
-    handlePreviousSong = () => {
-    	this.setState({
-    		futureQueue: this.props.queue.getFutureQueue(),
-			currentSong: this.props.queue.getCurrentSong(),
-			pastQueue: this.props.queue.getPastQueue(),
-    	}).then(console.log("moved song back"));
-    }
-    
-=======
+
         }
-	}
->>>>>>> 70a569a4ae95e5acafc632cb8a936b51c7462a61
+    }
 	
 	onKeyPress = (e) => {
 
