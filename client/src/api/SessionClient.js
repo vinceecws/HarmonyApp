@@ -143,7 +143,7 @@ class SessionClient {
             if (response.status === 200) {
                 console.log("Session joined")
             }
-            console.log('response registered');
+            
             if (callback) {
                 callback(response)
             }

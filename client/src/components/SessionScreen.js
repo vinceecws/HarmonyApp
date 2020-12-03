@@ -156,8 +156,10 @@ class SessionScreen extends React.Component {
 		}
 	}
 	initSessionClient = () =>{
+		console.log('initsession called')
 		this.props.sessionClient.joinSession(this.state._id, this.setState({loading: false}));
 		if(this.props.user){
+			console.log('user logged in')
 			if(this.props.user._id === this.state.hostId){
 				this.props.sessionClient.readySession();
 			}
@@ -332,12 +334,15 @@ class SessionScreen extends React.Component {
 		
 	}
 	handleGetSession = (status,data) => {
-
+		console.log('handleGetSession', status, data)
 		if (status === 200) {
+			console.log('Valid status')
 			var session = data.data.session;
 			if(session.hostId === this.props.user._id){
+				console.log('is host')
 				if(data.data.user !== undefined){
 					this.props.handleUpdateUser(data.data.user)
+					console.log('User updated')
 				}
 				var initialQueue = _.cloneDeep(data.data.session.initialQueue);
 				if(initialQueue.length > 0){
@@ -367,6 +372,7 @@ class SessionScreen extends React.Component {
 		        })
 			}
 			else{
+				console.log('not host')
 				this.setState({
 		        		
 		        		id: session._id,
