@@ -80,7 +80,7 @@ class SessionScreen extends React.Component {
 					this.handleChangeName(actionObj.data.newName);
 					break;
 				case 'session_state':
-					this.handleSetSessionState(actionObj.data.queue_state, actionObj.data.player_state);
+					this.handleSetSessionState(actionObj.data.queue_state, actionObj.data.player_state, actionObj.data.time);
 					break;
 				case 'get_session_state':
 					if(this.state.hostId === this.props.user._id){this.handleSendSessionState();}
@@ -93,13 +93,8 @@ class SessionScreen extends React.Component {
 		}
 	}
 
-	handleSetSessionState = (queueState, playerState) => {
+	handleSetSessionState = (queueState, playerState, time) => {
 		if (!this.isHost()){
-			this.setState({
-				currentSong: queueState.current_song,
-				prevQueue: queueState.past_queue,
-				futureQueue: queueState.future_queue,
-			});
 			//set player state?
 			this.props.queue.setShuffle(playerState.shuffle);
 			this.props.queue.setRepeat(playerState.repeat);
@@ -109,6 +104,12 @@ class SessionScreen extends React.Component {
 			else {
 				this.props.playerAPI.pauseVideo();
 			}
+			this.setState({
+				currentSong: queueState.current_song,
+				prevQueue: queueState.past_queue,
+				futureQueue: queueState.future_queue,
+			});
+			this.props.playerAPI.seekTo(time);
 		}
 	}
 
@@ -124,19 +125,13 @@ class SessionScreen extends React.Component {
 			past_queue: this.props.queue.getPastQueue(),
 			future_queue: this.props.queue.getFutureQueue()
 		}
-		data.time = this.props.playerAPI.getSongTime();
+		data.time = this.props.playerAPI.getCurrentTime();
 		this.props.sessionClient.emitSession(this.props.username, this.props.user._id, data)
 	}
 
 	handleChangeName = (newName) =>{
 		if (this.state.hostId !== this.props.user._id){
 			this.setState({name: newName});
-		}
-	}
-
-	handleSetPlayerTime = (time) => {
-		if (this.state.hostId !== this.props.user._id){
-			this.props.playerAPI.seekTo(time);
 		}
 	}
 
@@ -332,7 +327,9 @@ class SessionScreen extends React.Component {
 
 		if (status === 200) {
 			var session = data.data.session
-			this.props.handleUpdateUser(data.data.user)
+			if(data.data.user !== undefined){
+				this.props.handleUpdateUser(data.data.user)
+			}
 			var initialQueue = _.cloneDeep(data.data.session.initialQueue);
 			if(initialQueue.length > 0){
 				this.props.playVideo(initialQueue.shift());
