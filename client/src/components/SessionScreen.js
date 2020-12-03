@@ -30,18 +30,26 @@ class SessionScreen extends React.Component {
 		
 		//this.props.sessionClient.joinSession(this.props.match.params.sessionId)
 	}
-	componentDidMount = () =>{
+
+
+	componentDidMount = () => {
 		this.getSession();
-		console.log("componentDidMount");
-		this.playerActionListener = this.props.sessionClient.subscribeToAction("player", this.handleApplyQueueState.bind(this));
-        this.queueActionListener = this.props.sessionClient.subscribeToAction("queue", this.handleApplyQueueState.bind(this));
-        setInterval(() => {
-            this.setState({
-                currentSong: this.props.queue.getCurrentSong()
-            })
-            
-        }, 1000);
+
+		this.queueActionListener = this.props.sessionClient.subscribeToAction("queue", this.handleApplyQueueState.bind(this));
+		this.chatActionListener = this.props.sessionClient.subscribeToAction("chat", this.handleApplyChatLog.bind(this))
+		this.sessionActionListener = this.props.sessionClient.subscribeToAction("session", this.handleApplySessionState.bind(this))
+
+		this.futureQueueChangeListener = this.props.queue.subscribeToEvent("futureQueueChange", this.handleQueueStateChange.bind(this));
 	}
+
+	componentWillUnmount = () => {
+		this.chatActionListener = this.props.sessionClient.unsubscribeFromAction("chat", this.chatActionListener)
+		this.sessionActionListener = this.props.sessionClient.unsubscribeFromAction("session", this.sessionActionListener)
+		this.queueActionListener = this.props.sessionClient.unsubscribeFromAction("queue", this.queueActionListener);
+		
+		this.futureQueueChangeListener = this.props.queue.unsubscribeFromEvent("futureQueueChange", this.futureQueueChangeListener)
+	}
+
 	componentDidUpdate = (prevProps, prevState) => {
         if (prevState.user !== this.props.user) {
             this.setState({
@@ -49,14 +57,95 @@ class SessionScreen extends React.Component {
             })
         }
     }
-    componentWillUnmount = () => {
-        this.playerActionListener = this.props.sessionClient.unsubscribeFromAction("player", this.playerActionListener);
-        this.queueActionListener = this.props.sessionClient.unsubscribeFromAction("queue", this.queueActionListener);
-        
-    }
+
+	handleApplyChatLog = (action, actionObj) =>{
+		if (actionObj.action === 'chat'){
+			let chatObj = {'type': 'text', 'object': {'username':actionObj.username, 
+													'message':actionObj.data.message, 
+													'timestamp':actionObj.timestamp}};
+			this.setState({chatLog: this.state.chatLog.concat(chatObj)});
+		}
+	}
+
+
+	handleApplySessionState = (action, actionObj) => {
+		if (actionObj.action === 'session'){
+			switch(actionObj.subaction){
+				case 'end_session':
+					this.props.sessionClient.disconnect();
+					break;
+				case 'change_name':
+					this.handleChangeName(actionObj.data.newName);
+					break;
+				case 'session_state':
+					this.handleSetSessionState(actionObj.data.queue_state, actionObj.data.player_state);
+					break;
+				case 'get-session-state':
+					if(this.state.hostId === this.props.user._id){this.handleSendSessionState();}
+					break;
+				case 'like_session':
+					break;
+				default:
+					console.log('Invalid subaction');
+			}
+		}
+	}
+
+	handleSetSessionState = (queueState, playerState) => {
+		if (!this.isHost()){
+			this.setState({
+				currentSong: queueState.current_song,
+				prevQueue: queueState.past_queue,
+				futureQueue: queueState.future_queue,
+			});
+			//set player state?
+			this.props.queue.setShuffle(playerState.shuffle);
+			this.props.queue.setRepeat(playerState.repeat);
+			if (playerState.play){
+				this.props.playVideo();
+			}
+			else {
+				this.props.playerAPI.pauseVideo();
+			}
+		}
+	}
+
+	handleSendSessionState = () => {
+		let data = {}
+		data.player_state = {
+			play: !this.props.playerAPI.isPaused(),
+			shuffle: this.props.queue.getShuffle(),
+			repeat: this.props.queue.getRepeat()
+		}
+		data.queue_state = {
+			current_song: this.props.queue.getCurrentSong(),
+			past_queue: this.props.queue.getPastQueue(),
+			future_queue: this.props.queue.getFutureQueue()
+		}
+		data.time = this.props.playerAPI.getSongTime();
+		this.props.sessionClient.emitSession(this.props.username, this.props.user._id, data)
+	}
+
+	handleChangeName = (newName) =>{
+		if (this.state.hostId !== this.props.user._id){
+			this.setState({name: newName});
+		}
+	}
+
+	handleSetPlayerTime = (time) => {
+		if (this.state.hostId !== this.props.user._id){
+			this.props.playerAPI.seekTo(time);
+		}
+	}
+
+	changeSessionName = (newName) => {
+		let actionObj = {action: 'session', }
+	}
+
 	initSessionClient = () =>{
 		this.props.sessionClient.joinSession(this.state._id, this.setState({loading: false}));
 	}
+
 	getSession = () => { 
 		if (this.props.match.params.sessionId){
 			this.props.axiosWrapper.axiosGet("/api/session/" + this.props.match.params.sessionId, this.handleGetSession, true)
@@ -66,6 +155,7 @@ class SessionScreen extends React.Component {
 			// Render suggestions to start a session?
 		}
 	}
+
 	handleTextChange = (e) => {
 		if(this.state.messageText.length <= 250 && !(e.target.value.length > 250)){
 			this.setState({
@@ -74,9 +164,23 @@ class SessionScreen extends React.Component {
 		}
 		
 	}
-	handleApplyQueueState = (actionObj) => {
+
+	handleQueueStateChange = (event, newState) => {
+		switch (event) {
+			case "futureQueueChange":
+				this.setState({
+					futureQueue: newState
+				})
+				break
+			default:
+				break
+		}
+	}
+
+	handleApplyQueueState = (action, actionObj) => {
         if (this.props.currentSession && this.isHost()) {
             return
+<<<<<<< HEAD
         }
 
         if (actionObj.action === "player") {
@@ -91,32 +195,43 @@ class SessionScreen extends React.Component {
                     console.log("Invalid subaction")
             }
         }
-        else if (actionObj.action === "queue") {
+        /*else if (actionObj.action === "queue") {
+=======
+		}
+		
+        if (actionObj.action === "queue") {
+>>>>>>> 70a569a4ae95e5acafc632cb8a936b51c7462a61
             switch (actionObj.data.subaction) {
-                case "set_shuffle":
-                    this.props.queue.setShuffle(actionObj.data.state)
-                case "set_repeat":
-                    this.props.queue.setRepeat(actionObj.data.state)
+				// listen to only subactions that are not listened in Player.js
+                // case "set_shuffle":
+                //     this.props.queue.setShuffle(actionObj.data.state)
+                // case "set_repeat":
+                //     this.props.queue.setRepeat(actionObj.data.state)
                 default:
                     break
             }
-        }
+<<<<<<< HEAD
+        }*/
     }
     handleNextSong = () => {
     	this.setState({
     		futureQueue: this.props.queue.getFutureQueue(),
 			currentSong: this.props.queue.getCurrentSong(),
 			pastQueue: this.props.queue.getPastQueue(),
-    	})
+    	}).then(console.log("moved song forward"));
     }
     handlePreviousSong = () => {
     	this.setState({
     		futureQueue: this.props.queue.getFutureQueue(),
 			currentSong: this.props.queue.getCurrentSong(),
 			pastQueue: this.props.queue.getPastQueue(),
-    	})
+    	}).then(console.log("moved song back"));
     }
     
+=======
+        }
+	}
+>>>>>>> 70a569a4ae95e5acafc632cb8a936b51c7462a61
 	
 	onKeyPress = (e) => {
 
@@ -148,7 +263,7 @@ class SessionScreen extends React.Component {
 	handleOnDragEnd = (e) =>{
 		if(!e.destination) return;
 		console.log(e);
-		if(e.destination.droppableId === "futureQueue" && e.source.droppableId === "futureQueue"){
+		if(e.destination.droppableId === "futureQueue"){
 			const items = Array.from(this.state.futureQueue);
 			const [reorderedItem] = items.splice(e.source.index, 1);
 			items.splice(e.destination.index, 0, reorderedItem);
@@ -156,7 +271,13 @@ class SessionScreen extends React.Component {
 			this.setState({
 				futureQueue: items
 			});
-			this.props.queue.moveSongInFutureQueue(e.source.index,e.destination.index);
+			if(e.source.droppableId ==="futureQueue"){
+				this.props.queue.moveSongInFutureQueue(e.source.index,e.destination.index);
+			}
+			else if(e.source.droppableId === "pastQueue"){
+				this.props.queue.moveSongFromPastQueue(e.source.index,e.destination.index);
+			}
+			
 		}
 		
 	}
@@ -282,7 +403,7 @@ class SessionScreen extends React.Component {
 				        				Previously Played
 				        			</div>
 				        			<div className='row' style={{height:'43%', overflow:'auto'}}>
-					        			<Droppable droppableId="prevQueue">
+					        			<Droppable droppableId="pastQueue">
 						                    {(provided) => ( 
 		        								<QueueComponent Queue={this.state.pastQueue} fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.props.user}/>
 		        							)}

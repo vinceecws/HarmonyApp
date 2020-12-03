@@ -33,7 +33,7 @@ class Player extends React.Component {
 
         this.props.playerAPI.subscribeToEvent("onPlayerStateChange", this.handlePlayerStateChange.bind(this))
 
-        setInterval(() => {
+        this.playerTimeListener = setInterval(() => {
             if (!this.state.seeking) {
                 this.setState({
                     currentTime: this.props.playerAPI.getCurrentTime() 
@@ -59,6 +59,8 @@ class Player extends React.Component {
         this.shuffleStateChangeListener = this.props.queue.unsubscribeFromEvent("shuffleStateChange", this.shuffleStateChangeListener)
 
         this.props.playerAPI.unsubscribeFromEvent("onPlayerStateChange")
+
+        clearInterval(this.playerTimeListener)
     }
 
     handleShowTitleTicker = () => {
