@@ -384,7 +384,7 @@ class CollectionScreen extends React.Component{
                             <div className='row'>
                                 {/* Remember to add these attributes to collection objects*/}
                                 <p className='collection-page-text'>
-                                    {this.props.user.username} - {this.state.collection.likes} likes - {this.state.collection.songList.length} songs 
+                                    {this.state.collection.ownerName} - {this.state.collection.likes} likes - {this.state.collection.songList.length} songs 
                                 </p>
                             </div>
                         </div>
