@@ -104,7 +104,7 @@ class SessionClient {
                 this.receiveSession(args[0])
                 break
             default:
-                console.log("Invalid action")
+                console.log("Invalid action of " + action)
         }
     }
 

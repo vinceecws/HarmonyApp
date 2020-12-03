@@ -99,6 +99,7 @@ class MainApp extends React.Component {
                         handleUpdateUser={this.props.handleUpdateUser}
                         sessionClient={this.props.sessionClient}
                         axiosWrapper={this.props.axiosWrapper} 
+                        history={this.props.history}
                         shouldStartSession={this.shouldStartSession}         
                     />
                 </Row>

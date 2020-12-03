@@ -450,12 +450,16 @@ class CollectionScreen extends React.Component{
                                                 <div className='collection-song-title ellipsis-multi-line-overflow' style={{display: 'inline-block', width: '20%', marginRight: '2%'}}><div>{e.creator}</div></div>
                                                 <div className='collection-page-text' style={{display: 'inline-block', marginRight: '10.5%'}}>{this.getDateAdded()}</div>
                                                 <div className='collection-page-text' style={{display: 'inline-block', marginRight: '5%'}}>{this.getDurationString(e.duration, i)} </div>
-                                                <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}}>
-                                                    {/* Fix during implementation */}
-                                                    <Image className='player-song-favorite-button-icon' src={icon_like} 
-                                                            style={{maxHeight: '25px', maxWidth: '25px', backgroundColor: e.favorited ? '#00e400' : 'transparent'}} 
-                                                            onClick={() => this.onPressLikeSong(e)} roundedCircle/>
-                                                </Button>
+                                                { 
+                                                    this.props.user ? 
+                                                    <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}}>
+                                                        {/* Fix during implementation */}
+                                                        <Image className='player-song-favorite-button-icon' src={icon_like} 
+                                                                style={{maxHeight: '25px', maxWidth: '25px', backgroundColor: e.favorited ? '#00e400' : 'transparent'}} 
+                                                                onClick={() => this.onPressLikeSong(e)} roundedCircle/>
+                                                    </Button>
+                                                    : <div></div>
+                                                } 
                                                 <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}} 
                                                         onClick={() => this.onPressDeleteSong(e)}>
                                                     <img src={delete_button_white} style={{maxHeight: '25px', maxWidth: '25px'}}></img>
