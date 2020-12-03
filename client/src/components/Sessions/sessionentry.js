@@ -42,7 +42,7 @@ class SessionEntry extends React.Component{
 
 		const showTicker = this.state.showTicker;
 		let entry;
-		if(showTicker){
+		if (showTicker) {
 			entry = <Ticker speed={14} mode="await">
 							{({ index }) => (<h1 className='Session-Entry-Text body-text underline color-accented'>{this.props.name}</h1>)}
 					</Ticker>;
