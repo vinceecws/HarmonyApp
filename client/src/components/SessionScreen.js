@@ -72,7 +72,7 @@ class SessionScreen extends React.Component {
 
 	handleApplySessionState = (action, actionObj) => {
 		if (actionObj.action === 'session'){
-			switch(actionObj.subaction){
+			switch(actionObj.data.subaction){
 				case 'end_session':
 					this.props.sessionClient.disconnect();
 					break;
@@ -82,7 +82,7 @@ class SessionScreen extends React.Component {
 				case 'session_state':
 					this.handleSetSessionState(actionObj.data.queue_state, actionObj.data.player_state);
 					break;
-				case 'get-session-state':
+				case 'get_session_state':
 					if(this.state.hostId === this.props.user._id){this.handleSendSessionState();}
 					break;
 				case 'like_session':
@@ -140,8 +140,17 @@ class SessionScreen extends React.Component {
 		}
 	}
 
-	changeSessionName = (newName) => {
-		let actionObj = {action: 'session', }
+	onChangeSessionName = (changedName) => {
+		let data = {subaction: 'change_name', newName: changedName}
+		this.props.sessionClient.emitSession(this.props.user.username, this.props.user._id, data);
+		this.setState({ name: changedName });
+	}
+
+	//for host ending session
+	onEndSession = () => {
+		if (this.isHost()){
+			
+		}
 	}
 
 	initSessionClient = () =>{
@@ -211,7 +220,8 @@ class SessionScreen extends React.Component {
 	onKeyPress = (e) => {
 
 		if(e.key === "Enter" && this.state.messageText.length <= 250){
-			
+			let data = {subaction: 'text', message: this.state.messageText};
+			this.props.sessionClient.emitChat(this.props.user.username, this.props.user._id, data);
 			
 			//console.log(this.props.user);
 			/*Adjust new object for new action types*/
@@ -220,7 +230,6 @@ class SessionScreen extends React.Component {
 				this.setState({
 					chatLog: this.state.chatLog.concat(obj),
 					messageText: ""
-
 				})
 			}
 			else{
@@ -228,7 +237,6 @@ class SessionScreen extends React.Component {
 				this.setState({
 					chatLog: this.state.chatLog.concat(obj),
 					messageText: ""
-
 				})
 			}
 			

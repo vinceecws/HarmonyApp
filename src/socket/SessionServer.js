@@ -71,7 +71,9 @@ class SessionServer {
     joinSession = (clientSocket, sessionId) => {
         if (!clientSocket.rooms[1]) { //If not already in a Session
             clientSocket.join(sessionId);
-            clientSocket.rooms[1].emit("get-session-state");
+            let getData = {subaction: 'get_session_state'}
+            let getSessionStateObj = {action: 'session', data: getData }
+            this.socket.to(clientSocket.rooms[1]).emit("session", getSessionStateObj);
         }
         else {
             clientSocket.emit("session-error", "Client is already in a Session")
@@ -87,7 +89,7 @@ class SessionServer {
         }
     }
 
-    likeSession = async (clientSocket, sessionId, likes) => {
+    likeSession = (clientSocket, sessionId, likes) => {
         if (clientSocket.rooms[1] && clientSocket.rooms[1] === sessionId){
             this.socket.to(clientSocket.rooms[1]).emit("likes", likes);
             mongooseQuery.updateSession(sessionId, {likes: likes});
@@ -97,7 +99,7 @@ class SessionServer {
         }
     }
 
-    emitChat = async (clientSocket, chatObj) => {
+    emitChat = (clientSocket, chatObj) => {
         if (clientSocket.request.user) {
             var newChatObj = this.createActionObj("chat", chatObj.username, chatObj.userId, chatObj.data)
             this.socket.to(clientSocket.rooms[1]).emit("chat", newChatObj)
@@ -119,7 +121,7 @@ class SessionServer {
         }
     }
 
-    emitQueue = async (clientSocket, queueObj) => {
+    emitQueue = (clientSocket, queueObj) => {
         if (clientSocket.request.user) {
             var newQueueObj = this.createActionObj("queue", queueObj.username, queueObj.userId, queueObj.data)
             this.socket.to(clientSocket.rooms[1]).emit("queue", newQueueObj)
@@ -130,7 +132,7 @@ class SessionServer {
         }
     }
 
-    emitSession = async (clientSocket, sessionObj) => {
+    emitSession = (clientSocket, sessionObj) => {
         if (clientSocket.request.user) {
             var newSessionObj = this.createActionObj("session", sessionObj.username, sessionObj.userId, sessionObj.data)
             this.socket.to(clientSocket.rooms[1]).emit("session", newSessionObj)
