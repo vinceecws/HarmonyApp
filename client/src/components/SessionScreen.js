@@ -167,10 +167,13 @@ class SessionScreen extends React.Component {
 	getSession = () => { 
 		if (this.props.match.params.sessionId){
 			this.props.axiosWrapper.axiosGet("/api/session/" + this.props.match.params.sessionId, this.handleGetSession, true)
-			console.log("session fetched");
+			console.log("new session fetched");
 		}
 		else {
-			// Render suggestions to start a session?
+			if(this.props.currentSession){
+				this.props.axiosWrapper.axiosGet("/api/session/" + this.props.user.currentSession, this.handleGetSession, true)
+			}
+			
 		}
 	}
 
@@ -250,6 +253,21 @@ class SessionScreen extends React.Component {
 		}
 
 	}
+	handleEmitQueueState = (action, subaction, ...args) => {
+        if (!(this.props.user.currentSession && this.isHost())) {
+            return
+        }
+
+        var username = this.props.user.username
+        var userId = this.props.user._id
+        var data = {}
+        
+        if (action === "queue") {
+            data.subaction = subaction
+            data.state = args[0]
+            this.sessionClient.emitQueue(username, userId, data)
+        }
+    }
 	handleOnDragEnd = (e) =>{
 		if(!e.destination) return;
 		console.log(e);
@@ -263,9 +281,11 @@ class SessionScreen extends React.Component {
 			});
 			if(e.source.droppableId ==="futureQueue"){
 				this.props.queue.moveSongInFutureQueue(e.source.index,e.destination.index);
+				this.handleEmitQueueState("queue", "move_song",e.source.index,e.destination.index);
 			}
 			else if(e.source.droppableId === "pastQueue"){
 				this.props.queue.moveSongFromPastQueue(e.source.index,e.destination.index);
+				this.handleEmitQueueState("queue", "move_song_from_past",e.source.index,e.destination.index);
 			}
 			
 		}
