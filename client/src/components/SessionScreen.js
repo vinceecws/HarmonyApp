@@ -402,11 +402,13 @@ class SessionScreen extends React.Component {
 							name: session.name,
 							startTime: session.startTime,
 					});
+<<<<<<< HEAD
+					this.initSessionClient(session._id);
+=======
 				this.initSessionClient(session._id);
 					
+>>>>>>> d48fb8ecc4f3488efc7bb36ce34b9f4dc8bf063e
 			}
-			
-			
             
         }
         else if (status === 404) {
