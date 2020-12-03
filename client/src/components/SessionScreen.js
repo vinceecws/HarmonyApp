@@ -152,7 +152,14 @@ class SessionScreen extends React.Component {
 			
 		}
 	}
-
+	placeholderChatMsg = () =>{
+		if(this.props.user){
+			return('Send your message here...');
+		}
+		else{
+			return('Login or Signup to send a message');
+		}
+	}
 	initSessionClient = () =>{
 		this.props.sessionClient.joinSession(this.state._id, this.setState({loading: false}));
 	}
@@ -219,7 +226,7 @@ class SessionScreen extends React.Component {
 	
 	onKeyPress = (e) => {
 
-		if(e.key === "Enter" && this.state.messageText.length <= 250){
+		if(e.key === "Enter" && this.state.messageText.length <= 250 && this.props.user){
 			let data = {subaction: 'text', message: this.state.messageText};
 			this.props.sessionClient.emitChat(this.props.user.username, this.props.user._id, data);
 			
@@ -327,6 +334,7 @@ class SessionScreen extends React.Component {
         }
     }
     isGuest = () =>{
+    	console.log("Guest checked");
     	return !this.props.user;
     }
     render(){
@@ -363,8 +371,8 @@ class SessionScreen extends React.Component {
 	        				<ChatFeed actionLog={this.state.chatLog} user={this.props.user}  />
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
-	        				<input disable={this.props.currentSession} type='text' name='MessageSender' placeholder='Send your message here...' onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
-	        				<div disable={this.props.currentSession} style={{width:'5%', display:'block', textAlign:'center'}}>{this.state.messageText.length}/250</div>
+	        				<input disabled={!this.props.user} type='text' name='MessageSender' placeholder={this.placeholderChatMsg()} onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
+	        				<div style={{width:'5%', display:'block', textAlign:'center', marginTop:'5px'}}>{this.state.messageText.length}/250</div>
 	        			</div>
 	        		</div>
 	        		<div className='col-sm-4' style={{height:'100%', overflow:'auto'}}>
@@ -430,8 +438,8 @@ class SessionScreen extends React.Component {
 	        				<ChatFeed  actionLog={this.state.chatLog} user={this.props.user}  />
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
-	        				<input type='text' disabled={this.isGuest} name='MessageSender' placeholder='Log in or Sign up to send a message...' onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'100%', display:'block'}}/>
-	        				<div disable={this.isGuest} style={{width:'5%', display:'block', textAlign:'center'}}>{this.state.messageText.length}/250</div>
+	        				<input type='text' disabled={!this.props.user} name='MessageSender' placeholder={this.placeholderChatMsg()} onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'100%', display:'block'}}/>
+	        				<div  style={{width:'5%', display:'block', textAlign:'center', marginTop:'5px'}}>{this.state.messageText.length}/250</div>
 	        			</div>
 	        		</div>
 	        		<div className='col-sm-4' style={{height:'100%'}}>
