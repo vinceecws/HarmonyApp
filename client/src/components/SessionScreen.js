@@ -367,7 +367,7 @@ class SessionScreen extends React.Component {
 							pastQueue: this.props.queue.getPastQueue(),
 							
 			        	})
-			        	this.initSessionClient(sessionId);
+			        	this.initSessionClient(session._id);
 			        })
 				}
 				else{
@@ -379,7 +379,7 @@ class SessionScreen extends React.Component {
 							name: session.name,
 							startTime: session.startTime,
 					});
-					this.initSessionClient(sessionId);
+					this.initSessionClient(session._id);
 					if(data.data.user !== undefined){
 						this.props.handleUpdateUser(data.data.user);
 					}
@@ -394,7 +394,7 @@ class SessionScreen extends React.Component {
 							name: session.name,
 							startTime: session.startTime,
 					});
-					this.initSessionClient(sessionId);
+					this.initSessionClient(session._id);
 					
 			}
 			
