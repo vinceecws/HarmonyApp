@@ -41,6 +41,7 @@ class SessionScreen extends React.Component {
 		this.sessionActionListener = this.props.sessionClient.subscribeToAction("session", this.handleApplySessionState.bind(this))
 
 		this.futureQueueChangeListener = this.props.queue.subscribeToEvent("futureQueueChange", this.handleQueueStateChange.bind(this));
+		this.pastQueueChangeListener = this.props.queue.subscribeToEvent("pastQueueChange", this.handleQueueStateChange.bind(this));
 	}
 
 	componentWillUnmount = () => {
@@ -173,6 +174,11 @@ class SessionScreen extends React.Component {
 					futureQueue: newState
 				})
 				break
+			case "pastQueueChange":
+				this.setState({
+					pastQueue: newState
+				})
+				break
 			default:
 				break
 		}
@@ -184,13 +190,17 @@ class SessionScreen extends React.Component {
         }
 
         if (actionObj.action === "queue") {
-
+        	/* move_song, move_song_from_past, add_song, del_song*/
             switch (actionObj.data.subaction) {
 				// listen to only subactions that are not listened in Player.js
-                // case "set_shuffle":
-                //     this.props.queue.setShuffle(actionObj.data.state)
-                // case "set_repeat":
-                //     this.props.queue.setRepeat(actionObj.data.state)
+                 case "move_song":
+                     this.props.queue.moveSongInFutureQueue(actionObj.data.from,actionObj.data.to);
+                 case "move_song_from_past":
+                     this.props.queue.moveSongFromPastQueue(actionObj.data.from,actionObj.data.to);
+                 case "add_song":
+                     this.props.queue.addSongToFutureQueue(actionObj.data.songId);
+                 case "del_song":
+                     this.props.queue.removeSongFromFutureQueue(actionObj.data.index);
                 default:
                     break
             }
