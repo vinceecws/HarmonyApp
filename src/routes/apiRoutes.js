@@ -983,26 +983,41 @@ module.exports = function(mainSocket, sessionSocket) {
         }
         else{
             let session = await mongooseQuery.getSession({'_id': req.params.id});
-            let user = stripUser(req.user)
-            let updatedUser = user._id === session.hostId ? 
-                (updatedUser = await mongooseQuery.updateUser(user._id, {
-                    live: true,
-                    currentSession: sessionId
-                }).catch(err => res.sendStatus(404)))
-                    :
-                (updatedUser = await mongooseQuery.updateUser(user._id, {
-                    currentSession: sessionId
-                }).catch(err => res.sendStatus(404)))
+            if (req.user){
+                let user = stripUser(req.user)
+                let updatedUser = user._id === session.hostId ? 
+                    (updatedUser = await mongooseQuery.updateUser(user._id, {
+                        live: true,
+                        currentSession: session._id
+                    }).catch(err => res.sendStatus(404)))
+                        :
+                    (updatedUser = await mongooseQuery.updateUser(user._id, {
+                        currentSession: session._id
+                    }).catch(err => res.sendStatus(404)))
+
+                return res.status(200).json({
+                    message: "Fetch success",
+                    statusCode: 200,
+                    data: {
+                        session: session,
+                        user: stripUser(updatedUser)
+                    },
+                    success: true
+                })
+            }
+            else {
+                return res.status(200).json({
+                    message: "Fetch success",
+                    statusCode: 200,
+                    data: {
+                        session: session,
+                    },
+                    success: true
+                })
+            }
             
-            return res.status(200).json({
-                message: "Fetch success",
-                statusCode: 200,
-                data: {
-                    session: session,
-                    user: stripUser(updatedUser)
-                },
-                success: true
-            })
+            
+            
             
         }
 

@@ -275,7 +275,9 @@ class SessionScreen extends React.Component {
 
 		if (status === 200) {
 			var session = data.data.session
-			this.props.handleUpdateUser(data.data.user)
+			if(data.data.user !== undefined){
+				this.props.handleUpdateUser(data.data.user)
+			}
 			var initialQueue = _.cloneDeep(data.data.session.initialQueue);
 			if(initialQueue.length > 0){
 				this.props.playVideo(initialQueue.shift());
