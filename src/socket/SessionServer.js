@@ -88,6 +88,7 @@ class SessionServer {
 
     joinSession = (clientSocket, sessionId) => {
         if (!clientSocket.rooms[1]) { //If not already in a Session
+            console.log("JOINING SESSION")
             clientSocket.join(sessionId);
             let getData = {subaction: 'get_session_state'}
             let getSessionStateObj = {action: 'session', data: getData }
