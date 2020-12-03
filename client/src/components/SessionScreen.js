@@ -25,17 +25,42 @@ class SessionScreen extends React.Component {
 			chatLog: [],
 			messageText: "",
 		}
-		this.getSession();
+		
 		
 		
 		//this.props.sessionClient.joinSession(this.props.match.params.sessionId)
 	}
+	componentDidMount = () =>{
+		this.getSession();
+		console.log("componentDidMount");
+		this.playerActionListener = this.props.sessionClient.subscribeToAction("player", this.handleApplyQueueState.bind(this));
+        this.queueActionListener = this.props.sessionClient.subscribeToAction("queue", this.handleApplyQueueState.bind(this));
+        setInterval(() => {
+            this.setState({
+                currentSong: this.props.queue.getCurrentSong()
+            })
+            
+        }, 1000);
+	}
+	componentDidUpdate = (prevProps, prevState) => {
+        if (prevState.user !== this.props.user) {
+            this.setState({
+                user: this.props.user
+            })
+        }
+    }
+    componentWillUnmount = () => {
+        this.playerActionListener = this.props.sessionClient.unsubscribeFromAction("player", this.playerActionListener);
+        this.queueActionListener = this.props.sessionClient.unsubscribeFromAction("queue", this.queueActionListener);
+        
+    }
 	initSessionClient = () =>{
 		this.props.sessionClient.joinSession(this.state._id, this.setState({loading: false}));
 	}
 	getSession = () => { 
 		if (this.props.match.params.sessionId){
 			this.props.axiosWrapper.axiosGet("/api/session/" + this.props.match.params.sessionId, this.handleGetSession, true)
+			console.log("session fetched");
 		}
 		else {
 			// Render suggestions to start a session?
@@ -49,6 +74,50 @@ class SessionScreen extends React.Component {
 		}
 		
 	}
+	handleApplyQueueState = (actionObj) => {
+        if (this.props.currentSession && this.isHost()) {
+            return
+        }
+
+        if (actionObj.action === "player") {
+            switch (actionObj.data.subaction) {
+                case "next_song":
+                    this.handleNextSong()
+                    break
+                case "prev_song":
+                    this.handlePreviousSong()
+                    break
+                default:
+                    console.log("Invalid subaction")
+            }
+        }
+        else if (actionObj.action === "queue") {
+            switch (actionObj.data.subaction) {
+                case "set_shuffle":
+                    this.props.queue.setShuffle(actionObj.data.state)
+                case "set_repeat":
+                    this.props.queue.setRepeat(actionObj.data.state)
+                default:
+                    break
+            }
+        }
+    }
+    handleNextSong = () => {
+    	this.setState({
+    		futureQueue: this.props.queue.getFutureQueue(),
+			currentSong: this.props.queue.getCurrentSong(),
+			pastQueue: this.props.queue.getPastQueue(),
+    	})
+    }
+    handlePreviousSong = () => {
+    	this.setState({
+    		futureQueue: this.props.queue.getFutureQueue(),
+			currentSong: this.props.queue.getCurrentSong(),
+			pastQueue: this.props.queue.getPastQueue(),
+    	})
+    }
+    
+	
 	onKeyPress = (e) => {
 
 		if(e.key === "Enter" && this.state.messageText.length <= 250){
@@ -116,6 +185,7 @@ class SessionScreen extends React.Component {
 					startTime: session.startTime,
 					futureQueue: this.props.queue.getFutureQueue(),
 					currentSong: this.props.queue.getCurrentSong(),
+					pastQueue: this.props.queue.getPastQueue(),
 					chatLog: session.actionLog
 	        	})
 	        	this.initSessionClient();
@@ -192,7 +262,7 @@ class SessionScreen extends React.Component {
 	        				<div disable={this.props.currentSession} style={{width:'5%', display:'block', textAlign:'center'}}>{this.state.messageText.length}/250</div>
 	        			</div>
 	        		</div>
-	        		<div className='col-sm-4' style={{height:'100%'}}>
+	        		<div className='col-sm-4' style={{height:'100%', overflow:'auto'}}>
 	        			
 	        			
 	        				
@@ -200,7 +270,7 @@ class SessionScreen extends React.Component {
 	        					 	<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
 				        				Up Next
 				        			</div>
-	        					 	<div className='row' style={{height:'43%'}}>
+	        					 	<div className='row' style={{height:'43%', overflow:'auto'}}>
 						                <Droppable droppableId="futureQueue">
 						                    {(provided) => ( 
 						                    	<QueueComponent Queue={this.state.futureQueue} fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.props.user}/>
@@ -211,10 +281,10 @@ class SessionScreen extends React.Component {
 						            <div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
 				        				Previously Played
 				        			</div>
-				        			<div className='row' style={{height:'43%'}}>
+				        			<div className='row' style={{height:'43%', overflow:'auto'}}>
 					        			<Droppable droppableId="prevQueue">
 						                    {(provided) => ( 
-		        								<QueueComponent Queue={this.state.prevQueue} fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.props.user}/>
+		        								<QueueComponent Queue={this.state.pastQueue} fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.props.user}/>
 		        							)}
 		        							
 						                </Droppable>
@@ -279,7 +349,7 @@ class SessionScreen extends React.Component {
 				        			</div>
 				        			<div className='row' style={{height:'43%'}}>
 					        			
-		        								<QueueComponent Queue={this.state.prevQueue} fetchVideoById={this.props.fetchVideoById}/>
+		        								<QueueComponent Queue={this.state.pastQueue} fetchVideoById={this.props.fetchVideoById}/>
 		        							
 		        							
 						                
