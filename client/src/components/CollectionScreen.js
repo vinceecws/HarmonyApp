@@ -128,7 +128,7 @@ class CollectionScreen extends React.Component{
 
     onPressPlaySong = (song, index) => {
         let futureQueue = this.state.collection.songList.slice(index + 1);
-        this.props.playVideo(song);
+        this.props.playVideo(song._id);
         for (let s of futureQueue){
             this.props.dataAPI.fetchVideoById(s, true).then((s) => {
                 if (s.status === 403){
@@ -136,6 +136,7 @@ class CollectionScreen extends React.Component{
                 }
                 else{
                     this.props.queue.addSongToFutureQueue(s);
+                    this.setState({playing: true, songPlaying: song._id});
                 }  
             })
         }

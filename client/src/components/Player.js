@@ -155,8 +155,10 @@ class Player extends React.Component {
             switch (actionObj.data.subaction) {
                 case "set_shuffle":
                     this.props.queue.setShuffle(actionObj.data.state)
+                    break;
                 case "set_repeat":
                     this.props.queue.setRepeat(actionObj.data.state)
+                    break;
                 default:
                     break
             }

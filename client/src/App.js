@@ -54,7 +54,7 @@ class App extends React.Component {
     }
     
     componentDidUpdate = (prevProps, prevState) => {
-        if (this.state.user && !prevState.user || !this.state.user && prevState.user) {
+        if ((this.state.user && !prevState.user) || (!this.state.user && prevState.user)) {
             this.sessionClient.disconnect()
             this.sessionClient = new SessionClient(io('/session'))
             this.queue = new Queue()

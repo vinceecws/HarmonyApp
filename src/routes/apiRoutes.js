@@ -1163,13 +1163,10 @@ module.exports = function(mainSocket, sessionSocket) {
             let filteredSessions = [];
             let filteredCollections = [];
             let filteredUsers = [];
-
+            console.log(sessionMatches);
             for (let s of sessionMatches){
-                if (thisUser.google.name === undefined && String(s.hostName) !== String(thisUser.local.username)){
+                if (String(s.hostId) !== String(thisUser._id)){
                     filteredSessions.push(s);
-                }
-                else if (String(s.hostName) !== String(thisUser.google.name)){
-                        filteredSessions.push(s);
                 }
             }
             for (let c of collectionMatches){

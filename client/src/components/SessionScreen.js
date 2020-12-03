@@ -25,6 +25,7 @@ class SessionScreen extends React.Component {
 			futureQueue: [],
 			chatLog: [],
 			messageText: "",
+			user: this.props.user,
 		}
 		
 		
@@ -158,6 +159,7 @@ class SessionScreen extends React.Component {
 	initSessionClient = (sessionId) =>{
 		this.props.sessionClient.joinSession(sessionId, this.setState({loading: false}));
 		if(this.props.user){
+			console.log('user logged in')
 			if(this.props.user._id === this.state.hostId){
 				console.log("session will be ready");
 				this.props.sessionClient.readySession();
@@ -245,13 +247,17 @@ class SessionScreen extends React.Component {
             switch (actionObj.data.subaction) {
 				// listen to only subactions that are not listened in Player.js
                  case "move_song":
-                     this.props.queue.moveSongInFutureQueue(actionObj.data.from,actionObj.data.to);
+					 this.props.queue.moveSongInFutureQueue(actionObj.data.from,actionObj.data.to);
+					 break;
                  case "move_song_from_past":
-                     this.props.queue.moveSongFromPastQueue(actionObj.data.from,actionObj.data.to);
+					 this.props.queue.moveSongFromPastQueue(actionObj.data.from,actionObj.data.to);
+					 break;
                  case "add_song":
-                     this.props.queue.addSongToFutureQueue(actionObj.data.songId);
+					 this.props.queue.addSongToFutureQueue(actionObj.data.songId);
+					 break;
                  case "del_song":
-                     this.props.queue.removeSongFromFutureQueue(actionObj.data.index);
+					 this.props.queue.removeSongFromFutureQueue(actionObj.data.index);
+					 break;
                 default:
                     break
             }
@@ -335,7 +341,7 @@ class SessionScreen extends React.Component {
 		
 	}
 	handleGetSession = (status,data) => {
-
+		console.log('handleGetSession', status, data)
 		if (status === 200) {
 			var session = data.data.session;
 			if(this.props.user){
@@ -371,6 +377,7 @@ class SessionScreen extends React.Component {
 			        })
 				}
 				else{
+					console.log('logged in but not host')
 					this.setState({
 			        		
 			        		id: session._id,
@@ -379,13 +386,14 @@ class SessionScreen extends React.Component {
 							name: session.name,
 							startTime: session.startTime,
 					});
-					this.initSessionClient(session._id);
 					if(data.data.user !== undefined){
 						this.props.handleUpdateUser(data.data.user);
 					}
+					this.initSessionClient(session._id);
 				}
 			}
 			else{
+				console.log('not logged in')
 				this.setState({
 			        		
 			        		id: session._id,
@@ -394,7 +402,12 @@ class SessionScreen extends React.Component {
 							name: session.name,
 							startTime: session.startTime,
 					});
+<<<<<<< HEAD
 					this.initSessionClient(session._id);
+=======
+				this.initSessionClient(session._id);
+					
+>>>>>>> d48fb8ecc4f3488efc7bb36ce34b9f4dc8bf063e
 			}
             
         }
