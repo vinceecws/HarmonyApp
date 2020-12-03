@@ -211,6 +211,11 @@ class Queue {
         this.onChange.futureQueueChange.forEach(handler => handler.call(this.getFutureQueue()))
     }
 
+    clearPastQueue = () => {
+        this._pastQueue = []
+        this.onChange.pastQueueChange.forEach(handler => handler.call(this.getPastQueue()))
+    }
+
     /*
         moveSongInFutureQueue prioritizes user-defined order, therefore, changes in order made in shuffle mode
         is expected to persist even when shuffle is turned off. However, note that the converse is not true.
