@@ -207,9 +207,12 @@ exports.createSession = async function(hostId, hostName, name, startTime, initia
         hostId: hostId,
         hostName: hostName,
         name: name,
+        startTime: startTime,
+        streams: 0,
+        likes: 0,
         live: false,
-        startTime: startTime, 
-        initialQueue: initialQueue
+        initialQueue: initialQueue,
+        actionLog: []
     }).save().catch(error => {return error});
     
     return session;
