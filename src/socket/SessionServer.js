@@ -18,7 +18,6 @@ class SessionServer {
     }
 
     parseAction = (action, clientSocket, ...args) => {
-        console.log(action)
         switch (action) {
             case "ready":
                 this.readySession(clientSocket)
@@ -74,8 +73,10 @@ class SessionServer {
     */
     readySession = (clientSocket) => {
         if (clientSocket.request.user) {
+            console.log("READYING NOW")
             mongooseQuery.updateSession(clientSocket.rooms[1], {live: true}).then(async () => {
                 var sessions = await mongooseQuery.getSessions()
+                console.log(sessions)
                 this.mainSocket.emit('top-sessions', sessions)
             })
         }
