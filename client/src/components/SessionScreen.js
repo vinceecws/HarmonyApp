@@ -162,6 +162,7 @@ class SessionScreen extends React.Component {
 	}
 	initSessionClient = () =>{
 		this.props.sessionClient.joinSession(this.state._id, this.setState({loading: false}));
+		this.props.sessionClient.emitSession("session","get_session_state");
 	}
 
 	getSession = () => { 
@@ -183,7 +184,7 @@ class SessionScreen extends React.Component {
 						pastQueue: this.props.queue.getPastQueue(),
 						
 		        	});
-		        	this.initSessionClient();
+		        	
 				}
 			}
 			else{ //Not logged in
@@ -195,7 +196,7 @@ class SessionScreen extends React.Component {
 					pastQueue: this.props.queue.getPastQueue(),
 					
 	        	});
-	        	this.initSessionClient();
+	        	
 			}
 			
 			
@@ -354,7 +355,7 @@ class SessionScreen extends React.Component {
 					futureQueue: this.props.queue.getFutureQueue(),
 					currentSong: this.props.queue.getCurrentSong(),
 					pastQueue: this.props.queue.getPastQueue(),
-					chatLog: session.actionLog
+					
 	        	})
 	        	this.initSessionClient();
 	        })
