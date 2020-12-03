@@ -994,7 +994,6 @@ module.exports = function(mainSocket, sessionSocket) {
                     currentSession: sessionId
                 }).catch(err => res.sendStatus(404)))
             
-            
             return res.status(200).json({
                 message: "Fetch success",
                 statusCode: 200,

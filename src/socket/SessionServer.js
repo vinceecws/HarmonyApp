@@ -135,7 +135,12 @@ class SessionServer {
     emitSession = (clientSocket, sessionObj) => {
         if (clientSocket.request.user) {
             var newSessionObj = this.createActionObj("session", sessionObj.username, sessionObj.userId, sessionObj.data)
-            this.socket.to(clientSocket.rooms[1]).emit("session", newSessionObj)
+            if (sessionObj.data.subaction === 'session_state'){
+                this.socket.to(clientSocket.rooms[0]).emit('session', newSessionObj)
+            }
+            else {
+                this.socket.to(clientSocket.rooms[1]).emit("session", newSessionObj)
+            }
             this.updateSessionState(clientSocket.rooms[1], newSessionObj)
         }
         else {
