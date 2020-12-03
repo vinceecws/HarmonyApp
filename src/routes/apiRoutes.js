@@ -946,11 +946,16 @@ module.exports = function(mainSocket, sessionSocket) {
         }
         else {
             let user = stripUser(req.user)
-            let newSession = await mongooseQuery.createSession(user._id, user.username, req.body.name, Date.now(), req.body.initialQueue)
-
+            let sessionId = await mongooseQuery.createSession(user._id, user.username, req.body.name, Date.now(), req.body.initialQueue).catch(err => res.sendStatus(404))
+            let updatedUser = await mongooseQuery.updateUser(user._id, {
+                live: true,
+                currentSession: sessionId
+            }).catch(err => res.sendStatus(404))
             let sessions = await mongooseQuery.getSessions().catch(err => {
                 mainSocket.emit('error')
             })
+            /* Add support for emitting session creation to all listening sockets */
+            
             mainSocket.emit('top-sessions', sessions, (response) => {
                 if (response.status === 200) {
                     console.log("Sessions acknowledged")
@@ -961,7 +966,8 @@ module.exports = function(mainSocket, sessionSocket) {
                 message: "Session created",
                 statusCode: 200,
                 data: {
-                    session: newSession
+                    session: sessionId,
+                    user: stripUser(updatedUser)
                 },
                 success:true
             })

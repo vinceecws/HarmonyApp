@@ -36,7 +36,7 @@ class MainApp extends React.Component {
         desired song 
     */
     playVideo = (id) => {
-        console.log(this.props.playerAPI.player)
+
         this.queue.clearFutureQueue()
         this.fetchVideoById(id, true).then((song) => {
             this.queue.setCurrentSong(song)
@@ -61,6 +61,10 @@ class MainApp extends React.Component {
         return this.dataAPI.fetchVideoById(id, snippet)
     }
 
+    shouldStartSession = () => {
+        return this.props.user && !this.props.user.privateMode && !this.props.user.live
+    }
+
     render() {
         return(
             <div id="main-app-container">
@@ -75,13 +79,12 @@ class MainApp extends React.Component {
                     </Col>
                     <Col id="screen-container">
                         <Switch>
-                            <Route path='/main/search' render={(props) => <SearchScreen {...props} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} fetchVideoById={this.fetchVideoById} queryVideos={this.queryVideos} playVideo={this.playVideo} queue={this.queue} currentSession={this.props.currentSession} axiosWrapper={this.props.axiosWrapper}/>} />
+                            <Route path='/main/search' render={(props) => <SearchScreen {...props} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} fetchVideoById={this.fetchVideoById} queryVideos={this.queryVideos} playVideo={this.playVideo} queue={this.queue} currentSession={this.props.currentSession} shouldStartSession={this.shouldStartSession} axiosWrapper={this.props.axiosWrapper}/>} />
                             <Route path={['/main/session/:sessionId', '/main/session']} render={(props) => <SessionScreen {...props} auth={this.props.auth} user={this.props.user} key={props.match.params.sessionId} handleUpdateUser={this.props.handleUpdateUser} fetchVideoById={this.fetchVideoById} queue={this.queue} playVideo={this.playVideo} axiosWrapper={this.props.axiosWrapper} currentSession={this.props.currentSession} sessionClient={this.props.sessionClient}/>} />
-                            <Route path='/main/profile/:userId' render={(props) => <ProfileScreen {...props} auth={this.props.auth} key={props.match.params.userId} handleUpdateUser={this.props.handleUpdateUser} fetchVideoById={this.fetchVideoById} user={this.props.user} playVideo={this.playVideo} queue={this.queue} currentSession={this.props.currentSession} axiosWrapper={this.props.axiosWrapper}/>} />
-                            <Route path='/main/collection/:collectionId' render={(props) => <CollectionScreen {...props} auth={this.props.auth} key={props.match.params.collectionId} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} queue={this.queue} dataAPI={this.dataAPI} playVideo={this.playVideo} playerAPI={this.playerAPI} currentSession={this.props.currentSession}/>} />
-                            <Route path='/main/collection' render={(props) => <CollectionScreen {...props} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} currentSession={this.props.currentSession} />} />
+                            <Route path='/main/profile/:userId' render={(props) => <ProfileScreen {...props} auth={this.props.auth} key={props.match.params.userId} handleUpdateUser={this.props.handleUpdateUser} fetchVideoById={this.fetchVideoById} user={this.props.user} playVideo={this.playVideo} queue={this.queue} currentSession={this.props.currentSession} shouldStartSession={this.shouldStartSession} axiosWrapper={this.props.axiosWrapper}/>} />
+                            <Route path='/main/collection/:collectionId' render={(props) => <CollectionScreen {...props} auth={this.props.auth} key={props.match.params.collectionId} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} queue={this.queue} dataAPI={this.dataAPI} playVideo={this.playVideo} playerAPI={this.playerAPI} currentSession={this.props.currentSession} shouldStartSession={this.shouldStartSession}/>} />
                             <Route path='/main/settings' render={(props) => <SettingsScreen {...props} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} currentSession={this.props.currentSession} />} />
-                            <Route path='/' render={(props) => <HomeScreen {...props} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} currentSession={this.props.currentSession}/>} />
+                            <Route path='/' render={(props) => <HomeScreen {...props} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} currentSession={this.props.currentSession} shouldStartSession={this.shouldStartSession}/>} />
                         </Switch>
                     </Col>
                 </Row>

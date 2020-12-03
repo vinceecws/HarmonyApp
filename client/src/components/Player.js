@@ -66,6 +66,18 @@ class Player extends React.Component {
         })
     }
 
+    handleCreateSession = (initialQueue) => {
+        this.props.axiosWrapper.axiosPost('/api/session/newSession', {
+            name: `${this.props.user.username}'s Live Session`,
+            initialQueue: initialQueue
+        }, (function(res, data) {
+			if (data.success) {
+                this.props.handleUpdateUser(data.data.user)
+                this.props.history.push('/main/session/' + data.data.sessionId)
+			}
+		}).bind(this), true)
+    }
+
     handleEmitPlayerState = (action, subaction, ...args) => {
         if (!(this.props.currentSession && this.isHost())) {
             return
@@ -178,15 +190,21 @@ class Player extends React.Component {
 
     handleTogglePlay = () => {
         var currentSong
+        var hasNext
         if (!this.props.playerAPI.isPlayerInit()) { //Initialize on first use
             this.handleEmitPlayerState("player", "play")
             if (this.props.queue.currentSongIsEmpty()) {
-                this.props.queue.nextSong()
+                hasNext = this.props.queue.nextSong()
             }
 
-            if (!this.props.queue.currentSongIsEmpty()) {
+            if (hasNext) {
                 currentSong = this.props.queue.getCurrentSong()
-                this.props.playerAPI.initIFrameAPI(currentSong._id)
+                if (this.props.shouldStartSession()) {
+                    this.handleCreateSession(currentSong._id)
+                }
+                else {
+                    this.props.playerAPI.initIFrameAPI(currentSong._id)
+                }
             }
             return
         }
@@ -194,15 +212,25 @@ class Player extends React.Component {
         if (this.props.playerAPI.isPaused()) {
             this.handleEmitPlayerState("player", "play")
             if (this.props.queue.currentSongIsEmpty()) {
-                this.props.queue.nextSong()
+                hasNext = this.props.queue.nextSong()
 
-                currentSong = this.props.queue.getCurrentSong()
-                if (currentSong != null) {
-                    this.props.playerAPI.loadVideoById(currentSong._id)
+                if (hasNext) {
+                    currentSong = this.props.queue.getCurrentSong()
+                    if (this.props.shouldStartSession()) {
+                        this.handleCreateSession(currentSong._id)
+                    }
+                    else {
+                        this.props.playerAPI.loadVideoById(currentSong._id)
+                    }
                 }
             }
             else {
-                this.props.playerAPI.playVideo()
+                if (this.props.shouldStartSession()) {
+                    this.handleCreateSession(currentSong._id)
+                }
+                else {
+                    this.props.playerAPI.playVideo()
+                }
             }
         }
         else {

@@ -83,23 +83,45 @@ class ProfileScreen extends React.Component{
 
 	handlePlayItem = (obj, e) => {
         if (obj.type === "song") {
-            this.props.playVideo(obj._id)
+            if (this.props.shouldStartSession()) {
+                this.handleCreateSession([obj._id])
+            }
+            else {
+                this.props.playVideo(obj._id)
+            }
         }
         else if (obj.type === "session") {
             this.props.history.push('/main/session/' + obj._id)
         }
         else if (obj.type === "collection") {
 			var songList = _.cloneDeep(obj.songList)
-			if (songList.length > 0) {
-				this.props.playVideo(songList.shift())
+            if (songList.length > 0) {
+                if (this.props.shouldStartSession()) {
+                    this.handleCreateSession(songList)
+                }
+                else {
+                    this.props.playVideo(songList.shift())
 
-				Promise.all(songList.map((songId) => {
-					return this.props.fetchVideoById(songId, true)
-				})).then((songs) => {
-					songs.forEach(song => this.props.queue.addSongToFutureQueue(song))
-				})
-			}
+                    Promise.all(songList.map((songId) => {
+                        return this.props.fetchVideoById(songId, true)
+                    })).then((songs) => {
+                        songs.forEach(song => this.props.queue.addSongToFutureQueue(song))
+                    })
+                }
+            }
         }
+	}
+	
+	handleCreateSession = (initialQueue) => {
+        this.props.axiosWrapper.axiosPost('/api/session/newSession', {
+            name: `${this.props.user.username}'s Live Session`,
+            initialQueue: initialQueue
+        }, (function(res, data) {
+			if (data.success) {
+                this.props.handleUpdateUser(data.data.user)
+                this.props.history.push('/main/session/' + data.data.sessionId)
+			}
+		}).bind(this), true)
     }
 
 	handleCreateCollection = () => {
