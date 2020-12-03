@@ -159,14 +159,14 @@ class SessionScreen extends React.Component {
 	initSessionClient = (sessionId) =>{
 		this.props.sessionClient.joinSession(sessionId, this.setState({loading: false}));
 		if(this.props.user){
-			console.log('user logged in')
 			if(this.props.user._id === this.state.hostId){
-				console.log("session will be ready");
 				this.props.sessionClient.readySession();
-				console.log("session is ready");
 			}
 			else {
-				this.props.sessionClient.emitSession("session","get_session_state");
+				var data =  {
+					subaction: "get_session_state"
+				}
+				this.props.sessionClient.emitSession(this.props.user.username, this.props.user._id, data);
 			}
 		}
 		
@@ -175,7 +175,6 @@ class SessionScreen extends React.Component {
 	getSession = () => { 
 		if (this.props.match.params.sessionId){
 			this.props.axiosWrapper.axiosGet("/api/session/" + this.props.match.params.sessionId, this.handleGetSession, true);
-			console.log("new session fetched");
 		}
 		else {
 			if(this.props.user){
@@ -377,7 +376,6 @@ class SessionScreen extends React.Component {
 			        })
 				}
 				else{
-					console.log('logged in but not host')
 					this.setState({
 			        		
 			        		id: session._id,
@@ -402,12 +400,8 @@ class SessionScreen extends React.Component {
 							name: session.name,
 							startTime: session.startTime,
 					});
-<<<<<<< HEAD
-					this.initSessionClient(session._id);
-=======
 				this.initSessionClient(session._id);
 					
->>>>>>> d48fb8ecc4f3488efc7bb36ce34b9f4dc8bf063e
 			}
             
         }

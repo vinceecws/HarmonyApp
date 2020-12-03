@@ -9,9 +9,9 @@ class SessionServer {
     }
 
     initSocket = () => {
-        console.log('server socket initialized')
         this.socket.on('connect', async (socket) => {
             /* Access equivalent of PassportJS's "req.user" here as "socket.request.user" */
+
             socket.onAny((event, ...args) => {
                 this.parseAction(event, socket, ...args)
             })
@@ -74,11 +74,9 @@ class SessionServer {
     */
     readySession = (clientSocket) => {
         if (clientSocket.request.user) {
-            console.log("READYING NOW")
             console.log(clientSocket.rooms[1])
             mongooseQuery.updateSession(clientSocket.rooms[1], {live: true}).then(async () => {
                 var sessions = await mongooseQuery.getSessions()
-                console.log(sessions)
                 this.mainSocket.emit('top-sessions', sessions)
             })
         }
@@ -90,7 +88,6 @@ class SessionServer {
     joinSession = (clientSocket, sessionId) => {
         console.log(sessionId)
         if (!clientSocket.rooms[1]) { //If not already in a Session
-            console.log("JOINING SESSION")
             clientSocket.join(sessionId);
             let getData = {subaction: 'get_session_state'}
             let getSessionStateObj = {action: 'session', data: getData }
@@ -154,6 +151,7 @@ class SessionServer {
     }
 
     emitSession = (clientSocket, sessionObj) => {
+        console.log(sessionObj)
         if (clientSocket.request.user) {
             var newSessionObj = this.createActionObj("session", sessionObj.username, sessionObj.userId, sessionObj.data)
             if (sessionObj.data.subaction === 'session_state'){
