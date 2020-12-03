@@ -138,6 +138,7 @@ class SessionClient {
         })
     }
     joinSession = (id, callback) => {
+        console.log("JOIN SESSION")
         this.socket.emit("join", id, (response) => {
             if (response.status === 200) {
                 console.log("Session joined")

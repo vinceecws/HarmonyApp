@@ -395,10 +395,7 @@ class SessionScreen extends React.Component {
 							startTime: session.startTime,
 					});
 					this.initSessionClient(session._id);
-					
 			}
-			
-			
             
         }
         else if (status === 404) {

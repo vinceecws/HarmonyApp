@@ -87,6 +87,7 @@ class SessionServer {
     }
 
     joinSession = (clientSocket, sessionId) => {
+        console.log(sessionId)
         if (!clientSocket.rooms[1]) { //If not already in a Session
             console.log("JOINING SESSION")
             clientSocket.join(sessionId);
