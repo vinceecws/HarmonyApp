@@ -9,6 +9,7 @@ class SessionServer {
     }
 
     initSocket = () => {
+        console.log('server socket initialized')
         this.socket.on('connect', async (socket) => {
             /* Access equivalent of PassportJS's "req.user" here as "socket.request.user" */
             socket.onAny((event, ...args) => {
