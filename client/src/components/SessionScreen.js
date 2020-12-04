@@ -160,11 +160,10 @@ class SessionScreen extends React.Component {
 		this.props.sessionClient.joinSession(sessionId);
 		if(this.props.user){
 			if(this.props.user._id === hostId){
-				this.props.sessionClient.readySession((() => {
-					this.setState({
-						loading: false
-					})
-				}).bind(this));
+				this.props.sessionClient.readySession()
+				this.setState({
+					loading: false
+				})
 			}
 			else {
 				var data =  {
