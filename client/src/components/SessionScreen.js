@@ -156,14 +156,14 @@ class SessionScreen extends React.Component {
 		}
 	}
 	initSessionClient = (sessionId, hostId) =>{
+		this.props.queue.clearPastQueue()
 		this.props.sessionClient.joinSession(sessionId);
 		if(this.props.user){
 			if(this.props.user._id === hostId){
-				this.props.sessionClient.readySession((() => {
-					this.setState({
-						loading: false
-					})
-				}).bind(this));
+				this.props.sessionClient.readySession()
+				this.setState({
+					loading: false
+				})
 			}
 			else {
 				var data =  {
@@ -186,20 +186,14 @@ class SessionScreen extends React.Component {
 				}
 				else{ //Logged in
 					this.setState({
-		        		
-		        		
 						futureQueue: this.props.queue.getFutureQueue(),
 						pastQueue: this.props.queue.getPastQueue(),
 						loading:false
-						
 		        	});
-		        	
 				}
 			}
 			else{ //Not logged in
 				this.setState({
-	        		
-	        		
 					futureQueue: this.props.queue.getFutureQueue(),
 					pastQueue: this.props.queue.getPastQueue(),
 					loading:false
@@ -387,7 +381,7 @@ class SessionScreen extends React.Component {
 					if(data.data.user !== undefined){
 						this.props.handleUpdateUser(data.data.user);
 					}
-					this.initSessionClient(session._id);
+					this.initSessionClient(session._id, session.hostId);
 				}
 			}
 			else{
@@ -399,7 +393,7 @@ class SessionScreen extends React.Component {
 							name: session.name,
 							startTime: session.startTime,
 					});
-				this.initSessionClient(session._id);
+				this.initSessionClient(session._id, session.hostId);
 					
 			}
             

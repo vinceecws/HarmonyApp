@@ -35,23 +35,23 @@ class CollectionScreen extends React.Component{
                 user: this.props.user
             })
         }
-        console.log('Component user updated: ', this.state.user);
+        console.log('Component user updated: ', this.props.user);
     }
 
     onPressLikeCollection = () =>{
-        if (this.state.user !== null){
-            let favoritedCollections = this.state.user.likedCollections;
+        if (this.props.user !== null){
+            let favoritedCollections = this.props.user.likedCollections;
             let numLikes = this.state.collection.likes;
             if (!this.state.favorited){
                 numLikes++;
-                this.state.user.likedCollections === undefined ? 
+                this.props.user.likedCollections === undefined ? 
                             favoritedCollections = [this.state.collection._id] :
                             favoritedCollections.push(this.state.collection._id);
             }
-            else if (this.state.user.likedCollections !== undefined){
+            else if (this.props.user.likedCollections !== undefined){
                 if (numLikes > 0){numLikes--;}
                 favoritedCollections = [];
-                for (let c of this.state.user.likedCollections){
+                for (let c of this.props.user.likedCollections){
                     if (c !== this.props.match.params.collectionId){
                         favoritedCollections.push(c);
                     }
@@ -65,7 +65,7 @@ class CollectionScreen extends React.Component{
                     console.log('Updated collection');
 
                     //update user
-                    this.props.axiosWrapper.axiosPost('/api/collection/updateUser/' + this.state.user._id,
+                    this.props.axiosWrapper.axiosPost('/api/collection/updateUser/' + this.props.user._id,
                     {likedCollections: favoritedCollections}, (function(res, data){
                         if (data.success){
                             console.log('Updated user: ', data.data.user);
@@ -161,11 +161,11 @@ class CollectionScreen extends React.Component{
     }
 
     onPressLikeSong = (song) => {
-        let favedSongs = this.state.user.likedSongs;
+        let favedSongs = this.props.user.likedSongs;
         if (song.favorited){
             song.favorited = false;
             favedSongs = [];
-            for(let s of this.state.user.likedSongs){
+            for(let s of this.props.user.likedSongs){
                 if (s !== song._id){
                     favedSongs.push(s);
                 }
@@ -181,7 +181,7 @@ class CollectionScreen extends React.Component{
             }
         }
         
-        this.props.axiosWrapper.axiosPost('/api/collection/updateUser/' + this.state.user._id, 
+        this.props.axiosWrapper.axiosPost('/api/collection/updateUser/' + this.props.user._id, 
         {likedSongs: favedSongs}, (function(res, data){
             if(data.success){
                 this.props.handleUpdateUser(data.data.user);
@@ -201,10 +201,10 @@ class CollectionScreen extends React.Component{
                         Promise.all(songs.map((songId) => {
                             return this.props.dataAPI.fetchVideoById(songId, true)
                         })).then((s) => {
-                            if (this.state.user !== null && this.state.user.likedSongs.length > 0) {
+                            if (this.props.user && this.props.user.likedSongs.length > 0) {
                                 for (let song of s) {
                                     let songFaved = false
-                                    for (let fav of this.state.user.likedSongs) {
+                                    for (let fav of this.props.user.likedSongs) {
                                         if (fav === song._id) {
                                             songFaved = true
                                         }
@@ -285,8 +285,8 @@ class CollectionScreen extends React.Component{
     }
 
     isCollectionFavorited = (collection) => {
-        if (this.state.user !== null && this.state.user.likedCollections !== undefined){
-            for (let c of this.state.user.likedCollections){
+        if (this.props.user !== null && this.props.user.likedCollections !== undefined){
+            for (let c of this.props.user.likedCollections){
                 if (c === collection._id){
                     return true;
                 }
@@ -450,13 +450,16 @@ class CollectionScreen extends React.Component{
                                                 <div className='collection-song-title ellipsis-multi-line-overflow' style={{display: 'inline-block', width: '20%', marginRight: '2%'}}><div>{e.creator}</div></div>
                                                 <div className='collection-page-text' style={{display: 'inline-block', marginRight: '10.5%'}}>{this.getDateAdded()}</div>
                                                 <div className='collection-page-text' style={{display: 'inline-block', marginRight: '5%'}}>{this.getDurationString(e.duration, i)} </div>
-                                                {this.state.user ? 
-                                                <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}}>
-                                                    {/* Fix during implementation */}
-                                                    <Image className='player-song-favorite-button-icon' src={icon_like} 
-                                                            style={{maxHeight: '25px', maxWidth: '25px', backgroundColor: e.favorited ? '#00e400' : 'transparent'}} 
-                                                            onClick={() => this.onPressLikeSong(e)} roundedCircle/>
-                                                </Button> : <div></div> }
+                                                { 
+                                                    this.props.user ? 
+                                                    <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}}>
+                                                        {/* Fix during implementation */}
+                                                        <Image className='player-song-favorite-button-icon' src={icon_like} 
+                                                                style={{maxHeight: '25px', maxWidth: '25px', backgroundColor: e.favorited ? '#00e400' : 'transparent'}} 
+                                                                onClick={() => this.onPressLikeSong(e)} roundedCircle/>
+                                                    </Button>
+                                                    : <div></div>
+                                                } 
                                                 <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}} 
                                                         onClick={() => this.onPressDeleteSong(e)}>
                                                     <img src={delete_button_white} style={{maxHeight: '25px', maxWidth: '25px'}}></img>

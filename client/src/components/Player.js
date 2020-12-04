@@ -237,6 +237,8 @@ class Player extends React.Component {
     handleTogglePlay = () => {
         var currentSong
         var hasNext
+        var futureQueue
+
         if (!this.props.playerAPI.isPlayerInit()) { //Initialize on first use
             this.handleEmitPlayerState("player", "play")
             if (this.props.queue.currentSongIsEmpty()) {
@@ -249,7 +251,9 @@ class Player extends React.Component {
             if (hasNext) {
                 currentSong = this.props.queue.getCurrentSong()
                 if (this.props.shouldStartSession()) {
-                    this.handleCreateSession(currentSong._id)
+                    futureQueue = this.props.queue.getFutureQueue()
+                    futureQueue.unshift(currentSong)
+                    this.handleCreateSession(futureQueue)
                 }
                 else {
                     this.props.playerAPI.initIFrameAPI(currentSong._id)
@@ -266,7 +270,9 @@ class Player extends React.Component {
                 if (hasNext) {
                     currentSong = this.props.queue.getCurrentSong()
                     if (this.props.shouldStartSession()) {
-                        this.handleCreateSession(currentSong._id)
+                        futureQueue = this.props.queue.getFutureQueue()
+                        futureQueue.unshift(currentSong)
+                        this.handleCreateSession(futureQueue)
                     }
                     else {
                         this.props.playerAPI.loadVideoById(currentSong._id)
@@ -276,7 +282,9 @@ class Player extends React.Component {
             else {
                 currentSong = this.props.queue.getCurrentSong()
                 if (this.props.shouldStartSession()) {
-                    this.handleCreateSession(currentSong._id)
+                    futureQueue = this.props.queue.getFutureQueue()
+                    futureQueue.unshift(currentSong)
+                    this.handleCreateSession(futureQueue)
                 }
                 else {
                     this.props.playerAPI.playVideo()
