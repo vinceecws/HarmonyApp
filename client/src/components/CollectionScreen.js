@@ -298,8 +298,17 @@ class CollectionScreen extends React.Component{
     }
 
 
-    deleteCollection = () => {
-
+    onDeleteCollection = () => {
+        this.props.axiosWrapper.axiosGet('/api/collection/delete/' + this.props.match.params.collectionId, (function(res, data){
+            if (data.success){
+                console.log('Collection Deleted');
+                this.props.handleUpdateUser(data.data.user);
+                this.props.history.push('/main/home/' + this.props.user._id);
+            }
+            else {
+                console.log(data);
+            }
+        }).bind(this), true)
     }
 
     //reorder songlist (persistant)
@@ -326,6 +335,18 @@ class CollectionScreen extends React.Component{
                 }
             }).bind(this), true)
         }
+    }
+
+
+    ownsCollection = () => {
+        if (this.props.user){
+            for (let playlist of this.props.user.playlists){
+                if (String(playlist) === this.state.collection._id){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     render(){
@@ -392,6 +413,7 @@ class CollectionScreen extends React.Component{
                         </div>
 
                         {/* Queue Buttons */}
+                        {this.ownsCollection() ?
                         <div className='col'>
                             <div className='row'>
                                 <Dropdown className="search-screen-results-category-list-item-img-overlay-dropdown" as={ButtonGroup}>
@@ -410,13 +432,12 @@ class CollectionScreen extends React.Component{
                                             </Button>
                                         </Dropdown.Item>
                                         <Dropdown.Item>
-                                            <Button onClick={() => this.deleteCollection}>
+                                            <Button onClick={this.onDeleteCollection}>
                                                 Delete Collection
                                             </Button>
                                         </Dropdown.Item>
                                     </Dropdown.Menu>
-                                </Dropdown>
-                                
+                                </Dropdown> 
                             </div>
                             <div className='row'>
                                 <Button id='player-song-favorite-button' style={{position: 'relative',  paddingTop: '5%'}}>
@@ -424,7 +445,8 @@ class CollectionScreen extends React.Component{
                                             style={{minHeight: '40px', minWidth: '40px', marginTop: '20px', backgroundColor: this.state.favorited ? '#00e400' : 'transparent'}} roundedCircle/>
                                 </Button>
                             </div>
-                        </div>
+                        </div> : <div></div>
+                        }
                     </div>
 
                     {/* Queue List */}
@@ -453,19 +475,22 @@ class CollectionScreen extends React.Component{
                                                 <div className='collection-page-text' style={{display: 'inline-block', marginRight: '10.5%'}}>{this.getDateAdded()}</div>
                                                 <div className='collection-page-text' style={{display: 'inline-block', marginRight: '5%'}}>{this.getDurationString(e.duration, i)} </div>
                                                 { 
-                                                    this.props.user ? 
+                                                    this.ownsCollection() ? 
+                                                    <div>
                                                     <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}}>
                                                         {/* Fix during implementation */}
                                                         <Image className='player-song-favorite-button-icon' src={icon_like} 
                                                                 style={{maxHeight: '25px', maxWidth: '25px', backgroundColor: e.favorited ? '#00e400' : 'transparent'}} 
                                                                 onClick={() => this.onPressLikeSong(e)} roundedCircle/>
                                                     </Button>
-                                                    : <div></div>
-                                                } 
+                                                    
                                                 <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}} 
                                                         onClick={() => this.onPressDeleteSong(e)}>
                                                     <img src={delete_button_white} style={{maxHeight: '25px', maxWidth: '25px'}}></img>
                                                 </Button>
+                                                </div>
+                                                : <div></div>
+                                            }
                                             </div>
                                         </li>)}
                                     </Draggable>)
