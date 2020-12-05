@@ -478,7 +478,6 @@ module.exports = function(mainSocket, sessionSocket) {
         }
         else {
             let user = await mongooseQuery.getUser({'_id': req.params.id});
-            
             return res.status(200).json({
                 message: "Fetch success",
                 statusCode: 200,
@@ -507,8 +506,8 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else {
-            let user = await mongooseQuery.getUser({'_id': id})
-            let sessions = await mongooseQuery.getSession(user.sessions, true)
+            //let user = await mongooseQuery.getUser({'_id': id})
+            let sessions = await mongooseQuery.getSession(req.user.sessions, true)
             
             return res.status(200).json({
                 message: "Fetch success",
@@ -525,8 +524,7 @@ module.exports = function(mainSocket, sessionSocket) {
     });
 
     apiRouter.get('/profile/:id/playlists', async (req, res) => {
-        let id = req.params.id;
-        if (id == null){
+        if (req.params.id == null){
             return res.status(401).json({
                 error: {
                     name: "Bad request",
@@ -541,8 +539,8 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else {
-            let user = await mongooseQuery.getUser({'_id': id})
-            let playlists = await mongooseQuery.getCollection(user.playlists, true)
+            //let user = await mongooseQuery.getUser({'_id': id})
+            let playlists = await mongooseQuery.getCollection(req.user.playlists, true)
             
             return res.status(200).json({
                 message: "Fetch success",
@@ -575,8 +573,8 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else {
-            let user = await mongooseQuery.getUser({'_id': id})
-            let likedCollections = await mongooseQuery.getCollection(user.likedCollections, true)
+            //let user = await mongooseQuery.getUser({'_id': id})
+            let likedCollections = await mongooseQuery.getCollection(req.user.likedCollections, true)
             
             return res.status(200).json({
                 message: "Fetch success",
@@ -669,8 +667,7 @@ module.exports = function(mainSocket, sessionSocket) {
     });
 
     apiRouter.get('/collection/delete/:id', async (req, res) => {
-        let id = req.params.id;
-        if(id == null){
+        if(req.params.id == null){
             return res.status(404).json({
                 error: {
                     name: "Invalid session",
@@ -686,9 +683,26 @@ module.exports = function(mainSocket, sessionSocket) {
         }
         else{
             await mongooseQuery.deleteCollection({'_id': req.params.id});
+            let newPlaylists = [];
+            let newlikedCollections = [];
+            console.log(req.user.playlists)
+            for (let p of req.user.playlists){
+                if (p !== req.params.id){
+                    newPlaylists.push(p);
+                }
+            }
+            for (let p of req.user.likedCollections){
+                if (p !== req.params.id){
+                    newlikedCollections.push(p);
+                }
+            }
+            let updatedUser = await mongooseQuery.updateUser(req.user._id, {playlists: newPlaylists, likedCollections: newlikedCollections});
             return res.status(200).json({
                 message: "Collection deleted",
                 statusCode: 200,
+                data: {
+                    user: stripUser(updatedUser)
+                },
                 success:true
             })
         }
