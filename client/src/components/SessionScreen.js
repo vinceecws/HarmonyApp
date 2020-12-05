@@ -34,7 +34,7 @@ class SessionScreen extends React.Component {
 
 
 	componentDidMount = () => {
-		this.getSession();
+		this.getSessionScenario();
 
 		this.queueActionListener = this.props.sessionClient.subscribeToAction("queue", this.handleApplyQueueState.bind(this));
 		this.chatActionListener = this.props.sessionClient.subscribeToAction("chat", this.handleApplyChatLog.bind(this))
@@ -175,34 +175,99 @@ class SessionScreen extends React.Component {
 		
 	}
 
-	getSession = () => { 
-		if (this.props.match.params.sessionId){
-			this.props.axiosWrapper.axiosGet("/api/session/" + this.props.match.params.sessionId, this.handleGetSession, true);
-		}
-		else {
-			if(this.props.user){
-				if(this.props.user.currentSession){
-					this.props.axiosWrapper.axiosGet("/api/session/" + this.props.user.currentSession, this.handleGetSession, true);
-				}
-				else{ //Logged in
-					this.setState({
-						futureQueue: this.props.queue.getFutureQueue(),
-						pastQueue: this.props.queue.getPastQueue(),
-						loading:false
-		        	});
+	getSessionScenario = () => { 
+		if(this.props.sessionId){ //A session Id is being passed which means we are attempting to join a specific session
+			if(this.props.user){ //User is logged in
+				if(this.props.user.currentSession){ //Currently in a live session
+					if(this.props.user.live){ //If live it means that the user is the host since they are in the session
+						if(this.props.user.currentSession !== this.props.sessionId){// we are joining a new session
+
+						}
+						else{//this is the same as the one we're already in
+
+						}
+					}
+					else{ //It's possible to not be live but still be the host, which means we need to check if private mode is on
+						if(this.props.user.privateMode){ //private mode is on which means the user is hosting a private session
+
+						}
+						else{ //this is a standard user who is joining a session
+
+						}
+					}
+				}else{ //They are not in a session, which means we are fetching the session and joining
+
 				}
 			}
-			else{ //Not logged in
-				this.setState({
-					futureQueue: this.props.queue.getFutureQueue(),
-					pastQueue: this.props.queue.getPastQueue(),
-					loading:false
-	        	});
+			else{ //User is not logged in (guest)
+				if(this.props.currentSession){ //guest is currently in a live session, check if this is different
+					if(this.props.currentSession !== this.props.sessionId){// we are joining a new session
+
+					}
+					else{//this is the same as the one we're already in
+
+					}
+				}
+				else{ //guest is joining a new session
+
+				}
+			}
+		}
+		else{// a session id is not passed which means we are clicking on session tab (i.e. we are rejoining a session)
+			if(this.props.user){ //User is logged in
+				if(this.props.user.currentSession){ //Currently in a live session
+					if(this.props.user.live){ //If live it means that the user is the host since they are in the session
+
+					}
+					else{ //It's possible to not be live but still be the host, which means we need to check if private mode is on
+						if(this.props.user.privateMode){ //private mode is on which means the user is rejoining a private session
+
+						}
+						else{ //this is a standard user who is rejoining a session
+
+						}
+					}
+				}else{ //They are not in a session, which means we are displaying the queue
+
+				}
+			}
+			else{ //User is not logged in (guest)
+				if(this.props.currentSession){ //guest is currently in a live session
+
+				}
+				else{ //guest is in a guest session which is just to display the queue
+
+				}
+			}
+		}
+		
+		// if (this.props.match.params.sessionId){
+		// 	this.props.axiosWrapper.axiosGet("/api/session/" + this.props.match.params.sessionId, this.handleGetSession, true);
+		// }
+		// else {
+		// 	if(this.props.user){
+		// 		if(this.props.user.currentSession){
+		// 			this.props.axiosWrapper.axiosGet("/api/session/" + this.props.user.currentSession, this.handleGetSession, true);
+		// 		}
+		// 		else{ //Logged in
+		// 			this.setState({
+		// 				futureQueue: this.props.queue.getFutureQueue(),
+		// 				pastQueue: this.props.queue.getPastQueue(),
+		// 				loading:false
+		//         	});
+		// 		}
+		// 	}
+		// 	else{ //Not logged in
+		// 		this.setState({
+		// 			futureQueue: this.props.queue.getFutureQueue(),
+		// 			pastQueue: this.props.queue.getPastQueue(),
+		// 			loading:false
+	 //        	});
 	        	
-			}
+		// 	}
 			
 			
-		}
+		// }
 	}
 
 	handleTextChange = (e) => {
