@@ -18,6 +18,7 @@ class QueueComponent extends React.Component{
                 id={item._id}
                 user={this.props.user}
                 queueType={this.props.queueType}
+                isHost={this.props.isHost}
             />
 
             ); 
@@ -25,7 +26,7 @@ class QueueComponent extends React.Component{
         
                
         if(this.props.isHost){
-            renderStuff = <div className='list-group list-group-sessionScreen' isHost={this.props.isHost} style={{width: '100%', minWidth: '150px'}} {...this.props.provided.droppableProps} ref={this.props.provided.innerRef}>
+            renderStuff = <div className='list-group list-group-sessionScreen'  style={{width: '100%', minWidth: '150px'}} {...this.props.provided.droppableProps} ref={this.props.provided.innerRef}>
                 {QueueList}
                 {this.props.provided.placeholder}
             </div>

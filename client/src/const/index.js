@@ -21,6 +21,17 @@ export const mainScreens = {
 }
 
 /*
+    The Different Role types of a user in a Session
+*/
+export const sessionRoles = {
+    'LIVE_HOST': 0,
+    'PRIVATE_HOST': 1,
+    'USER': 2,
+    'GUEST_USER': 3,
+    'GUEST_HOST': 4
+}
+
+/*
     The 3 states of repeat in the music player
 */
 export const repeatStates = {
