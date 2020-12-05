@@ -506,8 +506,8 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else {
-            //let user = await mongooseQuery.getUser({'_id': id})
-            let sessions = await mongooseQuery.getSession(req.user.sessions, true)
+            let user = await mongooseQuery.getUser({'_id': id})
+            let sessions = await mongooseQuery.getSession(user.sessions, true)
             
             return res.status(200).json({
                 message: "Fetch success",
@@ -539,8 +539,8 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else {
-            //let user = await mongooseQuery.getUser({'_id': id})
-            let playlists = await mongooseQuery.getCollection(req.user.playlists, true)
+            let user = await mongooseQuery.getUser({'_id': req.params.id})
+            let playlists = await mongooseQuery.getCollection(user.playlists, true)
             
             return res.status(200).json({
                 message: "Fetch success",
@@ -573,8 +573,8 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else {
-            //let user = await mongooseQuery.getUser({'_id': id})
-            let likedCollections = await mongooseQuery.getCollection(req.user.likedCollections, true)
+            let user = await mongooseQuery.getUser({'_id': req.params.id})
+            let likedCollections = await mongooseQuery.getCollection(user.likedCollections, true)
             
             return res.status(200).json({
                 message: "Fetch success",
@@ -687,12 +687,12 @@ module.exports = function(mainSocket, sessionSocket) {
             let newlikedCollections = [];
             console.log(req.user.playlists)
             for (let p of req.user.playlists){
-                if (p !== req.params.id){
+                if (String(p) !== req.params.id){
                     newPlaylists.push(p);
                 }
             }
             for (let p of req.user.likedCollections){
-                if (p !== req.params.id){
+                if (String(p) !== req.params.id){
                     newlikedCollections.push(p);
                 }
             }

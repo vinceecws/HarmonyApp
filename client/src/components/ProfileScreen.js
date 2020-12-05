@@ -261,6 +261,7 @@ class ProfileScreen extends React.Component{
 
 	fetchUserData = () => {
 		if (this.state.profileUser) {
+			console.log(this.state.profileUser)
 			if (this.state.profileUser.sessions.length > 0) {
 				this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.userId + '/sessions', (function(res, data) {
 					if (data.success) {
@@ -311,12 +312,15 @@ class ProfileScreen extends React.Component{
 
 			if (this.state.profileUser.likedCollections.length > 0) {
 				this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.userId + '/likedCollections', (function(res, data) {
-					if (data.success) {
+					if (data.success && data.data.likedCollections.length > 0) {
+						console.log(true)
 						this.setState({
 							likedCollections: data.data.likedCollections,
 							likedCollections_loading: false
 						})
 					}
+					else {
+						this.setState({ likedCollections_loading: false})}
 				}).bind(this), true)
 			}
 			else if (this.state.likedCollections_loading) {
@@ -595,7 +599,7 @@ class ProfileScreen extends React.Component{
 							<div></div>
 						}
 						{ 
-							this.state.profileUser.likedCollections && (this.state.profileUser.likedCollections.length > 0) ?
+							this.state.profileUser.likedCollections && (this.state.likedCollections.length > 0) ?
 							<div>
 								<div className='row' style={{padding:'1em'}}>
 									<div style={{color: 'white', fontSize:'35px'}}>
