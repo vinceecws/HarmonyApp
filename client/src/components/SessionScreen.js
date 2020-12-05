@@ -182,29 +182,30 @@ class SessionScreen extends React.Component {
 
 	getSessionScenario = () => { 
 		let sessionRole;
-		if(this.state.user){ //User is logged in
-			if(this.state.user.currentSession){ //Currently in a live session
-				if(this.state.user.live){ //If live it means that the user is the host since they are in the session
-					sessionRole = sessionRoles.LIVE_HOST;
+		if (this.state.user) { //User is logged in
+			if (this.state.user.currentSession) { //Currently in a live session
+				if (this.state.user.live){ //If live it means that the user is the host since they are in the session
+					sessionRole = sessionRoles.USER_PUBLIC_HOST;
 				}
-				else{ //It's possible to not be live but still be the host, which means we need to check if private mode is on
-					if(this.state.user.privateMode){ //private mode is on which means the user is hosting a private session
-						sessionRole = sessionRoles.PRIVATE_HOST;
+				else { //It's possible to not be live but still be the host, which means we need to check if private mode is on
+					if (this.state.user.privateMode){ //private mode is on which means the user is hosting a private session
+						sessionRole = sessionRoles.USER_PRIVATE_HOST;
 					}
-					else{ //this is a standard user who is joining a session
-						sessionRole = sessionRoles.USER;
+					else { //this is a standard user who is joining a session
+						sessionRole = sessionRoles.USER_PARTICIPANT;
 					}
 				}
-			}else{ //They are not in a session, which means we are fetching the session and joining
-				sessionRole = sessionRoles.USER;
+			} 
+			else { //They are not in a session, which means we are fetching the session and joining
+				sessionRole = sessionRoles.USER_PARTICIPANT;
 			}
 		}
-		else{ //User is not logged in (guest)
-			if(this.props.currentSession){ //guest is currently in a live session, check if this is different
-				sessionRole = sessionRoles.GUEST_HOST;
+		else { //User is not logged in (guest)
+			if (this.props.currentSession) { //guest is currently in a live session, check if this is different
+				sessionRole = sessionRoles.GUEST_PARTICIPANT;
 			}
-			else{ //guest is joining a new session
-				 sessionRole = sessionRoles.GUEST_USER;
+			else { //guest is just playing songs
+				sessionRole = sessionRoles.GUEST_NON_PARTICIPANT;
 			}
 		}
 		this.setState({

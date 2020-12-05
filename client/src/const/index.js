@@ -24,11 +24,11 @@ export const mainScreens = {
     The Different Role types of a user in a Session
 */
 export const sessionRoles = {
-    'LIVE_HOST': 0,
-    'PRIVATE_HOST': 1,
-    'USER': 2,
-    'GUEST_USER': 3,
-    'GUEST_HOST': 4
+    'USER_PUBLIC_HOST': 0,
+    'USER_PRIVATE_HOST': 1,
+    'USER_PARTICIPANT': 2,
+    'GUEST_PARTICIPANT': 3,
+    'GUEST_NON_PARTICIPANT': 4
 }
 
 /*
