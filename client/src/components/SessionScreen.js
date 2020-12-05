@@ -1,4 +1,5 @@
 import React from 'react';
+import { sessionRoles } from '../const'
 import { icon_profile_image, icon_radio } from '../graphics';
 import ChatFeed from './Chat/ChatFeed.js';
 import QueueComponent from './Queues/QueueComponent.js';
@@ -24,13 +25,13 @@ class SessionScreen extends React.Component {
 			futureQueue: [],
 			chatLog: [],
 			messageText: "",
+			role: null,
 			user: this.props.user,
 		}
 	}
 
 
 	componentDidMount = () => {
-		this.getSessionScenario();
 		this.queueActionListener = this.props.sessionClient.subscribeToAction("queue", this.handleApplyQueueState.bind(this));
 		this.chatActionListener = this.props.sessionClient.subscribeToAction("chat", this.handleApplyChatLog.bind(this))
 		this.sessionActionListener = this.props.sessionClient.subscribeToAction("session", this.handleApplySessionState.bind(this))
@@ -44,7 +45,8 @@ class SessionScreen extends React.Component {
 		this.sessionActionListener = this.props.sessionClient.unsubscribeFromAction("session", this.sessionActionListener)
 		this.queueActionListener = this.props.sessionClient.unsubscribeFromAction("queue", this.queueActionListener);
 		
-		this.futureQueueChangeListener = this.props.queue.unsubscribeFromEvent("futureQueueChange", this.futureQueueChangeListener)
+		this.futureQueueChangeListener = this.props.queue.unsubscribeFromEvent("futureQueueChange", this.futureQueueChangeListener);
+		this.pastQueueChangeListener = this.props.queue.unsubscribeFromEvent("pastQueueChange", this.handleQueueStateChange.bind(this));
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
@@ -59,7 +61,7 @@ class SessionScreen extends React.Component {
             this.setState({
 				_id: this.props.screenProps.sessionId,
 				loading: true,
-            }, this.getSession) //This still has to handle quitting the current session before joining new session
+            }, this.getSessionScenario) //This still has to handle quitting the current session before joining new session
         }
     }
 
@@ -179,42 +181,36 @@ class SessionScreen extends React.Component {
 	}
 
 	getSessionScenario = () => { 
-		if(this.props.sessionId){ //A session Id is being passed which means we are attempting to join a specific session
-			if(this.props.user){ //User is logged in
-				if(this.props.user.currentSession){ //Currently in a live session
-					if(this.props.user.live){ //If live it means that the user is the host since they are in the session
-						if(this.props.user.currentSession !== this.props.sessionId){// we are joining a new session
-
-						}
-						else{//this is the same as the one we're already in
-
-						}
-					}
-					else{ //It's possible to not be live but still be the host, which means we need to check if private mode is on
-						if(this.props.user.privateMode){ //private mode is on which means the user is hosting a private session
-
-						}
-						else{ //this is a standard user who is joining a session
-
-						}
-					}
-				}else{ //They are not in a session, which means we are fetching the session and joining
-
+		let sessionRole;
+		if(this.state.user){ //User is logged in
+			if(this.state.user.currentSession){ //Currently in a live session
+				if(this.state.user.live){ //If live it means that the user is the host since they are in the session
+					sessionRole = sessionRoles.LIVE_HOST;
 				}
+				else{ //It's possible to not be live but still be the host, which means we need to check if private mode is on
+					if(this.state.user.privateMode){ //private mode is on which means the user is hosting a private session
+						sessionRole = sessionRoles.PRIVATE_HOST;
+					}
+					else{ //this is a standard user who is joining a session
+						sessionRole = sessionRoles.USER;
+					}
+				}
+			}else{ //They are not in a session, which means we are fetching the session and joining
+				sessionRole = sessionRoles.USER;
 			}
-			else{ //User is not logged in (guest)
-				if(this.props.currentSession){ //guest is currently in a live session, check if this is different
-					if(this.props.currentSession !== this.props.sessionId){// we are joining a new session
-
-					}
-					else{//this is the same as the one we're already in
-
-					}
-				}
-				else{ //guest is joining a new session
-
-				}
+		}
+		else{ //User is not logged in (guest)
+			if(this.props.currentSession){ //guest is currently in a live session, check if this is different
+				sessionRole = sessionRoles.GUEST_HOST;
 			}
+			else{ //guest is joining a new session
+				 sessionRole = sessionRoles.GUEST_USER;
+			}
+		}
+		this.setState({
+			role: sessionRole
+		}, this.props.axiosWrapper.axiosGet("/api/session/" + this.state._id, this.handleGetSession, true));
+		
 		//if (this.props.screenProps.sessionId){
 		// 	this.props.axiosWrapper.axiosGet("/api/session/" + this.props.screenProps.sessionId, this.handleGetSession, true);
 		// }
