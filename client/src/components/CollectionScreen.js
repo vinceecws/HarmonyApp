@@ -299,14 +299,10 @@ class CollectionScreen extends React.Component{
 
 
     onDeleteCollection = () => {
-        this.props.axiosWrapper.axiosGet('/api/collection/delete/' + this.props.match.params.collectionId, (function(res, data){
+        this.props.axiosWrapper.axiosGet('/api/collection/delete/' + this.state.collectionId, (function(res, data){
             if (data.success){
-                console.log('Collection Deleted');
                 this.props.handleUpdateUser(data.data.user);
-                this.props.history.push('/main/home/' + this.props.user._id);
-            }
-            else {
-                console.log(data);
+                this.props.switchScreen(mainScreens.HOME)
             }
         }).bind(this), true)
     }
