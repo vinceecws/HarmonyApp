@@ -411,8 +411,8 @@ class CollectionScreen extends React.Component{
                         </div>
 
                         {/* Queue Buttons */}
-                        {this.ownsCollection() ?
                         <div className='col'>
+                            {this.ownsCollection() ?
                             <div className='row'>
                                 <Dropdown className="search-screen-results-category-list-item-img-overlay-dropdown" as={ButtonGroup}>
                                     <Dropdown.Toggle split className="search-screen-results-category-list-item-img-overlay-dropdown-button no-caret">
@@ -437,14 +437,18 @@ class CollectionScreen extends React.Component{
                                     </Dropdown.Menu>
                                 </Dropdown> 
                             </div>
+                            : <div></div>
+                        }
+                        {this.props.user ? 
                             <div className='row'>
                                 <Button id='player-song-favorite-button' style={{position: 'relative',  paddingTop: '5%'}}>
                                     <Image className={'player-song-favorite-button-icon'} onClick={this.onPressLikeCollection} src={icon_like} 
                                             style={{minHeight: '40px', minWidth: '40px', marginTop: '20px', backgroundColor: this.state.favorited ? '#00e400' : 'transparent'}} roundedCircle/>
                                 </Button>
                             </div>
-                        </div> : <div></div>
-                        }
+                            : <div></div>
+                        }  
+                        </div> 
                     </div>
 
                     {/* Queue List */}
@@ -472,23 +476,22 @@ class CollectionScreen extends React.Component{
                                                 <div className='collection-song-title ellipsis-multi-line-overflow' style={{display: 'inline-block', width: '20%', marginRight: '2%'}}><div>{e.creator}</div></div>
                                                 <div className='collection-page-text' style={{display: 'inline-block', marginRight: '10.5%'}}>{this.getDateAdded()}</div>
                                                 <div className='collection-page-text' style={{display: 'inline-block', marginRight: '5%'}}>{this.getDurationString(e.duration, i)} </div>
-                                                { 
-                                                    this.ownsCollection() ? 
-                                                    <div>
+                                                { this.props.user ? 
                                                     <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}}>
                                                         {/* Fix during implementation */}
                                                         <Image className='player-song-favorite-button-icon' src={icon_like} 
                                                                 style={{maxHeight: '25px', maxWidth: '25px', backgroundColor: e.favorited ? '#00e400' : 'transparent'}} 
                                                                 onClick={() => this.onPressLikeSong(e)} roundedCircle/>
                                                     </Button>
-                                                    
+                                                    : <div></div>
+                                                }
+                                                { this.ownsCollection() ? 
                                                 <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}} 
                                                         onClick={() => this.onPressDeleteSong(e)}>
                                                     <img src={delete_button_white} style={{maxHeight: '25px', maxWidth: '25px'}}></img>
                                                 </Button>
-                                                </div>
                                                 : <div></div>
-                                            }
+                                                }
                                             </div>
                                         </li>)}
                                     </Draggable>)
