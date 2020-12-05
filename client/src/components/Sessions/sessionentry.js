@@ -41,11 +41,11 @@ class SessionEntry extends React.Component{
 		const showTicker = this.state.showTicker;
 		let entry;
 		if (showTicker) {
-			entry = <Ticker speed={14} mode="await">
-							{({ index }) => (<h1 className='Session-Entry-Text body-text underline color-accented'>{this.props.name}</h1>)}
+			entry = <Ticker speed={12}>
+							{({ index }) => (<h1 className='session-entry-text session-entry-text-ticker body-text underline color-accented'>{this.props.name}</h1>)}
 					</Ticker>;
 		} else{
-			entry = <h1 className='Session-Entry-Text body-text color-accented'>{this.props.name}</h1>;
+			entry = <h1 className='session-entry-text body-text color-accented'>{this.props.name}</h1>;
 		}
 		return(
 			<div className="session-entry-container" onClick={() => this.props.switchScreen(mainScreens.SESSION, {sessionId: this.props.id})} onMouseEnter={this.handleEntry} onMouseLeave={this.handleLeave}>
@@ -55,7 +55,7 @@ class SessionEntry extends React.Component{
 							<Image className="session-entry-image" src={this.props.image}/>
 						</Col>
 						<Col className="session-entry-text-container">
-							<h1 className='Session-Entry-Text body-text color-accented'>{this.props.hostName}</h1>
+							<h1 className='session-entry-text body-text color-accented'>{this.props.hostName}</h1>
 							{entry}
 						</Col>
 						<Col className="session-entry-stream-count-container">

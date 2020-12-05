@@ -157,20 +157,24 @@ body, html {
 
 /* Session Screen */
 
-.session-title-text{
+.session-title-text {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
   flex-wrap: nowrap !important;
 }
 
-.Session-Entry-Text{
+.session-entry-text {
   text-align: left;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   color: white;
   
+}
+
+.session-entry-text-ticker {
+  padding-right: 8px;
 }
 
 .list-group-sessionScreen{
@@ -197,6 +201,7 @@ body, html {
 
 .session-entry-container, .session-entry-container:hover {
   text-decoration: none;
+  cursor: pointer;
 }
 
 .session-entry-row-container {
@@ -382,10 +387,6 @@ body, html {
   background-color: #505050;
 }
 
-.tab-component-link-container {
-
-}
-
 #tab-component-login-button, #tab-component-login-button:hover {
   position: absolute;
   right: 20px;
@@ -442,10 +443,17 @@ body, html {
 .tab-component-link:hover {
   color: lightgray;
   border-bottom: solid 1px black;
+  cursor: pointer;
 }
 
 .tab-component-link-selected {
+  padding: 0 !important;
+  margin: 5px 15px 5px 15px !important;
   border-bottom: solid 1px black;
+}
+
+.tab-component-link-selected:hover {
+  cursor: pointer;
 }
 
 /* Player */
@@ -523,6 +531,10 @@ body, html {
 #player-song-title div:hover {
   text-decoration: underline;
   cursor: default;
+}
+
+#player-song-title-ticker {
+  padding-right: 8px;
 }
 
 .collection-song-title {

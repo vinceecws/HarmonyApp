@@ -101,7 +101,7 @@ class MainApp extends React.Component {
         return(
             <div id="main-app-container">
                 <Row id="top-container">
-                    <TabComponent switchScreen={this.switchScreen} auth={this.props.auth} user={this.props.user} axiosWrapper={this.props.axiosWrapper} handleLogOut={this.props.handleLogOut} history={this.props.history} currentSession={this.props.currentSession}/>
+                    <TabComponent switchScreen={this.switchScreen} currentScreen={this.state.currentScreen} auth={this.props.auth} user={this.props.user} axiosWrapper={this.props.axiosWrapper} handleLogOut={this.props.handleLogOut} history={this.props.history} currentSession={this.props.currentSession}/>
                 </Row>
                 <Row id="mid-container" style={{marginLeft:'0px'}}>
                     <Col id="side-list-container" sm={2} md={2} lg={2} xl={2}>

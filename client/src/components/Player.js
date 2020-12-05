@@ -436,8 +436,8 @@ class Player extends React.Component {
     render(){
         var title
         if (this.state.showTitleTicker) {
-            title =  <Ticker speed={6} mode="await">
-                        {({index}) => (<h1 className="body-text color-contrasted">{this.getSongName()}</h1>)}
+            title =  <Ticker speed={6}>
+                        {({index}) => (<h1 id="player-song-title-ticker" className="body-text color-contrasted">{this.getSongName()}</h1>)}
                      </Ticker>;
         }
         else {
