@@ -1,14 +1,11 @@
 import React from 'react';
 import AccountLink from './AccountLink.js'
 import { NavLink } from 'react-router-dom'
+import { mainScreens } from '../const'
 
 class TabComponent extends React.Component{
     constructor(props){
         super(props);
-
-        this.state = {
-            currentScreen: 0
-        }
     }
 
     render(){
@@ -16,16 +13,16 @@ class TabComponent extends React.Component{
             <div id="tab-component-container">
                 <ul id='tab-component-nav-container' className='nav'>
                     <li className='nav-item tab-component-link-container'>
-                        <NavLink href='#' className='nav-link tab-component-link title color-accented' activeClassName='nav-link tab-component-link-selected' to="/main/home">Home</NavLink>
+                        <NavLink href='#' className='nav-link tab-component-link title color-accented' activeClassName='nav-link tab-component-link-selected' onClick={() => this.props.switchScreen(mainScreens.HOME)} to={'/main'}>Home</NavLink>
                     </li>
                     <li className='nav-item tab-component-link-container'>
-                        <NavLink href='#' className='nav-link tab-component-link title color-accented' activeClassName='nav-link tab-component-link-selected' to="/main/session">Session</NavLink>
+                        <NavLink href='#' className='nav-link tab-component-link title color-accented' activeClassName='nav-link tab-component-link-selected' onClick={() => this.props.switchScreen(mainScreens.SESSION)} to={'/main'}>Session</NavLink>
                     </li>
                     <li className='nav-item tab-component-link-container'>
-                        <NavLink href='#' className='nav-link tab-component-link title color-accented' activeClassName='nav-link tab-component-link-selected' to="/main/search">Search</NavLink>
+                        <NavLink href='#' className='nav-link tab-component-link title color-accented' activeClassName='nav-link tab-component-link-selected' onClick={() => this.props.switchScreen(mainScreens.SEARCH)} to={'/main'}>Search</NavLink>
                     </li>
                 </ul>
-                <AccountLink auth={this.props.auth} user={this.props.user} axiosWrapper={this.props.axiosWrapper} handleLogOut={this.props.handleLogOut} history={this.props.history}/>
+                <AccountLink switchScreen={this.props.switchScreen} auth={this.props.auth} user={this.props.user} axiosWrapper={this.props.axiosWrapper} handleLogOut={this.props.handleLogOut} history={this.props.history}/>
             </div>
         )
     }

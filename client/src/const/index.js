@@ -9,16 +9,15 @@ export const google_oauth2_client_id = '1062386445238-hpt4garm04t6lfcn82brmbic5g
 export const youtube_data_api_key = 'AIzaSyAAvijnMt1vaI6Z2gwSJE-MOCoygHwSEvM' //Sebastian's
 
 /*
-    The 7 screens of the app
+    The 6 screens of the main app
 */
-export const screens = {
-    'LOGIN': 0,
-    'HOME': 1,
-    'SESSION': 2,
-    'SEARCH': 3,
-    'PROFILE': 4,
-    'COLLECTION': 5,
-    'SETTINGS': 6
+export const mainScreens = {
+    'HOME': 0,
+    'SESSION': 1,
+    'SEARCH': 2,
+    'PROFILE': 3,
+    'COLLECTION': 4,
+    'SETTINGS': 5
 }
 
 /*

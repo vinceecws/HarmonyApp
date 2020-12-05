@@ -92,11 +92,11 @@
 }
 
 .visible {
-  visibility: visible;
+  display: initial !important;
 }
 
 .hidden {
-  visibility: hidden;
+  display: none !important;
 }
 
 .collapsed {

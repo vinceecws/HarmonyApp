@@ -26,16 +26,10 @@ class SessionScreen extends React.Component {
 			messageText: "",
 			user: this.props.user,
 		}
-		
-		
-		
-		//this.props.sessionClient.joinSession(this.props.match.params.sessionId)
 	}
 
 
 	componentDidMount = () => {
-		this.getSession();
-
 		this.queueActionListener = this.props.sessionClient.subscribeToAction("queue", this.handleApplyQueueState.bind(this));
 		this.chatActionListener = this.props.sessionClient.subscribeToAction("chat", this.handleApplyChatLog.bind(this))
 		this.sessionActionListener = this.props.sessionClient.subscribeToAction("session", this.handleApplySessionState.bind(this))
@@ -57,6 +51,14 @@ class SessionScreen extends React.Component {
             this.setState({
                 user: this.props.user
             })
+		}
+		
+		//If screen is active and new sessionId is passed
+        if (this.props.screenProps && (prevState._id !== this.props.screenProps.sessionId)) {
+            this.setState({
+				_id: this.props.screenProps.sessionId,
+				loading: true,
+            }, this.getSession) //This still has to handle quitting the current session before joining new session
         }
     }
 
@@ -176,8 +178,8 @@ class SessionScreen extends React.Component {
 	}
 
 	getSession = () => { 
-		if (this.props.match.params.sessionId){
-			this.props.axiosWrapper.axiosGet("/api/session/" + this.props.match.params.sessionId, this.handleGetSession, true);
+		if (this.props.screenProps.sessionId){
+			this.props.axiosWrapper.axiosGet("/api/session/" + this.props.screenProps.sessionId, this.handleGetSession, true);
 		}
 		else {
 			if(this.props.user){
@@ -433,23 +435,19 @@ class SessionScreen extends React.Component {
     	return !this.props.user;
     }
     render(){
-    	
-    	
-    	let renderContainer = false
+		var component
     	if(!this.state.loading && !this.state.error && this.isHost){
-    		renderContainer = 
+    		component = 
     			<div style={{fontFamily: 'BalsamiqSans', marginLeft:'15px', height:'100%'}}>
         		<div className='row' style={{height:'100%'}}>
         			<div className='col-sm-8' style={{height:'100%'}}>
 	        			<div className='row' style={{height:'22%', border: '3px solid black', borderRadius: '25px'}}>
 	        				<div className='col' style={{maxWidth:'35%', height:'100%', padding:'1em'}}>
-	        					<img src={icon_profile_image} style={{backgroundColor:'white',display: 'block', margin: 'auto', height:'90%',
-	        									 border: '3px solid black'}}/>
+	        					<img src={icon_profile_image} style={{backgroundColor:'white',display: 'block', margin: 'auto', height:'90%', border: '3px solid black'}}/>
 	        				</div>
 	        				<div className='col' style={{maxWidth:'50%', minWidth:'50%',height:'100%', padding:'1em', color:'white'}}>
 	        					<div className='title session-title-text'>
 	        						{this.state.name}
-
 	        					</div>
 	        					<div className='body-text' style={{marginTop:'30px', margin: 'auto'}}>
 	        						{this.state.hostName}
@@ -460,7 +458,6 @@ class SessionScreen extends React.Component {
 	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}>{this.state.startTime}</div>
 	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}><Button variant="primary" onClick={this.endSession}>End Session</Button></div>
 	        				</div>
-
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
 	        				<ChatFeed actionLog={this.state.chatLog} user={this.props.user}  />
@@ -471,53 +468,45 @@ class SessionScreen extends React.Component {
 	        			</div>
 	        		</div>
 	        		<div className='col-sm-4' style={{height:'100%', overflow:'auto'}}>
-	        			
-	        			
-	        				
-	        					 <DragDropContext onDragEnd={this.handleOnDragEnd}>
-	        					 	<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
-				        				Up Next
-				        			</div>
-	        					 	<div className='row' style={{height:'43%', overflow:'auto'}}>
-						                <Droppable droppableId="futureQueue">
-						                    {(provided) => ( 
-						                    	<QueueComponent Queue={this.state.futureQueue} 	queueType="future" isHost={this.isHost} fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.props.user}/>
-						        			 )}
-						        			   
-						                </Droppable>
-					                </div>
-						            <div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
-				        				Previously Played
-				        			</div>
-				        			<div className='row' style={{height:'43%', overflow:'auto'}}>
-					        			<Droppable droppableId="pastQueue">
-						                    {(provided) => ( 
-		        								<QueueComponent Queue={this.state.pastQueue} isHost={this.isHost} queueType="past"  fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.props.user}/>
-		        							)}
-		        							
-						                </Droppable>
-				        			</div>
-					            </DragDropContext>
+						<DragDropContext onDragEnd={this.handleOnDragEnd}>
+							<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
+								Up Next
+							</div>
+							<div className='row' style={{height:'43%', overflow:'auto'}}>
+								<Droppable droppableId="futureQueue">
+									{(provided) => ( 
+										<QueueComponent Queue={this.state.futureQueue} 	queueType="future" isHost={this.isHost} fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.props.user}/>
+										)}
+										
+								</Droppable>
+							</div>
+							<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
+								Previously Played
+							</div>
+							<div className='row' style={{height:'43%', overflow:'auto'}}>
+								<Droppable droppableId="pastQueue">
+									{(provided) => ( 
+										<QueueComponent Queue={this.state.pastQueue} isHost={this.isHost} queueType="past"  fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.props.user}/>
+									)}
+								</Droppable>
+							</div>
+						</DragDropContext>
 	        		</div>
         		</div>
-        		
         	</div>
-
     	}
     	else if(!this.state.loading && !this.state.error && !this.isHost){
-    		renderContainer = 
+    		component = 
     			<div style={{fontFamily: 'BalsamiqSans', marginLeft:'15px', height:'100%'}}>
         		<div className='row' style={{height:'100%'}}>
         			<div className='col-sm-8' style={{height:'100%'}}>
 	        			<div className='row' style={{height:'22%', border: '3px solid black', borderRadius: '25px'}}>
 	        				<div className='col' style={{maxWidth:'35%', height:'100%', padding:'1em'}}>
-	        					<img src={icon_profile_image} style={{backgroundColor:'white',display: 'block', margin: 'auto', height:'90%',
-	        									 border: '3px solid black'}}/>
+	        					<img src={icon_profile_image} style={{backgroundColor:'white',display: 'block', margin: 'auto', height:'90%', border: '3px solid black'}}/>
 	        				</div>
 	        				<div className='col' style={{maxWidth:'50%', minWidth:'50%', padding:'1em', color:'white'}}>
 	        					<div className='title session-title-text'>
 	        						{this.state.name}
-
 	        					</div>
 	        					<div className='body-text' style={{marginTop:'30px', margin: 'auto'}}>
 	        						{this.state.hostName}
@@ -538,45 +527,34 @@ class SessionScreen extends React.Component {
 	        			</div>
 	        		</div>
 	        		<div className='col-sm-4' style={{height:'100%'}}>
-	        			
-	        			
-	        				
-	        					 
-	        					 	<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
-				        				Up Next
-				        			</div>
-	        					 	<div className='row' style={{height:'43%'}}>
-						                
-						                    	<QueueComponent Queue={this.state.futureQueue} fetchVideoById={this.props.fetchVideoById}/>
-						        			
-						        			   
-						                
-					                </div>
-						            <div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
-				        				Previously Played
-				        			</div>
-				        			<div className='row' style={{height:'43%'}}>
-					        			
-		        								<QueueComponent Queue={this.state.pastQueue} fetchVideoById={this.props.fetchVideoById}/>
-		        							
-		        							
-						                
-				        			</div>
-					            
+						<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
+							Up Next
+						</div>
+						<div className='row' style={{height:'43%'}}>
+							<QueueComponent Queue={this.state.futureQueue} fetchVideoById={this.props.fetchVideoById}/>
+						</div>
+						<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
+							Previously Played
+						</div>
+						<div className='row' style={{height:'43%'}}>
+							<QueueComponent Queue={this.state.pastQueue} fetchVideoById={this.props.fetchVideoById}/>
+						</div>
 	        		</div>
         		</div>
-        		
         	</div>
     	}
     	else if (this.state.loading && !this.state.error){
-    		renderContainer = <Spinner/>
+    		component = <Spinner/>
     	}
-    	else{
-    		renderContainer = <div style={{color:'white'}}>Error 404</div>
-    	}
+    	else {
+    		component = <div style={{color:'white'}}>Error 404</div>
+		}
+		
         return(
-        	renderContainer
-        	);
+			<div className={this.props.visible ? "visible" : "hidden"}>
+                {component}
+            </div>
+		)
     }
 }
 

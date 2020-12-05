@@ -2,9 +2,7 @@ import React from 'react';
 import Ticker from 'react-ticker';
 import { Row, Col, Image } from 'react-bootstrap'
 import { icon_music_1 } from '../../graphics'
-import { Link } from 'react-router-dom'
-
-
+import { mainScreens } from '../../const'
 
 class SessionEntry extends React.Component{
 	constructor(props){
@@ -50,7 +48,7 @@ class SessionEntry extends React.Component{
 			entry = <h1 className='Session-Entry-Text body-text color-accented'>{this.props.name}</h1>;
 		}
 		return(
-			<Link className="session-entry-container" to={"/main/session/" + this.props.id} onMouseEnter={this.handleEntry} onMouseLeave={this.handleLeave}>
+			<div className="session-entry-container" onClick={() => this.props.switchScreen(mainScreens.SESSION, {sessionId: this.props.id})} onMouseEnter={this.handleEntry} onMouseLeave={this.handleLeave}>
 				<div className='list-group-item list-group-item-action'>
 					<Row className="session-entry-row-container">
 						<Col className="session-entry-image-container">
@@ -66,7 +64,7 @@ class SessionEntry extends React.Component{
 						</Col>
 					</Row>
 				</div>
-			</Link>
+			</div>
 		);
 	}
 }

@@ -1164,7 +1164,6 @@ module.exports = function(mainSocket, sessionSocket) {
             let filteredSessions = [];
             let filteredCollections = [];
             let filteredUsers = [];
-            console.log(sessionMatches);
             for (let s of sessionMatches){
                 if (String(s.hostId) !== String(thisUser._id)){
                     filteredSessions.push(s);

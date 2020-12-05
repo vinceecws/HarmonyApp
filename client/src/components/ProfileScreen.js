@@ -3,6 +3,7 @@ import Spinner from './Spinner';
 import { icon_profile_image, icon_like, icon_music_1, plus_button, icon_play_white_1, menu_button_white, icon_sound_mixer_1, icon_list, icon_playlist_2 } from '../graphics';
 import { Modal, Image, Card, Button, Dropdown, DropdownButton, ButtonGroup } from 'react-bootstrap'
 import DropdownItem from 'react-bootstrap/esm/DropdownItem'
+import { mainScreens } from '../const'
 
 const _ = require('lodash')
 
@@ -18,6 +19,7 @@ class ProfileScreen extends React.Component{
 			playlists_loading: true,
 			likedSongs_loading: true,
 			likedCollections_loading: true,
+			userId: null,
 			profileUser: null,
 			sessions: [],
 			playlists: [],
@@ -35,19 +37,19 @@ class ProfileScreen extends React.Component{
 			this.setState({
 				user: this.props.user
 			})
-
-			if (this.state.user && (this.state.profileUser._id === this.state.user._id)) { //Refresh if user is viewing own profile
-				this.fetchUser().then(() => {
-					this.fetchUserData()
-				})
-			}
 		}
-	}
 
-	componentDidMount = () => {
-		this.fetchUser().then(() => {
-			this.fetchUserData()
-		})
+		//If screen is active and new userId is passed
+        if (this.props.screenProps && (prevState.userId !== this.props.screenProps.userId)) {
+            this.setState({
+				userId: this.props.screenProps.userId,
+				loading: true,
+				sessions_loading: true,
+				playlists_loading: true,
+				likedSongs_loading: true,
+				likedCollections_loading: true,
+            }, this.fetchUser)
+        }
 	}
 
 	formatCount = (count) => {
@@ -63,21 +65,29 @@ class ProfileScreen extends React.Component{
 	}
 
 	handleGoToCollection = (id, e) => {
-		this.props.history.push('/main/collection/' + id)
+		this.props.switchScreen(mainScreens.COLLECTION, {
+			collectionId: id
+		})
 	}
 
 	handleGoToItem = (obj, e) => {
         if (obj.type === "session") {
-            this.props.history.push('/main/session/' + obj._id)
+			this.props.switchScreen(mainScreens.SESSION, {
+                sessionId: obj._id
+            })
         }
         else if (obj.type === "collection") {
-            this.props.history.push('/main/collection/' + obj._id)
+			this.props.switchScreen(mainScreens.COLLECTION, {
+                collectionId: obj._id
+            })
         }
 	}
 	
 	handleGoToCreator = (obj, e) => {
 		if (obj.type === "collection") {
-            this.props.history.push('/main/profile/' + obj.ownerId)
+			this.props.switchScreen(mainScreens.PROFILE, {
+                userId: obj.ownerId
+            })
         }
     }
 
@@ -91,7 +101,9 @@ class ProfileScreen extends React.Component{
             }
         }
         else if (obj.type === "session") {
-            this.props.history.push('/main/session/' + obj._id)
+			this.props.switchScreen(mainScreens.SESSION, {
+                sessionId: obj._id
+            })
         }
         else if (obj.type === "collection") {
 			var songList = _.cloneDeep(obj.songList)
@@ -118,7 +130,9 @@ class ProfileScreen extends React.Component{
             initialQueue: initialQueue
         }, (function(res, data) {
 			if (data.success) {
-                this.props.history.push('/main/session/' + data.data.sessionId)
+				this.props.switchScreen(mainScreens.SESSION, {
+					sessionId: data.data.sessionId
+				})
 			}
 		}).bind(this), true)
     }
@@ -227,22 +241,19 @@ class ProfileScreen extends React.Component{
     }
 
 	fetchUser () {
-		if (this.state.user && (this.props.match.params.userId === this.state.user._id)) {
-			return new Promise((resolve) => {
-				this.setState({
-					profileUser: _.cloneDeep(this.state.user),
-					loading: false
-				})
-				resolve()
-			})
+		if (this.state.user && (this.state.userId === this.state.user._id)) {
+			this.setState({
+				profileUser: _.cloneDeep(this.state.user),
+				loading: false
+			}, this.fetchUserData)
 		}
 		else {
-			return this.props.axiosWrapper.axiosGet('/api/profile/' + this.props.match.params.userId, (function(res, data) {
+			this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.userId, (function(res, data) {
 				if (data.success) {
 					this.setState({
 						profileUser: data.data.user,
 						loading: false
-					})
+					}, this.fetchUserData)
 				}
 			}).bind(this), true)
 		}
@@ -251,7 +262,7 @@ class ProfileScreen extends React.Component{
 	fetchUserData = () => {
 		if (this.state.profileUser) {
 			if (this.state.profileUser.sessions.length > 0) {
-				this.props.axiosWrapper.axiosGet('/api/profile/' + this.props.match.params.userId + '/sessions', (function(res, data) {
+				this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.userId + '/sessions', (function(res, data) {
 					if (data.success) {
 						this.setState({
 							sessions: data.data.sessions,
@@ -267,7 +278,7 @@ class ProfileScreen extends React.Component{
 			}
 
 			if (this.state.profileUser.playlists.length > 0) {
-				this.props.axiosWrapper.axiosGet('/api/profile/' + this.props.match.params.userId + '/playlists', (function(res, data) {
+				this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.userId + '/playlists', (function(res, data) {
 					if (data.success) {
 						this.setState({
 							playlists: data.data.playlists,
@@ -299,7 +310,7 @@ class ProfileScreen extends React.Component{
 			}
 
 			if (this.state.profileUser.likedCollections.length > 0) {
-				this.props.axiosWrapper.axiosGet('/api/profile/' + this.props.match.params.userId + '/likedCollections', (function(res, data) {
+				this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.userId + '/likedCollections', (function(res, data) {
 					if (data.success) {
 						this.setState({
 							likedCollections: data.data.likedCollections,
@@ -317,11 +328,12 @@ class ProfileScreen extends React.Component{
 	}
 
     render(){
+		var component
 		if (this.state.loading) {
-			return <Spinner/>
+			component = <Spinner/>
 		}
 		else {
-			return(
+			component = (
 				<div style={{fontFamily: 'BalsamiqSans', padding:'1em'}}>
 					<Modal contentClassName="profile-screen-modal" show={this.state.showCreateCollectionModal}>
 							<Modal.Header onHide={this.handleHideCreateCollectionModal} closeButton>
@@ -655,6 +667,12 @@ class ProfileScreen extends React.Component{
 				</div>
 			);
 		}
+
+		return(
+			<div className={this.props.visible ? "visible" : "hidden"}>
+                {component}
+            </div>
+		)
 	}
 }
 export default ProfileScreen;
