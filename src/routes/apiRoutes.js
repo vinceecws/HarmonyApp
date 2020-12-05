@@ -685,7 +685,7 @@ module.exports = function(mainSocket, sessionSocket) {
             await mongooseQuery.deleteCollection({'_id': req.params.id});
             let newPlaylists = [];
             let newlikedCollections = [];
-            console.log(req.user.playlists)
+
             for (let p of req.user.playlists){
                 if (String(p) !== req.params.id){
                     newPlaylists.push(p);

@@ -36,6 +36,10 @@ class ProfileScreen extends React.Component{
 		if (prevState.user !== this.props.user) {
 			this.setState({
 				user: this.props.user
+			}, () => {
+				if (this.state.user._id === this.state.userId) {
+					this.fetchUser()
+				}
 			})
 		}
 

@@ -4,6 +4,7 @@ import {icon_music_1, icon_like, icon_play_2, icon_pause_3, icon_add_3,
     icon_up_arrow, icon_down_arrow, menu_button_white, delete_button_white} from '../graphics'
 import { Image, Button, Dropdown, ButtonGroup, Modal } from 'react-bootstrap';
 import {Droppable, DragDropContext, Draggable} from 'react-beautiful-dnd'
+import { mainScreens } from '../const'
 
 const _ = require('lodash');
 
@@ -302,7 +303,9 @@ class CollectionScreen extends React.Component{
         this.props.axiosWrapper.axiosGet('/api/collection/delete/' + this.state.collectionId, (function(res, data){
             if (data.success){
                 this.props.handleUpdateUser(data.data.user);
-                this.props.switchScreen(mainScreens.HOME)
+                this.props.switchScreen(mainScreens.PROFILE, {
+                    userId: data.data.user._id
+                })
             }
         }).bind(this), true)
     }
