@@ -38,7 +38,13 @@ class ProfileScreen extends React.Component{
 				user: this.props.user
 			}, () => {
 				if (this.state.user._id === this.state.userId) {
-					this.fetchUser()
+					this.setState({
+						loading: true,
+						sessions_loading: true,
+						playlists_loading: true,
+						likedSongs_loading: true,
+						likedCollections_loading: true
+					}, this.fetchUser)
 				}
 			})
 		}
@@ -51,7 +57,7 @@ class ProfileScreen extends React.Component{
 				sessions_loading: true,
 				playlists_loading: true,
 				likedSongs_loading: true,
-				likedCollections_loading: true,
+				likedCollections_loading: true
             }, this.fetchUser)
         }
 	}
