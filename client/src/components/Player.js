@@ -4,8 +4,7 @@ import RangeSlider from 'react-bootstrap-range-slider';
 import { Container, Row, Col, Image, Button } from 'react-bootstrap';
 import { icon_play_2, icon_pause_3, icon_previous, icon_next, icon_repeat_3, icon_repeat_1, icon_shuffle_arrows, icon_volume_up_1, icon_no_sound } from '../graphics';
 import { ReactComponent as FavoriteButton } from '../graphics/music_player_pack/035-like.svg'
-import { repeatStates } from '../const'
-
+import { repeatStates, mainScreens } from '../const'
 
 class Player extends React.Component {
 
@@ -81,7 +80,9 @@ class Player extends React.Component {
             initialQueue: initialQueue
         }, (function(res, data) {
 			if (data.success) {
-                this.props.history.push('/main/session/' + data.data.sessionId)
+                this.props.switchScreen(mainScreens.SESSION, {
+                    sessionId: data.data.sessionId
+                })
 			}
 		}).bind(this), true)
     }
@@ -435,8 +436,8 @@ class Player extends React.Component {
     render(){
         var title
         if (this.state.showTitleTicker) {
-            title =  <Ticker speed={6} mode="await">
-                        {({index}) => (<h1 className="body-text color-contrasted">{this.getSongName()}</h1>)}
+            title =  <Ticker speed={6}>
+                        {({index}) => (<h1 id="player-song-title-ticker" className="body-text color-contrasted">{this.getSongName()}</h1>)}
                      </Ticker>;
         }
         else {

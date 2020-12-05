@@ -47,11 +47,9 @@ class HomeScreen extends React.Component {
     }
     */
     render() {
-        let renderContainer = false
-        
-        
+        var component
         if (!this.state.loading){
-            renderContainer = 
+            component = 
                 <div id="home-screen-container">
                     {this.fetchSuggestions().map((category, cat_ind) => category.suggestions !== undefined && category.suggestions.length > 0 ?
                         <div className="home-screen-category-container" key={cat_ind}>
@@ -83,12 +81,14 @@ class HomeScreen extends React.Component {
                 </div>
         }
         else{
-            renderContainer = <Spinner/>
+            component = <Spinner/>
         }
         
         
         return(
-            renderContainer
+            <div className={this.props.visible ? "visible" : "hidden"}>
+                {component}
+            </div>
         );
     }
 }

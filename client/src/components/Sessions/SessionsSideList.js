@@ -20,7 +20,6 @@ class SessionSideList extends React.Component{
     initSocket = () => {
         if (this.props.mainSocket) {
             this.props.mainSocket.on('top-sessions', (topSessions) => {
-                console.log(topSessions)
                 if (topSessions) {
                     this.setState({
                         loading: false,
@@ -50,6 +49,7 @@ class SessionSideList extends React.Component{
                             name={session.name}
                             image={session.image}
                             streams={session.streams}
+                            switchScreen={this.props.switchScreen}
                         /> )
                     }
                 </div>

@@ -3,6 +3,7 @@ import { ListGroup, Image, Button, CardDeck, Card, InputGroup, FormControl, Drop
 import { delete_cross_white, delete_button_white, icon_play_white_1, menu_button_white, icon_music_1, icon_sound_mixer_1, icon_playlist_2, icon_profile_image } from '../graphics'
 import SuggestionsAPI from '../api/SuggestionsAPI'
 import DropdownItem from 'react-bootstrap/esm/DropdownItem';
+import { mainScreens } from '../const'
 
 const _ = require('lodash')
 
@@ -56,7 +57,9 @@ class SearchScreen extends React.Component {
 			this.props.axiosWrapper.axiosPost('/api/createCollectionWithSong/' + this.state.newCollectionName + "&" + this.state.currentSongTarget, {}, (function(res, data){
 				if (data.success) {
                     this.props.handleUpdateUser(data.data.user)
-					this.props.history.push('/main/collection/' + data.data.collectionId)
+                    this.props.switchScreen(mainScreens.COLLECTION, {
+                        collectionId: data.data.collectionId
+                    })
 				}
 			}).bind(this), true)
 		}
@@ -158,22 +161,32 @@ class SearchScreen extends React.Component {
 
     handleGoToResultItem = (obj, e) => {
         if (obj.type === "session") {
-            this.props.history.push('/main/session/' + obj._id)
+            this.props.switchScreen(mainScreens.SESSION, {
+                sessionId: obj._id
+            })
         }
         else if (obj.type === "collection") {
-            this.props.history.push('/main/collection/' + obj._id)
+            this.props.switchScreen(mainScreens.COLLECTION, {
+                collectionId: obj._id
+            })
         }
         else if (obj.type === "user") {
-            this.props.history.push('/main/profile/' + obj._id)
+            this.props.switchScreen(mainScreens.PROFILE, {
+                userId: obj._id
+            })
         }
     }
 
     handleGoToResultCreator = (obj, e) => {
         if (obj.type === "session") {
-            this.props.history.push('/main/profile/' + obj.hostId)
+            this.props.switchScreen(mainScreens.PROFILE, {
+                userId: obj.hostId
+            })
         }
         else if (obj.type === "collection") {
-            this.props.history.push('/main/profile/' + obj.ownerId)
+            this.props.switchScreen(mainScreens.PROFILE, {
+                userId: obj.ownerId
+            })
         }
     }
 
@@ -187,7 +200,9 @@ class SearchScreen extends React.Component {
             }
         }
         else if (obj.type === "session") {
-            this.props.history.push('/main/session/' + obj._id)
+            this.props.switchScreen(mainScreens.SESSION, {
+                sessionId: obj._id
+            })
         }
         else if (obj.type === "collection") {
             var songList = _.cloneDeep(obj.songList)
@@ -214,7 +229,9 @@ class SearchScreen extends React.Component {
             initialQueue: initialQueue
         }, (function(res, data) {
 			if (data.success) {
-                this.props.history.push('/main/session/' + data.data.sessionId)
+                this.props.switchScreen(mainScreens.SESSION, {
+                    sessionId: data.data.sessionId
+                })
 			}
 		}).bind(this), true)
     }
@@ -325,7 +342,8 @@ class SearchScreen extends React.Component {
     }
 
     render() {
-        return(
+        var component
+        component = (
             <div className="search-screen-container">
                 <Modal contentClassName="search-screen-modal" show={this.state.showCreateCollectionModal}>
                     <Modal.Header onHide={this.handleHideCreateCollectionModal} closeButton>
@@ -542,6 +560,12 @@ class SearchScreen extends React.Component {
                 </div>
             </div>
         )
+
+        return(
+			<div className={this.props.visible ? "visible" : "hidden"}>
+                {component}
+            </div>
+		)
     }
 }
 

@@ -4,6 +4,7 @@ import {icon_music_1, icon_like, icon_play_2, icon_pause_3, icon_add_3,
     icon_up_arrow, icon_down_arrow, menu_button_white, delete_button_white} from '../graphics'
 import { Image, Button, Dropdown, ButtonGroup, Modal } from 'react-bootstrap';
 import {Droppable, DragDropContext, Draggable} from 'react-beautiful-dnd'
+
 const _ = require('lodash');
 
 
@@ -11,6 +12,7 @@ class CollectionScreen extends React.Component{
     constructor(props){
         super(props)
         this.state = {
+            collectionId: null,
             user: this.props.user,
             collection: null,
             songList: [],
@@ -25,17 +27,19 @@ class CollectionScreen extends React.Component{
         }
     }
 
-    componentDidMount = () => {
-        this.fetchCollection();
-    }
-
     componentDidUpdate = (prevProps, prevState) => {
         if (prevState.user !== this.props.user) {
             this.setState({
                 user: this.props.user
             })
         }
-        console.log('Component user updated: ', this.props.user);
+        //If screen is active and new collectionId is passed
+        if (this.props.screenProps && (prevState.collectionId !== this.props.screenProps.collectionId)) {
+            this.setState({
+                collectionId: this.props.screenProps.collectionId,
+                loading: true
+            }, this.fetchCollection)
+        }
     }
 
     onPressLikeCollection = () =>{
@@ -52,14 +56,14 @@ class CollectionScreen extends React.Component{
                 if (numLikes > 0){numLikes--;}
                 favoritedCollections = [];
                 for (let c of this.props.user.likedCollections){
-                    if (c !== this.props.match.params.collectionId){
+                    if (c !== this.state.collectionId){
                         favoritedCollections.push(c);
                     }
                 }
             }
 
             //update collection
-            this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/'+ this.props.match.params.collectionId,
+            this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/'+ this.state.collectionId,
             {likes: numLikes}, (function(res, data){
                 if (data.success){
                     console.log('Updated collection');
@@ -68,7 +72,6 @@ class CollectionScreen extends React.Component{
                     this.props.axiosWrapper.axiosPost('/api/collection/updateUser/' + this.props.user._id,
                     {likedCollections: favoritedCollections}, (function(res, data){
                         if (data.success){
-                            console.log('Updated user: ', data.data.user);
                             this.props.handleUpdateUser(data.data.user);
                             this.fetchCollection();
                         }
@@ -104,7 +107,7 @@ class CollectionScreen extends React.Component{
 
     onEditName = () => {
         if (this.state.collectionName.trim() !== ''){
-            this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.props.match.params.collectionId, 
+            this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.state.collectionId, 
             {name: this.state.collectionName}, (function(res, data){
                 if (data.success){
                     this.hideEditNameModal();
@@ -116,7 +119,7 @@ class CollectionScreen extends React.Component{
 
     onEditDescription = () => {
         if (this.state.collectionName.trim() !== ''){
-            this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.props.match.params.collectionId, 
+            this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.state.collectionId, 
             {description: this.state.collectionDescription}, (function(res, data){
                 if (data.success){
                     this.hideEditDescriptionModal();
@@ -149,7 +152,7 @@ class CollectionScreen extends React.Component{
                 newSongList.push(s);
             }
         }
-        this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.props.match.params.collectionId, 
+        this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.state.collectionId, 
         {songList: newSongList}, (function(res, data){
             if (data.success){
                 this.fetchCollection();
@@ -185,15 +188,14 @@ class CollectionScreen extends React.Component{
         {likedSongs: favedSongs}, (function(res, data){
             if(data.success){
                 this.props.handleUpdateUser(data.data.user);
-                console.log('Updated favorited songs: ', data.data.user.likedSongs)
                 this.fetchCollection();
             }
         }).bind(this), true)
     }
 
     fetchCollection = () => {
-        if (this.props.match.params.collectionId) {
-            this.props.axiosWrapper.axiosGet('/api/collection/' + this.props.match.params.collectionId, (function(res, data) {
+        if (this.state.collectionId) {
+            this.props.axiosWrapper.axiosGet('/api/collection/' + this.state.collectionId, (function(res, data) {
                 if (data.success) {
 
                     let songs = data.data.collection.songList;
@@ -326,7 +328,7 @@ class CollectionScreen extends React.Component{
             let newSongList = this.state.collection.songList;
             newSongList.splice(result.source.index, 1);
             newSongList.splice(result.destination.index, 0, result.draggableId);
-            this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.props.match.params.collectionId, 
+            this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.state.collectionId, 
             {songList: newSongList}, (function(res, data){
                 if(data.success){
                     this.fetchCollection();
@@ -348,12 +350,12 @@ class CollectionScreen extends React.Component{
     }
 
     render(){
-        console.log('Current State: ', this.state);
+        var component
         if (this.state.loading) {
-            return <Spinner/>
+            component = <Spinner/>
         }
         else {
-            return (
+            component = (
                 <div className='container' style={{minWidth: '100%'}}>
                     <Modal show={this.state.showEditNameModal}>
 						<Modal.Header onHide={this.hideEditNameModal} closeButton>
@@ -411,8 +413,8 @@ class CollectionScreen extends React.Component{
                         </div>
 
                         {/* Queue Buttons */}
-                        {this.ownsCollection() ?
                         <div className='col'>
+                            {this.ownsCollection() ?
                             <div className='row'>
                                 <Dropdown className="search-screen-results-category-list-item-img-overlay-dropdown" as={ButtonGroup}>
                                     <Dropdown.Toggle split className="search-screen-results-category-list-item-img-overlay-dropdown-button no-caret">
@@ -437,14 +439,18 @@ class CollectionScreen extends React.Component{
                                     </Dropdown.Menu>
                                 </Dropdown> 
                             </div>
+                            : <div></div>
+                        }
+                        {this.props.user ? 
                             <div className='row'>
                                 <Button id='player-song-favorite-button' style={{position: 'relative',  paddingTop: '5%'}}>
                                     <Image className={'player-song-favorite-button-icon'} onClick={this.onPressLikeCollection} src={icon_like} 
                                             style={{minHeight: '40px', minWidth: '40px', marginTop: '20px', backgroundColor: this.state.favorited ? '#00e400' : 'transparent'}} roundedCircle/>
                                 </Button>
                             </div>
-                        </div> : <div></div>
-                        }
+                            : <div></div>
+                        }  
+                        </div> 
                     </div>
 
                     {/* Queue List */}
@@ -472,23 +478,22 @@ class CollectionScreen extends React.Component{
                                                 <div className='collection-song-title ellipsis-multi-line-overflow' style={{display: 'inline-block', width: '20%', marginRight: '2%'}}><div>{e.creator}</div></div>
                                                 <div className='collection-page-text' style={{display: 'inline-block', marginRight: '10.5%'}}>{this.getDateAdded()}</div>
                                                 <div className='collection-page-text' style={{display: 'inline-block', marginRight: '5%'}}>{this.getDurationString(e.duration, i)} </div>
-                                                { 
-                                                    this.ownsCollection() ? 
-                                                    <div>
+                                                { this.props.user ? 
                                                     <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}}>
                                                         {/* Fix during implementation */}
                                                         <Image className='player-song-favorite-button-icon' src={icon_like} 
                                                                 style={{maxHeight: '25px', maxWidth: '25px', backgroundColor: e.favorited ? '#00e400' : 'transparent'}} 
                                                                 onClick={() => this.onPressLikeSong(e)} roundedCircle/>
                                                     </Button>
-                                                    
+                                                    : <div></div>
+                                                }
+                                                { this.ownsCollection() ? 
                                                 <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}} 
                                                         onClick={() => this.onPressDeleteSong(e)}>
                                                     <img src={delete_button_white} style={{maxHeight: '25px', maxWidth: '25px'}}></img>
                                                 </Button>
-                                                </div>
                                                 : <div></div>
-                                            }
+                                                }
                                             </div>
                                         </li>)}
                                     </Draggable>)
@@ -502,6 +507,11 @@ class CollectionScreen extends React.Component{
                 </div>
             )
         }
+        return (
+            <div className={this.props.visible ? "visible" : "hidden"}>
+                {component}
+            </div>
+        )
     }
 }
 

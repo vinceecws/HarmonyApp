@@ -1,6 +1,5 @@
 import React from 'react';
 import Spinner from './Spinner';
-import {icon_profile_image, icon_calendar} from '../graphics';
 import { Link, Route } from 'react-router-dom'
 import { Form, Col, Button } from 'react-bootstrap'
 
@@ -10,25 +9,32 @@ class SettingsScreen extends React.Component{
 	constructor (props) {
         super(props);
         this.state = {
-				username: "",
-                password: "",
-                new_password:"",
-                confirm_password: "",
-                biography: "",
-                privateMode: false,
-                loading: true,
-                profileUser: null,
-                changeUsername_invalidPassword: false,
-                changeUsername_taken: false,
-                changeUsername_validated: false,
-                changePassword_validated: false,
-                changePassword_invalidPassword: false,
-                changeBiography_validated: false,
-                character_limit: 250
-
-    		}
-        this.fetchUser();
+            username: "",
+            password: "",
+            new_password:"",
+            confirm_password: "",
+            biography: "",
+            privateMode: false,
+            loading: true,
+            profileUser: null,
+            changeUsername_invalidPassword: false,
+            changeUsername_taken: false,
+            changeUsername_validated: false,
+            changePassword_validated: false,
+            changePassword_invalidPassword: false,
+            changeBiography_validated: false,
+            character_limit: 250
+    	}
     }
+
+    componentDidUpdate = (prevProps, prevState) => {
+        if (!prevProps.visible && this.props.visible) {
+            if (this.props.user) {
+                this.fetchUser()
+            }
+        }
+    }
+
     clearUsernameCredentials = () => {
         this.setState({
             username: "",
@@ -71,7 +77,6 @@ class SettingsScreen extends React.Component{
 
     }
     handleBiographyChange = (e) => {
-        //const shouldSet = this.state.biography.length < 500;
         if(!(e.target.value.length > this.state.character_limit)){
             this.setState({
                 biography: e.target.value
@@ -111,28 +116,21 @@ class SettingsScreen extends React.Component{
     }
     handleValidateUsername = (e) =>{
          if (this.state.username.trim() === ""){
-            //Handle empty username, password or confirm password here
-            console.log("Username, password must not be empty")
             return false
         }
 
-        
-
-
         if (/\s/g.test(this.state.username)) { //Contains whitespace
-            console.log("Username Contains whitespace")
             return  false
         }
 
         if (!/^[0-9a-zA-Z_]+$/.test(this.state.username)) { //Contains illegal characters
-            console.log("Username contains illegal characters")
             return false
         }
 
         if (this.state.username.trim().length < 6 || this.state.username.trim().length > 12) { //Invalid length
-            console.log("Username has invalid length")
             return false
         }
+
         return true
     }
     handleValidateNewPassword = (e) =>{
@@ -192,7 +190,6 @@ class SettingsScreen extends React.Component{
         return false
     }
     handleUsername = (e) => {
-        //409 = Username Taken 422 = Incorrect Password
         e.preventDefault()
         if (this.validateNewUsername()) {
 
@@ -202,16 +199,11 @@ class SettingsScreen extends React.Component{
                     
             }, (function(res, data) {
                 if (data.success) {
-                    console.log(data);
                     this.props.handleUpdateUser(data.data.user);
                     this.setState({
-                        
                         changeUsername_taken: false,
                         changeUsername_invalidPassword: false
                     });
-                    this.props.history.push('/main/settings')
-                
-                    console.log(data.message)
                 }
                 else {
                     if(data.statusCode === 409){
@@ -225,7 +217,6 @@ class SettingsScreen extends React.Component{
                             changeUsername_validated: true,
                             changeUsername_invalidPassword: true,
                         });
-                        console.log("set Invalid Password in handleUsername")
                     }
                     
                 }
@@ -248,16 +239,10 @@ class SettingsScreen extends React.Component{
                     
             }, (function(res, data) {
                 if (data.success) {
-                    this.props.handleUpdateUser(data.data.user);
-                    this.props.history.push('/main/settings')
-                   
+                    this.props.handleUpdateUser(data.data.user)        
                     this.setState({
                         changeBiography_validated: true
-                    });
-                }
-                else {
-                    // Handle username taken prompting here
-                    console.log("Biography was not updated")
+                    })
                 }
             }).bind(this), true)
         }
@@ -283,13 +268,10 @@ class SettingsScreen extends React.Component{
                     this.setState({
                         changePassword_invalidPassword: false
                     });
-                    this.props.history.push('/main/settings')
                     this.clearPasswordCredentials();
-                    
                 }
                 else {
                     // Handle username taken prompting here
-                    console.log("Password was not updated")
                     this.setState({
                         changePassword_validated: true,
                         changePassword_invalidPassword: true
@@ -312,23 +294,22 @@ class SettingsScreen extends React.Component{
     }
     fetchUser = () => {
         this.props.axiosWrapper.axiosGet('/api/settings', (function(res, data) {
-            console.log(data);
             if (data.success) {
-                console.log('Success!')
                 this.setState({
                     profileUser: data.data.user,
                     loading: false
                 })
-                console.log(this.state.profileUser);
             }
         }).bind(this), true)
     }
-	render(){
+
+	render() {
+        var component
         if (this.state.loading) {
-            return <Spinner/>
+            component = <Spinner/>
         }
         else {
-            return (
+            component = (
             		<div style={{fontFamily: 'BalsamiqSans', maxWidth:'100%', padding:'1em'}}>
                         <div className='body-text color-contrasted'>SETTINGS</div>
             			<div className='row'>
@@ -344,7 +325,7 @@ class SettingsScreen extends React.Component{
                         </div>
                         <div className='row' style={{position: 'relative', height:'30px'}}>
                             <div className='col'>
-                                <Link to={'/main/settings/changeUsername'}>
+                                <Link to={'/main/changeUsername'}>
                                     <button data-toggle='modal' data-target='#changeUsernameModal'>Change Username</button><br/>
                                 </Link>
                             </div>
@@ -354,7 +335,7 @@ class SettingsScreen extends React.Component{
                         </div>
                         <div className='row'>
                             <div className='col' style={{color:'white'}}>
-                                <Link to={'/main/settings/changePassword'}>
+                                <Link to={'/main/changePassword'}>
                                     <button data-toggle='modal' data-target='#changePasswordModal'>Change Password</button><br/>
                                 </Link>
                             </div>
@@ -364,7 +345,7 @@ class SettingsScreen extends React.Component{
                         </div>
                         <div className='row'>
                             <div className='col' style={{color:'white'}}>
-                                <Link to={'/main/settings/changeBiography'}>
+                                <Link to={'/main/changeBiography'}>
                                     <button data-toggle='modal' data-target='#changeBiographyModal'>Change Biography</button><br/>
                                 </Link>
                             </div>
@@ -373,7 +354,7 @@ class SettingsScreen extends React.Component{
                             <label style={{position:'relative',bottom:'0px', left:'15px'}}>Change the biography that is displayed on your profile.</label>
                         </div>
                         {/* Modal */}
-                        <Route path={'/main/settings/changeUsername'} render={() => { 
+                        <Route path={'/main/changeUsername'} render={() => { 
                             return(
                             <div id="changeUsernameModal" style={{position: 'relative', transform: 'translate(0, -60%)'}}>
                                 <div className="modal-dialog">
@@ -439,7 +420,7 @@ class SettingsScreen extends React.Component{
                             </div>
                         )}}/>
                         {/* Modal */}
-                        <Route path={'/main/settings/changeBiography'} render={() => { 
+                        <Route path={'/main/changeBiography'} render={() => { 
                             return(
                             <div id="changeBiographyModal" style={{position: 'relative', transform: 'translate(0, -50%)'}}>
                                 <div className="modal-dialog">
@@ -481,7 +462,7 @@ class SettingsScreen extends React.Component{
                             </div>
                         )}}/>
                         {/* Modal */}
-                        <Route path={'/main/settings/changePassword'} render={() => { 
+                        <Route path={'/main/changePassword'} render={() => { 
                             return(
                             <div id="changePasswordModal" style={{position: 'relative', transform: 'translate(0, -50%)'}}>
                                 <div className="modal-dialog">
@@ -568,10 +549,14 @@ class SettingsScreen extends React.Component{
                         )}}/>
 
             		</div>
-                    
-            	);
+            	)
         }
         
+        return(
+			<div className={this.props.visible ? "visible" : "hidden"}>
+                {component}
+            </div>
+		)
     }
 
 }
