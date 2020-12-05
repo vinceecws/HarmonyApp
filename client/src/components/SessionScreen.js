@@ -25,7 +25,7 @@ class SessionScreen extends React.Component {
 			futureQueue: [],
 			chatLog: [],
 			messageText: "",
-			role: null,
+			role: sessionRoles.GUEST_HOST,
 			user: this.props.user,
 		}
 	}
@@ -200,7 +200,7 @@ class SessionScreen extends React.Component {
 			}
 		}
 		else{ //User is not logged in (guest)
-			if(this.props.currentSession){ //guest is currently in a live session, check if this is different
+			if(!this.props.currentSession){ //guest is not currently in a session so the session screen just shows the queue, check if this is different
 				sessionRole = sessionRoles.GUEST_HOST;
 			}
 			else{ //guest is joining a new session
