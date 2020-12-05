@@ -303,7 +303,9 @@ class CollectionScreen extends React.Component{
         this.props.axiosWrapper.axiosGet('/api/collection/delete/' + this.state.collectionId, (function(res, data){
             if (data.success){
                 this.props.handleUpdateUser(data.data.user);
-                this.props.switchScreen(mainScreens.HOME)
+                this.props.switchScreen(mainScreens.PROFILE, {
+                    userId: data.data.user._id
+                })
             }
         }).bind(this), true)
     }
