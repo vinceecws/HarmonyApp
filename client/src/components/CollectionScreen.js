@@ -4,6 +4,7 @@ import {icon_music_1, icon_like, icon_play_2, icon_pause_3, icon_add_3,
     icon_up_arrow, icon_down_arrow, menu_button_white, delete_button_white} from '../graphics'
 import { Image, Button, Dropdown, ButtonGroup, Modal } from 'react-bootstrap';
 import {Droppable, DragDropContext, Draggable} from 'react-beautiful-dnd'
+import { mainScreens } from '../const'
 
 const _ = require('lodash');
 
@@ -299,11 +300,11 @@ class CollectionScreen extends React.Component{
 
 
     onDeleteCollection = () => {
-        this.props.axiosWrapper.axiosGet('/api/collection/delete/' + this.props.match.params.collectionId, (function(res, data){
+        this.props.axiosWrapper.axiosGet('/api/collection/delete/' + this.state.collectionId, (function(res, data){
             if (data.success){
                 console.log('Collection Deleted');
                 this.props.handleUpdateUser(data.data.user);
-                this.props.history.push('/main/home/' + this.props.user._id);
+                this.props.switchScreen(mainScreens.HOME);
             }
             else {
                 console.log(data);
@@ -316,13 +317,13 @@ class CollectionScreen extends React.Component{
         console.log(result);
         if (result.destination !== null && result.source !== null){
             //update frontend
-            /*
+            
             let newStateSongList = _.cloneDeep(this.state.songList);
             let movedSong = newStateSongList[result.source];
             newStateSongList.splice(result.source.index, 1);
             newStateSongList.splice(result.destination.index, 0, movedSong);
             this.setState({songList: newStateSongList});
-            */
+            
 
             //update backend
             let newSongList = this.state.collection.songList;
@@ -457,7 +458,7 @@ class CollectionScreen extends React.Component{
                     
                     <div className='row' style={{paddingTop: '5px', border: '2px solid black', backgroundColor: 'grey'}}>
                         <h5 className='collection-page-text' style={{marginLeft: '10px', marginRight: '30%'}}>Title</h5>
-                        <h5 className='collection-page-text' style={{marginRight: '20%'}}>Artist</h5>
+                        <h5 className='collection-page-text' style={{marginRight: '20%'}}>Creator</h5>
                         <h5 className='collection-page-text' style={{marginRight: '10%'}}>Date Added</h5>
                         <h5 className='collection-page-text' style={{marginRight: '10%'}}>Duration</h5>
                     </div>
