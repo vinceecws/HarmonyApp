@@ -37,18 +37,15 @@ class ProfileScreen extends React.Component{
 			this.setState({
 				user: this.props.user
 			}, () => {
-				if(this.state.user !== null){
-					if (this.state.user._id === this.state.userId) {
-						this.setState({
-							loading: true,
-							sessions_loading: true,
-							playlists_loading: true,
-							likedSongs_loading: true,
-							likedCollections_loading: true
-						}, this.fetchUser)
-					}
+				if (this.state.user && this.state.user._id === this.state.userId) {
+					this.setState({
+						loading: true,
+						sessions_loading: true,
+						playlists_loading: true,
+						likedSongs_loading: true,
+						likedCollections_loading: true
+					}, this.fetchUser)
 				}
-				
 			})
 		}
 
