@@ -25,7 +25,7 @@ class SessionScreen extends React.Component {
 			futureQueue: [],
 			chatLog: [],
 			messageText: "",
-			role: sessionRoles.GUEST_HOST,
+			role: sessionRoles.GUEST_PARTICIPANT,
 			user: this.props.user,
 		}
 	}
@@ -153,7 +153,7 @@ class SessionScreen extends React.Component {
 		}
 	}
 	placeholderChatMsg = () =>{
-		if(this.props.user){
+		if(!this.isGuest()){
 			return('Send your message here...');
 		}
 		else{
@@ -446,35 +446,14 @@ class SessionScreen extends React.Component {
         }
 	}
 	isHost = () => {
-        if (this.props.user) { //Logged-in
-            if (this.props.currentSession) { //In a live Session
-                if (this.props.user.live) { //Hosting
-                    return true 
-                }
-                else { //Participating
-                    return false
-                }
-            }
-            else { //Private session or no session
-                return true
-            }
-        }
-        else { //Guest
-            if (this.props.currentSession) { //In a live Session, participating
-                return false
-            }
-            else {
-                return true //Offline session or no session
-            }
-        }
+        return (this.state.role === sessionRoles.GUEST_NON_PARTICIPANT || this.state.role === sessionRoles.USER_PRIVATE_HOST || this.state.role === sessionRoles.USER_PUBLIC_HOST);
     }
     isGuest = () =>{
-    	console.log("Guest checked");
-    	return !this.props.user;
+    	return (this.state.role === sessionRoles.GUEST_PARTICIPANT || this.state.role === sessionRoles.GUEST_NON_PARTICIPANT);
     }
     render(){
 		var component
-    	if(!this.state.loading && !this.state.error && this.isHost){
+    	if(!this.state.loading && !this.state.error && this.isHost()){
     		component = 
     			<div style={{fontFamily: 'BalsamiqSans', marginLeft:'15px', height:'100%'}}>
         		<div className='row' style={{height:'100%'}}>
@@ -501,7 +480,7 @@ class SessionScreen extends React.Component {
 	        				<ChatFeed actionLog={this.state.chatLog} user={this.props.user}  />
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
-	        				<input disabled={!this.props.user} type='text' name='MessageSender' placeholder={this.placeholderChatMsg()} onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
+	        				<input disabled={this.isGuest()} type='text' name='MessageSender' placeholder={this.placeholderChatMsg()} onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
 	        				<div style={{width:'5%', display:'block', textAlign:'center', marginTop:'5px'}}>{this.state.messageText.length}/250</div>
 	        			</div>
 	        		</div>
@@ -533,7 +512,7 @@ class SessionScreen extends React.Component {
         		</div>
         	</div>
     	}
-    	else if(!this.state.loading && !this.state.error && !this.isHost){
+    	else if(!this.state.loading && !this.state.error && !this.isHost()){
     		component = 
     			<div style={{fontFamily: 'BalsamiqSans', marginLeft:'15px', height:'100%'}}>
         		<div className='row' style={{height:'100%'}}>
@@ -560,7 +539,7 @@ class SessionScreen extends React.Component {
 	        				<ChatFeed  actionLog={this.state.chatLog} user={this.props.user}  />
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
-	        				<input type='text' disabled={!this.props.user} name='MessageSender' placeholder={this.placeholderChatMsg()} onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'100%', display:'block'}}/>
+	        				<input type='text' disabled={this.isGuest()} name='MessageSender' placeholder={this.placeholderChatMsg()} onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'100%', display:'block'}}/>
 	        				<div  style={{width:'5%', display:'block', textAlign:'center', marginTop:'5px'}}>{this.state.messageText.length}/250</div>
 	        			</div>
 	        		</div>

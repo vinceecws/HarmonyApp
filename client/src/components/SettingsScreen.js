@@ -14,7 +14,6 @@ class SettingsScreen extends React.Component{
             new_password:"",
             confirm_password: "",
             biography: "",
-            privateMode: false,
             loading: true,
             profileUser: null,
             changeUsername_invalidPassword: false,
@@ -66,6 +65,23 @@ class SettingsScreen extends React.Component{
         
         this.props.history.goBack()
         this.clearPasswordCredentials()
+    }
+    handlePrivateToggle = () =>{
+        this.props.axiosWrapper.axiosPost('/api/settings/changePrivateMode', {
+                privateMode: !this.state.profileUser.privateMode
+                
+        }, (function(res, data) {
+            if (data.success) {
+                this.props.handleUpdateUser(data.data.user);  
+                this.setState({
+                    profileUser: data.data.user
+                })
+            }
+        }).bind(this), true);
+        
+    }
+    sendPrivateToggle = () =>{
+        
     }
     handleUsernameChange = (e) => {
         if(!(e.target.value.length > this.state.character_limit)){
@@ -290,7 +306,7 @@ class SettingsScreen extends React.Component{
         
     }
     getPrivateMode = () =>{
-    	return this.state.user.privateMode;
+    	return this.state.privateMode;
     }
     fetchUser = () => {
         this.props.axiosWrapper.axiosGet('/api/settings', (function(res, data) {
@@ -314,7 +330,7 @@ class SettingsScreen extends React.Component{
                         <div className='body-text color-contrasted'>SETTINGS</div>
             			<div className='row'>
                             <div style={{position: 'relative', left:'15px', height:'30px'}}>
-                                    <input type="checkbox" id="customSwitch1" className='checkbox'/>
+                                    <input type="checkbox" defaultChecked={this.state.profileUser.privateMode}  id="customSwitch1" className='checkbox' onClick={this.handlePrivateToggle} value={this.state.profileUser.privateMode}/>
                                     <label for='customSwitch1' className='switch'></label>
                                     <label style={{position:'relative',bottom:'12px', left:'15px', color:'white'}}>Private Mode</label>
                             </div>

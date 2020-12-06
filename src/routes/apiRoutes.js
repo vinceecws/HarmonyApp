@@ -862,6 +862,60 @@ module.exports = function(mainSocket, sessionSocket) {
         }
         
     });
+    apiRouter.post('/settings/changePrivateMode', async (req, res) => {
+        if(req.user == null){
+            return res.status(404).json({
+                error: {
+                    name: "Invalid session",
+                    message: "Not found"
+                },
+                message: "Not found",
+                statusCode: 404,
+                data: {
+                    collection: null
+                },
+                success: false
+            })
+        }
+        let id = req.user._id
+        if(id == null){
+            return res.status(404).json({
+                error: {
+                    name: "Invalid session",
+                    message: "Not found"
+                },
+                message: "Not found",
+                statusCode: 404,
+                data: {
+                    collection: null
+                },
+                success: false
+            })
+        }
+        else{
+            let user = await mongooseQuery.changePrivateMode({'_id': id}, req.body);
+            if (!user) {
+                return res.status(200).json({
+                    message: "private mode could not be updated",
+                    statusCode: 422,
+                    data: {
+                        user: null
+                    },
+                    success: false
+                })
+            }
+            return res.status(200).json({
+                message: "Private mode changed",
+                data: {
+                    user: stripUser(user)
+                },
+                statusCode: 200,
+                success:true
+            })
+
+        }
+        
+    });
     apiRouter.post('/settings/changePassword', async (req, res) => {
         if(req.user == null){
             return res.status(404).json({

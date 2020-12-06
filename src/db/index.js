@@ -167,6 +167,20 @@ exports.changeBiography = async function(userObject, updateFieldsObject){
     return user;
     
 }
+exports.changePrivateMode = async function(userObject, updateFieldsObject){
+    console.log('update private mode for user');
+    
+    /*let user = await connection.then(async () => {
+        return await User.findOneAndUpdate(userObject, {$set:{'local.username':updateFieldsObject.username}}, {new: true});
+    }).catch(error => {return error});*/
+    
+    let user = await connection.then(async () => {
+        return await User.findOneAndUpdate(userObject, {$set:{'privateMode':updateFieldsObject.privateMode}}, {new: true});
+    }).catch(error => {return error});
+    
+    return user;
+    
+}
 exports.changePassword = async function(userObject, updateFieldsObject){
     console.log('update password for user');
     /*let user = await connection.then(async () => {
