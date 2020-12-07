@@ -6,32 +6,6 @@ module.exports = function(mainSocket, sessionSocket) {
 
     apiRouter = express.Router()
 
-    apiRouter.get('/topSessions', async (req, res) => {
-        let sessions = await mongooseQuery.getSessions()
-            .catch(err => {
-                return res.status(401).json({
-                    error: {
-                        name: "Invalid session",
-                        message: "Invalid query"
-                    },
-                    message: "Invalid query",
-                    statusCode: 401,
-                    data: {
-                        sessions: null
-                    },
-                    success: false
-                })
-            });
-        return res.status(200).json({
-            message: "Fetch success",
-            statusCode: 200,
-            data: {
-                sessions: {sessions}
-            },
-            success: true
-        })
-    })
-
     apiRouter.post('/addSongToFavorites/:songId', async (req, res) => {
         let songId = req.params.songId
 
@@ -1016,10 +990,6 @@ module.exports = function(mainSocket, sessionSocket) {
         else {
             var user = stripUser(req.user)
             var session = await mongooseQuery.createSession(user._id, user.username, req.body.name, Date.now(), req.body.initialQueue).catch(err => res.sendStatus(404))
-            var sessions = await mongooseQuery.getSessions().catch(err => {
-                mainSocket.emit('error')
-            })
-            /* Add support for emitting session creation to all listening sockets */
 
             return res.status(200).json({
                 message: "Session created",
@@ -1146,7 +1116,7 @@ module.exports = function(mainSocket, sessionSocket) {
                     res.sendStatus(404)
                 })
 
-                let sessions = await mongooseQuery.getSessions().catch(err => {
+                let sessions = await mongooseQuery.getLiveSessions().catch(err => {
                     mainSocket.emit('error')
                 })
                 mainSocket.emit('top-sessions', sessions)

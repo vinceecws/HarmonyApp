@@ -22,6 +22,10 @@ const sessionSchema = new mongoose.Schema({
     },
     likes: {
         type: Number
+    },
+    live: {
+        type: Boolean,
+        default: false
     }
 })
 
