@@ -265,9 +265,11 @@ exports.getSession = async function(sessionObject, lean=false) {
     return session;
 }
 
-exports.getSessions = async function(){
+exports.getLiveSessions = async () => {
     let sessions = await connection.then(async () => {
-        return await Session.find({});
+        return await Session.find({
+            live: true
+        })
     }).catch(error => {return error});
     return sessions;
 }

@@ -65,7 +65,7 @@ class SessionServer {
     readySession = (clientSocket) => {
         if (clientSocket.request.user) {
             mongooseQuery.updateSession([...clientSocket.rooms][1], {live: true}).then(async () => {
-                var sessions = await mongooseQuery.getSessions()
+                var sessions = await mongooseQuery.getLiveSessions()
                 this.mainSocket.emit('top-sessions', sessions)
             })
         }
@@ -82,7 +82,7 @@ class SessionServer {
                     likes: 1
                 }
             }).then(async () => {
-                var sessions = await mongooseQuery.getSessions()
+                var sessions = await mongooseQuery.getLiveSessions()
                 this.mainSocket.emit('top-sessions', sessions)
             })
             let getData = {subaction: 'get_session_state'}

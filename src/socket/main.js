@@ -12,7 +12,7 @@ module.exports = function (io, ...middlewares) {
         console.log('Connected to Main namespace')
 
         socket.on('get-top-sessions', async () => {
-            let sessions = await mongooseQuery.getSessions().catch(err => {
+            let sessions = await mongooseQuery.getLiveSessions().catch(err => {
                 socket.emit('error')
             })
             socket.emit('top-sessions', sessions)
