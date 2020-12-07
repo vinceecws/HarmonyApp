@@ -94,7 +94,7 @@ class MainApp extends React.Component {
     }
 
     shouldStartSession = () => {
-        return this.props.user && !this.props.user.privateMode && !this.props.user.live
+        return this.props.user && !this.props.user.live
     }
 
     render() {

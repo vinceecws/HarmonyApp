@@ -74,7 +74,7 @@ class Player extends React.Component {
         })
     }
 
-    handleCreateSession = (initialQueue) => {
+    handleCreateSession = () => {
         this.props.axiosWrapper.axiosPost('/api/session/newSession', {
             name: `${this.props.user.username}'s Live Session`
         }, (function(res, data) {
@@ -253,7 +253,10 @@ class Player extends React.Component {
                 if (this.props.shouldStartSession()) {
                     futureQueue = this.props.queue.getFutureQueue()
                     futureQueue.unshift(currentSong)
-                    this.handleCreateSession()
+
+                    if (this.props.shouldStartSession()) {
+                        this.handleCreateSession()
+                    }
                 }
                 else {
                     this.props.playerAPI.initIFrameAPI(currentSong._id)
@@ -272,7 +275,10 @@ class Player extends React.Component {
                     if (this.props.shouldStartSession()) {
                         futureQueue = this.props.queue.getFutureQueue()
                         futureQueue.unshift(currentSong)
-                        this.handleCreateSession()
+
+                        if (this.props.shouldStartSession()) {
+                            this.handleCreateSession()
+                        }
                     }
                     else {
                         this.props.playerAPI.loadVideoById(currentSong._id)
@@ -284,7 +290,10 @@ class Player extends React.Component {
                 if (this.props.shouldStartSession()) {
                     futureQueue = this.props.queue.getFutureQueue()
                     futureQueue.unshift(currentSong)
-                    this.handleCreateSession()
+                    
+                    if (this.props.shouldStartSession()) {
+                        this.handleCreateSession()
+                    }
                 }
                 else {
                     this.props.playerAPI.playVideo()
