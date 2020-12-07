@@ -98,12 +98,20 @@ class Queue {
         return _.cloneDeep(this._futureQueue)
     }
 
+    getOriginalFutureQueue = () => {
+        return _.cloneDeep(this._originalFutureQueue)
+    }
+
     getPastQueueLength = () => {
         return this._pastQueue.length
     }
 
     getFutureQueueLength = () => {
         return this._futureQueue.length
+    }
+
+    getOriginalFutureQueueLength = () => {
+        return this._originalFutureQueue.length
     }
 
     getRepeat = () => {
@@ -126,6 +134,20 @@ class Queue {
     setCurrentSong = (song) => {
         this._currentSong = song
         this.onChange.currentSongChange.forEach(handler => handler.call(this.getCurrentSong()))
+    }
+
+    setPastQueue = (pastQueue) => {
+        this._pastQueue = pastQueue
+        this.onChange.pastQueueChange.forEach(handler => handler.call(this.getPastQueue()))
+    }
+
+    setFutureQueue = (futureQueue) => {
+        this._futureQueue = futureQueue
+        this.onChange.futureQueueChange.forEach(handler => handler.call(this.getFutureQueue()))
+    }
+
+    setOriginalFutureQueue = (originalFutureQueue) => {
+        this._originalFutureQueue = originalFutureQueue
     }
 
     nextSong = () => {
