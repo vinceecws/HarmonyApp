@@ -80,6 +80,8 @@ class SessionScreen extends React.Component {
 	}
 
 	handleApplySessionState = (action, actionObj) => {
+		console.log(action + " in handleApply")
+		console.log(actionObj + " in handleApply");
 		if (actionObj.action === 'session'){
 			switch(actionObj.data.subaction){
 				case 'end_session':
@@ -116,7 +118,7 @@ class SessionScreen extends React.Component {
 			}
 			this.props.playerAPI.seekTo(time);
 			this.setState({
-				prevQueue: queueState.past_queue,
+				pastQueue: queueState.past_queue,
 				futureQueue: queueState.future_queue,
 				loading: false
 			});
@@ -189,7 +191,7 @@ class SessionScreen extends React.Component {
 		var session = data.data.session;
 		console.log(data);
 		if(!this.isGuest()){
-				this.props.handleUpdateUser(data.data.user);
+			this.props.handleUpdateUser(data.data.user);
 		}
 		console.log(data.data.user);
 		if (this.state.user) { //User is logged in

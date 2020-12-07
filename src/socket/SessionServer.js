@@ -72,6 +72,7 @@ class SessionServer {
         else {
             clientSocket.emit("session-error", "Client is not authenticated")
         }
+        console.log("session ready in server")
     }
 
     joinSession = (clientSocket, sessionId) => {
@@ -88,6 +89,7 @@ class SessionServer {
             let getData = {subaction: 'get_session_state'}
             let getSessionStateObj = {action: 'session', data: getData }
             this.socket.to([...clientSocket.rooms][1]).emit("session", getSessionStateObj);
+            console.log("User has joined session in server")
         }
         else {
             clientSocket.emit("session-error", "Client is already in a Session")
@@ -147,6 +149,7 @@ class SessionServer {
         if (clientSocket.request.user) {
             var newSessionObj = this.createActionObj("session", sessionObj.username, sessionObj.userId, sessionObj.data)
             this.socket.to([...clientSocket.rooms][1]).emit("session", newSessionObj)
+            console.log("EMIT SESSION IN SERVER: "+sessionObj)
         }
         else {
             clientSocket.emit("session-error", "Client is not authenticated or client is not the Session host")

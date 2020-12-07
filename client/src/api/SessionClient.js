@@ -90,6 +90,7 @@ class SessionClient {
     */
     parseAction = (action, ...args) => {
         console.log(action);
+        console.log(args);
         switch (action) {
             case "chat":
                 this.receiveChat(args[0])
@@ -121,6 +122,7 @@ class SessionClient {
     }
 
     receiveSession = (sessionObj) => {
+        console.log(sessionObj);
         this.onActions.rcvdSession.forEach(handler => handler.call(sessionObj))
     }
 
@@ -128,6 +130,7 @@ class SessionClient {
         Action emitters
     */
     readySession = (callback) => {
+        console.log("READY SESSION")
         this.socket.emit("ready", (response) => {
             if (response.status === 200) {
                 console.log("Session ready")
