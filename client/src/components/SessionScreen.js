@@ -69,11 +69,13 @@ class SessionScreen extends React.Component {
     }
 
 	handleApplyChatLog = (action, actionObj) =>{
+		console.log('apply chat log');
 		if (actionObj.action === 'chat'){
-			let chatObj = {'type': 'text', 'object': {'username':actionObj.username, 
-													'message':actionObj.data.message, 
-													'timestamp':actionObj.timestamp}};
-			this.setState({chatLog: this.state.chatLog.concat(chatObj)});
+			
+			this.state.chatLog.push(actionObj)
+			this.setState({
+				chatlog: this.state.chatLog
+			})
 		}
 	}
 	fetchNewSession = () =>{
@@ -330,20 +332,11 @@ class SessionScreen extends React.Component {
 			
 			//console.log(this.props.user);
 			/*Adjust new object for new action types*/
-			if(this.state.chatLog.length > 0){
-				const obj = {'type':"message", 'object':{'username':this.props.user.username, 'message':this.state.messageText, 'timestamp':(this.state.chatLog[this.state.chatLog.length-1].object.timestamp)+1}};
-				this.setState({
-					chatLog: this.state.chatLog.concat(obj),
+			this.setState({
 					messageText: ""
-				})
-			}
-			else{
-				const obj = {'type':"message", 'object':{'username':this.props.user.username, 'message':this.state.messageText, 'timestamp':100}};
-				this.setState({
-					chatLog: this.state.chatLog.concat(obj),
-					messageText: ""
-				})
-			}
+			})	
+			
+			
 			
 		}
 
@@ -433,6 +426,7 @@ class SessionScreen extends React.Component {
 						hostName : session.hostName,
 						name: session.name,
 						startTime: session.startTime,
+						
 				});
 				if(session.live){
 					this.initSessionClient(session._id, session.hostId);
@@ -490,7 +484,7 @@ class SessionScreen extends React.Component {
 	        				</div>
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
-	        				<ChatFeed actionLog={this.state.chatLog} user={this.props.user}  />
+	        				<ChatFeed chatLog={this.state.chatLog} user={this.props.user}  />
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
 	        				<input disabled={this.isGuest()} type='text' name='MessageSender' placeholder={this.placeholderChatMsg()} onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
@@ -549,7 +543,7 @@ class SessionScreen extends React.Component {
 	        				</div>
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
-	        				<ChatFeed  actionLog={this.state.chatLog} user={this.props.user}  />
+	        				<ChatFeed  chatLog={this.state.chatLog} user={this.props.user}  />
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
 	        				<input type='text' disabled={this.isGuest()} name='MessageSender' placeholder={this.placeholderChatMsg()} onChange={this.handleTextChange} onKeyPress={this.onKeyPress} value={this.state.messageText} style={{width:'100%', display:'block'}}/>
