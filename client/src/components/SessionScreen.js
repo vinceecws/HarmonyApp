@@ -137,6 +137,7 @@ class SessionScreen extends React.Component {
 			original_future_queue: this.props.queue.getOriginalFutureQueue()
 		}
 		data.time = this.props.playerAPI.getCurrentTime();
+		data.subaction = "session_state"
 		this.props.sessionClient.emitSession(this.props.username, this.props.user._id, data)
 	}
 
