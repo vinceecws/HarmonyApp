@@ -50,8 +50,8 @@ class Player extends React.Component {
     }
 
     componentWillUnmount = () => {
-        this.playerActionListener = this.props.sessionClient.unsubscribeFromAction("player", this.playerActionListener)
-        this.queueActionListener = this.props.sessionClient.unsubscribeFromAction("queue", this.queueActionListener)
+        this.playerActionListener = this.props.sessionClient.unsubscribeFromAction("rcvdPlayer", this.playerActionListener)
+        this.queueActionListener = this.props.sessionClient.unsubscribeFromAction("rcvdQueue", this.queueActionListener)
 
         this.currentSongChangeListener = this.props.queue.unsubscribeFromEvent("currentSongChange", this.currentSongChangeListener)
         this.repeatStateChangeListener = this.props.queue.unsubscribeFromEvent("repeatStateChange", this.repeatStateChangeListener)
