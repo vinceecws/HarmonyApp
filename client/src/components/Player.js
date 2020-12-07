@@ -23,8 +23,8 @@ class Player extends React.Component {
     }
 
     componentDidMount = () => {
-        this.playerActionListener = this.props.sessionClient.subscribeToAction("player", this.handleApplyPlayerState.bind(this))
-        this.queueActionListener = this.props.sessionClient.subscribeToAction("queue", this.handleApplyPlayerState.bind(this))
+        this.playerActionListener = this.props.sessionClient.subscribeToAction("rcvdPlayer", this.handleApplyPlayerState.bind(this))
+        this.queueActionListener = this.props.sessionClient.subscribeToAction("rcvdQueue", this.handleApplyPlayerState.bind(this))
 
         this.currentSongChangeListener = this.props.queue.subscribeToEvent("currentSongChange", this.handleQueueStateChange.bind(this))
         this.repeatStateChangeListener = this.props.queue.subscribeToEvent("repeatStateChange", this.handleQueueStateChange.bind(this))

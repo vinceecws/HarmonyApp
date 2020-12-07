@@ -32,18 +32,19 @@ class SessionScreen extends React.Component {
 
 
 	componentDidMount = () => {
-		this.queueActionListener = this.props.sessionClient.subscribeToAction("queue", this.handleApplyQueueState.bind(this));
-		this.chatActionListener = this.props.sessionClient.subscribeToAction("chat", this.handleApplyChatLog.bind(this));
-		this.sessionActionListener = this.props.sessionClient.subscribeToAction("session", this.handleApplySessionState.bind(this), true);
+
+		this.queueActionListener = this.props.sessionClient.subscribeToAction("rcvdQueue", this.handleApplyQueueState.bind(this));
+		this.chatActionListener = this.props.sessionClient.subscribeToAction("rcvdChat", this.handleApplyChatLog.bind(this))
+		this.sessionActionListener = this.props.sessionClient.subscribeToAction("rcvdSession", this.handleApplySessionState.bind(this))
 
 		this.futureQueueChangeListener = this.props.queue.subscribeToEvent("futureQueueChange", this.handleQueueStateChange.bind(this));
 		this.pastQueueChangeListener = this.props.queue.subscribeToEvent("pastQueueChange", this.handleQueueStateChange.bind(this));
 	}
 
 	componentWillUnmount = () => {
-		this.chatActionListener = this.props.sessionClient.unsubscribeFromAction("chat", this.chatActionListener)
-		this.sessionActionListener = this.props.sessionClient.unsubscribeFromAction("session", this.sessionActionListener)
-		this.queueActionListener = this.props.sessionClient.unsubscribeFromAction("queue", this.queueActionListener);
+		this.chatActionListener = this.props.sessionClient.unsubscribeFromAction("rcvdChat", this.chatActionListener)
+		this.sessionActionListener = this.props.sessionClient.unsubscribeFromAction("rcvdSession", this.sessionActionListener)
+		this.queueActionListener = this.props.sessionClient.unsubscribeFromAction("rcvdQueue", this.queueActionListener);
 		
 		this.futureQueueChangeListener = this.props.queue.unsubscribeFromEvent("futureQueueChange", this.futureQueueChangeListener);
 		this.pastQueueChangeListener = this.props.queue.unsubscribeFromEvent("pastQueueChange", this.handleQueueStateChange.bind(this));
