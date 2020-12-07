@@ -62,7 +62,7 @@ class SessionScreen extends React.Component {
             this.setState({
 				_id: this.props.screenProps.sessionId,
 				loading: true,
-            }, this.props.axiosWrapper.axiosGet("/api/session/" + this.state._id, this.getSessionScenario, true)) //This still has to handle quitting the current session before joining new session
+            }, this.fetchNewSession) //This still has to handle quitting the current session before joining new session
         }
         
     }
@@ -75,7 +75,9 @@ class SessionScreen extends React.Component {
 			this.setState({chatLog: this.state.chatLog.concat(chatObj)});
 		}
 	}
-
+	fetchNewSession = () =>{
+		this.props.axiosWrapper.axiosGet("/api/session/" + this.state._id, this.getSessionScenario, true);
+	}
 
 	handleApplySessionState = (action, actionObj) => {
 		if (actionObj.action === 'session'){
