@@ -82,7 +82,7 @@ class SessionScreen extends React.Component {
 
 	handleApplySessionState = (action, actionObj) => {
 		console.log("handle Apply called")
-		console.log(actionObj + " in handleApply");
+		console.log(actionObj);
 		if (actionObj.action === 'session'){
 			switch(actionObj.data.subaction){
 				case 'end_session':
