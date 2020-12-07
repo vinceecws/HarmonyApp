@@ -6,32 +6,6 @@ module.exports = function(mainSocket, sessionSocket) {
 
     apiRouter = express.Router()
 
-    apiRouter.get('/topSessions', async (req, res) => {
-        let sessions = await mongooseQuery.getSessions()
-            .catch(err => {
-                return res.status(401).json({
-                    error: {
-                        name: "Invalid session",
-                        message: "Invalid query"
-                    },
-                    message: "Invalid query",
-                    statusCode: 401,
-                    data: {
-                        sessions: null
-                    },
-                    success: false
-                })
-            });
-        return res.status(200).json({
-            message: "Fetch success",
-            statusCode: 200,
-            data: {
-                sessions: {sessions}
-            },
-            success: true
-        })
-    })
-
     apiRouter.post('/addSongToFavorites/:songId', async (req, res) => {
         let songId = req.params.songId
 
