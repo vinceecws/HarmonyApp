@@ -228,6 +228,7 @@ class SearchScreen extends React.Component {
             name: `${this.props.user.username}'s Live Session`,
             initialQueue: initialQueue
         }, (function(res, data) {
+            console.log(data);
 			if (data.success) {
                 this.props.switchScreen(mainScreens.SESSION, {
                     sessionId: data.data.sessionId

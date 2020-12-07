@@ -58,6 +58,7 @@ class SessionScreen extends React.Component {
 		
 		//If screen is active and new sessionId is passed
         if (this.props.screenProps && (prevState._id !== this.props.screenProps.sessionId)) {
+        	console.log(this.props.screenProps)
             this.setState({
 				_id: this.props.screenProps.sessionId,
 				loading: true,
@@ -184,42 +185,27 @@ class SessionScreen extends React.Component {
 	getSessionScenario = (status,data) => { 
 		let sessionRole;
 		var session = data.data.session;
-		console.log(session);
+		console.log(data);
 		if(!this.isGuest()){
 				this.props.handleUpdateUser(data.data.user);
 		}
 		console.log(data.data.user);
 		if (this.state.user) { //User is logged in
-			if (this.state.user.currentSession) { //Currently in a live session
-				if (this.state.user.live){ //If live it means that the user is the host since they are in the session
+			if (session.hostId === this.state.user._id){ 
+				
+				if (this.state.user.privateMode){
+					sessionRole = sessionRoles.USER_PRIVATE_HOST;
+				}
+				else {
 					sessionRole = sessionRoles.USER_PUBLIC_HOST;
 				}
-				else { //It's possible to not be live but still be the host, which means we need to check if private mode is on
-					if (this.state.user.privateMode){ //private mode is on which means the user is hosting a private session
-						sessionRole = sessionRoles.USER_PRIVATE_HOST;
-					}
-					else { //this is a standard user who is joining a session
-						console.log("current session participant")
-						sessionRole = sessionRoles.USER_PARTICIPANT;
-					}
-				}
-			} 
-			else { //For when you are not currently in a session
-				if (session.hostId === this.state.user._id){ 
-					
-					if (this.state.user.privateMode){
-						sessionRole = sessionRoles.USER_PRIVATE_HOST;
-					}
-					else {
-						sessionRole = sessionRoles.USER_PUBLIC_HOST;
-					}
-				}
-				else { 
-					console.log("not current session participant")
-					sessionRole = sessionRoles.USER_PARTICIPANT;
-					
-				}
 			}
+			else { 
+				console.log("not current session participant")
+				sessionRole = sessionRoles.USER_PARTICIPANT;
+				
+			}
+			
 		}
 		else { //User is not logged in (guest)
 			if (this.props.currentSession) { //guest is currently in a live session, check if this is different
@@ -400,29 +386,29 @@ class SessionScreen extends React.Component {
 		console.log('handleGetSession', status, data)
 		if (status === 200) {
 			var session = data.data.session;
-			var initialQueue = _.cloneDeep(session.initialQueue);
+			
 			if(this.isHost() && !this.isGuest()){
 				
-				Promise.all(initialQueue.map((songId) => {
-		            	return this.props.fetchVideoById(songId, true) //Initial queue of song objects
-		        	})).then((fetchedSongs) => {
-						fetchedSongs.forEach(song => {
-							console.log(song);
-							this.props.queue.addSongToFutureQueue(song);
-						});
-		            	this.setState({
-			        		
-			        		id: session._id,
-							hostId: session.hostId,
-							hostName : session.hostName,
-							name: session.name,
-							startTime: session.startTime,
-							futureQueue: this.props.queue.getFutureQueue(),
-							pastQueue: this.props.queue.getPastQueue(),
-							
-			        	})
-			        	this.initSessionClient(session._id, session.hostId);
-			        })
+				// Promise.all(initialQueue.map((songId) => {
+		  //           	return this.props.fetchVideoById(songId, true) //Initial queue of song objects
+		  //       	})).then((fetchedSongs) => {
+				// 		fetchedSongs.forEach(song => {
+				// 			console.log(song);
+				// 			this.props.queue.addSongToFutureQueue(song);
+				// 		});
+            	this.setState({
+	        		
+	        		id: session._id,
+					hostId: session.hostId,
+					hostName : session.hostName,
+					name: session.name,
+					startTime: session.startTime,
+					futureQueue: this.props.queue.getFutureQueue(),
+					pastQueue: this.props.queue.getPastQueue(),
+					
+	        	})
+	        	this.initSessionClient(session._id, session.hostId);
+			        
 			}
 			else if(!this.isHost()){
 				this.setState({
