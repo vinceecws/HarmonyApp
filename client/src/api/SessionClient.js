@@ -76,7 +76,7 @@ class SessionClient {
         if (action in this.onActions) {
             var ind = this.onActions[action].findIndex(x => x == handler)
             if (ind > -1) {
-                var handler = this.onActions.splice(ind, 1)[0]
+                var handler = this.onActions[action].splice(ind, 1)[0]
                 return handler.destroy()
             }
             else {
