@@ -215,7 +215,7 @@ exports.deleteCollection = async function(collectionObject, lean=false){
     
 }
 
-exports.createSession = async function(hostId, hostName, name, startTime, initialQueue){
+exports.createSession = async function(hostId, hostName, name, startTime){
     let session = await new Session({
         hostId: hostId,
         hostName: hostName,
@@ -223,9 +223,7 @@ exports.createSession = async function(hostId, hostName, name, startTime, initia
         startTime: startTime,
         streams: 0,
         likes: 0,
-        live: false,
-        initialQueue: initialQueue,
-        actionLog: []
+        live: false
     }).save().catch(error => {return error});
     
     return session;

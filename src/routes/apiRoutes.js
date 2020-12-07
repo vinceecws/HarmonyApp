@@ -989,7 +989,7 @@ module.exports = function(mainSocket, sessionSocket) {
         }
         else {
             var user = stripUser(req.user)
-            var session = await mongooseQuery.createSession(user._id, user.username, req.body.name, Date.now(), req.body.initialQueue).catch(err => res.sendStatus(404))
+            var session = await mongooseQuery.createSession(user._id, user.username, req.body.name, Date.now()).catch(err => res.sendStatus(404))
 
             return res.status(200).json({
                 message: "Session created",

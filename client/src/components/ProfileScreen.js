@@ -104,7 +104,7 @@ class ProfileScreen extends React.Component{
 	handlePlayItem = (obj, e) => {
         if (obj.type === "song") {
             if (this.props.shouldStartSession()) {
-                this.handleCreateSession([obj._id])
+                this.handleCreateSession()
             }
             else {
                 this.props.playVideo(obj._id)
@@ -119,7 +119,7 @@ class ProfileScreen extends React.Component{
 			var songList = _.cloneDeep(obj.songList)
             if (songList.length > 0) {
                 if (this.props.shouldStartSession()) {
-                    this.handleCreateSession(songList)
+                    this.handleCreateSession()
                 }
                 else {
                     this.props.playVideo(songList.shift())
@@ -134,10 +134,9 @@ class ProfileScreen extends React.Component{
         }
 	}
 	
-	handleCreateSession = (initialQueue) => {
+	handleCreateSession = () => {
         this.props.axiosWrapper.axiosPost('/api/session/newSession', {
-            name: `${this.props.user.username}'s Live Session`,
-            initialQueue: initialQueue
+            name: `${this.props.user.username}'s Live Session`
         }, (function(res, data) {
 			if (data.success) {
 				this.props.switchScreen(mainScreens.SESSION, {
