@@ -990,11 +990,15 @@ module.exports = function(mainSocket, sessionSocket) {
         else {
             var user = stripUser(req.user)
             var session = await mongooseQuery.createSession(user._id, user.username, req.body.name, Date.now()).catch(err => res.sendStatus(404))
+            var updatedUser = await mongooseQuery.updateUser(user._id, {
+                hosting: true
+            }).catch(err => res.sendStatus(404))
 
             return res.status(200).json({
                 message: "Session created",
                 statusCode: 200,
                 data: {
+                    user: stripUser(updatedUser),
                     sessionId: session._id,
                 },
                 success:true
