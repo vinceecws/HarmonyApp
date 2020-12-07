@@ -137,6 +137,7 @@ class ProfileScreen extends React.Component{
             name: `${this.props.user.username}'s Live Session`
         }, (function(res, data) {
 			if (data.success) {
+				this.props.handleUpdateUser(data.data.user)
 				this.props.switchScreen(mainScreens.SESSION, {
 					sessionId: data.data.sessionId
 				})

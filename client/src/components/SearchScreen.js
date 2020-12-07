@@ -227,6 +227,7 @@ class SearchScreen extends React.Component {
         }, (function(res, data) {
             console.log(data);
 			if (data.success) {
+                this.props.handleUpdateUser(data.data.user)
                 this.props.switchScreen(mainScreens.SESSION, {
                     sessionId: data.data.sessionId
                 })

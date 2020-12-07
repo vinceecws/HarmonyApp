@@ -79,6 +79,7 @@ class Player extends React.Component {
             name: `${this.props.user.username}'s Live Session`
         }, (function(res, data) {
 			if (data.success) {
+                this.props.handleUpdateUser(data.data.user)
                 this.props.switchScreen(mainScreens.SESSION, {
                     sessionId: data.data.sessionId
                 })
@@ -290,7 +291,7 @@ class Player extends React.Component {
                 if (this.props.shouldStartSession()) {
                     futureQueue = this.props.queue.getFutureQueue()
                     futureQueue.unshift(currentSong)
-                    
+
                     if (this.props.shouldStartSession()) {
                         this.handleCreateSession()
                     }
