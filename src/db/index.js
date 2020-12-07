@@ -291,17 +291,10 @@ exports.updateSession = async function(sessionID, updateObject, lean=false){
     return session;
 }
 
-exports.deleteSession = async function(sessionObject, lean=false){
-    console.log('Delete session');
-    let session = await connection.then(async () => {
-        if (lean) {
-            return await Session.findOneAndRemove(sessionObject).lean()
-        }
-        else {
-            return await Session.findOneAndRemove(sessionObject)
-        }
+exports.deleteSession = async function(sessionObject){
+    await connection.then(async () => {
+        return await Session.findOneAndRemove(sessionObject)
     }).catch(error => {return error});
-
 }
 
 

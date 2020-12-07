@@ -1050,12 +1050,7 @@ module.exports = function(mainSocket, sessionSocket) {
                     success: true
                 })
             }
-            
-            
-            
-            
         }
-
     });
 
 
@@ -1070,7 +1065,7 @@ module.exports = function(mainSocket, sessionSocket) {
                 message: "Not found",
                 statusCode: 404,
                 data: {
-                    session: null
+                    user: null
                 },
                 success: false
             })
@@ -1084,15 +1079,12 @@ module.exports = function(mainSocket, sessionSocket) {
                 message: "Unauthorized",
                 statusCode: 401,
                 data: {
-                    session: null
+                    user: null
                 },
                 success: false
             })
         }
         else {
-            let session = await mongooseQuery.getSession(req.params.id).catch(err => {
-                res.sendStatus(404)
-            })
 
             if (session.hostId !== req.user._id) {
                 return res.status(401).json({
@@ -1103,7 +1095,7 @@ module.exports = function(mainSocket, sessionSocket) {
                     message: "Unauthorized",
                     statusCode: 401,
                     data: {
-                        session: null
+                        user: null
                     },
                     success: false
                 })
@@ -1111,14 +1103,17 @@ module.exports = function(mainSocket, sessionSocket) {
             else {
                 /* Need to emit end-session event to all participants */
 
-                await mongooseQuery.updateSession(req.params.id, {
-                    endTime: Date.now(),
-                    live: false,
-                    playerState: {},
-                    queueState: {}
+                await mongooseQuery.deleteSession({
+                    _id: id
                 }).catch(err => {
                     res.sendStatus(404)
                 })
+
+                var updatedUser = await mongooseQuery.updateUser(user._id, {
+                    hosting: false,
+                    live: false,
+                    currentSession: null
+                }).catch(err => res.sendStatus(404))
 
                 let sessions = await mongooseQuery.getLiveSessions().catch(err => {
                     mainSocket.emit('error')
