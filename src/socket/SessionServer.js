@@ -79,7 +79,7 @@ class SessionServer {
             clientSocket.join(sessionId);
             mongooseQuery.updateSession([...clientSocket.rooms][1], {
                 $inc: {
-                    likes: 1
+                    streams: 1
                 }
             }).then(async () => {
                 var sessions = await mongooseQuery.getLiveSessions()
