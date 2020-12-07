@@ -41,9 +41,9 @@ class SessionScreen extends React.Component {
 	}
 
 	componentWillUnmount = () => {
-		this.chatActionListener = this.props.sessionClient.unsubscribeFromAction("chat", this.chatActionListener)
-		this.sessionActionListener = this.props.sessionClient.unsubscribeFromAction("session", this.sessionActionListener)
-		this.queueActionListener = this.props.sessionClient.unsubscribeFromAction("queue", this.queueActionListener);
+		this.chatActionListener = this.props.sessionClient.unsubscribeFromAction("rcvdChat", this.chatActionListener)
+		this.sessionActionListener = this.props.sessionClient.unsubscribeFromAction("rcvdSession", this.sessionActionListener)
+		this.queueActionListener = this.props.sessionClient.unsubscribeFromAction("rcvdQueue", this.queueActionListener);
 		
 		this.futureQueueChangeListener = this.props.queue.unsubscribeFromEvent("futureQueueChange", this.futureQueueChangeListener);
 		this.pastQueueChangeListener = this.props.queue.unsubscribeFromEvent("pastQueueChange", this.handleQueueStateChange.bind(this));
