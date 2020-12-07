@@ -204,7 +204,10 @@ class SessionScreen extends React.Component {
 			}
 			else { 
 				console.log("not current session participant")
-				sessionRole = sessionRoles.USER_PARTICIPANT;
+				if(session.live){
+					sessionRole = sessionRoles.USER_PARTICIPANT;
+				}
+				
 				
 			}
 			
@@ -421,7 +424,10 @@ class SessionScreen extends React.Component {
 						name: session.name,
 						startTime: session.startTime,
 				});
-				this.initSessionClient(session._id, session.hostId);
+				if(session.live){
+					this.initSessionClient(session._id, session.hostId);
+				}
+				
 			}
 			
         }
