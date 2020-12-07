@@ -80,9 +80,6 @@ class SettingsScreen extends React.Component{
         }).bind(this), true);
         
     }
-    sendPrivateToggle = () =>{
-        
-    }
     handleUsernameChange = (e) => {
         if(!(e.target.value.length > this.state.character_limit)){
             this.setState({
