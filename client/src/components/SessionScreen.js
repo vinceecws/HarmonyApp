@@ -32,9 +32,9 @@ class SessionScreen extends React.Component {
 
 
 	componentDidMount = () => {
-		this.queueActionListener = this.props.sessionClient.subscribeToAction("queue", this.handleApplyQueueState.bind(this));
-		this.chatActionListener = this.props.sessionClient.subscribeToAction("chat", this.handleApplyChatLog.bind(this))
-		this.sessionActionListener = this.props.sessionClient.subscribeToAction("session", this.handleApplySessionState.bind(this))
+		this.queueActionListener = this.props.sessionClient.subscribeToAction("rcvdQueue", this.handleApplyQueueState.bind(this));
+		this.chatActionListener = this.props.sessionClient.subscribeToAction("rcvdChat", this.handleApplyChatLog.bind(this))
+		this.sessionActionListener = this.props.sessionClient.subscribeToAction("rcvdSession", this.handleApplySessionState.bind(this))
 
 		this.futureQueueChangeListener = this.props.queue.subscribeToEvent("futureQueueChange", this.handleQueueStateChange.bind(this));
 		this.pastQueueChangeListener = this.props.queue.subscribeToEvent("pastQueueChange", this.handleQueueStateChange.bind(this));
