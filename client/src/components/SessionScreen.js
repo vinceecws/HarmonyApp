@@ -25,7 +25,7 @@ class SessionScreen extends React.Component {
 			futureQueue: [],
 			chatLog: [],
 			messageText: "",
-			role: sessionRoles.GUEST_PARTICIPANT,
+			role: sessionRoles.GUEST_NON_PARTICIPANT,
 			user: this.props.user,
 		}
 	}
@@ -61,8 +61,9 @@ class SessionScreen extends React.Component {
             this.setState({
 				_id: this.props.screenProps.sessionId,
 				loading: true,
-            }, this.getSessionScenario) //This still has to handle quitting the current session before joining new session
+            }, this.props.axiosWrapper.axiosGet("/api/session/" + this.state._id, this.getSessionScenario, true)) //This still has to handle quitting the current session before joining new session
         }
+        
     }
 
 	handleApplyChatLog = (action, actionObj) =>{
@@ -180,8 +181,14 @@ class SessionScreen extends React.Component {
 		
 	}
 
-	getSessionScenario = () => { 
+	getSessionScenario = (status,data) => { 
 		let sessionRole;
+		var session = data.data.session;
+		console.log(session);
+		if(!this.isGuest()){
+				this.props.handleUpdateUser(data.data.user);
+		}
+		console.log(data.data.user);
 		if (this.state.user) { //User is logged in
 			if (this.state.user.currentSession) { //Currently in a live session
 				if (this.state.user.live){ //If live it means that the user is the host since they are in the session
@@ -192,12 +199,26 @@ class SessionScreen extends React.Component {
 						sessionRole = sessionRoles.USER_PRIVATE_HOST;
 					}
 					else { //this is a standard user who is joining a session
+						console.log("current session participant")
 						sessionRole = sessionRoles.USER_PARTICIPANT;
 					}
 				}
 			} 
-			else { //They are not in a session, which means we are fetching the session and joining
-				sessionRole = sessionRoles.USER_PARTICIPANT;
+			else { //For when you are not currently in a session
+				if (session.hostId === this.state.user._id){ 
+					
+					if (this.state.user.privateMode){
+						sessionRole = sessionRoles.USER_PRIVATE_HOST;
+					}
+					else {
+						sessionRole = sessionRoles.USER_PUBLIC_HOST;
+					}
+				}
+				else { 
+					console.log("not current session participant")
+					sessionRole = sessionRoles.USER_PARTICIPANT;
+					
+				}
 			}
 		}
 		else { //User is not logged in (guest)
@@ -208,9 +229,10 @@ class SessionScreen extends React.Component {
 				sessionRole = sessionRoles.GUEST_NON_PARTICIPANT;
 			}
 		}
+		console.log("assigned session role: "+ sessionRole);
 		this.setState({
 			role: sessionRole
-		}, this.props.axiosWrapper.axiosGet("/api/session/" + this.state._id, this.handleGetSession, true));
+		}, this.handleGetSession(status, data));
 		
 		//if (this.props.screenProps.sessionId){
 		// 	this.props.axiosWrapper.axiosGet("/api/session/" + this.props.screenProps.sessionId, this.handleGetSession, true);
@@ -378,17 +400,10 @@ class SessionScreen extends React.Component {
 		console.log('handleGetSession', status, data)
 		if (status === 200) {
 			var session = data.data.session;
-			if(this.props.user){
-				if(session.hostId === this.props.user._id){
-					if(data.data.user !== undefined){
-						this.props.handleUpdateUser(data.data.user)
-					}
-					var initialQueue = _.cloneDeep(data.data.session.initialQueue);
-					if(initialQueue.length > 0){
-						this.props.playVideo(initialQueue.shift());
-					}
-					
-					Promise.all(initialQueue.map((songId) => {
+			var initialQueue = _.cloneDeep(session.initialQueue);
+			if(this.isHost() && !this.isGuest()){
+				
+				Promise.all(initialQueue.map((songId) => {
 		            	return this.props.fetchVideoById(songId, true) //Initial queue of song objects
 		        	})).then((fetchedSongs) => {
 						fetchedSongs.forEach(song => {
@@ -408,41 +423,35 @@ class SessionScreen extends React.Component {
 			        	})
 			        	this.initSessionClient(session._id, session.hostId);
 			        })
-				}
-				else{
-					this.setState({
-			        		
-			        		id: session._id,
-							hostId: session.hostId,
-							hostName : session.hostName,
-							name: session.name,
-							startTime: session.startTime,
-					});
-					if(data.data.user !== undefined){
-						this.props.handleUpdateUser(data.data.user);
-					}
-					this.initSessionClient(session._id, session.hostId);
-				}
 			}
-			else{
+			else if(!this.isHost()){
 				this.setState({
 			        		
-			        		id: session._id,
-							hostId: session.hostId,
-							hostName : session.hostName,
-							name: session.name,
-							startTime: session.startTime,
-					});
+		        		id: session._id,
+						hostId: session.hostId,
+						hostName : session.hostName,
+						name: session.name,
+						startTime: session.startTime,
+				});
 				this.initSessionClient(session._id, session.hostId);
-					
 			}
-            
+			
         }
-        else if (status === 404) {
-        	this.setState({
-        		loading: false,
-        		error: true
-        	})
+        else {
+        	if(this.state.role === sessionRoles.GUEST_NON_PARTICIPANT){
+	        	this.setState({
+	        		loading: false,
+	        		futureQueue: this.props.queue.getFutureQueue(),
+			 		pastQueue: this.props.queue.getPastQueue()
+	        	})
+        	}
+        	else{
+        		this.setState({
+	        		loading: false,
+	        		error: true
+	        	})
+        	}
+        	
         }
 	}
 	isHost = () => {
