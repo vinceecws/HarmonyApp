@@ -192,11 +192,10 @@ class SearchScreen extends React.Component {
 
     handlePlayItem = (obj, e) => {
         if (obj.type === "song") {
+            this.props.playVideo(obj._id)
+
             if (this.props.shouldStartSession()) {
                 this.handleCreateSession()
-            }
-            else {
-                this.props.playVideo(obj._id)
             }
         }
         else if (obj.type === "session") {
@@ -207,23 +206,22 @@ class SearchScreen extends React.Component {
         else if (obj.type === "collection") {
             var songList = _.cloneDeep(obj.songList)
             if (songList.length > 0) {
-                if (this.props.shouldStartSession()) {
-                    this.handleCreateSession()
-                }
-                else {
-                    this.props.playVideo(songList.shift())
+                this.props.playVideo(songList.shift())
 
-                    Promise.all(songList.map((songId) => {
-                        return this.props.fetchVideoById(songId, true)
-                    })).then((songs) => {
-                        songs.forEach(song => this.props.queue.addSongToFutureQueue(song))
-                    })
-                }
+                Promise.all(songList.map((songId) => {
+                    return this.props.fetchVideoById(songId, true)
+                })).then((songs) => {
+                    songs.forEach(song => this.props.queue.addSongToFutureQueue(song))
+                }).then(() => {
+                    if (this.props.shouldStartSession()) {
+                        this.handleCreateSession()
+                    }
+                })
             }
         }
     }
 
-    handleCreateSession = (initialQueue) => {
+    handleCreateSession = () => {
         this.props.axiosWrapper.axiosPost('/api/session/newSession', {
             name: `${this.props.user.username}'s Live Session`
         }, (function(res, data) {
