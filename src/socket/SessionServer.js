@@ -85,9 +85,6 @@ class SessionServer {
                 var sessions = await mongooseQuery.getLiveSessions()
                 this.mainSocket.emit('top-sessions', sessions)
             })
-            let getData = {subaction: 'get_session_state'}
-            let getSessionStateObj = {action: 'session', data: getData }
-            this.socket.to([...clientSocket.rooms][1]).emit("session", getSessionStateObj);
         }
         else {
             clientSocket.emit("session-error", "Client is already in a Session")
