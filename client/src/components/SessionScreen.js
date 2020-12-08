@@ -58,8 +58,7 @@ class SessionScreen extends React.Component {
 		}
 	
 		//If screen is active and new sessionId is passed
-        if (this.props.screenProps && (prevState._id !== this.props.screenProps.sessionId)) {
-        	console.log(this.props.screenProps)
+        if (this.props.screenProps.sessionId && (prevState._id !== this.props.screenProps.sessionId)) {
             this.setState({
 				_id: this.props.screenProps.sessionId,
 				loading: true,
@@ -261,7 +260,7 @@ class SessionScreen extends React.Component {
 				this.props.sessionClient.emitSession(this.state.user.username, this.state.user._id, actionData)
 				this.props.sessionClient.endSession()
 				this.props.handleUpdateUser(data.data.user)
-				this.props.switchScreen(mainScreens.HOME, {})
+				this.props.switchScreen(mainScreens.HOME, null)
 			}
 		}, true)
 	}
@@ -271,7 +270,9 @@ class SessionScreen extends React.Component {
 			if (data.success) {
 				this.props.sessionClient.leaveSession()
 				this.props.handleUpdateUser(data.data.user)
-				this.props.switchScreen(mainScreens.HOME, {})
+				var newScreenProps = _.cloneDeep(this.props.screenProps)
+				newScreenProps.sessionId = null
+				this.props.switchScreen(mainScreens.HOME, null)
 			}
 		}, true)
 	}

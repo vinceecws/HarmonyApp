@@ -35,7 +35,7 @@ class CollectionScreen extends React.Component{
             })
         }
         //If screen is active and new collectionId is passed
-        if (this.props.screenProps && (prevState.collectionId !== this.props.screenProps.collectionId)) {
+        if (this.props.screenProps.collectionId && (prevState.collectionId !== this.props.screenProps.collectionId)) {
             this.setState({
                 collectionId: this.props.screenProps.collectionId,
                 loading: true
