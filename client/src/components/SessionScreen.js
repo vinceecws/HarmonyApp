@@ -248,27 +248,27 @@ class SessionScreen extends React.Component {
 	*/
 
 	handleEndSession = () => {
-		this.props.axiosWrapper.axiosPost('/api/endSession', {}, (res, data) => {
-			if (data.data.success) {
-				var data = {
+		this.props.axiosWrapper.axiosPost('/api/session/endSession', {}, (res, data) => {
+			if (data.success) {
+				var actionData = {
 					subaction: "end_session"
 				}
-				this.props.sessionClient.emitSession(this.state.user.username, this.state.user._id, data)
+				this.props.sessionClient.emitSession(this.state.user.username, this.state.user._id, actionData)
 				this.props.sessionClient.endSession()
 				this.props.handleUpdateUser(data.data.user)
 				this.props.switchScreen(mainScreens.HOME, {})
 			}
-		})
+		}, true)
 	}
 
 	handleLeaveSession = () => {
-		this.props.axiosWrapper.axiosPost('/api/leaveSession', {}, (res, data) => {
-			if (data.data.success) {
+		this.props.axiosWrapper.axiosPost('/api/session/leaveSession', {}, (res, data) => {
+			if (data.success) {
 				this.props.sessionClient.leaveSession()
 				this.props.handleUpdateUser(data.data.user)
 				this.props.switchScreen(mainScreens.HOME, {})
 			}
-		})
+		}, true)
 	}
 
 	handleChangeSessionName = (changedName) => {
