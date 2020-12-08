@@ -57,9 +57,7 @@ class SearchScreen extends React.Component {
 			this.props.axiosWrapper.axiosPost('/api/createCollectionWithSong/' + this.state.newCollectionName + "&" + this.state.currentSongTarget, {}, (function(res, data){
 				if (data.success) {
                     this.props.handleUpdateUser(data.data.user)
-                    this.props.switchScreen(mainScreens.COLLECTION, {
-                        collectionId: data.data.collectionId
-                    })
+                    this.props.switchScreen(mainScreens.COLLECTION, data.data.collectionId)
 				}
 			}).bind(this), true)
 		}
@@ -161,32 +159,22 @@ class SearchScreen extends React.Component {
 
     handleGoToResultItem = (obj, e) => {
         if (obj.type === "session") {
-            this.props.switchScreen(mainScreens.SESSION, {
-                sessionId: obj._id
-            })
+            this.props.switchScreen(mainScreens.SESSION, obj._id)
         }
         else if (obj.type === "collection") {
-            this.props.switchScreen(mainScreens.COLLECTION, {
-                collectionId: obj._id
-            })
+            this.props.switchScreen(mainScreens.COLLECTION, obj._id)
         }
         else if (obj.type === "user") {
-            this.props.switchScreen(mainScreens.PROFILE, {
-                userId: obj._id
-            })
+            this.props.switchScreen(mainScreens.PROFILE, obj._id)
         }
     }
 
     handleGoToResultCreator = (obj, e) => {
         if (obj.type === "session") {
-            this.props.switchScreen(mainScreens.PROFILE, {
-                userId: obj.hostId
-            })
+            this.props.switchScreen(mainScreens.PROFILE, obj.hostId)
         }
         else if (obj.type === "collection") {
-            this.props.switchScreen(mainScreens.PROFILE, {
-                userId: obj.ownerId
-            })
+            this.props.switchScreen(mainScreens.PROFILE, obj.ownerId)
         }
     }
 
@@ -199,9 +187,7 @@ class SearchScreen extends React.Component {
             }
         }
         else if (obj.type === "session") {
-            this.props.switchScreen(mainScreens.SESSION, {
-                sessionId: obj._id
-            })
+            this.props.switchScreen(mainScreens.SESSION, obj._id)
         }
         else if (obj.type === "collection") {
             var songList = _.cloneDeep(obj.songList)
@@ -228,9 +214,7 @@ class SearchScreen extends React.Component {
             console.log(data);
 			if (data.success) {
                 this.props.handleUpdateUser(data.data.user)
-                this.props.switchScreen(mainScreens.SESSION, {
-                    sessionId: data.data.sessionId
-                })
+                this.props.switchScreen(mainScreens.SESSION, data.data.sessionId)
 			}
 		}).bind(this), true)
     }

@@ -24,13 +24,17 @@ class MainApp extends React.Component {
         this.queue = this.props.queue
         this.state = {
             currentScreen: mainScreens.HOME,
-            screenProps: null
+            screenProps: {
+                sessionId: null,
+                userId: null,
+                collectionId: null
+            }
         }
     }
 
     /* Screen navigation */
 
-    switchScreen = (newScreen, screenProps) => {
+    switchScreen = (newScreen, id) => {
         /* 
             Screens are indexed according to the enum mainScreens
 
@@ -38,10 +42,23 @@ class MainApp extends React.Component {
             without re-rendering the existing content of the screen
         */
 
-        if (screenProps) {
+        if (arguments.length > 1 && id !== undefined) {
+            var newScreenProps = _.cloneDeep(this.state.screenProps)
+            switch (newScreen) {
+                case mainScreens.SESSION:
+                    newScreenProps.sessionId = id
+                    break
+                case mainScreens.COLLECTION:
+                    newScreenProps.collectionId = id
+                    break
+                case mainScreens.PROFILE:
+                    newScreenProps.userId = id
+                    break
+                default:
+            }
             this.setState({
                 currentScreen: newScreen,
-                screenProps: screenProps
+                screenProps: newScreenProps
             })
         }
         else {

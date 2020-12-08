@@ -93,9 +93,7 @@ class Player extends React.Component {
         }, (function(res, data) {
 			if (data.success) {
                 this.props.handleUpdateUser(data.data.user)
-                this.props.switchScreen(mainScreens.SESSION, {
-                    sessionId: data.data.sessionId
-                })
+                this.props.switchScreen(mainScreens.SESSION, data.data.sessionId)
 			}
 		}).bind(this), true)
     }

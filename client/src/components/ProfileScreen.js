@@ -50,7 +50,7 @@ class ProfileScreen extends React.Component{
 		}
 
 		//If screen is active and new userId is passed
-        if (this.props.screenProps && (prevState.userId !== this.props.screenProps.userId)) {
+        if (this.props.screenProps.userId && (prevState.userId !== this.props.screenProps.userId)) {
             this.setState({
 				userId: this.props.screenProps.userId,
 				loading: true,
@@ -75,29 +75,21 @@ class ProfileScreen extends React.Component{
 	}
 
 	handleGoToCollection = (id, e) => {
-		this.props.switchScreen(mainScreens.COLLECTION, {
-			collectionId: id
-		})
+		this.props.switchScreen(mainScreens.COLLECTION, id)
 	}
 
 	handleGoToItem = (obj, e) => {
         if (obj.type === "session") {
-			this.props.switchScreen(mainScreens.SESSION, {
-                sessionId: obj._id
-            })
+			this.props.switchScreen(mainScreens.SESSION, obj._id)
         }
         else if (obj.type === "collection") {
-			this.props.switchScreen(mainScreens.COLLECTION, {
-                collectionId: obj._id
-            })
+			this.props.switchScreen(mainScreens.COLLECTION, obj._id)
         }
 	}
 	
 	handleGoToCreator = (obj, e) => {
 		if (obj.type === "collection") {
-			this.props.switchScreen(mainScreens.PROFILE, {
-                userId: obj.ownerId
-            })
+			this.props.switchScreen(mainScreens.PROFILE, obj.ownerId)
         }
     }
 
@@ -110,9 +102,7 @@ class ProfileScreen extends React.Component{
 			}
         }
         else if (obj.type === "session") {
-			this.props.switchScreen(mainScreens.SESSION, {
-                sessionId: obj._id
-            })
+			this.props.switchScreen(mainScreens.SESSION, obj._id)
         }
         else if (obj.type === "collection") {
 			var songList = _.cloneDeep(obj.songList)
@@ -138,9 +128,7 @@ class ProfileScreen extends React.Component{
         }, (function(res, data) {
 			if (data.success) {
 				this.props.handleUpdateUser(data.data.user)
-				this.props.switchScreen(mainScreens.SESSION, {
-					sessionId: data.data.sessionId
-				})
+				this.props.switchScreen(mainScreens.SESSION, data.data.sessionId)
 			}
 		}).bind(this), true)
     }
