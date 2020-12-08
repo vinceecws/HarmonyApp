@@ -74,9 +74,12 @@ class SessionScreen extends React.Component {
 	*/
 	
 	handleQueueAction = (action, actionObj) => {
-        if (this.props.currentSession && this.isHost()) {
-            return
-        }
+		if(this.state.user){
+			if (this.state.user.currentSession && this.isHost()) {
+	            return
+	        }
+		}
+        
 
         if (actionObj.action === "queue") {
         	/* move_song, move_song_from_past, add_song, del_song*/
@@ -278,6 +281,9 @@ class SessionScreen extends React.Component {
 	}
 
 	handleTextChange = (e) => {
+		if(e.target.value.length > 250){
+            e.target.value = e.target.value.substring(0, 250)
+        }
 		if(this.state.messageText.length <= 250 && !(e.target.value.length > 250)){
 			this.setState({
 				messageText: e.target.value
