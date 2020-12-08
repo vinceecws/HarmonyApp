@@ -67,6 +67,14 @@ class SessionScreen extends React.Component {
             	this.props.axiosWrapper.axiosGet("/api/session/" + this.state._id, this.setSessionRole, true)
             }) //This still has to handle quitting the current session before joining new session
         }
+        else if(this.props.screenProps && !this.props.user){ //screen active on a non-participant guest
+        	this.setState({
+        		role: sessionRoles.GUEST_NON_PARTICIPANT,
+        		loading:false,
+        		futureQueue: this.props.queue.getFutureQueue(),
+				pastQueue: this.props.queue.getPastQueue()
+        	})
+        }
 	}
 
 	/*
