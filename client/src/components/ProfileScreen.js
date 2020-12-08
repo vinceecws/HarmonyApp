@@ -50,7 +50,7 @@ class ProfileScreen extends React.Component{
 		}
 
 		//If screen is active and new userId is passed
-        if (this.props.screenProps.userId && (prevState.userId !== this.props.screenProps.userId)) {
+        if (this.props.screenProps && this.props.screenProps.userId && (prevState.userId !== this.props.screenProps.userId)) {
             this.setState({
 				userId: this.props.screenProps.userId,
 				loading: true,
