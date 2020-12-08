@@ -15,7 +15,6 @@ class ChatFeed extends React.Component{
 }
     render(){
         var ChatEntries = this.props.chatLog; //in the future sort these out for message actions
-        console.log(ChatEntries);
         var ChatList = ChatEntries.map(item => {
             if(item.action === "chat"){
                 if(this.props.user != null){

@@ -56,8 +56,7 @@ class SessionScreen extends React.Component {
                 user: this.props.user
             })
 		}
-		console.log(this.props);
-		console.log(this.props.queue);
+	
 		//If screen is active and new sessionId is passed
         if (this.props.screenProps && (prevState._id !== this.props.screenProps.sessionId)) {
         	console.log(this.props.screenProps)
@@ -553,7 +552,7 @@ class SessionScreen extends React.Component {
 	        				<ChatFeed  chatLog={this.state.chatLog} user={this.props.user}  />
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
-	        				<input type='text' disabled={this.isGuest()} name='MessageSender' placeholder={this.placeholderChatMsg()} onChange={this.handleTextChange} onKeyPress={this.handleChatKeyPress} value={this.state.messageText} style={{width:'100%', display:'block'}}/>
+	        				<input type='text' disabled={this.isGuest()} name='MessageSender' placeholder={this.placeholderChatMsg} onChange={this.handleTextChange} onKeyPress={this.handleChatKeyPress} value={this.state.messageText} style={{width:'100%', display:'block'}}/>
 	        				<div  style={{width:'5%', display:'block', textAlign:'center', marginTop:'5px'}}>{this.state.messageText.length}/250</div>
 	        			</div>
 	        		</div>
