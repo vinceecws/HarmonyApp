@@ -63,7 +63,9 @@ class SessionScreen extends React.Component {
             this.setState({
 				_id: this.props.screenProps.sessionId,
 				loading: true,
-            }, this.fetchNewSession) //This still has to handle quitting the current session before joining new session
+            }, () => {
+            	this.props.axiosWrapper.axiosGet("/api/session/" + this.state._id, this.getSessionScenario, true)
+            }) //This still has to handle quitting the current session before joining new session
         }
         
 	}
@@ -99,6 +101,8 @@ class SessionScreen extends React.Component {
 
         }
     }
+    //resets the state to defaults
+    
 
 	handleChatAction = (action, actionObj) =>{
 		console.log('apply chat log');
@@ -404,6 +408,9 @@ class SessionScreen extends React.Component {
 	        		futureQueue: this.props.queue.getFutureQueue(),
 			 		pastQueue: this.props.queue.getPastQueue()
 	        	})
+	        	if(session.live){
+					this.initSessionClient(session._id, session.hostId);
+				}
         	}
         	else {
         		this.setState({
