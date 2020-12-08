@@ -1060,7 +1060,7 @@ module.exports = function(mainSocket, sessionSocket) {
 
             if (session.hostId === req.user._id) {
                 await mongooseQuery.deleteSession({
-                    _id: id
+                    _id: session._id
                 }).catch(err => {
                     res.sendStatus(404)
                 })
