@@ -47,7 +47,7 @@ class SessionScreen extends React.Component {
 		this.queueActionListener = this.props.sessionClient.unsubscribeFromAction("rcvdQueue", this.queueActionListener);
 		
 		this.futureQueueChangeListener = this.props.queue.unsubscribeFromEvent("futureQueueChange", this.futureQueueChangeListener);
-		this.pastQueueChangeListener = this.props.queue.unsubscribeFromEvent("pastQueueChange", this.handleQueueStateChange.bind(this));
+		this.pastQueueChangeListener = this.props.queue.unsubscribeFromEvent("pastQueueChange", this.pastQueueChangeListener);
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
@@ -63,10 +63,14 @@ class SessionScreen extends React.Component {
             this.setState({
 				_id: this.props.screenProps.sessionId,
 				loading: true,
-            }, this.fetchNewSession) //This still has to handle quitting the current session before joining new session
+            }, () => {
+            	this.props.axiosWrapper.axiosGet("/api/session/" + this.state._id, this.getSessionScenario, true)
+            }) //This still has to handle quitting the current session before joining new session
         }
         
     }
+    //resets the state to defaults
+    
 
 	handleApplyChatLog = (action, actionObj) =>{
 		console.log('apply chat log');
@@ -78,9 +82,7 @@ class SessionScreen extends React.Component {
 			})
 		}
 	}
-	fetchNewSession = () =>{
-		this.props.axiosWrapper.axiosGet("/api/session/" + this.state._id, this.getSessionScenario, true);
-	}
+	
 
 	handleApplySessionState = (action, actionObj) => {
 		console.log("handle Apply called")
@@ -163,11 +165,15 @@ class SessionScreen extends React.Component {
 	}
 
 	//for host ending session
-	onEndSession = () => {
-		if (this.isHost()){
-			
-		}
+	endSession = () => {
+		
 	}
+
+	//for user ending session
+	leaveSession = () => {
+
+	}
+
 	placeholderChatMsg = () =>{
 		if(!this.isGuest()){
 			return('Send your message here...');
@@ -193,6 +199,12 @@ class SessionScreen extends React.Component {
 				this.props.sessionClient.emitSession(this.props.user.username, this.props.user._id, data);
 			}
 		}
+		else {
+				var data =  {
+					subaction: "get_session_state"
+				}
+				this.props.sessionClient.emitSession(null, null, data);
+			}
 		
 	}
 
@@ -237,37 +249,6 @@ class SessionScreen extends React.Component {
 			role: sessionRole
 		}, this.handleGetSession(status, data));
 		
-		//if (this.props.screenProps.sessionId){
-		// 	this.props.axiosWrapper.axiosGet("/api/session/" + this.props.screenProps.sessionId, this.handleGetSession, true);
-		// }
-		
-		// if (this.props.match.params.sessionId){
-		// 	this.props.axiosWrapper.axiosGet("/api/session/" + this.props.match.params.sessionId, this.handleGetSession, true);
-		// }
-		// else {
-		// 	if(this.props.user){
-		// 		if(this.props.user.currentSession){
-		// 			this.props.axiosWrapper.axiosGet("/api/session/" + this.props.user.currentSession, this.handleGetSession, true);
-		// 		}
-		// 		else{ //Logged in
-		// 			this.setState({
-		// 				futureQueue: this.props.queue.getFutureQueue(),
-		// 				pastQueue: this.props.queue.getPastQueue(),
-		// 				loading:false
-		//         	});
-		// 		}
-		// 	}
-		// 	else{ //Not logged in
-		// 		this.setState({
-		// 			futureQueue: this.props.queue.getFutureQueue(),
-		// 			pastQueue: this.props.queue.getPastQueue(),
-		// 			loading:false
-	 //        	});
-	        	
-		// 	}
-			
-			
-		// }
 	}
 
 	handleTextChange = (e) => {
@@ -442,6 +423,9 @@ class SessionScreen extends React.Component {
 	        		futureQueue: this.props.queue.getFutureQueue(),
 			 		pastQueue: this.props.queue.getPastQueue()
 	        	})
+	        	if(session.live){
+					this.initSessionClient(session._id, session.hostId);
+				}
         	}
         	else{
         		this.setState({
