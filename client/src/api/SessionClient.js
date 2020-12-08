@@ -166,6 +166,18 @@ class SessionClient {
         })
     }
 
+    endSession = (callback) => {
+        this.socket.emit("end", (response) => {
+            if (response.status === 200) {
+                console.log("Session ended")
+            }
+            
+            if (callback) {
+                callback(response)
+            }
+        })
+    }
+
     emitChat = (username, userId, data, callback) => {
         var actionObj = this.createActionObj("chat", username, userId, data)
         this.socket.emit("chat", actionObj, (response, chatObj) => {
