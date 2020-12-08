@@ -6,11 +6,13 @@ exports.stripUser = function(user) {
         biography: user.biography,
         privateMode: user.privateMode, 
         live: user.live,
+        hosting: user.hosting,
         playlists: user.playlists, 
         sessions: user.sessions,
         history: user.history, 
         likedSongs: user.likedSongs,
-        likedCollections: user.likedCollections
+        likedCollections: user.likedCollections,
+        currentSession: user.currentSession
     }
 
     return strippedUser

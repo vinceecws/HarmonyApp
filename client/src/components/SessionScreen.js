@@ -1,5 +1,5 @@
 import React from 'react';
-import { sessionRoles } from '../const'
+import { mainScreens, sessionRoles } from '../const'
 import { icon_profile_image, icon_radio } from '../graphics';
 import ChatFeed from './Chat/ChatFeed.js';
 import QueueComponent from './Queues/QueueComponent.js';
@@ -215,18 +215,15 @@ class SessionScreen extends React.Component {
 		}
 		data.time = this.props.playerAPI.getCurrentTime();
 		data.subaction = "session_state"
-		this.props.sessionClient.emitSession(this.props.username, this.props.user._id, data)
+		this.props.sessionClient.emitSession(this.state.username, this.state.user._id, data)
 	}
 
 	handleEmitQueueState = (action, subaction, ...args) => {
-        if (!(this.props.user.currentSession && this.isHost())) {
+        if (!(this.state.user.currentSession && this.isHost())) {
             return
-        }
+		}
 
-        var username = this.props.user.username
-        var userId = this.props.user._id
         var data = {}
-        
         if (action === "queue") {
             data.subaction = subaction
             if (subaction === "move_song" || subaction === "move_song_from_past") {
@@ -242,7 +239,7 @@ class SessionScreen extends React.Component {
             else if (subaction === "del_song") {
             	data.index = args[0];
             }
-            this.sessionClient.emitQueue(username, userId, data);
+            this.props.sessionClient.emitQueue(this.state.username, this.state.user._id, data);
         }
 	}
 
@@ -251,11 +248,27 @@ class SessionScreen extends React.Component {
 	*/
 
 	handleEndSession = () => {
-
+		this.props.axiosWrapper.axiosPost('/api/endSession', {}, (res, data) => {
+			if (data.data.success) {
+				var data = {
+					subaction: "end_session"
+				}
+				this.props.sessionClient.emitSession(this.state.user.username, this.state.user._id, data)
+				this.props.sessionClient.endSession()
+				this.props.handleUpdateUser(data.data.user)
+				this.props.switchScreen(mainScreens.HOME, {})
+			}
+		})
 	}
 
 	handleLeaveSession = () => {
-
+		this.props.axiosWrapper.axiosPost('/api/leaveSession', {}, (res, data) => {
+			if (data.data.success) {
+				this.props.sessionClient.leaveSession()
+				this.props.handleUpdateUser(data.data.user)
+				this.props.switchScreen(mainScreens.HOME, {})
+			}
+		})
 	}
 
 	handleChangeSessionName = (changedName) => {
@@ -457,7 +470,7 @@ class SessionScreen extends React.Component {
 	        				<div className='col' style={{maxWidth:'15%', textAlign: 'right',height:'100%', padding:'1em', minWidth:'5%',color:'white',  float:'right'}}>
 	        					<div className='row body-text' style={{height:'30%', display:'block', textAlign:'center'}}>{this.state.live}<img src={icon_radio} style={{width:'30px'}}/></div>
 	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}>{this.state.startTime}</div>
-	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}><Button variant="primary" onClick={this.endSession}>End Session</Button></div>
+	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}><Button variant="primary" onClick={this.handleEndSession}>End Session</Button></div>
 	        				</div>
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
@@ -516,7 +529,7 @@ class SessionScreen extends React.Component {
 	        				<div className='col' style={{maxWidth:'15%', textAlign: 'right',height:'100%', padding:'1em', minWidth:'5%',color:'white',  float:'right'}}>
 	        					<div className='row body-text' style={{height:'30%', display:'block', textAlign:'center'}}>{this.state.live}<img src={icon_radio} style={{width:'30px'}}/></div>
 	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}>{this.state.startTime}</div>
-	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}><Button variant="primary" onClick={this.leaveSession}>Leave Session</Button></div>
+	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}><Button variant="primary" onClick={this.handleLeaveSession}>Leave Session</Button></div>
 	        				</div>
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>

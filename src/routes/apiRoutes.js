@@ -1054,39 +1054,33 @@ module.exports = function(mainSocket, sessionSocket) {
     });
 
 
-    apiRouter.post('/session/endSession/:id', async (req, res) => {
-        let id = req.params.id;
-        if (id == null){
-            return res.status(404).json({
-                error: {
-                    name: "Invalid session",
-                    message: "Not found"
-                },
-                message: "Not found",
-                statusCode: 404,
-                data: {
-                    user: null
-                },
-                success: false
-            })
-        }
-        else if (!req.user) {
-            return res.status(401).json({
-                error: {
-                    name: "Invalid session",
-                    message: "Unauthorized"
-                },
-                message: "Unauthorized",
-                statusCode: 401,
-                data: {
-                    user: null
-                },
-                success: false
-            })
-        }
-        else {
+    apiRouter.post('/session/endSession/', async (req, res) => {
+        if (req.user) {
+            var session = await mongooseQuery.getSession({'_id': req.user.currentSession})
 
-            if (session.hostId !== req.user._id) {
+            if (session.hostId === req.user._id) {
+                await mongooseQuery.deleteSession({
+                    _id: id
+                }).catch(err => {
+                    res.sendStatus(404)
+                })
+
+                var updatedUser = await mongooseQuery.updateUser(user._id, {
+                    hosting: false,
+                    live: false,
+                    currentSession: null
+                }).catch(err => res.sendStatus(404))
+
+                return res.status(200).json({
+                    message: "End success",
+                    statusCode: 200,
+                    data: {
+                        user: stripUser(updatedUser)
+                    },
+                    success: true
+                })
+            }
+            else {
                 return res.status(401).json({
                     error: {
                         name: "Invalid credentials",
@@ -1100,35 +1094,50 @@ module.exports = function(mainSocket, sessionSocket) {
                     success: false
                 })
             }
-            else {
-                /* Need to emit end-session event to all participants */
-
-                await mongooseQuery.deleteSession({
-                    _id: id
-                }).catch(err => {
-                    res.sendStatus(404)
-                })
-
-                var updatedUser = await mongooseQuery.updateUser(user._id, {
-                    hosting: false,
-                    live: false,
-                    currentSession: null
-                }).catch(err => res.sendStatus(404))
-
-                let sessions = await mongooseQuery.getLiveSessions().catch(err => {
-                    mainSocket.emit('error')
-                })
-                mainSocket.emit('top-sessions', sessions)
-
-                return res.status(200).json({
-                    message: "Fetch successful",
-                    statusCode: 200,
-                    success: true
-                })
-            }
         }
-
+        else {
+            return res.status(401).json({
+                error: {
+                    name: "Invalid credentials",
+                    message: "Unauthorized"
+                },
+                message: "Unauthorized",
+                statusCode: 401,
+                data: {
+                    user: null
+                },
+                success: false
+            })
+        }
     });
+
+    apiRouter.post('/session/leaveSession', async (req, res) => {
+        if (req.user && req.user.currentSession) {
+            var user = stripUser(req.user)
+            var updatedUser = await mongooseQuery.updateUser(user._id, {
+                currentSession: null
+            }).catch(err => res.sendStatus(404))
+
+            return res.status(200).json({
+                message: "Leave success",
+                statusCode: 200,
+                data: {
+                    user: stripUser(updatedUser)
+                },
+                success: true
+            })
+        }
+        else {
+            return res.status(400).json({
+                message: "Invalid request",
+                statusCode: 400,
+                data: {
+                    user: null
+                },
+                success: true
+            })
+        }
+    })
 
     apiRouter.get('/search', async (req, res) => {
         if (req.user) {

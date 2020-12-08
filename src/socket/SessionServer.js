@@ -29,6 +29,9 @@ class SessionServer {
             case "leave":
                 this.leaveSession(clientSocket, args[0])
                 break
+            case "end":
+                this.endSession(clientSocket, args[0])
+                break
             case "chat":
                 this.emitChat(clientSocket, args[0])
                 break
@@ -86,20 +89,37 @@ class SessionServer {
                 var sessions = await mongooseQuery.getLiveSessions()
                 this.mainSocket.emit('top-sessions', sessions)
             })
-
-
         }
         else {
             clientSocket.emit("session-error", "Client is already in a Session")
         }
     }
 
-    leaveSession = (clientSocket, sessionId) => {
-        if ([...clientSocket.rooms][1] && [...clientSocket.rooms][1] === sessionId) { //If in a Session
-            clientSocket.leave(sessionId)
+    leaveSession = (clientSocket) => {
+        if ([...clientSocket.rooms][1]) { //If in a Session
+            mongooseQuery.updateSession([...clientSocket.rooms][1], {
+                $inc: {
+                    streams: -1
+                }
+            }).then(async () => {
+                clientSocket.leave(sessionId)
+                var sessions = await mongooseQuery.getLiveSessions()
+                this.mainSocket.emit('top-sessions', sessions)
+            })
         }
         else {
-            clientSocket.emit("session-error", "Client is not in a Session or client is not associated with the sessionId")
+            clientSocket.emit("session-error", "Client is not in a Session")
+        }
+    }
+
+    endSession = (clientSocket) => {
+        if ([...clientSocket.rooms][1]) { //If in a Session
+            clientSocket.leave(sessionId)
+            var sessions = await mongooseQuery.getLiveSessions()
+            this.mainSocket.emit('top-sessions', sessions)
+        }
+        else {
+            clientSocket.emit("session-error", "Client is not in a Session")
         }
     }
 
