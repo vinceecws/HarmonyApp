@@ -265,6 +265,9 @@ class SessionScreen extends React.Component {
 	}
 
 	handleTextChange = (e) => {
+		if(e.target.value.length > 250){
+            e.target.value = e.target.value.substring(0, 250)
+        }
 		if(this.state.messageText.length <= 250 && !(e.target.value.length > 250)){
 			this.setState({
 				messageText: e.target.value

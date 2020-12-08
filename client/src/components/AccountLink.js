@@ -12,6 +12,7 @@ class AccountLink extends React.Component {
                 this.props.handleLogOut()
                 this.props.history.push("/login")
             }
+            
         }).bind(this), true)
     }
 
