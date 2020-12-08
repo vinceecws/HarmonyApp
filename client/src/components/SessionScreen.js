@@ -14,7 +14,7 @@ class SessionScreen extends React.Component {
 		super(props);
 
 		this.state = {
-			loading: true,
+			loading: false,
 			error: false,
 			_id: null,
 			hostId: null,
@@ -56,7 +56,8 @@ class SessionScreen extends React.Component {
                 user: this.props.user
             })
 		}
-		
+		console.log(this.props);
+		console.log(this.props.queue);
 		//If screen is active and new sessionId is passed
         if (this.props.screenProps && (prevState._id !== this.props.screenProps.sessionId)) {
         	console.log(this.props.screenProps)
@@ -67,14 +68,7 @@ class SessionScreen extends React.Component {
             	this.props.axiosWrapper.axiosGet("/api/session/" + this.state._id, this.setSessionRole, true)
             }) //This still has to handle quitting the current session before joining new session
         }
-        else if(this.props.screenProps && !this.props.user){ //screen active on a non-participant guest
-        	this.setState({
-        		role: sessionRoles.GUEST_NON_PARTICIPANT,
-        		loading:false,
-        		futureQueue: this.props.queue.getFutureQueue(),
-				pastQueue: this.props.queue.getPastQueue()
-        	})
-        }
+        
 	}
 
 	/*
@@ -230,9 +224,10 @@ class SessionScreen extends React.Component {
 	}
 
 	handleEmitQueueState = (action, subaction, ...args) => {
-        if (!(this.state.user.currentSession && this.isHost())) {
+		if (!(this.state.user.currentSession && this.isHost())) {
             return
 		}
+        
 
         var data = {}
         if (action === "queue") {
@@ -326,11 +321,22 @@ class SessionScreen extends React.Component {
 			});
 			if (e.source.droppableId ==="futureQueue") {
 				this.props.queue.moveSongInFutureQueue(e.source.index,e.destination.index);
-				this.handleEmitQueueState("queue", "move_song",e.source.index,e.destination.index);
+				if(!this.isGuest()){
+					if ((this.state.user.currentSession && this.isHost())) {
+			            this.handleEmitQueueState("queue", "move_song",e.source.index,e.destination.index);
+					}
+				}
+				
+				
 			}
 			else if (e.source.droppableId === "pastQueue") {
 				this.props.queue.moveSongFromPastQueue(e.source.index,e.destination.index);
-				this.handleEmitQueueState("queue", "move_song_from_past",e.source.index,e.destination.index);
+				if(!this.isGuest()){
+					if ((this.state.user.currentSession && this.isHost())) {
+						this.handleEmitQueueState("queue", "move_song_from_past",e.source.index,e.destination.index);
+					}
+				}
+				
 			}
 		}
 	}
@@ -481,7 +487,7 @@ class SessionScreen extends React.Component {
 	        				<div className='col' style={{maxWidth:'15%', textAlign: 'right',height:'100%', padding:'1em', minWidth:'5%',color:'white',  float:'right'}}>
 	        					<div className='row body-text' style={{height:'30%', display:'block', textAlign:'center'}}>{this.state.live}<img src={icon_radio} style={{width:'30px'}}/></div>
 	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}>{this.state.startTime}</div>
-	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}><Button variant="primary" onClick={this.handleEndSession}>End Session</Button></div>
+	        					<div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}} onClick={this.handleEndSession}>End Session</Button></div>
 	        				</div>
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
@@ -540,7 +546,7 @@ class SessionScreen extends React.Component {
 	        				<div className='col' style={{maxWidth:'15%', textAlign: 'right',height:'100%', padding:'1em', minWidth:'5%',color:'white',  float:'right'}}>
 	        					<div className='row body-text' style={{height:'30%', display:'block', textAlign:'center'}}>{this.state.live}<img src={icon_radio} style={{width:'30px'}}/></div>
 	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}>{this.state.startTime}</div>
-	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}><Button variant="primary" onClick={this.handleLeaveSession}>Leave Session</Button></div>
+	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}><Button variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}}>Leave Session</Button></div>
 	        				</div>
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
