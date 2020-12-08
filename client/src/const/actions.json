@@ -45,9 +45,9 @@
         "username": "abcd",
         "userId": "1234",
         "data": {
-        	"subaction": "end_session", /* end_session, change_name, player_time, session_state */
+        	"subaction": "end_session", /* end_session, change_name, session_state */
             "newName": "lo-fi 24/8", /* change_name */
-            "time": "01:50", /* player_time */
+            "time": "01:50", /* session_state */
             "queue_state": { /* session_state */
                 "past_queue": [
                     "dY7nv3mK2",

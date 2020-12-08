@@ -13,6 +13,7 @@ class Player extends React.Component {
         this.state = {
             user: this.props.user,
             showTitleTicker: false,
+            showCreatorTicker: false,
             paused: this.props.playerAPI.isPaused(),
             repeat: this.props.queue.getRepeat(),
             shuffle: this.props.queue.getShuffle(),
@@ -71,6 +72,18 @@ class Player extends React.Component {
     handleHideTitleTicker = () => {
         this.setState({
             showTitleTicker: false
+        })
+    }
+
+    handleShowCreatorTicker = () => {
+        this.setState({
+            showCreatorTicker: true
+        })
+    }
+
+    handleHideCreatorTicker = () => {
+        this.setState({
+            showCreatorTicker: false
         })
     }
 
@@ -444,13 +457,25 @@ class Player extends React.Component {
 
     render(){
         var title
+        var creator
         if (this.state.showTitleTicker) {
-            title =  <Ticker speed={6}>
+            title =  
+                    <Ticker speed={6}>
                         {({index}) => (<h1 id="player-song-title-ticker" className="body-text color-contrasted">{this.getSongName()}</h1>)}
-                     </Ticker>;
+                    </Ticker>
         }
         else {
             title = <h1 className="body-text color-contrasted">{this.getSongName()}</h1>
+        }
+
+        if (this.state.showCreatorTicker) {
+            creator =  
+                    <Ticker speed={6}>
+                        {({index}) => (<h1 id="player-song-title-ticker" className="body-text color-contrasted">{this.getArtist()}</h1>)}
+                    </Ticker>
+        }
+        else {
+            creator = <h1 className="body-text color-contrasted">{this.getArtist()}</h1>
         }
         return(
             <Container id="player-container" fluid>
@@ -465,7 +490,9 @@ class Player extends React.Component {
                                 <div className="fade-single-line-overflow body-text color-contrasted" onMouseEnter={this.handleShowTitleTicker} onMouseLeave={this.handleHideTitleTicker}>
                                     {title}
                                 </div>
-                                <div className="fade-single-line-overflow tiny-text color-contrasted">{this.getArtist()}</div>
+                                <div className="fade-single-line-overflow body-text color-contrasted" onMouseEnter={this.handleShowCreatorTicker} onMouseLeave={this.handleHideCreatorTicker}>
+                                    {creator}
+                                </div>
                                 {
                                     !this.props.queue.currentSongIsEmpty() && this.state.user ?
                                     <Button id="player-song-favorite-button">
