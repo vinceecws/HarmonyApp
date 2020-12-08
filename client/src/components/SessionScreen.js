@@ -64,10 +64,9 @@ class SessionScreen extends React.Component {
 				_id: this.props.screenProps.sessionId,
 				loading: true,
             }, () => {
-            	this.props.axiosWrapper.axiosGet("/api/session/" + this.state._id, this.getSessionScenario, true)
+            	this.props.axiosWrapper.axiosGet("/api/session/" + this.state._id, this.setSessionRole, true)
             }) //This still has to handle quitting the current session before joining new session
         }
-        
 	}
 
 	/*
@@ -309,25 +308,6 @@ class SessionScreen extends React.Component {
 		}
 	}
 
-	initSessionClient = (sessionId, hostId) =>{
-		this.props.queue.clearPastQueue()
-		this.props.sessionClient.joinSession(sessionId);
-		if(this.props.user) {
-			if(this.props.user._id === hostId) {
-				this.props.sessionClient.readySession()
-				this.setState({
-					loading: false
-				})
-			}
-			else {
-				var data =  {
-					subaction: "get_session_state"
-				}
-				this.props.sessionClient.emitSession(this.props.user.username, this.props.user._id, data);
-			}
-		}
-	}
-
 	/*
 		Build-up functions
 	*/
@@ -367,10 +347,10 @@ class SessionScreen extends React.Component {
 		console.log("assigned session role: "+ sessionRole);
 		this.setState({
 			role: sessionRole
-		}, this.handleGetSession(status, data));
+		}, this.initSession(status, data));
 	}
 
-	handleGetSession = (status,data) => {
+	initSession = (status, data) => {
 		if (status === 200) {
 			var session = data.data.session;
 			
@@ -419,6 +399,25 @@ class SessionScreen extends React.Component {
 	        	})
         	}
         }
+	}
+
+	initSessionClient = (sessionId, hostId) => {
+		this.props.queue.clearPastQueue()
+		this.props.sessionClient.joinSession(sessionId);
+		if(this.props.user) {
+			if(this.props.user._id === hostId) {
+				this.props.sessionClient.readySession()
+				this.setState({
+					loading: false
+				})
+			}
+			else {
+				var data =  {
+					subaction: "get_session_state"
+				}
+				this.props.sessionClient.emitSession(this.props.user.username, this.props.user._id, data);
+			}
+		}
 	}
 
 	/*
