@@ -115,8 +115,9 @@ class SessionServer {
     endSession = (clientSocket) => {
         if ([...clientSocket.rooms][1]) { //If in a Session
             clientSocket.leave(sessionId)
-            var sessions = await mongooseQuery.getLiveSessions()
-            this.mainSocket.emit('top-sessions', sessions)
+            mongooseQuery.getLiveSessions().then(sessions => {
+                this.mainSocket.emit('top-sessions', sessions)
+            })
         }
         else {
             clientSocket.emit("session-error", "Client is not in a Session")
