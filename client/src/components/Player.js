@@ -89,7 +89,7 @@ class Player extends React.Component {
 
     handleCreateSession = () => {
         this.props.axiosWrapper.axiosPost('/api/session/newSession', {
-            name: `${this.props.user.username}'s Live Session`
+            name: `${this.state.user.username}'s Live Session`
         }, (function(res, data) {
 			if (data.success) {
                 this.props.handleUpdateUser(data.data.user)
@@ -105,8 +105,8 @@ class Player extends React.Component {
             return
         }
 
-        var username = this.props.user.username
-        var userId = this.props.user._id
+        var username = this.state.user.username
+        var userId = this.state.user._id
         var data = {}
         
         if (action === "player") {
@@ -419,11 +419,11 @@ class Player extends React.Component {
     }
 
     getPlayerControlsDisabled = () => {
-        return this.props.currentSession && !this.isHost() //In a live Session and not the host
+        return !this.isHost()
     }
 
     getSeekDisabled = () => {
-        return this.props.currentSession //In a live Session
+        return !(this.isHost() && this.state.user && this.state.user.privateMode)
     }
 
     /*
@@ -432,16 +432,16 @@ class Player extends React.Component {
         False, if logged-in user is participating in a live Session, or guest user is participating in a live Session
     */
     isHost = () => {
-        if (this.props.user) { //Logged-in
-            if (this.props.currentSession) { //In a live Session
-                if (this.props.user.live) { //Hosting
+        if (this.state.user) { //Logged-in
+            if (this.state.user.currentSession) { //In a live Session
+                if (this.state.user.hosting) { //Hosting
                     return true 
                 }
                 else { //Participating
                     return false
                 }
             }
-            else { //Private session or no session
+            else { //No session
                 return true
             }
         }

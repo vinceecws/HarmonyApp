@@ -322,7 +322,7 @@ exports.getUsersFromQuery = async function(query, lean=false){
     return users;
 }
 
-exports.getSessionsFromQuery = async function(query, lean=false){
+exports.getSessionsFromQuery = async function(query, live=false, lean=false){
     let sessions = await connection.then(async () => {
         if (lean) {
             return await Session.find({'$or': [

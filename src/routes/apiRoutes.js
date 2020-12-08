@@ -1167,7 +1167,7 @@ module.exports = function(mainSocket, sessionSocket) {
     })
 
     apiRouter.get('/search/query=:search', async (req, res) => {
-        let sessionMatches = await mongooseQuery.getSessionsFromQuery(req.params.search, true)
+        let sessionMatches = await mongooseQuery.getSessionsFromQuery(req.params.search, true, true)
                                         .catch(err => res.sendStatus(404));
                                         
         let collectionMatches = await mongooseQuery.getCollectionsFromQuery(req.params.search, true)
