@@ -102,7 +102,7 @@ class SessionServer {
                     streams: -1
                 }
             }).then(async () => {
-                clientSocket.leave(sessionId)
+                clientSocket.leave([...clientSocket.rooms][1])
                 var sessions = await mongooseQuery.getLiveSessions()
                 this.mainSocket.emit('top-sessions', sessions)
             })
@@ -114,7 +114,7 @@ class SessionServer {
 
     endSession = (clientSocket) => {
         if ([...clientSocket.rooms][1]) { //If in a Session
-            clientSocket.leave(sessionId)
+            clientSocket.leave([...clientSocket.rooms][1])
             mongooseQuery.getLiveSessions().then(sessions => {
                 this.mainSocket.emit('top-sessions', sessions)
             })

@@ -991,6 +991,7 @@ module.exports = function(mainSocket, sessionSocket) {
             var user = stripUser(req.user)
             var session = await mongooseQuery.createSession(user._id, user.username, req.body.name, Date.now()).catch(err => res.sendStatus(404))
             var updatedUser = await mongooseQuery.updateUser(user._id, {
+                live: true,
                 hosting: true
             }).catch(err => res.sendStatus(404))
 
@@ -1056,16 +1057,16 @@ module.exports = function(mainSocket, sessionSocket) {
 
     apiRouter.post('/session/endSession/', async (req, res) => {
         if (req.user) {
-            var session = await mongooseQuery.getSession({'_id': req.user.currentSession})
+            var session = await mongooseQuery.getSession({'_id': req.user.currentSession}, true)
 
-            if (session.hostId === req.user._id) {
+            if (String(session.hostId) === String(req.user._id)) {
                 await mongooseQuery.deleteSession({
                     _id: session._id
                 }).catch(err => {
                     res.sendStatus(404)
                 })
 
-                var updatedUser = await mongooseQuery.updateUser(user._id, {
+                var updatedUser = await mongooseQuery.updateUser(req.user._id, {
                     hosting: false,
                     live: false,
                     currentSession: null
