@@ -141,7 +141,7 @@ class Player extends React.Component {
     }
 
     handleApplyPlayerState = (action, actionObj) => {
-        if (this.props.currentSession && this.isHost()) {
+        if (this.isHost()) {
             return
         }
 
