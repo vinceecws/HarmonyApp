@@ -56,15 +56,28 @@ class SessionScreen extends React.Component {
                 user: this.props.user
             })
 		}
-	
-		//If screen is active and new sessionId is passed
-        if (this.props.screenProps && this.props.screenProps.sessionId && (prevState._id !== this.props.screenProps.sessionId)) {
-            this.setState({
-				_id: this.props.screenProps.sessionId,
-				loading: true,
-            }, () => {
-            	this.props.axiosWrapper.axiosGet("/api/session/" + this.state._id, this.setSessionRole, true)
-            }) //This still has to handle quitting the current session before joining new session
+
+
+        if (this.props.screenProps) {
+			//If screen is active and new sessionId is passed
+			if (this.props.screenProps.sessionId && (prevState._id !== this.props.screenProps.sessionId)) {
+				this.setState({
+					_id: this.props.screenProps.sessionId,
+					loading: true,
+				}, () => {
+					this.props.axiosWrapper.axiosGet("/api/session/" + this.state._id, this.setSessionRole, true)
+				}) //This still has to handle quitting the current session before joining new session
+			}
+			//If screen is active and no sessionId is passed
+			else {
+				this.setState({
+					_id: this.props.screenProps.sessionId,
+					loading: true,
+				}, () => {
+					this.setSessionRole()
+				})
+			}
+
         }
         
 	}
@@ -74,12 +87,9 @@ class SessionScreen extends React.Component {
 	*/
 	
 	handleQueueAction = (action, actionObj) => {
-		if(this.state.user){
-			if (this.state.user.currentSession && this.isHost()) {
-	            return
-	        }
+		if (!this.shouldReceiveActions()) {
+			return
 		}
-        
 
         if (actionObj.action === "queue") {
         	/* move_song, move_song_from_past, add_song, del_song*/
@@ -123,24 +133,24 @@ class SessionScreen extends React.Component {
 		if (actionObj.action === 'session'){
 			switch(actionObj.data.subaction){
 				case 'end_session':
-					if (!this.isHost()) {
+					if (this.shouldReceiveActions()) {
 						this.handleLeaveSession()
 					}
 					break;
 				case 'change_name':
-					if (!this.isHost()) {
+					if (this.shouldReceiveActions()) {
 						this.setState({
 							name: actionObj.data.newName
 						})
 					}
 					break;
 				case 'session_state':
-					if (!this.isHost() & this.state.loading) {
+					if (this.shouldReceiveActions() & this.state.loading) {
 						this.handleReceiveSessionState(actionObj.data.queue_state, actionObj.data.player_state, actionObj.data.time)
 					}
 					break;
 				case 'get_session_state':
-					if (this.isHost()) {
+					if (this.shouldEmitActions()) {
 						this.handleEmitSessionState()
 					}
 					break;
@@ -178,23 +188,25 @@ class SessionScreen extends React.Component {
 	*/
 
 	handleReceiveSessionState = (queueState, playerState, time) => {
-		if (!this.isHost() && this.state.loading) {
+		if (this.state.loading && this.shouldReceiveActions()) {
+
+			if (queueState.current_song) {
+				if (playerState.play) {
+					this.props.playVideo(queueState.current_song._id)
+				}
+				else {
+					this.props.playVideo(queueState.current_song._id)
+					this.props.playerAPI.pauseVideo()
+				}
+				this.props.playerAPI.seekTo(time)
+			}
 
 			this.props.queue.setFutureQueue(queueState.future_queue)
 			this.props.queue.setPastQueue(queueState.past_queue)
 			this.props.queue.setOriginalFutureQueue(queueState.original_future_queue)
 
-			this.props.queue.setShuffle(playerState.shuffle);
-			this.props.queue.setRepeat(playerState.repeat);
-
-			if (playerState.play){
-				this.props.playerAPI.playVideo(queueState.current_song._id);
-			}
-			else {
-				this.props.playerAPI.playVideo(queueState.current_song._id);
-				this.props.playerAPI.pauseVideo();
-			}
-			this.props.playerAPI.seekTo(time);
+			this.props.queue.setShuffle(playerState.shuffle)
+			this.props.queue.setRepeat(playerState.repeat)
 
 			this.setState({
 				loading: false
@@ -225,7 +237,7 @@ class SessionScreen extends React.Component {
 	}
 
 	handleEmitQueueState = (action, subaction, ...args) => {
-		if (!(this.state.user.currentSession && this.isHost())) {
+		if (!this.shouldEmitActions()) {
             return
 		}
         
@@ -284,7 +296,7 @@ class SessionScreen extends React.Component {
 
 	handleChangeSessionName = (changedName) => {
 		let data = {subaction: 'change_name', newName: changedName}
-		this.props.sessionClient.emitSession(this.props.user.username, this.props.user._id, data);
+		this.props.sessionClient.emitSession(this.state.user.username, this.state.user._id, data);
 		this.setState({ name: changedName });
 	}
 
@@ -301,11 +313,10 @@ class SessionScreen extends React.Component {
 	}
 	
 	handleChatKeyPress = (e) => {
-		if (e.key === "Enter" && this.state.messageText.length <= 250 && this.props.user) {
+		if (e.key === "Enter" && this.state.messageText.length <= 250 && this.state.user) {
 			let data = {subaction: 'text', message: this.state.messageText};
-			this.props.sessionClient.emitChat(this.props.user.username, this.props.user._id, data);
+			this.props.sessionClient.emitChat(this.state.user.username, this.state.user._id, data);
 			
-			//console.log(this.props.user);
 			/*Adjust new object for new action types*/
 			this.setState({
 				messageText: ""
@@ -326,20 +337,14 @@ class SessionScreen extends React.Component {
 			});
 			if (e.source.droppableId ==="futureQueue") {
 				this.props.queue.moveSongInFutureQueue(e.source.index,e.destination.index);
-				if(!this.isGuest()){
-					if ((this.state.user.currentSession && this.isHost())) {
-			            this.handleEmitQueueState("queue", "move_song",e.source.index,e.destination.index);
-					}
+				if (this.shouldEmitActions()) {
+					this.handleEmitQueueState("queue", "move_song",e.source.index,e.destination.index);
 				}
-				
-				
 			}
 			else if (e.source.droppableId === "pastQueue") {
 				this.props.queue.moveSongFromPastQueue(e.source.index,e.destination.index);
-				if(!this.isGuest()){
-					if ((this.state.user.currentSession && this.isHost())) {
-						this.handleEmitQueueState("queue", "move_song_from_past",e.source.index,e.destination.index);
-					}
+				if(this.shouldEmitActions()){
+					this.handleEmitQueueState("queue", "move_song_from_past",e.source.index,e.destination.index);
 				}
 				
 			}
@@ -349,50 +354,47 @@ class SessionScreen extends React.Component {
 	/*
 		Build-up functions
 	*/
-	setSessionRole = (status,data) => { 
-		let sessionRole;
-		var session = data.data.session;
-		console.log(data);
-		if(!this.isGuest()){
-			this.props.handleUpdateUser(data.data.user);
-		}
-		console.log(data.data.user);
-		if (this.state.user) { //User is logged in
-			if (session.hostId === this.state.user._id){ 
-				
-				if (this.state.user.privateMode){
-					sessionRole = sessionRoles.USER_PRIVATE_HOST;
+	setSessionRole = (_, data) => { 
+		var sessionRole
+		var session
+		if (data?.data?.session) { //Live Session is loaded
+			session = data.data.session
+			if (this.state.user) { //User is logged in
+				if (session.hostId === this.state.user._id){ 
+					if (this.state.user.privateMode) {
+						sessionRole = sessionRoles.USER_PRIVATE_HOST
+					}
+					else {
+						sessionRole = sessionRoles.USER_PUBLIC_HOST
+					}
 				}
-				else {
-					sessionRole = sessionRoles.USER_PUBLIC_HOST;
-				}
-			}
-			else { 
-				console.log("not current session participant")
-				if(session.live){
-					sessionRole = sessionRoles.USER_PARTICIPANT;
+				else { 
+					sessionRole = sessionRoles.USER_PARTICIPANT
 				}
 			}
-		}
-		else { //User is not logged in (guest)
-			if (this.props.currentSession) { //guest is currently in a live session, check if this is different
-				sessionRole = sessionRoles.GUEST_PARTICIPANT;
-			}
-			else { //guest is just playing songs
-				sessionRole = sessionRoles.GUEST_NON_PARTICIPANT;
+			else {
+				sessionRole = sessionRoles.GUEST_PARTICIPANT
 			}
 		}
-		console.log("assigned session role: "+ sessionRole);
+		else { //No Session is loaded
+			if (this.state.user) {
+				sessionRole = sessionRoles.USER_NON_PARTICIPANT
+			}
+			else {
+				sessionRole = sessionRoles.GUEST_NON_PARTICIPANT
+			}
+		}
+		console.log("assigned session role: "+ sessionRole)
 		this.setState({
 			role: sessionRole
-		}, this.initSession(status, data));
+		}, () => {
+			this.initSession(session)
+		})
 	}
 
-	initSession = (status, data) => {
-		if (status === 200) {
-			var session = data.data.session;
-			
-			if(this.isHost() && !this.isGuest()) {
+	initSession = (session) => {
+		if (session) {
+			if (this.shouldEmitActions()) {
             	this.setState({
 	        		id: session._id,
 					hostId: session.hostId,
@@ -400,61 +402,55 @@ class SessionScreen extends React.Component {
 					name: session.name,
 					startTime: session.startTime,
 					futureQueue: this.props.queue.getFutureQueue(),
-					pastQueue: this.props.queue.getPastQueue(),
-					
-	        	})
-	        	this.initSessionClient(session._id, session.hostId);
+					pastQueue: this.props.queue.getPastQueue()
+	        	}, this.initSessionClient)
 			}
-			else if (!this.isHost()) {
+			else if (this.shouldReceiveActions()) {
 				this.setState({	
 					id: session._id,
 					hostId: session.hostId,
 					hostName : session.hostName,
 					name: session.name,
-					startTime: session.startTime,
-				})
-
-				if (session.live) {
-					this.initSessionClient(session._id, session.hostId);
-				}
+					startTime: session.startTime
+				}, this.initSessionClient)
 			}
         }
-        else {
-        	if (this.state.role === sessionRoles.GUEST_NON_PARTICIPANT) {
-	        	this.setState({
-	        		loading: false,
-	        		futureQueue: this.props.queue.getFutureQueue(),
-			 		pastQueue: this.props.queue.getPastQueue()
-	        	})
-	        	if(session.live){
-					this.initSessionClient(session._id, session.hostId);
-				}
-        	}
-        	else {
-        		this.setState({
-	        		loading: false,
-	        		error: true
-	        	})
-        	}
-        }
+        else if (this.shouldIgnoreActions()) {
+			this.setState({
+				loading: false,
+				futureQueue: this.props.queue.getFutureQueue(),
+				pastQueue: this.props.queue.getPastQueue()
+			})
+		}
+		else {
+			this.setState({
+				loading: false,
+				error: true
+			})
+		}
 	}
 
-	initSessionClient = (sessionId, hostId) => {
+	initSessionClient = () => {
 		this.props.queue.clearPastQueue()
-		this.props.sessionClient.joinSession(sessionId);
-		if(this.props.user) {
-			if(this.props.user._id === hostId) {
-				this.props.sessionClient.readySession()
-				this.setState({
-					loading: false
-				})
+		this.props.sessionClient.joinSession(this.state.id)
+
+		if (this.shouldEmitActions()) {
+			this.props.sessionClient.readySession()
+			this.setState({
+				loading: false
+			})
+		}
+		else if (this.shouldReceiveActions()) {
+			var data =  {
+				subaction: "get_session_state"
 			}
-			else {
-				var data =  {
-					subaction: "get_session_state"
-				}
-				this.props.sessionClient.emitSession(this.props.user.username, this.props.user._id, data);
-			}
+			this.props.sessionClient.emitSession(this.state.user.username, this.state.user._id, data);
+		}
+		else {
+			this.setState({
+				loading: false,
+				error: true
+			})
 		}
 	}
 
@@ -468,6 +464,48 @@ class SessionScreen extends React.Component {
 	
     isGuest = () =>{
     	return (this.state.role === sessionRoles.GUEST_PARTICIPANT || this.state.role === sessionRoles.GUEST_NON_PARTICIPANT) && !this.state.user;
+	}
+
+	/*
+		Users that should emit player, queue, and session actions to all participants
+	*/
+	shouldEmitActions = () => {
+        /* True if logged-in, in a Session, hosting and not in Private Mode */
+        if (this.state.role === sessionRoles.USER_PUBLIC_HOST) {
+            return true
+        }
+        return false
+    }
+
+	/*
+		Users that should receive player, queue, and session actions emitted by the host
+	*/
+    shouldReceiveActions = () => {
+        /* True if in a live Session, and not hosting */
+        if (this.state.role === sessionRoles.USER_PARTICIPANT) {
+			return true
+		}
+		else if (this.state.role === sessionRoles.GUEST_PARTICIPANT) {
+			return true
+		}
+		return false
+	}
+
+	/*
+		Users that should not have to emit/receive any actions
+	*/
+	shouldIgnoreActions = () => {
+		/* True if not in a public Session, or a Session */
+		if (this.state.role === sessionRoles.USER_PRIVATE_HOST) {
+			return true
+		}
+		else if (this.state.role === sessionRoles.USER_NON_PARTICIPANT) {
+			return true
+		}
+		else if (this.state.role === sessionRoles.GUEST_NON_PARTICIPANT) {
+			return true
+		}
+		return false
 	}
 	
     render(){
@@ -496,7 +534,7 @@ class SessionScreen extends React.Component {
 	        				</div>
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
-	        				<ChatFeed chatLog={this.state.chatLog} user={this.props.user}  />
+	        				<ChatFeed chatLog={this.state.chatLog} user={this.state.user}  />
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
 	        				<input disabled={this.isGuest() || !this.state._id} type='text' name='MessageSender' placeholder={this.isGuest() ? 'Login or sign-up to join the chat' : 'Send your message here...'} onChange={this.handleTextChange} onKeyPress={this.handleChatKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
@@ -511,7 +549,7 @@ class SessionScreen extends React.Component {
 							<div className='row' style={{height:'43%', overflow:'auto'}}>
 								<Droppable droppableId="futureQueue">
 									{(provided) => ( 
-										<QueueComponent Queue={this.state.futureQueue} 	queueType="future" isHost={this.isHost} fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.props.user}/>
+										<QueueComponent Queue={this.state.futureQueue} 	queueType="future" isHost={this.isHost} fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.state.user}/>
 										)}
 										
 								</Droppable>
@@ -522,7 +560,7 @@ class SessionScreen extends React.Component {
 							<div className='row' style={{height:'43%', overflow:'auto'}}>
 								<Droppable droppableId="pastQueue">
 									{(provided) => ( 
-										<QueueComponent Queue={this.state.pastQueue} isHost={this.isHost} queueType="past"  fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.props.user}/>
+										<QueueComponent Queue={this.state.pastQueue} isHost={this.isHost} queueType="past"  fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.state.user}/>
 									)}
 								</Droppable>
 							</div>
@@ -555,7 +593,7 @@ class SessionScreen extends React.Component {
 	        				</div>
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
-	        				<ChatFeed  chatLog={this.state.chatLog} user={this.props.user}  />
+	        				<ChatFeed  chatLog={this.state.chatLog} user={this.state.user}  />
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
 	        				<input type='text' disabled={this.isGuest() || !this.state._id} name='MessageSender' placeholder={this.isGuest() ? 'Login or sign-up to join the chat' : 'Send your message here...'} onChange={this.handleTextChange} onKeyPress={this.handleChatKeyPress} value={this.state.messageText} style={{width:'100%', display:'block'}}/>
