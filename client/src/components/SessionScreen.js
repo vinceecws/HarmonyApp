@@ -423,6 +423,13 @@ class SessionScreen extends React.Component {
 					startTime: session.startTime
 				}, this.initSessionClient)
 			}
+			else if (this.shouldIgnoreActions()) {
+				this.setState({
+					loading: false,
+					futureQueue: this.props.queue.getFutureQueue(),
+					pastQueue: this.props.queue.getPastQueue()
+				})
+			}
         }
         else if (this.shouldIgnoreActions()) {
 			this.setState({
@@ -592,7 +599,7 @@ class SessionScreen extends React.Component {
 	        				<div className='col' style={{maxWidth:'35%', height:'100%', padding:'1em'}}>
 	        					<img src={icon_profile_image} style={{backgroundColor:'white',display: 'block', margin: 'auto', height:'90%', border: '3px solid black'}}/>
 	        				</div>
-	        				<div className='col' style={{maxWidth:'50%', minWidth:'50%', padding:'1em', color:'white'}}>
+	        				<div className='col' style={{maxWidth:'50%', minWidth:'50%',height:'100%', padding:'1em', color:'white'}}>
 	        					<div className='title session-title-text'>
 	        						{this.state.name}
 	        					</div>
@@ -603,14 +610,14 @@ class SessionScreen extends React.Component {
 	        				<div className='col' style={{maxWidth:'15%', textAlign: 'right',height:'100%', padding:'1em', minWidth:'5%',color:'white',  float:'right'}}>
 	        					<div className='row body-text' style={{height:'30%', display:'block', textAlign:'center'}}>{this.state.live}<img src={icon_radio} style={{width:'30px'}}/></div>
 	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}>{this.state.startTime}</div>
-	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}><Button variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}}>Leave Session</Button></div>
+	        					<div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}}>Leave Session</Button></div>
 	        				</div>
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
 	        				<ChatFeed  chatLog={this.state.chatLog} user={this.state.user}  />
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
-	        				<input type='text' disabled={this.isGuest() || !this.state._id} name='MessageSender' placeholder={this.isGuest() ? 'Login or sign-up to join the chat' : 'Send your message here...'} onChange={this.handleTextChange} onKeyPress={this.handleChatKeyPress} value={this.state.messageText} style={{width:'100%', display:'block'}}/>
+	        				<input type='text' disabled={this.isGuest() || !this.state._id} name='MessageSender' placeholder={this.isGuest() ? 'Login or sign-up to join the chat' : 'Send your message here...'} onChange={this.handleTextChange} onKeyPress={this.handleChatKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
 	        				<div  style={{width:'5%', display:'block', textAlign:'center', marginTop:'5px'}}>{this.state.messageText.length}/250</div>
 	        			</div>
 	        		</div>

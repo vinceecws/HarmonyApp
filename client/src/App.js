@@ -69,20 +69,10 @@ class App extends React.Component {
     }
 
     handleLogOut = () => {
-        if(this.state.currentSession){
-           this.axiosWrapper.axiosPost('/api/session/endSession/'+this.state.currentSession, function(res, data){
-            this.setState({
+        this.setState({
                 auth: false,
                 user: null
             })
-           }.bind(this), true); 
-        }
-        else{
-            this.setState({
-                auth: false,
-                user: null
-            })
-        }
         
         
     }
