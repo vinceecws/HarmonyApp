@@ -241,7 +241,7 @@ class Player extends React.Component {
     }
 
     handleSetPlay = (val) => {
-        if (this.playerAPI.isPaused() !== val) {
+        if (this.props.playerAPI.isPaused() !== val) {
             this.handleTogglePlay()
         }
     }
