@@ -165,14 +165,9 @@ class SessionServer {
     }
 
     emitSession = (clientSocket, sessionObj) => {
-        if (clientSocket.request.user) {
-            var newSessionObj = this.createActionObj("session", sessionObj.username, sessionObj.userId, sessionObj.data)
-            this.socket.to([...clientSocket.rooms][1]).emit("session", newSessionObj)
-            console.log("EMIT SESSION IN SERVER: "+sessionObj)
-        }
-        else {
-            clientSocket.emit("session-error", "Client is not authenticated or client is not the Session host")
-        }
+        var newSessionObj = this.createActionObj("session", sessionObj.username, sessionObj.userId, sessionObj.data)
+        this.socket.to([...clientSocket.rooms][1]).emit("session", newSessionObj)
+        console.log("EMIT SESSION IN SERVER: "+sessionObj)
     }
 }
 
