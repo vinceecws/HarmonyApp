@@ -421,7 +421,7 @@ class Player extends React.Component {
     }
 
     getSeekDisabled = () => {
-        return this.shouldEmitActions()
+        return this.shouldReceiveActions() || this.shouldEmitActions()
     }
 
     shouldEmitActions = () => {
