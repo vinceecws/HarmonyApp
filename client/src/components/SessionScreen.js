@@ -179,21 +179,21 @@ class SessionScreen extends React.Component {
 	handleReceiveSessionState = (queueState, playerState, time) => {
 		if (!this.isHost() && this.state.loading) {
 
-			if (playerState.play){
-				this.props.playVideo(queueState.current_song._id);
-			}
-			else {
-				this.props.playVideo(queueState.current_song._id);
-				this.props.playerAPI.pauseVideo();
-			}
-			this.props.playerAPI.seekTo(time);
-
 			this.props.queue.setFutureQueue(queueState.future_queue)
 			this.props.queue.setPastQueue(queueState.past_queue)
 			this.props.queue.setOriginalFutureQueue(queueState.original_future_queue)
 
 			this.props.queue.setShuffle(playerState.shuffle);
 			this.props.queue.setRepeat(playerState.repeat);
+
+			if (playerState.play){
+				this.props.playerAPI.playVideo(queueState.current_song._id);
+			}
+			else {
+				this.props.playerAPI.playVideo(queueState.current_song._id);
+				this.props.playerAPI.pauseVideo();
+			}
+			this.props.playerAPI.seekTo(time);
 
 			this.setState({
 				loading: false
