@@ -241,7 +241,7 @@ class Player extends React.Component {
     }
 
     handleSetPlay = (val) => {
-        if (this.props.playerAPI.isPaused() !== val) {
+        if (!this.props.playerAPI.isPaused() !== val) {
             this.handleTogglePlay()
         }
     }
@@ -346,12 +346,12 @@ class Player extends React.Component {
 
     handleToggleShuffle = (e) => {
         this.props.queue.toggleShuffle()
-        this.handleEmitPlayerState("queue", "shuffle", this.props.queue.getShuffle())
+        this.handleEmitPlayerState("queue", "set_shuffle", this.props.queue.getShuffle())
     }
 
     handleToggleRepeat = (e) => {
         this.props.queue.toggleRepeat()
-        this.handleEmitPlayerState("queue", "repeat", this.props.queue.getRepeat())
+        this.handleEmitPlayerState("queue", "set_repeat", this.props.queue.getRepeat())
     }
 
     getSongProgress = () => {
