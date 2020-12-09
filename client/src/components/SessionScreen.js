@@ -618,7 +618,7 @@ class SessionScreen extends React.Component {
 	        				<div className='col' style={{maxWidth:'15%', textAlign: 'right',height:'100%', padding:'1em', minWidth:'5%',color:'white',  float:'right'}}>
 	        					<div className='row body-text' style={{height:'30%', display:'block', textAlign:'center'}}>{this.state.live}<img src={icon_radio} style={{width:'30px'}}/></div>
 	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}>{this.state.startTime}</div>
-	        					<div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}}>Leave Session</Button></div>
+	        					<div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}} onClick={this.handleLeaveSession}>Leave Session</Button></div>
 	        				</div>
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
