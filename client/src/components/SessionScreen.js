@@ -184,7 +184,7 @@ class SessionScreen extends React.Component {
 	*/
 
 	handleReceiveSessionState = (queueState, playerState, time) => {
-		if (this.shouldReceiveActions() && this.state.loading) {
+		if (this.state.loading && this.shouldReceiveActions()) {
 
 			if (queueState.current_song) {
 				if (playerState.play) {
