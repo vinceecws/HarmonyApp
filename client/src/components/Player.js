@@ -109,12 +109,12 @@ class Player extends React.Component {
         
         if (action === "player") {
             data.subaction = subaction
-            this.sessionClient.emitPlayer(username, userId, data)
+            this.props.sessionClient.emitPlayer(username, userId, data)
         }
         else if (action === "queue") {
             data.subaction = subaction
             data.state = args[0]
-            this.sessionClient.emitQueue(username, userId, data)
+            this.props.sessionClient.emitQueue(username, userId, data)
         }
     }
 
