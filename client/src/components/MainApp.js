@@ -38,8 +38,11 @@ class MainApp extends React.Component {
         /* 
             Screens are indexed according to the enum mainScreens
 
-            Calling switchScreen without passing screenProps is mainly used for switching screens
+            Calling switchScreen without passing id is mainly used for switching screens
             without re-rendering the existing content of the screen
+
+            switchScreen can also be called with id to update screenProps without switching screens,
+            by calling switchScreen(mainScreens[currentScreen], id)
         */
 
         if (arguments.length > 1 && id !== undefined) {
