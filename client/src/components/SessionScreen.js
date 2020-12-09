@@ -154,7 +154,9 @@ class SessionScreen extends React.Component {
 
 	handleQueueStateChange = (event, newState) => {
 		console.log(event)
+		console.trace()
 		console.log(newState)
+
 		switch (event) {
 			case "futureQueueChange":
 				this.setState({
