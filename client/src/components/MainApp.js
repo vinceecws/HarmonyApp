@@ -34,19 +34,21 @@ class MainApp extends React.Component {
 
     /* Screen navigation */
 
-    switchScreen = (newScreen, id) => {
+    switchScreen = (...args) => {
         /* 
             Screens are indexed according to the enum mainScreens
+            switchScreen takes 2 arguments, newScreen in args[0] and ID in args[1]
 
-            Calling switchScreen without passing id is mainly used for switching screens
+            Calling switchScreen without passing ID is mainly used for switching screens
             without re-rendering the existing content of the screen
 
-            switchScreen can also be called with id to update screenProps without switching screens,
-            by calling switchScreen(mainScreens[currentScreen], id)
+            switchScreen can also be called with ID to update screenProps without switching screens,
+            by calling switchScreen(mainScreens[currentScreen], ID)
         */
-
-        if (arguments.length > 1 && id !== undefined) {
+        var newScreen = args[0]
+        if (args.length > 1 && args[1] !== undefined) {
             var newScreenProps = _.cloneDeep(this.state.screenProps)
+            var id = args[1]
             switch (newScreen) {
                 case mainScreens.SESSION:
                     newScreenProps.sessionId = id
