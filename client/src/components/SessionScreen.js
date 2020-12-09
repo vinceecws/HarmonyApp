@@ -117,7 +117,6 @@ class SessionScreen extends React.Component {
     
 
 	handleChatAction = (action, actionObj) =>{
-		console.log('apply chat log');
 		if (actionObj.action === 'chat'){
 			
 			this.state.chatLog.push(actionObj)
@@ -128,8 +127,6 @@ class SessionScreen extends React.Component {
 	}
 
 	handleSessionAction = (action, actionObj) => {
-		console.log("handle Apply called")
-		console.log(actionObj);
 		if (actionObj.action === 'session'){
 			switch(actionObj.data.subaction){
 				case 'end_session':
@@ -163,10 +160,6 @@ class SessionScreen extends React.Component {
 	}
 
 	handleQueueStateChange = (event, newState) => {
-		console.log(event)
-		console.trace()
-		console.log(newState)
-
 		switch (event) {
 			case "futureQueueChange":
 				this.setState({
