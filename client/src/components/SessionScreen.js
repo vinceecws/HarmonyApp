@@ -488,7 +488,7 @@ class SessionScreen extends React.Component {
 	*/
 
 	isHost = () => {
-        return (this.state.role === sessionRoles.GUEST_NON_PARTICIPANT || this.state.role === sessionRoles.USER_PRIVATE_HOST || this.state.role === sessionRoles.USER_PUBLIC_HOST);
+        return (this.state.role === sessionRoles.GUEST_NON_PARTICIPANT || this.state.role === sessionRoles.USER_PRIVATE_HOST || this.state.role === sessionRoles.USER_PUBLIC_HOST || this.state.role === sessionRoles.USER_NON_PARTICIPANT);
 	}
 	
     isGuest = () =>{
@@ -537,8 +537,18 @@ class SessionScreen extends React.Component {
 		return false
 	}
 	
+	renderEndButton = () =>{
+		if(this.state.role === sessionRoles.USER_PRIVATE_HOST || this.state.role === sessionRoles.USER_PUBLIC_HOST){
+			return <div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}} onClick={this.handleEndSession}>End Session</Button></div>
+
+		}
+		else{
+			return
+		}
+	}
     render(){
 		var component
+		var button
     	if(!this.state.loading && !this.state.error && this.isHost()){
     		component = 
     			<div style={{fontFamily: 'BalsamiqSans', marginLeft:'15px', height:'100%'}}>
@@ -559,7 +569,7 @@ class SessionScreen extends React.Component {
 	        				<div className='col' style={{maxWidth:'15%', textAlign: 'right',height:'100%', padding:'1em', minWidth:'5%',color:'white',  float:'right'}}>
 	        					<div className='row body-text' style={{height:'30%', display:'block', textAlign:'center'}}>{this.state.live}<img src={icon_radio} style={{width:'30px'}}/></div>
 	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}>{this.state.startTime}</div>
-	        					<div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}} onClick={this.handleEndSession}>End Session</Button></div>
+	        					{this.renderEndButton()}
 	        				</div>
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
