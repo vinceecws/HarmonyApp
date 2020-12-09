@@ -252,7 +252,6 @@ class Player extends React.Component {
         var futureQueue
 
         if (!this.props.playerAPI.isPlayerInit()) { //Initialize on first use
-            this.handleEmitPlayerState("player", "play")
             if (this.props.queue.currentSongIsEmpty()) {
                 hasNext = this.props.queue.nextSong()
             }
@@ -262,54 +261,43 @@ class Player extends React.Component {
 
             if (hasNext) {
                 currentSong = this.props.queue.getCurrentSong()
+                this.props.playerAPI.initIFrameAPI(currentSong._id)
                 if (this.props.shouldStartSession()) {
-                    futureQueue = this.props.queue.getFutureQueue()
-                    futureQueue.unshift(currentSong)
-
-                    if (this.props.shouldStartSession()) {
-                        this.handleCreateSession()
-                    }
+                    this.handleCreateSession()
                 }
                 else {
-                    this.props.playerAPI.initIFrameAPI(currentSong._id)
+                    this.handleEmitPlayerState("player", "play")
                 }
             }
             return
         }
 
         if (this.state.paused) {
-            this.handleEmitPlayerState("player", "play")
             if (this.props.queue.currentSongIsEmpty()) {
                 hasNext = this.props.queue.nextSong()
 
                 if (hasNext) {
                     currentSong = this.props.queue.getCurrentSong()
-                    if (this.props.shouldStartSession()) {
-                        futureQueue = this.props.queue.getFutureQueue()
-                        futureQueue.unshift(currentSong)
-
-                        if (this.props.shouldStartSession()) {
-                            this.handleCreateSession()
-                        }
-                    }
-                    else {
-                        this.props.playerAPI.loadVideoById(currentSong._id)
-                    }
-                }
-            }
-            else {
-                currentSong = this.props.queue.getCurrentSong()
-                if (this.props.shouldStartSession()) {
-                    futureQueue = this.props.queue.getFutureQueue()
-                    futureQueue.unshift(currentSong)
-
+                    this.props.playerAPI.loadVideoById(currentSong._id)
                     if (this.props.shouldStartSession()) {
                         this.handleCreateSession()
                     }
+                    else {
+                        this.handleEmitPlayerState("player", "play")
+                    }
+                }
+                return
+            }
+            else {
+                currentSong = this.props.queue.getCurrentSong()
+                this.props.playerAPI.playVideo()
+                if (this.props.shouldStartSession()) {
+                    this.handleCreateSession()
                 }
                 else {
-                    this.props.playerAPI.playVideo()
+                    this.handleEmitPlayerState("player", "play")
                 }
+                return
             }
         }
         else {
