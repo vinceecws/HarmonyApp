@@ -99,7 +99,7 @@ class Player extends React.Component {
     }
 
     handleEmitPlayerState = (action, subaction, ...args) => {
-        if (!(this.props.currentSession && this.isHost())) {
+        if (!this.shouldEmitActions()) {
             return
         }
 
@@ -141,7 +141,7 @@ class Player extends React.Component {
     }
 
     handleApplyPlayerState = (action, actionObj) => {
-        if (this.props.currentSession && this.isHost()) {
+        if (!this.shouldReceiveActions()) {
             return
         }
 
@@ -417,40 +417,33 @@ class Player extends React.Component {
     }
 
     getPlayerControlsDisabled = () => {
-        return !this.isHost()
+        return this.shouldReceiveActions()
     }
 
     getSeekDisabled = () => {
-        return !(this.isHost() && this.state.user && this.state.user.privateMode)
+        return this.shouldReceiveActions() || this.shouldEmitActions()
     }
 
-    /*
-        Is user hosting their own session?
-        True, if logged-in user is hosting a live Session, logged-in user is hosting a private Session, or guest user is hosting an offline Session
-        False, if logged-in user is participating in a live Session, or guest user is participating in a live Session
-    */
-    isHost = () => {
-        if (this.state.user) { //Logged-in
-            if (this.state.user.currentSession) { //In a live Session
-                if (this.state.user.hosting) { //Hosting
-                    return true 
-                }
-                else { //Participating
-                    return false
-                }
-            }
-            else { //No session
+    shouldEmitActions = () => {
+        /* True if logged-in, in a Session, hosting and not in Private Mode */
+        if (this.state.user && this.state.user.currentSession && this.state.user.hosting && this.state.user.live) {
+            return true
+        }
+        return false
+    }
+
+    shouldReceiveActions = () => {
+        /* True if in a live Session, and not hosting */
+        if (this.state.user) {
+            if (this.state.user.currentSession && !this.state.user.hosting) {
                 return true
             }
+            return false
         }
-        else { //Guest
-            if (this.props.currentSession) { //In a live Session, participating
-                return false
-            }
-            else {
-                return true //Offline session or no session
-            }
+        else if (this.props.currentSession) {
+            return true
         }
+        return false
     }
 
     render(){
