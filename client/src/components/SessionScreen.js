@@ -16,7 +16,7 @@ class SessionScreen extends React.Component {
 		this.state = {
 			loading: true,
 			error: false,
-			_id: null,
+			id: null,
 			hostId: null,
 			hostName: null,
 			name: null,
@@ -28,12 +28,11 @@ class SessionScreen extends React.Component {
 			role: sessionRoles.GUEST_NON_PARTICIPANT,
 			user: this.props.user,
 		}
-		this.setSessionRole()
 	}
 
 
 	componentDidMount = () => {
-
+		this.setSessionRole()
 		this.queueActionListener = this.props.sessionClient.subscribeToAction("rcvdQueue", this.handleQueueAction.bind(this))
 		this.chatActionListener = this.props.sessionClient.subscribeToAction("rcvdChat", this.handleChatAction.bind(this))
 		this.sessionActionListener = this.props.sessionClient.subscribeToAction("rcvdSession", this.handleSessionAction.bind(this))
@@ -61,18 +60,18 @@ class SessionScreen extends React.Component {
 
         if (this.props.screenProps) {
 			//If screen is active and new sessionId is passed
-			if (this.props.screenProps.sessionId && (prevState._id !== this.props.screenProps.sessionId)) {
+			if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
 				this.setState({
-					_id: this.props.screenProps.sessionId,
+					id: this.props.screenProps.sessionId,
 					loading: true,
 				}, () => {
-					this.props.axiosWrapper.axiosGet("/api/session/" + this.state._id, this.setSessionRole, true)
+					this.props.axiosWrapper.axiosGet("/api/session/" + this.state.id, this.setSessionRole, true)
 				}) //This still has to handle quitting the current session before joining new session
 			}
 			//If screen is active and no sessionId is passed
-			else if (prevState._id) {
+			else if (prevState.id && this.props.screenProps.sessionId == null) {
 				this.setState({
-					_id: this.props.screenProps.sessionId,
+					id: null,
 					loading: true,
 				}, () => {
 					this.setSessionRole()
@@ -146,7 +145,7 @@ class SessionScreen extends React.Component {
 					}
 					break;
 				case 'session_state':
-					if (this.shouldReceiveActions() & this.state.loading) {
+					if (this.state.loading && this.shouldReceiveActions()) {
 						this.handleReceiveSessionState(actionObj.data.queue_state, actionObj.data.player_state, actionObj.data.time)
 					}
 					break;
@@ -283,16 +282,25 @@ class SessionScreen extends React.Component {
 	}
 
 	handleLeaveSession = () => {
-		this.props.axiosWrapper.axiosPost('/api/session/leaveSession', {}, (res, data) => {
-			if (data.success) {
-				this.props.sessionClient.leaveSession()
-				this.props.handleUpdateUser(data.data.user)
-				var newScreenProps = _.cloneDeep(this.props.screenProps)
-				newScreenProps.sessionId = null
-				this.props.switchScreen(mainScreens.SESSION, null)
-				this.props.switchScreen(mainScreens.HOME)
-			}
-		}, true)
+		if (this.isGuest()) {
+			this.props.sessionClient.leaveSession()
+			var newScreenProps = _.cloneDeep(this.props.screenProps)
+			newScreenProps.sessionId = null
+			this.props.switchScreen(mainScreens.SESSION, null)
+			this.props.switchScreen(mainScreens.HOME)
+		}
+		else {
+			this.props.axiosWrapper.axiosPost('/api/session/leaveSession', {}, (res, data) => {
+				if (data.success) {
+					this.props.sessionClient.leaveSession()
+					this.props.handleUpdateUser(data.data.user)
+					var newScreenProps = _.cloneDeep(this.props.screenProps)
+					newScreenProps.sessionId = null
+					this.props.switchScreen(mainScreens.SESSION, null)
+					this.props.switchScreen(mainScreens.HOME)
+				}
+			}, true)
+		}
 	}
 
 	handleChangeSessionName = (changedName) => {
@@ -361,7 +369,7 @@ class SessionScreen extends React.Component {
 		if (data?.data?.session) { //Live Session is loaded
 			session = data.data.session
 			if (this.state.user) { //User is logged in
-				if (session.hostId === this.state.user._id){ 
+				if (String(session.hostId) === String(this.state.user._id)) { 
 					if (this.state.user.privateMode) {
 						sessionRole = sessionRoles.USER_PRIVATE_HOST
 					}
@@ -445,7 +453,12 @@ class SessionScreen extends React.Component {
 			var data =  {
 				subaction: "get_session_state"
 			}
-			this.props.sessionClient.emitSession(this.state.user.username, this.state.user._id, data);
+			if (this.isGuest()) {
+				this.props.sessionClient.emitSession("", "", data)
+			}
+			else {
+				this.props.sessionClient.emitSession(this.state.user.username, this.state.user._id, data)
+			}
 		}
 		else {
 			this.setState({

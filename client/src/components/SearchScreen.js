@@ -211,8 +211,8 @@ class SearchScreen extends React.Component {
         this.props.axiosWrapper.axiosPost('/api/session/newSession', {
             name: `${this.props.user.username}'s Live Session`
         }, (function(res, data) {
-            console.log(data);
 			if (data.success) {
+                console.log(data.data.user)
                 this.props.handleUpdateUser(data.data.user)
                 this.props.switchScreen(mainScreens.SESSION, data.data.sessionId)
 			}
