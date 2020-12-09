@@ -14,7 +14,7 @@ class SessionScreen extends React.Component {
 		super(props);
 
 		this.state = {
-			loading: false,
+			loading: true,
 			error: false,
 			_id: null,
 			hostId: null,
@@ -28,6 +28,7 @@ class SessionScreen extends React.Component {
 			role: sessionRoles.GUEST_NON_PARTICIPANT,
 			user: this.props.user,
 		}
+		this.setSessionRole()
 	}
 
 
@@ -68,7 +69,7 @@ class SessionScreen extends React.Component {
 				}) //This still has to handle quitting the current session before joining new session
 			}
 			//If screen is active and no sessionId is passed
-			else {
+			else if (prevState._id) {
 				this.setState({
 					_id: this.props.screenProps.sessionId,
 					loading: true,
