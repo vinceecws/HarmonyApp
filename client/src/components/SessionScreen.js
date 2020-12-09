@@ -275,10 +275,7 @@ class SessionScreen extends React.Component {
 				this.props.sessionClient.emitSession(this.state.user.username, this.state.user._id, actionData)
 				this.props.sessionClient.endSession()
 				this.props.handleUpdateUser(data.data.user)
-				this.props.playerAPI.pauseVideo()
-				this.props.playerAPI.seekTo(0)
-				this.props.switchScreen(mainScreens.SESSION, null)
-				this.props.switchScreen(mainScreens.HOME)
+				this.handleTearDown()
 			}
 		}, true)
 	}
@@ -286,25 +283,15 @@ class SessionScreen extends React.Component {
 	handleLeaveSession = () => {
 		if (this.isGuest()) {
 			this.props.sessionClient.leaveSession()
-			var newScreenProps = _.cloneDeep(this.props.screenProps)
-			newScreenProps.sessionId = null
-			this.props.playerAPI.pauseVideo()
-			this.props.playerAPI.seekTo(0)
-			this.props.switchScreen(mainScreens.SESSION, null)
-			this.props.switchScreen(mainScreens.HOME)
 			this.props.handleUpdateCurrentSession(null)
+			this.handleTearDown()
 		}
 		else {
 			this.props.axiosWrapper.axiosPost('/api/session/leaveSession', {}, (res, data) => {
 				if (data.success) {
 					this.props.sessionClient.leaveSession()
 					this.props.handleUpdateUser(data.data.user)
-					var newScreenProps = _.cloneDeep(this.props.screenProps)
-					newScreenProps.sessionId = null
-					this.props.playerAPI.pauseVideo()
-					this.props.playerAPI.seekTo(0)
-					this.props.switchScreen(mainScreens.SESSION, null)
-					this.props.switchScreen(mainScreens.HOME)
+					this.handleTearDown()
 				}
 			}, true)
 		}
@@ -412,7 +399,6 @@ class SessionScreen extends React.Component {
 		if (session) {
 			if (this.shouldEmitActions()) {
             	this.setState({
-	        		id: session._id,
 					hostId: session.hostId,
 					hostName : session.hostName,
 					name: session.name,
@@ -423,7 +409,6 @@ class SessionScreen extends React.Component {
 			}
 			else if (this.shouldReceiveActions()) {
 				this.setState({	
-					id: session._id,
 					hostId: session.hostId,
 					hostName : session.hostName,
 					name: session.name,
@@ -481,6 +466,39 @@ class SessionScreen extends React.Component {
 				error: true
 			})
 		}
+	}
+
+	/*
+		Tear-down functions
+	*/
+
+	handleTearDown = () => {
+		var newScreenProps = _.cloneDeep(this.props.screenProps)
+		newScreenProps.sessionId = null
+		this.props.playerAPI.pauseVideo()
+		this.props.playerAPI.seekTo(0)
+		this.props.switchScreen(mainScreens.SESSION, null)
+		this.props.switchScreen(mainScreens.HOME)
+		this.handleResetState()
+		this.setSessionRole()
+	}
+
+	handleResetState = () => {
+		this.setState({
+			loading: true,
+			error: false,
+			id: null,
+			hostId: null,
+			hostName: null,
+			name: null,
+			startTime: null,
+			pastQueue: [],
+			futureQueue: [],
+			chatLog: [],
+			messageText: "",
+			role: sessionRoles.GUEST_NON_PARTICIPANT,
+			user: this.props.user,
+		})
 	}
 
 	/*
