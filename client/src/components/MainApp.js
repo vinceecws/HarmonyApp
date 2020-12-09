@@ -15,6 +15,8 @@ import CollectionScreen from './CollectionScreen.js'
 import { Row, Col } from 'react-bootstrap'
 import { Route, Switch } from 'react-router-dom'
 
+const _ = require('lodash')
+
 class MainApp extends React.Component {
 
     constructor(props) {
