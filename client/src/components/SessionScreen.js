@@ -60,6 +60,7 @@ class SessionScreen extends React.Component {
         if (this.props.screenProps) {
 			//If screen is active and new sessionId is passed
 			if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
+				console.log("NEW ID PASSED")
 				this.setState({
 					id: this.props.screenProps.sessionId,
 					loading: true,
@@ -69,6 +70,7 @@ class SessionScreen extends React.Component {
 			}
 			//If screen is active and no sessionId is passed
 			else if (prevState.id && this.props.screenProps.sessionId == null) {
+				console.log("ID CHANGED TO NULL")
 				this.setState({
 					id: null,
 					loading: true,
@@ -194,6 +196,7 @@ class SessionScreen extends React.Component {
 					this.props.playVideo(queueState.current_song._id)
 					this.props.playerAPI.pauseVideo()
 				}
+				console.log(time)
 				this.props.playerAPI.seekTo(time)
 			}
 
