@@ -991,7 +991,8 @@ module.exports = function(mainSocket, sessionSocket) {
             var user = stripUser(req.user)
             var session = await mongooseQuery.createSession(user._id, user.username, req.body.name, Date.now()).catch(err => res.sendStatus(404))
             var updatedUser = await mongooseQuery.updateUser(user._id, {
-                live: true,
+                currentSession: session._id,
+                live: !user.privateMode,
                 hosting: true
             }).catch(err => res.sendStatus(404))
 
@@ -1002,7 +1003,7 @@ module.exports = function(mainSocket, sessionSocket) {
                     user: stripUser(updatedUser),
                     sessionId: session._id,
                 },
-                success:true
+                success: true
             })
         }
     });
