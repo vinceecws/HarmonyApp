@@ -308,14 +308,14 @@ class CollectionScreen extends React.Component{
         }).bind(this), true)
     }
 
-    onCreateSession = () => {
+    onCreateSession = (song, index) => {
         this.props.axiosWrapper.axiosPost('/api/session/newSession', 
         {name: `${this.props.user.username}'s Live Session`}, 
         (function(res, data){
             if (data.success){
                 //how to initialize session queue to songs in collection?
-                this.props.playVideo(this.state.songList[0]._id);
-                for (let i = 1; i < this.state.songList.length; i++){
+                this.props.playVideo(song._id);
+                for (let i = index + 1; i < this.state.songList.length; i++){
                     this.props.queue.addSongToFutureQueue(this.state.songList[i])
                 }
                 this.props.handleUpdateUser(data.data.user)
@@ -453,7 +453,7 @@ class CollectionScreen extends React.Component{
                                         </Dropdown.Item>
                                         {this.state.songList.length > 0 ?
                                         (<Dropdown.Item>
-                                            <Button onClick={this.onCreateSession}>
+                                            <Button onClick={() => this.onCreateSession(this.state.songList[0], 0)}>
                                                 Start Session from Collection
                                             </Button>
                                         </Dropdown.Item>) : <div></div>
@@ -496,7 +496,7 @@ class CollectionScreen extends React.Component{
                                         {(provided) => 
                                         (<li className="collection-page-rows" style={{minWidth: '90vw'}} {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
                                             <div style={{display: 'flex', alignItems: 'center'}}>
-                                                <div className='collection-song-title ellipsis-multi-line-overflow'  style={{display: 'inline-block', marginLeft: '15px', marginRight: '2.5%', width: '27%'}} onClick={() => this.onPressPlaySong(e, i)}>{e.name}</div>
+                                                <div className='collection-song-title ellipsis-multi-line-overflow'  style={{display: 'inline-block', marginLeft: '15px', marginRight: '2.5%', width: '27%'}} onClick={() => this.onCreateSession(e, i)}>{e.name}</div>
                                                 <div className='collection-song-title ellipsis-multi-line-overflow' style={{display: 'inline-block', width: '20%', marginRight: '2%'}}><div>{e.creator}</div></div>
                                                 <div className='collection-page-text' style={{display: 'inline-block', marginRight: '10.5%'}}>{this.getDateAdded()}</div>
                                                 <div className='collection-page-text' style={{display: 'inline-block', marginRight: '5%'}}>{this.getDurationString(e.duration, i)} </div>
