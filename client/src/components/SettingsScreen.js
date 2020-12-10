@@ -15,6 +15,7 @@ class SettingsScreen extends React.Component{
             confirm_password: "",
             biography: "",
             loading: true,
+            hosting: false,
             profileUser: null,
             changeUsername_invalidPassword: false,
             changeUsername_taken: false,
@@ -70,17 +71,20 @@ class SettingsScreen extends React.Component{
         this.clearPasswordCredentials()
     }
     handlePrivateToggle = () =>{
-        this.props.axiosWrapper.axiosPost('/api/settings/changePrivateMode', {
-                privateMode: !this.state.profileUser.privateMode
-                
-        }, (function(res, data) {
-            if (data.success) {
-                this.props.handleUpdateUser(data.data.user);  
-                this.setState({
-                    profileUser: data.data.user
-                })
-            }
-        }).bind(this), true);
+        if(!this.state.hosting){
+            this.props.axiosWrapper.axiosPost('/api/settings/changePrivateMode', {
+                    privateMode: !this.state.profileUser.privateMode
+                    
+            }, (function(res, data) {
+                if (data.success) {
+                    this.props.handleUpdateUser(data.data.user);  
+                    this.setState({
+                        profileUser: data.data.user
+                    })
+                }
+            }).bind(this), true);
+        }
+        
         
     }
     handleUsernameChange = (e) => {
@@ -331,6 +335,7 @@ class SettingsScreen extends React.Component{
                 this.setState({
                     profileUser: data.data.user,
                     biography: data.data.user.biography,
+                    hosting: data.data.user.hosting,
                     loading: false
                 })
             }
@@ -348,7 +353,7 @@ class SettingsScreen extends React.Component{
                         <div className='body-text color-contrasted'>SETTINGS</div>
             			<div className='row'>
                             <div style={{position: 'relative', left:'15px', height:'30px'}}>
-                                    <input type="checkbox" defaultChecked={this.state.profileUser.privateMode}  id="customSwitch1" className='checkbox' onClick={this.handlePrivateToggle} value={this.state.profileUser.privateMode}/>
+                                    <input disabled={this.state.hosting} type="checkbox" defaultChecked={this.state.profileUser.privateMode}  id="customSwitch1" className='checkbox' onClick={this.handlePrivateToggle} value={this.state.profileUser.privateMode}/>
                                     <label for='customSwitch1' className='switch'></label>
                                     <label style={{position:'relative',bottom:'12px', left:'15px', color:'white'}}>Private Mode</label>
                             </div>
