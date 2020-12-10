@@ -235,7 +235,7 @@ class CollectionScreen extends React.Component{
     }
 
     getDurationString(duration){
-        console.log('Duration: ', duration);
+        //console.log('Duration: ', duration);
         //return String(duration / 60).padStart(2, '0') + ':' + String(duration % 60)
     }
 
@@ -309,18 +309,19 @@ class CollectionScreen extends React.Component{
     }
 
     onCreateSession = () => {
-        this.props.axiosWrapper.axiosGet('/api/session/newSession', (function(res, data){
+        this.props.axiosWrapper.axiosPost('/api/session/newSession', 
+        {name: `${this.props.user.username}'s Live Session`}, 
+        (function(res, data){
             if (data.success){
                 //how to initialize session queue to songs in collection?
-                this.props.handleUpdateUser(data.data.user)
-                this.props.playVideo(this.state.songList[0]);
+                this.props.playVideo(this.state.songList[0]._id);
                 for (let i = 1; i < this.state.songList.length; i++){
                     this.props.queue.addSongToFutureQueue(this.state.songList[i])
                 }
-                this.switchScreen(mainScreens.SESSION, data.data.sessionId)
-                console.log('Created session from playlist')
+                this.props.handleUpdateUser(data.data.user)
+                this.props.switchScreen(mainScreens.SESSION, data.data.sessionId)
             }
-        }).bind(this, true))
+        }).bind(this), true)
         
     }
 
