@@ -243,19 +243,6 @@ class CollectionScreen extends React.Component{
         return '10/30/2020'
     }
 
-    sortByTitle = (e) =>{
-        let sortedList = [];
-
-    }
-
-    sortByDateAdded = (e) =>{
-        let sortedList = [];
-    }
-
-    sortByArtist = (e) => {
-        let sortedList = [];
-    }
-
     showEditNameModal = () => {
         this.setState({ showEditNameModal: true });
     }
