@@ -314,7 +314,8 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else {
-            let newCollection = await mongooseQuery.createCollection(req.user._id, collectionName, "", [songId])
+            let user = stripUser(req.user)
+            let newCollection = await mongooseQuery.createCollection(user._id, user.username, collectionName, "", [songId])
             let updatedUser = await mongooseQuery.getUser({
                 _id: req.user._id
             }).catch(err => res.sendStatus(404))
