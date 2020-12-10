@@ -46,7 +46,7 @@ class SessionScreen extends React.Component {
 		this.chatActionListener = this.props.sessionClient.unsubscribeFromAction("rcvdChat", this.chatActionListener)
 		this.sessionActionListener = this.props.sessionClient.unsubscribeFromAction("rcvdSession", this.sessionActionListener)
 		
-		this.futureQueueChangeListener = this.props.queue.unsubscribeFromEvent("futureQueueChange", this.futureQueueChangeListener);
+		this.futureQueueChangeListener = this.props.queue.unsubscribeFromEvent("futureQueueChange", this.futureQueueChangeListener)
 		this.pastQueueChangeListener = this.props.queue.unsubscribeFromEvent("pastQueueChange", this.pastQueueChangeListener)
 	}
 
