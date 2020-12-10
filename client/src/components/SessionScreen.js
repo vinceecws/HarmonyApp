@@ -477,6 +477,9 @@ class SessionScreen extends React.Component {
 	handleTearDown = () => {
 		this.props.playerAPI.pauseVideo()
 		this.props.playerAPI.seekTo(0)
+		this.setState({
+			id: null
+		})
 		this.props.switchScreen(mainScreens.SESSION, null)
 		this.props.switchScreen(mainScreens.HOME)
 
