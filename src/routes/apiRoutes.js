@@ -1207,7 +1207,7 @@ module.exports = function(mainSocket, sessionSocket) {
             let filteredCollections = [];
             let filteredUsers = [];
             for (let s of sessionMatches){
-                if (String(s.hostId) !== String(thisUser._id)){
+                if (String(s.hostId) !== String(thisUser._id) && s.live){
                     filteredSessions.push(s);
                 }
             }

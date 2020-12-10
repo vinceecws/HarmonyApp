@@ -303,11 +303,25 @@ class CollectionScreen extends React.Component{
         this.props.axiosWrapper.axiosGet('/api/collection/delete/' + this.state.collectionId, (function(res, data){
             if (data.success){
                 this.props.handleUpdateUser(data.data.user);
-                this.props.switchScreen(mainScreens.PROFILE, {
-                    userId: data.data.user._id
-                })
+                this.props.switchScreen(mainScreens.PROFILE, data.data.user._id)
             }
         }).bind(this), true)
+    }
+
+    onCreateSession = () => {
+        this.props.axiosWrapper.axiosGet('/api/session/newSession', (function(res, data){
+            if (data.success){
+                //how to initialize session queue to songs in collection?
+                this.handleUpdateUser(data.data.user)
+                this.props.playVideo(this.state.songList[0]);
+                for (let i = 1; i < this.state.songList.length; i++){
+                    this.props.queue.addSongToFutureQueue(this.state.songList[i])
+                }
+                this.switchScreen(mainScreens.SESSION, data.data.sessionId)
+                console.log('Created session from playlist')
+            }
+        }))
+        
     }
 
     //reorder songlist (persistant)
@@ -430,11 +444,19 @@ class CollectionScreen extends React.Component{
                                                 Edit Description
                                             </Button>
                                         </Dropdown.Item>
+                                        
                                         <Dropdown.Item>
                                             <Button onClick={this.onDeleteCollection}>
                                                 Delete Collection
                                             </Button>
                                         </Dropdown.Item>
+                                        {this.state.songList.length > 0 ?
+                                        (<Dropdown.Item>
+                                            <Button onClick={this.onCreateSession}>
+                                                Start Session from Collection
+                                            </Button>
+                                        </Dropdown.Item>) : <div></div>
+                                        }
                                     </Dropdown.Menu>
                                 </Dropdown> 
                             </div>
