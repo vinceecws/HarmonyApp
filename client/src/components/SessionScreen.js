@@ -6,6 +6,7 @@ import QueueComponent from './Queues/QueueComponent.js';
 import Spinner from './Spinner';
 import {Button} from 'react-bootstrap';
 import { Droppable, DragDropContext, Draggable } from 'react-beautiful-dnd'
+import { Link } from 'react-router-dom'
 
 const _ = require('lodash')
 
@@ -509,6 +510,9 @@ class SessionScreen extends React.Component {
     isGuest = () =>{
     	return (this.state.role === sessionRoles.GUEST_PARTICIPANT || this.state.role === sessionRoles.GUEST_NON_PARTICIPANT) && !this.state.user;
 	}
+	isNonParticipant = () =>{
+		return (this.state.role === sessionRoles.GUEST_NON_PARTICIPANT) || (this.state.role === sessionRoles.USER_NON_PARTICIPANT)
+	}
 
 	/*
 		Users that should emit player, queue, and session actions to all participants
@@ -557,12 +561,54 @@ class SessionScreen extends React.Component {
 	*/
 	renderEndButton = () => {
 		if (this.state.role === sessionRoles.USER_PRIVATE_HOST || this.state.role === sessionRoles.USER_PUBLIC_HOST) {
-			return <div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}} onClick={this.handleEndSession}>End Session</Button></div>
+			return <div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button className="bg-color-harmony" variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}} onClick={this.handleEndSession}>End Session</Button></div>
 
 		}
 		else {
 			return
 		}
+	}
+
+	renderSuggestionButton = () =>{
+		var line1;
+		var line2;
+		if(this.state.role === sessionRoles.GUEST_PARTICIPANT){
+
+			line1 = "Interested in joining the conversation?"
+			line2 = "Login or Sign-up to join the chat"
+
+		}
+		else if(this.state.role === sessionRoles.GUEST_NON_PARTICIPANT){
+			line1 = "Want to share your collection with others?"
+			line2 = "Login or Sign-up to start a session"
+
+		}
+		if(line1 && line2){
+			return <div className="session-screen-empty-notice-button-container">
+							<div className="subtitle color-accented" style={{position:'absolute', marginTop:'-200px'}}>
+								{line1}
+							</div>
+							<Link  className="subtitle color-accented" to="/login">	
+								<Button className="session-screen-empty-notice-button bg-color-harmony" onClick ={this.state.role === sessionRoles.GUEST_PARTICIPANT ? this.handleLeaveSession : false}>
+									<div className="subtitle color-accented">
+										{line2}
+									</div>
+								</Button>
+							</Link>
+						</div>
+		}
+		if(this.state.role === sessionRoles.USER_PRIVATE_HOST){
+			return 	<div className="session-screen-empty-notice-button-container">
+						<div className="subtitle color-accented" style={{position:'absolute', marginTop:'-200px'}}>
+							Chat disabled for Private Session
+						</div>	
+					</div>
+		}
+		else{
+			return <ChatFeed chatLog={this.state.chatLog} user={this.state.user}  />;
+		}
+
+		
 	}
 
 	formatTime = () => {
@@ -603,10 +649,12 @@ class SessionScreen extends React.Component {
 	        				</div>
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
-	        				<ChatFeed chatLog={this.state.chatLog} user={this.state.user}  />
+	        				{this.renderSuggestionButton()}
+	        				
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
-	        				<input disabled={this.isGuest() || !this.state.id} type='text' name='MessageSender' placeholder={this.isGuest() ? 'Login or sign-up to join the chat' : 'Send your message here...'} onChange={this.handleTextChange} onKeyPress={this.handleChatKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
+	        				
+	        				<input disabled={this.isNonParticipant() || this.isGuest() || this.state.role === sessionRoles.USER_PRIVATE_HOST} type='text' name='MessageSender' placeholder={this.isGuest() ? 'Login or sign-up to join the chat' : 'Send your message here...'} onChange={this.handleTextChange} onKeyPress={this.handleChatKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
 	        				<div style={{width:'5%', display:'block', textAlign:'center', marginTop:'5px'}}>{this.state.messageText.length}/250</div>
 	        			</div>
 	        		</div>
@@ -658,14 +706,16 @@ class SessionScreen extends React.Component {
 	        				<div className='col' style={{maxWidth:'15%', textAlign: 'right',height:'100%', padding:'1em', minWidth:'5%',color:'white',  float:'right'}}>
 	        					<div className='row body-text' style={{height:'30%', display:'block', textAlign:'center'}}>{this.state.live}<img src={icon_radio} style={{width:'30px'}}/></div>
 	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}>{this.formatTime()}</div>
-	        					<div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}} onClick={this.handleLeaveSession}>Leave Session</Button></div>
+	        					<div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button  className="bg-color-harmony" variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}} onClick={this.handleLeaveSession}>Leave Session</Button></div>
 	        				</div>
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
-	        				<ChatFeed  chatLog={this.state.chatLog} user={this.state.user}  />
+	        				{this.renderSuggestionButton()}
+	        			
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
-	        				<input type='text' disabled={this.isGuest() || !this.state.id} name='MessageSender' placeholder={this.isGuest() ? 'Login or sign-up to join the chat' : 'Send your message here...'} onChange={this.handleTextChange} onKeyPress={this.handleChatKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
+	        				
+	        				<input type='text' disabled={this.isNonParticipant() || this.isGuest()} name='MessageSender' placeholder={this.isGuest() ? 'Login or sign-up to join the chat' : 'Send your message here...'} onChange={this.handleTextChange} onKeyPress={this.handleChatKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
 	        				<div  style={{width:'5%', display:'block', textAlign:'center', marginTop:'5px'}}>{this.state.messageText.length}/250</div>
 	        			</div>
 	        		</div>

@@ -196,7 +196,6 @@ body, html {
   overflow: hidden;
   white-space: nowrap;
 }
-/*Profile Screen*/
 
 
 .session-entry-container, .session-entry-container:hover {
@@ -246,6 +245,30 @@ body, html {
   background-color: white;
   height: 20px;
   width: 20px;
+}
+.session-screen-empty-notice-button-container {
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(52, 52, 52, 1.0);
+  height: 100%;
+  width: 100%;
+}
+.session-screen-empty-notice-button {
+  border-color: transparent !important;
+  border-width: 0px !important;
+  width: 400px;
+  height: 80px;
+  
+  max-width: 99%;
+}
+
+.session-screen-empty-notice-button:hover {
+  color: rgba(52, 52, 52, 0.8);
+  width: 400px;
+  height: 80px;
+  
 }
 
 
