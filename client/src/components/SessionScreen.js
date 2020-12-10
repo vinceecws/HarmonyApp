@@ -6,6 +6,7 @@ import QueueComponent from './Queues/QueueComponent.js';
 import Spinner from './Spinner';
 import {Button} from 'react-bootstrap';
 import { Droppable, DragDropContext, Draggable } from 'react-beautiful-dnd'
+import { Link } from 'react-router-dom'
 
 const _ = require('lodash')
 
@@ -14,7 +15,8 @@ class SessionScreen extends React.Component {
 		super(props);
 
 		this.state = {
-			loading: true,
+			loading: false,
+			unloading: false,
 			error: false,
 			id: null,
 			hostId: null,
@@ -57,10 +59,7 @@ class SessionScreen extends React.Component {
             })
 		}
 
-		console.log(prevState);
-		console.log(this.state.id);
-		console.log(this.props.screenProps);
-		if(!this.state.loading){
+		if (!this.state.loading && !this.state.unloading) {
 			if (this.props.screenProps) {
 				//If screen is active and new sessionId is passed
 				if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
@@ -90,8 +89,6 @@ class SessionScreen extends React.Component {
 				})
 			}
 		}
-        
-        
 	}
 
 	/*
@@ -203,6 +200,7 @@ class SessionScreen extends React.Component {
 					this.props.playVideo(queueState.current_song._id)
 					this.props.playerAPI.pauseVideo()
 				}
+				console.log("SEEK")
 				this.props.playerAPI.seekTo(time)
 			}
 			this.setState({
@@ -214,9 +212,6 @@ class SessionScreen extends React.Component {
 
 			this.props.queue.setShuffle(playerState.shuffle)
 			this.props.queue.setRepeat(playerState.repeat)
-
-			console.log(this.props.queue);
-
 		}
 	}
 
@@ -279,8 +274,9 @@ class SessionScreen extends React.Component {
 				}
 				this.props.sessionClient.emitSession(this.state.user.username, this.state.user._id, actionData)
 				this.props.sessionClient.endSession()
-				this.props.handleUpdateUser(data.data.user)
-				this.handleTearDown()
+				this.handleBeginTearDown(() => {
+					this.props.handleUpdateUser(data.data.user, this.handleTearDown)
+				})
 			}
 		}, true)
 	}
@@ -288,15 +284,17 @@ class SessionScreen extends React.Component {
 	handleLeaveSession = () => {
 		if (this.isGuest()) {
 			this.props.sessionClient.leaveSession()
-			this.props.handleUpdateCurrentSession(null)
-			this.handleTearDown()
+			this.handleBeginTearDown(() => {
+				this.props.handleUpdateCurrentSession(null, this.handleTearDown)
+			})
 		}
 		else {
 			this.props.axiosWrapper.axiosPost('/api/session/leaveSession', {}, (res, data) => {
 				if (data.success) {
 					this.props.sessionClient.leaveSession()
-					this.props.handleUpdateUser(data.data.user)
-					this.handleTearDown()
+					this.handleBeginTearDown(() => {
+						this.props.handleUpdateUser(data.data.user, this.handleTearDown)
+					})
 				}
 			}, true)
 		}
@@ -392,7 +390,6 @@ class SessionScreen extends React.Component {
 				sessionRole = sessionRoles.GUEST_NON_PARTICIPANT
 			}
 		}
-		console.log("assigned session role: "+ sessionRole)
 		this.setState({
 			role: sessionRole
 		}, () => {
@@ -401,7 +398,6 @@ class SessionScreen extends React.Component {
 	}
 
 	initSession = (session) => {
-		console.log(this.shouldIgnoreActions())
 		if (session) {
 			if (this.shouldEmitActions()) {
             	this.setState({
@@ -487,15 +483,21 @@ class SessionScreen extends React.Component {
 		Tear-down functions
 	*/
 
+	handleBeginTearDown = (callback) => {
+		this.setState({
+			unloading: true
+		}, callback)
+	}
+
 	handleTearDown = () => {
 		this.props.playerAPI.pauseVideo()
 		this.props.playerAPI.seekTo(0)
-		this.setState({
-			id: null
-		})
 		this.props.switchScreen(mainScreens.SESSION, null)
 		this.props.switchScreen(mainScreens.HOME)
-
+		this.setState({
+			id: null,
+			unloading: false
+		})
 	}
 
 	/*
@@ -506,8 +508,11 @@ class SessionScreen extends React.Component {
         return (this.state.role === sessionRoles.GUEST_NON_PARTICIPANT || this.state.role === sessionRoles.USER_PRIVATE_HOST || this.state.role === sessionRoles.USER_PUBLIC_HOST || this.state.role === sessionRoles.USER_NON_PARTICIPANT);
 	}
 	
-    isGuest = () =>{
+    isGuest = () => {
     	return (this.state.role === sessionRoles.GUEST_PARTICIPANT || this.state.role === sessionRoles.GUEST_NON_PARTICIPANT) && !this.state.user;
+	}
+	isNonParticipant = () =>{
+		return (this.state.role === sessionRoles.GUEST_NON_PARTICIPANT) || (this.state.role === sessionRoles.USER_NON_PARTICIPANT)
 	}
 
 	/*
@@ -557,12 +562,54 @@ class SessionScreen extends React.Component {
 	*/
 	renderEndButton = () => {
 		if (this.state.role === sessionRoles.USER_PRIVATE_HOST || this.state.role === sessionRoles.USER_PUBLIC_HOST) {
-			return <div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}} onClick={this.handleEndSession}>End Session</Button></div>
+			return <div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button className="bg-color-harmony" variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}} onClick={this.handleEndSession}>End Session</Button></div>
 
 		}
 		else {
 			return
 		}
+	}
+
+	renderSuggestionButton = () =>{
+		var line1;
+		var line2;
+		if(this.state.role === sessionRoles.GUEST_PARTICIPANT){
+
+			line1 = "Interested in joining the conversation?"
+			line2 = "Login or Sign-up to join the chat"
+
+		}
+		else if(this.state.role === sessionRoles.GUEST_NON_PARTICIPANT){
+			line1 = "Want to share your collection with others?"
+			line2 = "Login or Sign-up to start a session"
+
+		}
+		if(line1 && line2){
+			return <div className="session-screen-empty-notice-button-container">
+							<div className="subtitle color-accented" style={{position:'absolute', marginTop:'-200px'}}>
+								{line1}
+							</div>
+							<Link  className="subtitle color-accented" to="/login">	
+								<Button className="session-screen-empty-notice-button bg-color-harmony" onClick ={this.state.role === sessionRoles.GUEST_PARTICIPANT ? this.handleLeaveSession : false}>
+									<div className="subtitle color-accented">
+										{line2}
+									</div>
+								</Button>
+							</Link>
+						</div>
+		}
+		if(this.state.role === sessionRoles.USER_PRIVATE_HOST){
+			return 	<div className="session-screen-empty-notice-button-container">
+						<div className="subtitle color-accented" style={{position:'absolute', marginTop:'-200px'}}>
+							Chat disabled for Private Session
+						</div>	
+					</div>
+		}
+		else{
+			return <ChatFeed chatLog={this.state.chatLog} user={this.state.user}  />;
+		}
+
+		
 	}
 
 	formatTime = () => {
@@ -603,10 +650,12 @@ class SessionScreen extends React.Component {
 	        				</div>
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
-	        				<ChatFeed chatLog={this.state.chatLog} user={this.state.user}  />
+	        				{this.renderSuggestionButton()}
+	        				
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
-	        				<input disabled={this.isGuest() || !this.state.id} type='text' name='MessageSender' placeholder={this.isGuest() ? 'Login or sign-up to join the chat' : 'Send your message here...'} onChange={this.handleTextChange} onKeyPress={this.handleChatKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
+	        				
+	        				<input disabled={this.isNonParticipant() || this.isGuest() || this.state.role === sessionRoles.USER_PRIVATE_HOST} type='text' name='MessageSender' placeholder={this.isGuest() ? 'Login or sign-up to join the chat' : 'Send your message here...'} onChange={this.handleTextChange} onKeyPress={this.handleChatKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
 	        				<div style={{width:'5%', display:'block', textAlign:'center', marginTop:'5px'}}>{this.state.messageText.length}/250</div>
 	        			</div>
 	        		</div>
@@ -658,14 +707,16 @@ class SessionScreen extends React.Component {
 	        				<div className='col' style={{maxWidth:'15%', textAlign: 'right',height:'100%', padding:'1em', minWidth:'5%',color:'white',  float:'right'}}>
 	        					<div className='row body-text' style={{height:'30%', display:'block', textAlign:'center'}}>{this.state.live}<img src={icon_radio} style={{width:'30px'}}/></div>
 	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}>{this.formatTime()}</div>
-	        					<div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}} onClick={this.handleLeaveSession}>Leave Session</Button></div>
+	        					<div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button  className="bg-color-harmony" variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}} onClick={this.handleLeaveSession}>Leave Session</Button></div>
 	        				</div>
 	        			</div>
 	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
-	        				<ChatFeed  chatLog={this.state.chatLog} user={this.state.user}  />
+	        				{this.renderSuggestionButton()}
+	        			
 	        			</div>
 	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
-	        				<input type='text' disabled={this.isGuest() || !this.state.id} name='MessageSender' placeholder={this.isGuest() ? 'Login or sign-up to join the chat' : 'Send your message here...'} onChange={this.handleTextChange} onKeyPress={this.handleChatKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
+	        				
+	        				<input type='text' disabled={this.isNonParticipant() || this.isGuest()} name='MessageSender' placeholder={this.isGuest() ? 'Login or sign-up to join the chat' : 'Send your message here...'} onChange={this.handleTextChange} onKeyPress={this.handleChatKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
 	        				<div  style={{width:'5%', display:'block', textAlign:'center', marginTop:'5px'}}>{this.state.messageText.length}/250</div>
 	        			</div>
 	        		</div>
