@@ -60,6 +60,7 @@ class SearchScreen extends React.Component {
 		if (this.handleValidateNewCollectionName()){
 			this.props.axiosWrapper.axiosPost('/api/createCollectionWithSong/' + this.state.newCollectionName + "&" + this.state.currentSongTarget, {}, (function(res, data){
 				if (data.success) {
+                    this.handleHideCreateCollectionModal()
                     this.props.handleUpdateUser(data.data.user)
                     this.props.switchScreen(mainScreens.COLLECTION, data.data.collectionId)
 				}

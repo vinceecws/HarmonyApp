@@ -354,7 +354,7 @@ class SettingsScreen extends React.Component{
             			<div className='row'>
                             <div style={{position: 'relative', left:'15px', height:'30px'}}>
                                     <input disabled={this.state.hosting} type="checkbox" defaultChecked={this.state.profileUser.privateMode}  id="customSwitch1" className='checkbox' onClick={this.handlePrivateToggle} value={this.state.profileUser.privateMode}/>
-                                    <label for='customSwitch1' className='switch'></label>
+                                    <label htmlFor='customSwitch1' className='switch'></label>
                                     <label style={{position:'relative',bottom:'12px', left:'15px', color:'white'}}>Private Mode</label>
                             </div>
                             
