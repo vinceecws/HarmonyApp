@@ -282,7 +282,6 @@ class SearchScreen extends React.Component {
     fetchPlaylists = () => {
         this.props.axiosWrapper.axiosGet('/api/search', (function(res, data) {
             if (data.success) {
-                console.log(data.data.playlists)
                 this.setState({
                     playlists: data.data.playlists
                 })
