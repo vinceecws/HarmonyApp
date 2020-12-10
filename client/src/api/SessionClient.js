@@ -89,8 +89,6 @@ class SessionClient {
         Action receivers
     */
     parseAction = (action, ...args) => {
-        console.log(action);
-        console.log(args);
         switch (action) {
             case "chat":
                 this.receiveChat(args[0])
@@ -154,7 +152,7 @@ class SessionClient {
     leaveSession = (callback) => {
         this.socket.emit("leave", (response) => {
             if (response.status === 200) {
-                console.log("Session Left")
+                console.log("Session left")
             }
             
             if (callback) {

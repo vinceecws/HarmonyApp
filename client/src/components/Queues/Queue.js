@@ -154,8 +154,6 @@ class Queue {
         if (this._repeat === repeatStates.SONG) {
             return true
         }
-        console.log(this._futureQueue)
-        console.log(this._futureQueue.length)
         if (this._futureQueue.length > 0) {
             this._pastQueue.push(this._currentSong)
             var song = this._futureQueue.shift()

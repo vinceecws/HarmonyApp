@@ -15,7 +15,8 @@ class SessionScreen extends React.Component {
 		super(props);
 
 		this.state = {
-			loading: true,
+			loading: false,
+			unloading: false,
 			error: false,
 			id: null,
 			hostId: null,
@@ -58,10 +59,7 @@ class SessionScreen extends React.Component {
             })
 		}
 
-		console.log(prevState);
-		console.log(this.state.id);
-		console.log(this.props.screenProps);
-		if(!this.state.loading){
+		if (!this.state.loading && !this.state.unloading) {
 			if (this.props.screenProps) {
 				//If screen is active and new sessionId is passed
 				if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
@@ -91,8 +89,6 @@ class SessionScreen extends React.Component {
 				})
 			}
 		}
-        
-        
 	}
 
 	/*
@@ -204,6 +200,7 @@ class SessionScreen extends React.Component {
 					this.props.playVideo(queueState.current_song._id)
 					this.props.playerAPI.pauseVideo()
 				}
+				console.log("SEEK")
 				this.props.playerAPI.seekTo(time)
 			}
 			this.setState({
@@ -215,9 +212,6 @@ class SessionScreen extends React.Component {
 
 			this.props.queue.setShuffle(playerState.shuffle)
 			this.props.queue.setRepeat(playerState.repeat)
-
-			console.log(this.props.queue);
-
 		}
 	}
 
@@ -280,8 +274,9 @@ class SessionScreen extends React.Component {
 				}
 				this.props.sessionClient.emitSession(this.state.user.username, this.state.user._id, actionData)
 				this.props.sessionClient.endSession()
-				this.props.handleUpdateUser(data.data.user)
-				this.handleTearDown()
+				this.handleBeginTearDown(() => {
+					this.props.handleUpdateUser(data.data.user, this.handleTearDown)
+				})
 			}
 		}, true)
 	}
@@ -289,15 +284,17 @@ class SessionScreen extends React.Component {
 	handleLeaveSession = () => {
 		if (this.isGuest()) {
 			this.props.sessionClient.leaveSession()
-			this.props.handleUpdateCurrentSession(null)
-			this.handleTearDown()
+			this.handleBeginTearDown(() => {
+				this.props.handleUpdateCurrentSession(null, this.handleTearDown)
+			})
 		}
 		else {
 			this.props.axiosWrapper.axiosPost('/api/session/leaveSession', {}, (res, data) => {
 				if (data.success) {
 					this.props.sessionClient.leaveSession()
-					this.props.handleUpdateUser(data.data.user)
-					this.handleTearDown()
+					this.handleBeginTearDown(() => {
+						this.props.handleUpdateUser(data.data.user, this.handleTearDown)
+					})
 				}
 			}, true)
 		}
@@ -393,7 +390,6 @@ class SessionScreen extends React.Component {
 				sessionRole = sessionRoles.GUEST_NON_PARTICIPANT
 			}
 		}
-		console.log("assigned session role: "+ sessionRole)
 		this.setState({
 			role: sessionRole
 		}, () => {
@@ -402,7 +398,6 @@ class SessionScreen extends React.Component {
 	}
 
 	initSession = (session) => {
-		console.log(this.shouldIgnoreActions())
 		if (session) {
 			if (this.shouldEmitActions()) {
             	this.setState({
@@ -488,15 +483,21 @@ class SessionScreen extends React.Component {
 		Tear-down functions
 	*/
 
+	handleBeginTearDown = (callback) => {
+		this.setState({
+			unloading: true
+		}, callback)
+	}
+
 	handleTearDown = () => {
 		this.props.playerAPI.pauseVideo()
 		this.props.playerAPI.seekTo(0)
-		this.setState({
-			id: null
-		})
 		this.props.switchScreen(mainScreens.SESSION, null)
 		this.props.switchScreen(mainScreens.HOME)
-
+		this.setState({
+			id: null,
+			unloading: false
+		})
 	}
 
 	/*
@@ -507,7 +508,7 @@ class SessionScreen extends React.Component {
         return (this.state.role === sessionRoles.GUEST_NON_PARTICIPANT || this.state.role === sessionRoles.USER_PRIVATE_HOST || this.state.role === sessionRoles.USER_PUBLIC_HOST || this.state.role === sessionRoles.USER_NON_PARTICIPANT);
 	}
 	
-    isGuest = () =>{
+    isGuest = () => {
     	return (this.state.role === sessionRoles.GUEST_PARTICIPANT || this.state.role === sessionRoles.GUEST_NON_PARTICIPANT) && !this.state.user;
 	}
 	isNonParticipant = () =>{
