@@ -36,30 +36,20 @@ class ProfileScreen extends React.Component{
 		if (!_.isEqual(prevState.user, this.props.user)) {
 			this.setState({
 				user: this.props.user
-			}, () => {
-				if (this.state.user && this.state.user._id === this.state.userId) {
-					this.setState({
-						loading: true,
-						sessions_loading: true,
-						playlists_loading: true,
-						likedSongs_loading: true,
-						likedCollections_loading: true
-					}, this.fetchUser)
-				}
 			})
 		}
 
-		//If screen is active and new userId is passed
-        if (this.props.screenProps && this.props.screenProps.userId && (prevState.userId !== this.props.screenProps.userId)) {
-            this.setState({
+		//If screen is now active
+        if (!prevProps.visible && this.props.visible) {
+			this.setState({
 				userId: this.props.screenProps.userId,
 				loading: true,
 				sessions_loading: true,
 				playlists_loading: true,
 				likedSongs_loading: true,
 				likedCollections_loading: true
-            }, this.fetchUser)
-        }
+			}, this.fetchUser)
+		}
 	}
 
 	formatCount = (count) => {
