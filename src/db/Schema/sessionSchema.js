@@ -29,61 +29,6 @@ const sessionSchema = new mongoose.Schema({
     live: {
         type: Boolean,
         required: [true, "A session must be either live or passed"]
-    },
-    initialQueue: {
-        type: [String]
-    },
-    actionLog: {
-        type: [{
-            class: {
-                type: String,
-                required: [true, "Action class is required"]
-            },
-            timestamp: {
-                type: Date,
-                required: [true, "Action must have a timestamp"]
-            },
-            username: {
-                type: String,
-                required: [true, "Action must contain the actor's username"]
-            },
-            userId: {
-                type: String,
-                required: [true, "Action must containe the actor's user id"]
-            },
-            data: {
-                type: {
-                    action: {
-                        type: String
-                    },
-                    message: {
-                        type: String
-                    },
-                    from: {
-                        type: Number
-                    },
-                    to: {
-                        type: Number
-                    },
-                    index: {
-                        type: Number
-                    },
-                    songId: {
-                        type: String
-                    },
-                    state: {
-                        type: Number
-                    },
-                    newName: {
-                        type: String
-                    },
-                    time: {
-                        type: Date
-                    }
-                },
-                required: [true, "Action must have data as payload"]
-            }
-        }]
     }
 })
 

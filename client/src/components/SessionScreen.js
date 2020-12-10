@@ -1,4 +1,5 @@
 import React from 'react';
+import { sessionRoles } from '../const'
 import { icon_profile_image, icon_radio } from '../graphics';
 import ChatFeed from './Chat/ChatFeed.js';
 import QueueComponent from './Queues/QueueComponent.js';
@@ -24,6 +25,7 @@ class SessionScreen extends React.Component {
 			futureQueue: [],
 			chatLog: [],
 			messageText: "",
+			role: null,
 			user: this.props.user,
 		}
 	}
@@ -43,7 +45,8 @@ class SessionScreen extends React.Component {
 		this.sessionActionListener = this.props.sessionClient.unsubscribeFromAction("session", this.sessionActionListener)
 		this.queueActionListener = this.props.sessionClient.unsubscribeFromAction("queue", this.queueActionListener);
 		
-		this.futureQueueChangeListener = this.props.queue.unsubscribeFromEvent("futureQueueChange", this.futureQueueChangeListener)
+		this.futureQueueChangeListener = this.props.queue.unsubscribeFromEvent("futureQueueChange", this.futureQueueChangeListener);
+		this.pastQueueChangeListener = this.props.queue.unsubscribeFromEvent("pastQueueChange", this.handleQueueStateChange.bind(this));
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
@@ -58,7 +61,7 @@ class SessionScreen extends React.Component {
             this.setState({
 				_id: this.props.screenProps.sessionId,
 				loading: true,
-            }, this.getSession) //This still has to handle quitting the current session before joining new session
+            }, this.getSessionScenario) //This still has to handle quitting the current session before joining new session
         }
     }
 
@@ -177,34 +180,69 @@ class SessionScreen extends React.Component {
 		
 	}
 
-	getSession = () => { 
-		if (this.props.screenProps.sessionId){
-			this.props.axiosWrapper.axiosGet("/api/session/" + this.props.screenProps.sessionId, this.handleGetSession, true);
-		}
-		else {
-			if(this.props.user){
-				if(this.props.user.currentSession){
-					this.props.axiosWrapper.axiosGet("/api/session/" + this.props.user.currentSession, this.handleGetSession, true);
+	getSessionScenario = () => { 
+		let sessionRole;
+		if (this.state.user) { //User is logged in
+			if (this.state.user.currentSession) { //Currently in a live session
+				if (this.state.user.live){ //If live it means that the user is the host since they are in the session
+					sessionRole = sessionRoles.USER_PUBLIC_HOST;
 				}
-				else{ //Logged in
-					this.setState({
-						futureQueue: this.props.queue.getFutureQueue(),
-						pastQueue: this.props.queue.getPastQueue(),
-						loading:false
-		        	});
+				else { //It's possible to not be live but still be the host, which means we need to check if private mode is on
+					if (this.state.user.privateMode){ //private mode is on which means the user is hosting a private session
+						sessionRole = sessionRoles.USER_PRIVATE_HOST;
+					}
+					else { //this is a standard user who is joining a session
+						sessionRole = sessionRoles.USER_PARTICIPANT;
+					}
 				}
+			} 
+			else { //They are not in a session, which means we are fetching the session and joining
+				sessionRole = sessionRoles.USER_PARTICIPANT;
 			}
-			else{ //Not logged in
-				this.setState({
-					futureQueue: this.props.queue.getFutureQueue(),
-					pastQueue: this.props.queue.getPastQueue(),
-					loading:false
-	        	});
+		}
+		else { //User is not logged in (guest)
+			if (this.props.currentSession) { //guest is currently in a live session, check if this is different
+				sessionRole = sessionRoles.GUEST_PARTICIPANT;
+			}
+			else { //guest is just playing songs
+				sessionRole = sessionRoles.GUEST_NON_PARTICIPANT;
+			}
+		}
+		this.setState({
+			role: sessionRole
+		}, this.props.axiosWrapper.axiosGet("/api/session/" + this.state._id, this.handleGetSession, true));
+		
+		//if (this.props.screenProps.sessionId){
+		// 	this.props.axiosWrapper.axiosGet("/api/session/" + this.props.screenProps.sessionId, this.handleGetSession, true);
+		// }
+		
+		// if (this.props.match.params.sessionId){
+		// 	this.props.axiosWrapper.axiosGet("/api/session/" + this.props.match.params.sessionId, this.handleGetSession, true);
+		// }
+		// else {
+		// 	if(this.props.user){
+		// 		if(this.props.user.currentSession){
+		// 			this.props.axiosWrapper.axiosGet("/api/session/" + this.props.user.currentSession, this.handleGetSession, true);
+		// 		}
+		// 		else{ //Logged in
+		// 			this.setState({
+		// 				futureQueue: this.props.queue.getFutureQueue(),
+		// 				pastQueue: this.props.queue.getPastQueue(),
+		// 				loading:false
+		//         	});
+		// 		}
+		// 	}
+		// 	else{ //Not logged in
+		// 		this.setState({
+		// 			futureQueue: this.props.queue.getFutureQueue(),
+		// 			pastQueue: this.props.queue.getPastQueue(),
+		// 			loading:false
+	 //        	});
 	        	
-			}
+		// 	}
 			
 			
-		}
+		// }
 	}
 
 	handleTextChange = (e) => {
