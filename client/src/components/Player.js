@@ -6,6 +6,8 @@ import { icon_play_2, icon_pause_3, icon_previous, icon_next, icon_repeat_3, ico
 import { ReactComponent as FavoriteButton } from '../graphics/music_player_pack/035-like.svg'
 import { repeatStates, mainScreens } from '../const'
 
+const _ = require('lodash')
+
 class Player extends React.Component {
 
     constructor(props) {
@@ -43,7 +45,7 @@ class Player extends React.Component {
     }
 
     componentDidUpdate = (prevProps, prevState) => {
-        if (prevState.user !== this.props.user) {
+        if (!_.isEqual(prevState.user, this.props.user)) {
             this.setState({
                 user: this.props.user
             })
