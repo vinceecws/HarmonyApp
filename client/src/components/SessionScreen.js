@@ -78,7 +78,14 @@ class SessionScreen extends React.Component {
 				})
 			}
 
-        }
+		}
+		else if (prevState.id && this.state.id == null) {
+			this.setState({
+				loading: true
+			}, () => {
+				this.setSessionRole()
+			})
+		}
         
 	}
 
