@@ -193,7 +193,9 @@ class SessionScreen extends React.Component {
 				}
 				this.props.playerAPI.seekTo(time)
 			}
-
+			this.setState({
+				loading: false
+			})
 			this.props.queue.setFutureQueue(queueState.future_queue)
 			this.props.queue.setPastQueue(queueState.past_queue)
 			this.props.queue.setOriginalFutureQueue(queueState.original_future_queue)
@@ -201,9 +203,7 @@ class SessionScreen extends React.Component {
 			this.props.queue.setShuffle(playerState.shuffle)
 			this.props.queue.setRepeat(playerState.repeat)
 
-			this.setState({
-				loading: false
-			})
+			
 
 		}
 	}
@@ -566,7 +566,6 @@ class SessionScreen extends React.Component {
     render(){
 		var component
 		var button
-		console.log(this.state.id)
     	if(!this.state.loading && !this.state.error && this.isHost()){
     		component = 
     			<div style={{fontFamily: 'BalsamiqSans', marginLeft:'15px', height:'100%'}}>
