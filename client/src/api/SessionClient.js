@@ -154,7 +154,7 @@ class SessionClient {
     leaveSession = (callback) => {
         this.socket.emit("leave", (response) => {
             if (response.status === 200) {
-                console.log("Session joined")
+                console.log("Session Left")
             }
             
             if (callback) {

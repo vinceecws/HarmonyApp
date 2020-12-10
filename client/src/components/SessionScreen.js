@@ -475,8 +475,6 @@ class SessionScreen extends React.Component {
 	*/
 
 	handleTearDown = () => {
-		var newScreenProps = _.cloneDeep(this.props.screenProps)
-		newScreenProps.sessionId = null
 		this.props.playerAPI.pauseVideo()
 		this.props.playerAPI.seekTo(0)
 		this.props.switchScreen(mainScreens.SESSION, null)
@@ -565,6 +563,7 @@ class SessionScreen extends React.Component {
     render(){
 		var component
 		var button
+		console.log(this.state.id)
     	if(!this.state.loading && !this.state.error && this.isHost()){
     		component = 
     			<div style={{fontFamily: 'BalsamiqSans', marginLeft:'15px', height:'100%'}}>
