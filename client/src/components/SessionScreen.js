@@ -403,13 +403,18 @@ class SessionScreen extends React.Component {
 			else if (this.shouldReceiveActions()) {
 				this.setState({	
 					hostId: session.hostId,
-					hostName : session.hostName,
+					hostName: session.hostName,
 					name: session.name,
 					startTime: session.startTime
 				}, this.initSessionClient)
 			}
 			else if (this.shouldIgnoreActions()) {
 				this.setState({
+					id: session._id,
+					name: "Private Session",
+					hostId: session.hostId,
+					hostName: this.state.user.username,
+					startTime: session.startTime,
 					loading: false,
 					futureQueue: this.props.queue.getFutureQueue(),
 					pastQueue: this.props.queue.getPastQueue()
@@ -418,6 +423,10 @@ class SessionScreen extends React.Component {
         }
         else if (this.shouldIgnoreActions()) {
 			this.setState({
+				name: "",
+				hostName: "",
+				startTime: null,
+				chatLog: [],
 				loading: false,
 				futureQueue: this.props.queue.getFutureQueue(),
 				pastQueue: this.props.queue.getPastQueue()
@@ -472,26 +481,7 @@ class SessionScreen extends React.Component {
 		this.props.playerAPI.seekTo(0)
 		this.props.switchScreen(mainScreens.SESSION, null)
 		this.props.switchScreen(mainScreens.HOME)
-		this.handleResetState()
-		this.setSessionRole()
-	}
 
-	handleResetState = () => {
-		this.setState({
-			loading: true,
-			error: false,
-			id: null,
-			hostId: null,
-			hostName: null,
-			name: null,
-			startTime: null,
-			pastQueue: [],
-			futureQueue: [],
-			chatLog: [],
-			messageText: "",
-			role: sessionRoles.GUEST_NON_PARTICIPANT,
-			user: this.props.user,
-		})
 	}
 
 	/*
@@ -548,15 +538,30 @@ class SessionScreen extends React.Component {
 		return false
 	}
 	
-	renderEndButton = () =>{
-		if(this.state.role === sessionRoles.USER_PRIVATE_HOST || this.state.role === sessionRoles.USER_PUBLIC_HOST){
+	/*
+		UI
+	*/
+	renderEndButton = () => {
+		if (this.state.role === sessionRoles.USER_PRIVATE_HOST || this.state.role === sessionRoles.USER_PUBLIC_HOST) {
 			return <div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}} onClick={this.handleEndSession}>End Session</Button></div>
 
 		}
-		else{
+		else {
 			return
 		}
 	}
+
+	formatTime = () => {
+		if (!this.state.startTime) {
+			return ""
+		}
+		var time = new Date(this.state.startTime)
+        var sec = time.getSeconds()
+		var min = time.getMinutes()
+		var hour = time.getHours()
+        return hour + ":" + String(min).padStart(2, '0') + ":" + String(sec).padStart(2, '0')
+    }
+
     render(){
 		var component
 		var button
@@ -579,7 +584,7 @@ class SessionScreen extends React.Component {
 	        				</div>
 	        				<div className='col' style={{maxWidth:'15%', textAlign: 'right',height:'100%', padding:'1em', minWidth:'5%',color:'white',  float:'right'}}>
 	        					<div className='row body-text' style={{height:'30%', display:'block', textAlign:'center'}}>{this.state.live}<img src={icon_radio} style={{width:'30px'}}/></div>
-	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}>{this.state.startTime}</div>
+	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}>{this.formatTime()}</div>
 	        					{this.renderEndButton()}
 	        				</div>
 	        			</div>
@@ -638,7 +643,7 @@ class SessionScreen extends React.Component {
 	        				</div>
 	        				<div className='col' style={{maxWidth:'15%', textAlign: 'right',height:'100%', padding:'1em', minWidth:'5%',color:'white',  float:'right'}}>
 	        					<div className='row body-text' style={{height:'30%', display:'block', textAlign:'center'}}>{this.state.live}<img src={icon_radio} style={{width:'30px'}}/></div>
-	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}>{this.state.startTime}</div>
+	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}>{this.formatTime()}</div>
 	        					<div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}} onClick={this.handleLeaveSession}>Leave Session</Button></div>
 	        				</div>
 	        			</div>
