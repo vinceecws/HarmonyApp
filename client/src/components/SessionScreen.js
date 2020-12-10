@@ -274,8 +274,7 @@ class SessionScreen extends React.Component {
 				}
 				this.props.sessionClient.emitSession(this.state.user.username, this.state.user._id, actionData)
 				this.props.sessionClient.endSession()
-				this.props.handleUpdateUser(data.data.user)
-				this.handleTearDown()
+				this.props.handleUpdateUser(data.data.user, this.handleTearDown)
 			}
 		}, true)
 	}
@@ -283,15 +282,13 @@ class SessionScreen extends React.Component {
 	handleLeaveSession = () => {
 		if (this.isGuest()) {
 			this.props.sessionClient.leaveSession()
-			this.props.handleUpdateCurrentSession(null)
-			this.handleTearDown()
+			this.props.handleUpdateCurrentSession(null, this.handleTearDown)
 		}
 		else {
 			this.props.axiosWrapper.axiosPost('/api/session/leaveSession', {}, (res, data) => {
 				if (data.success) {
 					this.props.sessionClient.leaveSession()
-					this.props.handleUpdateUser(data.data.user)
-					this.handleTearDown()
+					this.props.handleUpdateUser(data.data.user, this.handleTearDown)
 				}
 			}, true)
 		}
@@ -488,9 +485,10 @@ class SessionScreen extends React.Component {
 		this.props.playerAPI.seekTo(0)
 		this.setState({
 			id: null
+		}, () => {
+			this.props.switchScreen(mainScreens.SESSION, null)
+			this.props.switchScreen(mainScreens.HOME)
 		})
-		this.props.switchScreen(mainScreens.SESSION, null)
-		this.props.switchScreen(mainScreens.HOME)
 	}
 
 	/*

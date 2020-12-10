@@ -84,17 +84,17 @@ class App extends React.Component {
         })
     }
 
-    handleUpdateUser = (updatedUser) => {
+    handleUpdateUser = (updatedUser, callback) => {
         this.setState({
             auth: true,
             user: updatedUser
-        });
+        }, callback);
     }
 
-    handleUpdateCurrentSession = (currentSession) => {
+    handleUpdateCurrentSession = (currentSession, callback) => {
         this.setState({
             currentSession: currentSession
-        })
+        }, callback)
     }
 
     render() {
