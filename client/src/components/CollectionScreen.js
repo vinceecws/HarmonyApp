@@ -312,7 +312,7 @@ class CollectionScreen extends React.Component{
         this.props.axiosWrapper.axiosGet('/api/session/newSession', (function(res, data){
             if (data.success){
                 //how to initialize session queue to songs in collection?
-                this.handleUpdateUser(data.data.user)
+                this.props.handleUpdateUser(data.data.user)
                 this.props.playVideo(this.state.songList[0]);
                 for (let i = 1; i < this.state.songList.length; i++){
                     this.props.queue.addSongToFutureQueue(this.state.songList[i])
@@ -320,7 +320,7 @@ class CollectionScreen extends React.Component{
                 this.switchScreen(mainScreens.SESSION, data.data.sessionId)
                 console.log('Created session from playlist')
             }
-        }))
+        }).bind(this, true))
         
     }
 

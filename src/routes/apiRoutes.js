@@ -256,10 +256,16 @@ module.exports = function(mainSocket, sessionSocket) {
         else {
             let user = stripUser(req.user)
             let newCollection = await mongooseQuery.createCollection(user._id, user.username, collectionName)
+            /*
             let updatedUser = await mongooseQuery.getUser({
                 _id: req.user._id
-            }).catch(err => res.sendStatus(404))
-
+            }).catch(err => res.sendStatus(404)) */
+            let updatedPlaylists = [];
+            for (let p of user.playlists){
+                updatedPlaylists.push(p);
+            }
+            updatedPlaylists.push(newCollection._id);
+            let updatedUser = await mongooseQuery.updateUser(user._id, updatedPlaylists);
             return res.status(200).json({
                 message: "Post success",
                 statusCode: 200,
