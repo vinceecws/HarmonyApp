@@ -43,11 +43,9 @@ class PlayerAPI {
 
     onPlayerStateChange = (e) => {
         if (e.data === window.YT.PlayerState.UNSTARTED || e.data === window.YT.PlayerState.BUFFERING) {
-            console.log("BUFFERING")
             this._playerBuffering = true
         }
         else {
-            console.log("NOT BUFFERING")
             this._playerBuffering = false
             this._bufferQueue.forEach(fn => fn()) //Flush buffered queue of function calls
             this._bufferQueue = []
@@ -181,6 +179,7 @@ class PlayerAPI {
 
     seekTo = (time) => {
         if (!this._playerBuffering && this._playerReady && this.player) {
+            this._playerBuffering = true
             this.player.seekTo(time)
         }
         else if (this._playerBuffering) {
@@ -190,6 +189,7 @@ class PlayerAPI {
 
     nextVideo = () => {
         if (!this._playerBuffering && this._playerReady && this.player) {
+            this._playerBuffering = true
             this.player.nextVideo()
         }
         else if (this._playerBuffering) {
@@ -199,6 +199,7 @@ class PlayerAPI {
 
     previousVideo = () => {
         if (!this._playerBuffering && this._playerReady && this.player) {
+            this._playerBuffering = true
             this.player.previousVideo()
         }
         else if (this._playerBuffering) {
