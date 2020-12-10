@@ -29,7 +29,7 @@ class CollectionScreen extends React.Component{
     }
 
     componentDidUpdate = (prevProps, prevState) => {
-        if (prevState.user !== this.props.user) {
+        if (!_.isEqual(prevState.user, this.props.user)) {
             this.setState({
                 user: this.props.user
             })

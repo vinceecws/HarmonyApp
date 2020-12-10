@@ -1023,9 +1023,10 @@ body, html {
   background-color: transparent !important;
 }
 
-.search-screen-results-category-list-item-img-overlay-dropdown-menu-collection .dropdown-menu a {
+.search-screen-results-category-list-item-img-overlay-dropdown-menu-collection .dropdown-menu div {
   font-family: BalsamiqSans;
-  color: whitesmoke
+  color: whitesmoke;
+  cursor: pointer;
 }
 
 .search-screen-results-category-list-item-img-overlay-dropdown .dropdown-item a {

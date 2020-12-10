@@ -6,6 +6,8 @@ import { icon_play_2, icon_pause_3, icon_previous, icon_next, icon_repeat_3, ico
 import { ReactComponent as FavoriteButton } from '../graphics/music_player_pack/035-like.svg'
 import { repeatStates, mainScreens } from '../const'
 
+const _ = require('lodash')
+
 class Player extends React.Component {
 
     constructor(props) {
@@ -17,7 +19,7 @@ class Player extends React.Component {
             paused: this.props.playerAPI.isPaused(),
             repeat: this.props.queue.getRepeat(),
             shuffle: this.props.queue.getShuffle(),
-            currentSong: this.props.queue.getCurrentSong(),
+            currentSong: this.getEmptySong(),
             currentTime: this.props.playerAPI.getCurrentTime(),
             seeking: false
         }
@@ -43,7 +45,7 @@ class Player extends React.Component {
     }
 
     componentDidUpdate = (prevProps, prevState) => {
-        if (prevState.user !== this.props.user) {
+        if (!_.isEqual(prevState.user, this.props.user)) {
             this.setState({
                 user: this.props.user
             })
@@ -248,19 +250,10 @@ class Player extends React.Component {
 
     handleTogglePlay = () => {
         var currentSong
-        var hasNext
-        var futureQueue
 
         if (!this.props.playerAPI.isPlayerInit()) { //Initialize on first use
-            if (this.props.queue.currentSongIsEmpty()) {
-                hasNext = this.props.queue.nextSong()
-            }
-            else {
-                hasNext = true
-            }
-
-            if (hasNext) {
-                currentSong = this.props.queue.getCurrentSong()
+            currentSong = this.props.queue.getCurrentSong()
+            if (currentSong) {
                 this.props.playerAPI.initIFrameAPI(currentSong._id)
                 if (this.props.shouldStartSession()) {
                     this.handleCreateSession()
@@ -273,23 +266,8 @@ class Player extends React.Component {
         }
 
         if (this.state.paused) {
-            if (this.props.queue.currentSongIsEmpty()) {
-                hasNext = this.props.queue.nextSong()
-
-                if (hasNext) {
-                    currentSong = this.props.queue.getCurrentSong()
-                    this.props.playerAPI.loadVideoById(currentSong._id)
-                    if (this.props.shouldStartSession()) {
-                        this.handleCreateSession()
-                    }
-                    else {
-                        this.handleEmitPlayerState("player", "play")
-                    }
-                }
-                return
-            }
-            else {
-                currentSong = this.props.queue.getCurrentSong()
+            currentSong = this.props.queue.getCurrentSong()
+            if (currentSong) {
                 this.props.playerAPI.playVideo()
                 if (this.props.shouldStartSession()) {
                     this.handleCreateSession()
@@ -297,8 +275,8 @@ class Player extends React.Component {
                 else {
                     this.handleEmitPlayerState("player", "play")
                 }
-                return
             }
+            return
         }
         else {
             this.handleEmitPlayerState("player", "pause")
@@ -340,6 +318,17 @@ class Player extends React.Component {
     handleToggleRepeat = (e) => {
         this.props.queue.toggleRepeat()
         this.handleEmitPlayerState("queue", "set_repeat", this.props.queue.getRepeat())
+    }
+
+    getEmptySong = () => {
+        return {
+            _id: "",
+            type: "song",
+            name: "",
+            creatorId: "",
+            creator: "",
+            image: null
+        }
     }
 
     getSongProgress = () => {
@@ -473,7 +462,7 @@ class Player extends React.Component {
                                     {creator}
                                 </div>
                                 {
-                                    !this.props.queue.currentSongIsEmpty() && this.state.user ?
+                                    !!this.props.queue.getCurrentSong() && this.state.user ?
                                     <Button id="player-song-favorite-button">
                                         <FavoriteButton className={this.getFavoriteButtonIconClass()} onClick={this.handleToggleFavorite.bind(this, this.state.currentSong._id)} />
                                     </Button> :

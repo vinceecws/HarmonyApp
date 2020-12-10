@@ -26,7 +26,7 @@ class Queue {
     constructor(pastQueue, futureQueue, currentSong, repeat=repeatStates.OFF, shuffle=false) {
         this._pastQueue = (pastQueue === undefined || pastQueue.length === 0) ? [] : pastQueue
         this._futureQueue = (futureQueue === undefined || futureQueue.length === 0) ? [] : futureQueue
-        this._currentSong = currentSong === undefined ? this.getEmptySong() : currentSong
+        this._currentSong = currentSong === undefined ? null : currentSong
         this._repeat = repeat
         this._shuffle = shuffle
 
@@ -70,21 +70,6 @@ class Queue {
     /*
         Queue States
     */
-
-    currentSongIsEmpty = () => {
-        return this._currentSong._id === ""
-    }
-
-    getEmptySong = () => {
-        return {
-            _id: "",
-            type: "song",
-            name: "",
-            creatorId: "",
-            creator: "",
-            image: null
-        }
-    }
 
     getCurrentSong = () => {
         return _.cloneDeep(this._currentSong)
@@ -271,6 +256,12 @@ class Queue {
     }
 
     addSongToFutureQueue = (song) => {
+        if (this._currentSong == null) {
+            this._currentSong = song
+            this.onChange.currentSongChange.forEach(handler => handler.call(this.getCurrentSong()))
+            return
+        }
+
         if (this._shuffle) {
             var ind = Math.floor(Math.random() * this._futureQueue.length - 1)
             this._futureQueue.splice(ind, 0, song)

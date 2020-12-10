@@ -33,7 +33,7 @@ class ProfileScreen extends React.Component{
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
-		if (prevState.user !== this.props.user) {
+		if (!_.isEqual(prevState.user, this.props.user)) {
 			this.setState({
 				user: this.props.user
 			}, () => {
@@ -258,7 +258,6 @@ class ProfileScreen extends React.Component{
 
 	fetchUserData = () => {
 		if (this.state.profileUser) {
-			console.log(this.state.profileUser)
 			if (this.state.profileUser.sessions.length > 0) {
 				this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.userId + '/sessions', (function(res, data) {
 					if (data.success) {

@@ -26,17 +26,21 @@ class SearchScreen extends React.Component {
         }
     }
 
-    componentDidUpdate = (prevProps, prevState) => {
-        if (prevState.user !== this.props.user) {
-            this.setState({
-                user: this.props.user
-            })
+    componentDidMount = () => {
+        if (this.state.user) {
+            this.fetchPlaylists()
         }
     }
 
-    componentDidMount = () => {
-        if (this.props.auth) {
-            this.fetchPlaylists()
+    componentDidUpdate = (prevProps, prevState) => {
+        if (!_.isEqual(prevState.user, this.props.user)) {
+            this.setState({
+                user: this.props.user
+            }, () => {
+                if (this.state.user) {
+                    this.fetchPlaylists()
+                }
+            })
         }
     }
 
@@ -277,6 +281,7 @@ class SearchScreen extends React.Component {
     fetchPlaylists = () => {
         this.props.axiosWrapper.axiosGet('/api/search', (function(res, data) {
             if (data.success) {
+                console.log(data.data.playlists)
                 this.setState({
                     playlists: data.data.playlists
                 })
@@ -426,7 +431,7 @@ class SearchScreen extends React.Component {
                                                                     {
                                                                         this.props.auth ?
                                                                         <div>
-                                                                            <DropdownItem onMouseEnter={this.handleMouseEnterDropdown} onMouseLeave={this.handleMouseLeaveDropdown}>
+                                                                            <DropdownItem as="div" onMouseEnter={this.handleMouseEnterDropdown} onMouseLeave={this.handleMouseLeaveDropdown}>
                                                                                 <DropdownButton
                                                                                     as={ButtonGroup}
                                                                                     key="right"
@@ -438,7 +443,7 @@ class SearchScreen extends React.Component {
                                                                                 >
                                                                                     {
                                                                                         this.state.playlists.map((playlist, playlist_ind) => 
-                                                                                            <Dropdown.Item key={playlist_ind} onClick={this.handleAddSongToCollection.bind(this, obj._id, playlist._id)}>{playlist.name}</Dropdown.Item>
+                                                                                            <Dropdown.Item as="div" key={playlist_ind} onClick={this.handleAddSongToCollection.bind(this, obj._id, playlist._id)}>{playlist.name}</Dropdown.Item>
                                                                                         )
                                                                                     }
                                                                                     {
