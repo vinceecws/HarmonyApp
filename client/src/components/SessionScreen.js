@@ -57,35 +57,40 @@ class SessionScreen extends React.Component {
             })
 		}
 
+		console.log(prevState);
+		console.log(this.state.id);
+		console.log(this.props.screenProps);
+		if(!this.state.loading){
+			if (this.props.screenProps) {
+				//If screen is active and new sessionId is passed
+				if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
+					this.setState({
+						id: this.props.screenProps.sessionId,
+						loading: true,
+					}, () => {
+						this.props.axiosWrapper.axiosGet("/api/session/" + this.state.id, this.setSessionRole, true)
+					}) //This still has to handle quitting the current session before joining new session
+				}
+				//If screen is active and no sessionId is passed
+				else if (prevState.id && this.props.screenProps.sessionId == null) {
+					this.setState({
+						id: null,
+						loading: true,
+					}, () => {
+						this.setSessionRole()
+					})
+				}
 
-        if (this.props.screenProps) {
-			//If screen is active and new sessionId is passed
-			if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
-				this.setState({
-					id: this.props.screenProps.sessionId,
-					loading: true,
-				}, () => {
-					this.props.axiosWrapper.axiosGet("/api/session/" + this.state.id, this.setSessionRole, true)
-				}) //This still has to handle quitting the current session before joining new session
 			}
-			//If screen is active and no sessionId is passed
-			else if (prevState.id && this.props.screenProps.sessionId == null) {
+			else if (prevState.id && this.state.id == null) {
 				this.setState({
-					id: null,
-					loading: true,
+					loading: true
 				}, () => {
 					this.setSessionRole()
 				})
 			}
-
 		}
-		else if (prevState.id && this.state.id == null) {
-			this.setState({
-				loading: true
-			}, () => {
-				this.setSessionRole()
-			})
-		}
+        
         
 	}
 
@@ -210,7 +215,7 @@ class SessionScreen extends React.Component {
 			this.props.queue.setShuffle(playerState.shuffle)
 			this.props.queue.setRepeat(playerState.repeat)
 
-			
+			console.log(this.props.queue);
 
 		}
 	}
@@ -396,6 +401,7 @@ class SessionScreen extends React.Component {
 	}
 
 	initSession = (session) => {
+		console.log(this.shouldIgnoreActions())
 		if (session) {
 			if (this.shouldEmitActions()) {
             	this.setState({
@@ -474,7 +480,7 @@ class SessionScreen extends React.Component {
 				loading: false,
 				error: true
 			})
-		}
+		}	
 	}
 
 	/*
