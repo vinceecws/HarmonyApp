@@ -15,6 +15,8 @@ import CollectionScreen from './CollectionScreen.js'
 import { Row, Col } from 'react-bootstrap'
 import { Route, Switch } from 'react-router-dom'
 
+const _ = require('lodash')
+
 class MainApp extends React.Component {
 
     constructor(props) {
@@ -24,24 +26,46 @@ class MainApp extends React.Component {
         this.queue = this.props.queue
         this.state = {
             currentScreen: mainScreens.HOME,
-            screenProps: null
+            screenProps: {
+                sessionId: null,
+                userId: null,
+                collectionId: null
+            }
         }
     }
 
     /* Screen navigation */
 
-    switchScreen = (newScreen, screenProps) => {
+    switchScreen = (...args) => {
         /* 
             Screens are indexed according to the enum mainScreens
+            switchScreen takes 2 arguments, newScreen in args[0] and ID in args[1]
 
-            Calling switchScreen without passing screenProps is mainly used for switching screens
+            Calling switchScreen without passing ID is mainly used for switching screens
             without re-rendering the existing content of the screen
-        */
 
-        if (screenProps) {
+            switchScreen can also be called with ID to update screenProps without switching screens,
+            by calling switchScreen(mainScreens[currentScreen], ID)
+        */
+        var newScreen = args[0]
+        if (args.length > 1 && args[1] !== undefined) {
+            var newScreenProps = _.cloneDeep(this.state.screenProps)
+            var id = args[1]
+            switch (newScreen) {
+                case mainScreens.SESSION:
+                    newScreenProps.sessionId = id
+                    break
+                case mainScreens.COLLECTION:
+                    newScreenProps.collectionId = id
+                    break
+                case mainScreens.PROFILE:
+                    newScreenProps.userId = id
+                    break
+                default:
+            }
             this.setState({
                 currentScreen: newScreen,
-                screenProps: screenProps
+                screenProps: newScreenProps
             })
         }
         else {
@@ -73,7 +97,7 @@ class MainApp extends React.Component {
         this.fetchVideoById(id, true).then((song) => {
             this.queue.setCurrentSong(song)
         })
-        if (this.playerAPI.isPlayerInit() === false) { //Initialize on first use
+        if (!this.playerAPI.isPlayerInit()) { //Initialize on first use
             this.playerAPI.initIFrameAPI(id)
         }
         else {
@@ -94,7 +118,7 @@ class MainApp extends React.Component {
     }
 
     shouldStartSession = () => {
-        return this.props.user && !this.props.user.privateMode && !this.props.user.live
+        return this.props.user && !this.props.user.hosting
     }
 
     render() {
@@ -111,10 +135,10 @@ class MainApp extends React.Component {
                     </Col>
                     <Col id="screen-container">
                         <SearchScreen visible={this.getScreenVisibility(mainScreens.SEARCH)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.SEARCH)} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} fetchVideoById={this.fetchVideoById} queryVideos={this.queryVideos} playVideo={this.playVideo} queue={this.queue} currentSession={this.props.currentSession} shouldStartSession={this.shouldStartSession} axiosWrapper={this.props.axiosWrapper}/>
-                        <SessionScreen visible={this.getScreenVisibility(mainScreens.SESSION)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.SESSION)} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} fetchVideoById={this.fetchVideoById} queue={this.queue} playVideo={this.playVideo} axiosWrapper={this.props.axiosWrapper} currentSession={this.props.currentSession} sessionClient={this.props.sessionClient} playerAPI={this.playerAPI}/>
+                        <SessionScreen visible={this.getScreenVisibility(mainScreens.SESSION)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.SESSION)} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} handleUpdateCurrentSession={this.props.handleUpdateCurrentSession} fetchVideoById={this.fetchVideoById} queue={this.queue} playVideo={this.playVideo} axiosWrapper={this.props.axiosWrapper} currentSession={this.props.currentSession} sessionClient={this.props.sessionClient} playerAPI={this.playerAPI}/>
                         <ProfileScreen visible={this.getScreenVisibility(mainScreens.PROFILE)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.PROFILE)} auth={this.props.auth} handleUpdateUser={this.props.handleUpdateUser} fetchVideoById={this.fetchVideoById} user={this.props.user} playVideo={this.playVideo} queue={this.queue} currentSession={this.props.currentSession} shouldStartSession={this.shouldStartSession} axiosWrapper={this.props.axiosWrapper}/>
                         <CollectionScreen visible={this.getScreenVisibility(mainScreens.COLLECTION)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.COLLECTION)} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} queue={this.queue} dataAPI={this.dataAPI} playVideo={this.playVideo} playerAPI={this.playerAPI} currentSession={this.props.currentSession} shouldStartSession={this.shouldStartSession}/>
-                        <SettingsScreen visible={this.getScreenVisibility(mainScreens.SETTINGS)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.SETTINGS)} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} currentSession={this.props.currentSession} />
+                        <SettingsScreen visible={this.getScreenVisibility(mainScreens.SETTINGS)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.SETTINGS)} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} currentSession={this.props.currentSession} history={this.props.history}/>
                         <HomeScreen visible={this.getScreenVisibility(mainScreens.HOME)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.HOME)} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} currentSession={this.props.currentSession} shouldStartSession={this.shouldStartSession}/>
                     </Col>
                 </Row>

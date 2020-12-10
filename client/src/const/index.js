@@ -27,8 +27,9 @@ export const sessionRoles = {
     'USER_PUBLIC_HOST': 0,
     'USER_PRIVATE_HOST': 1,
     'USER_PARTICIPANT': 2,
-    'GUEST_PARTICIPANT': 3,
-    'GUEST_NON_PARTICIPANT': 4
+    'USER_NON_PARTICIPANT': 3,
+    'GUEST_PARTICIPANT': 4,
+    'GUEST_NON_PARTICIPANT': 5
 }
 
 /*

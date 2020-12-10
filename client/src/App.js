@@ -70,9 +70,11 @@ class App extends React.Component {
 
     handleLogOut = () => {
         this.setState({
-            auth: false,
-            user: null
-        })
+                auth: false,
+                user: null
+            })
+        
+        
     }
 
     handleAuthenticate = (user) => {

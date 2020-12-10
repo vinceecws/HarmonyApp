@@ -57,9 +57,7 @@ class SearchScreen extends React.Component {
 			this.props.axiosWrapper.axiosPost('/api/createCollectionWithSong/' + this.state.newCollectionName + "&" + this.state.currentSongTarget, {}, (function(res, data){
 				if (data.success) {
                     this.props.handleUpdateUser(data.data.user)
-                    this.props.switchScreen(mainScreens.COLLECTION, {
-                        collectionId: data.data.collectionId
-                    })
+                    this.props.switchScreen(mainScreens.COLLECTION, data.data.collectionId)
 				}
 			}).bind(this), true)
 		}
@@ -161,77 +159,61 @@ class SearchScreen extends React.Component {
 
     handleGoToResultItem = (obj, e) => {
         if (obj.type === "session") {
-            this.props.switchScreen(mainScreens.SESSION, {
-                sessionId: obj._id
-            })
+            this.props.switchScreen(mainScreens.SESSION, obj._id)
         }
         else if (obj.type === "collection") {
-            this.props.switchScreen(mainScreens.COLLECTION, {
-                collectionId: obj._id
-            })
+            this.props.switchScreen(mainScreens.COLLECTION, obj._id)
         }
         else if (obj.type === "user") {
-            this.props.switchScreen(mainScreens.PROFILE, {
-                userId: obj._id
-            })
+            this.props.switchScreen(mainScreens.PROFILE, obj._id)
         }
     }
 
     handleGoToResultCreator = (obj, e) => {
         if (obj.type === "session") {
-            this.props.switchScreen(mainScreens.PROFILE, {
-                userId: obj.hostId
-            })
+            this.props.switchScreen(mainScreens.PROFILE, obj.hostId)
         }
         else if (obj.type === "collection") {
-            this.props.switchScreen(mainScreens.PROFILE, {
-                userId: obj.ownerId
-            })
+            this.props.switchScreen(mainScreens.PROFILE, obj.ownerId)
         }
     }
 
     handlePlayItem = (obj, e) => {
         if (obj.type === "song") {
+            this.props.playVideo(obj._id)
+
             if (this.props.shouldStartSession()) {
-                this.handleCreateSession([obj._id])
-            }
-            else {
-                this.props.playVideo(obj._id)
+                this.handleCreateSession()
             }
         }
         else if (obj.type === "session") {
-            this.props.switchScreen(mainScreens.SESSION, {
-                sessionId: obj._id
-            })
+            this.props.switchScreen(mainScreens.SESSION, obj._id)
         }
         else if (obj.type === "collection") {
             var songList = _.cloneDeep(obj.songList)
             if (songList.length > 0) {
-                if (this.props.shouldStartSession()) {
-                    this.handleCreateSession(songList)
-                }
-                else {
-                    this.props.playVideo(songList.shift())
+                this.props.playVideo(songList.shift())
 
-                    Promise.all(songList.map((songId) => {
-                        return this.props.fetchVideoById(songId, true)
-                    })).then((songs) => {
-                        songs.forEach(song => this.props.queue.addSongToFutureQueue(song))
-                    })
-                }
+                Promise.all(songList.map((songId) => {
+                    return this.props.fetchVideoById(songId, true)
+                })).then((songs) => {
+                    songs.forEach(song => this.props.queue.addSongToFutureQueue(song))
+                }).then(() => {
+                    if (this.props.shouldStartSession()) {
+                        this.handleCreateSession()
+                    }
+                })
             }
         }
     }
 
-    handleCreateSession = (initialQueue) => {
+    handleCreateSession = () => {
         this.props.axiosWrapper.axiosPost('/api/session/newSession', {
-            name: `${this.props.user.username}'s Live Session`,
-            initialQueue: initialQueue
+            name: `${this.props.user.username}'s Live Session`
         }, (function(res, data) {
 			if (data.success) {
-                this.props.switchScreen(mainScreens.SESSION, {
-                    sessionId: data.data.sessionId
-                })
+                this.props.handleUpdateUser(data.data.user)
+                this.props.switchScreen(mainScreens.SESSION, data.data.sessionId)
 			}
 		}).bind(this), true)
     }

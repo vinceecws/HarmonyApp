@@ -8,7 +8,7 @@ class QueueComponent extends React.Component{
         var QueueList;
         let renderStuff;
         if(QueueEntries!= null){
-            QueueList = QueueEntries.map((item, index) => 
+            QueueList = QueueEntries.map((item, index) => item !== null ?
 
 
             <QueueEntry 
@@ -20,7 +20,8 @@ class QueueComponent extends React.Component{
                 queueType={this.props.queueType}
                 isHost={this.props.isHost}
             />
-
+            :
+            item
             ); 
         }
         

@@ -48,7 +48,7 @@ class SessionEntry extends React.Component{
 			entry = <h1 className='session-entry-text body-text color-accented'>{this.props.name}</h1>;
 		}
 		return(
-			<div className="session-entry-container" onClick={() => this.props.switchScreen(mainScreens.SESSION, {sessionId: this.props.id})} onMouseEnter={this.handleEntry} onMouseLeave={this.handleLeave}>
+			<div className="session-entry-container" onClick={() => this.props.switchScreen(mainScreens.SESSION, this.props.id)} onMouseEnter={this.handleEntry} onMouseLeave={this.handleLeave}>
 				<div className='list-group-item list-group-item-action'>
 					<Row className="session-entry-row-container">
 						<Col className="session-entry-image-container">

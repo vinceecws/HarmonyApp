@@ -37,7 +37,7 @@ class ProfileScreen extends React.Component{
 			this.setState({
 				user: this.props.user
 			}, () => {
-				if (this.state.user._id === this.state.userId) {
+				if (this.state.user && this.state.user._id === this.state.userId) {
 					this.setState({
 						loading: true,
 						sessions_loading: true,
@@ -50,7 +50,7 @@ class ProfileScreen extends React.Component{
 		}
 
 		//If screen is active and new userId is passed
-        if (this.props.screenProps && (prevState.userId !== this.props.screenProps.userId)) {
+        if (this.props.screenProps && this.props.screenProps.userId && (prevState.userId !== this.props.screenProps.userId)) {
             this.setState({
 				userId: this.props.screenProps.userId,
 				loading: true,
@@ -75,74 +75,60 @@ class ProfileScreen extends React.Component{
 	}
 
 	handleGoToCollection = (id, e) => {
-		this.props.switchScreen(mainScreens.COLLECTION, {
-			collectionId: id
-		})
+		this.props.switchScreen(mainScreens.COLLECTION, id)
 	}
 
 	handleGoToItem = (obj, e) => {
         if (obj.type === "session") {
-			this.props.switchScreen(mainScreens.SESSION, {
-                sessionId: obj._id
-            })
+			this.props.switchScreen(mainScreens.SESSION, obj._id)
         }
         else if (obj.type === "collection") {
-			this.props.switchScreen(mainScreens.COLLECTION, {
-                collectionId: obj._id
-            })
+			this.props.switchScreen(mainScreens.COLLECTION, obj._id)
         }
 	}
 	
 	handleGoToCreator = (obj, e) => {
 		if (obj.type === "collection") {
-			this.props.switchScreen(mainScreens.PROFILE, {
-                userId: obj.ownerId
-            })
+			this.props.switchScreen(mainScreens.PROFILE, obj.ownerId)
         }
     }
 
 	handlePlayItem = (obj, e) => {
         if (obj.type === "song") {
-            if (this.props.shouldStartSession()) {
-                this.handleCreateSession([obj._id])
-            }
-            else {
-                this.props.playVideo(obj._id)
-            }
+			this.props.playVideo(obj._id)
+			
+			if (this.props.shouldStartSession()) {
+				this.handleCreateSession()
+			}
         }
         else if (obj.type === "session") {
-			this.props.switchScreen(mainScreens.SESSION, {
-                sessionId: obj._id
-            })
+			this.props.switchScreen(mainScreens.SESSION, obj._id)
         }
         else if (obj.type === "collection") {
 			var songList = _.cloneDeep(obj.songList)
             if (songList.length > 0) {
-                if (this.props.shouldStartSession()) {
-                    this.handleCreateSession(songList)
-                }
-                else {
-                    this.props.playVideo(songList.shift())
+				this.props.playVideo(songList.shift())
 
-                    Promise.all(songList.map((songId) => {
-                        return this.props.fetchVideoById(songId, true)
-                    })).then((songs) => {
-                        songs.forEach(song => this.props.queue.addSongToFutureQueue(song))
-                    })
-                }
+				Promise.all(songList.map((songId) => {
+					return this.props.fetchVideoById(songId, true)
+				})).then((songs) => {
+					songs.forEach(song => this.props.queue.addSongToFutureQueue(song))
+				}).then(() => {
+					if (this.props.shouldStartSession()) {
+                        this.handleCreateSession()
+                    }
+				})
             }
         }
 	}
 	
-	handleCreateSession = (initialQueue) => {
+	handleCreateSession = () => {
         this.props.axiosWrapper.axiosPost('/api/session/newSession', {
-            name: `${this.props.user.username}'s Live Session`,
-            initialQueue: initialQueue
+            name: `${this.props.user.username}'s Live Session`
         }, (function(res, data) {
 			if (data.success) {
-				this.props.switchScreen(mainScreens.SESSION, {
-					sessionId: data.data.sessionId
-				})
+				this.props.handleUpdateUser(data.data.user)
+				this.props.switchScreen(mainScreens.SESSION, data.data.sessionId)
 			}
 		}).bind(this), true)
     }

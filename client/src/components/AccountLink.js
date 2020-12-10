@@ -12,6 +12,7 @@ class AccountLink extends React.Component {
                 this.props.handleLogOut()
                 this.props.history.push("/login")
             }
+            
         }).bind(this), true)
     }
 
@@ -20,13 +21,13 @@ class AccountLink extends React.Component {
             return (
                 <Dropdown id="tab-component-account-link-container" as={ButtonGroup}>
                     <Button id="tab-component-account-link-button">
-                        <div onClick={() => this.props.switchScreen(mainScreens.PROFILE, {userId: this.props.user._id})}>
+                        <div onClick={() => this.props.switchScreen(mainScreens.PROFILE, this.props.user._id)}>
                             <Image id="tab-component-account-link-image" src={this.props.user.image ? this.props.user.image : icon_profile_image} />
                         </div>
                     </Button>
                     <Dropdown.Toggle split id="tab-component-account-link-dropdown-button" />
                     <Dropdown.Menu id="tab-component-account-link-dropdown-menu">
-                        <Dropdown.Item as={Button} onClick={() => this.props.switchScreen(mainScreens.PROFILE, {userId: this.props.user._id})}>
+                        <Dropdown.Item as={Button} onClick={() => this.props.switchScreen(mainScreens.PROFILE, this.props.user._id)}>
                             Profile
                         </Dropdown.Item>
                         <Dropdown.Item as={Button} onClick={() => this.props.switchScreen(mainScreens.SETTINGS)}>

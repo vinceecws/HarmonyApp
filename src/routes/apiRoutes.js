@@ -6,32 +6,6 @@ module.exports = function(mainSocket, sessionSocket) {
 
     apiRouter = express.Router()
 
-    apiRouter.get('/topSessions', async (req, res) => {
-        let sessions = await mongooseQuery.getSessions()
-            .catch(err => {
-                return res.status(401).json({
-                    error: {
-                        name: "Invalid session",
-                        message: "Invalid query"
-                    },
-                    message: "Invalid query",
-                    statusCode: 401,
-                    data: {
-                        sessions: null
-                    },
-                    success: false
-                })
-            });
-        return res.status(200).json({
-            message: "Fetch success",
-            statusCode: 200,
-            data: {
-                sessions: {sessions}
-            },
-            success: true
-        })
-    })
-
     apiRouter.post('/addSongToFavorites/:songId', async (req, res) => {
         let songId = req.params.songId
 
@@ -862,6 +836,60 @@ module.exports = function(mainSocket, sessionSocket) {
         }
         
     });
+    apiRouter.post('/settings/changePrivateMode', async (req, res) => {
+        if(req.user == null){
+            return res.status(404).json({
+                error: {
+                    name: "Invalid session",
+                    message: "Not found"
+                },
+                message: "Not found",
+                statusCode: 404,
+                data: {
+                    collection: null
+                },
+                success: false
+            })
+        }
+        let id = req.user._id
+        if(id == null){
+            return res.status(404).json({
+                error: {
+                    name: "Invalid session",
+                    message: "Not found"
+                },
+                message: "Not found",
+                statusCode: 404,
+                data: {
+                    collection: null
+                },
+                success: false
+            })
+        }
+        else{
+            let user = await mongooseQuery.changePrivateMode({'_id': id}, req.body);
+            if (!user) {
+                return res.status(200).json({
+                    message: "private mode could not be updated",
+                    statusCode: 422,
+                    data: {
+                        user: null
+                    },
+                    success: false
+                })
+            }
+            return res.status(200).json({
+                message: "Private mode changed",
+                data: {
+                    user: stripUser(user)
+                },
+                statusCode: 200,
+                success:true
+            })
+
+        }
+        
+    });
     apiRouter.post('/settings/changePassword', async (req, res) => {
         if(req.user == null){
             return res.status(404).json({
@@ -961,19 +989,21 @@ module.exports = function(mainSocket, sessionSocket) {
         }
         else {
             var user = stripUser(req.user)
-            var session = await mongooseQuery.createSession(user._id, user.username, req.body.name, Date.now(), req.body.initialQueue).catch(err => res.sendStatus(404))
-            var sessions = await mongooseQuery.getSessions().catch(err => {
-                mainSocket.emit('error')
-            })
-            /* Add support for emitting session creation to all listening sockets */
+            var session = await mongooseQuery.createSession(user._id, user.username, req.body.name, Date.now()).catch(err => res.sendStatus(404))
+            var updatedUser = await mongooseQuery.updateUser(user._id, {
+                currentSession: session._id,
+                live: !user.privateMode,
+                hosting: true
+            }).catch(err => res.sendStatus(404))
 
             return res.status(200).json({
                 message: "Session created",
                 statusCode: 200,
                 data: {
+                    user: stripUser(updatedUser),
                     sessionId: session._id,
                 },
-                success:true
+                success: true
             })
         }
     });
@@ -998,15 +1028,9 @@ module.exports = function(mainSocket, sessionSocket) {
             var session = await mongooseQuery.getSession({'_id': req.params.id});
             if (req.user){
                 var user = stripUser(req.user)
-                var updatedUser = user._id === session.hostId ? 
-                    (await mongooseQuery.updateUser(user._id, {
-                        live: true,
+                var updatedUser = await mongooseQuery.updateUser(user._id, {
                         currentSession: session._id
-                    }).catch(err => res.sendStatus(404)))
-                        :
-                    (await mongooseQuery.updateUser(user._id, {
-                        currentSession: session._id
-                    }).catch(err => res.sendStatus(404)))
+                    }).catch(err => res.sendStatus(404))
 
                 return res.status(200).json({
                     message: "Fetch success",
@@ -1028,51 +1052,37 @@ module.exports = function(mainSocket, sessionSocket) {
                     success: true
                 })
             }
-            
-            
-            
-            
         }
-
     });
 
 
-    apiRouter.post('/session/endSession/:id', async (req, res) => {
-        let id = req.params.id;
-        if (id == null){
-            return res.status(404).json({
-                error: {
-                    name: "Invalid session",
-                    message: "Not found"
-                },
-                message: "Not found",
-                statusCode: 404,
-                data: {
-                    session: null
-                },
-                success: false
-            })
-        }
-        else if (!req.user) {
-            return res.status(401).json({
-                error: {
-                    name: "Invalid session",
-                    message: "Unauthorized"
-                },
-                message: "Unauthorized",
-                statusCode: 401,
-                data: {
-                    session: null
-                },
-                success: false
-            })
-        }
-        else {
-            let session = await mongooseQuery.getSession(req.params.id).catch(err => {
-                res.sendStatus(404)
-            })
+    apiRouter.post('/session/endSession/', async (req, res) => {
+        if (req.user) {
+            var session = await mongooseQuery.getSession({'_id': req.user.currentSession}, true)
 
-            if (session.hostId !== req.user._id) {
+            if (String(session.hostId) === String(req.user._id)) {
+                await mongooseQuery.deleteSession({
+                    _id: session._id
+                }).catch(err => {
+                    res.sendStatus(404)
+                })
+
+                var updatedUser = await mongooseQuery.updateUser(req.user._id, {
+                    hosting: false,
+                    live: false,
+                    currentSession: null
+                }).catch(err => res.sendStatus(404))
+
+                return res.status(200).json({
+                    message: "End success",
+                    statusCode: 200,
+                    data: {
+                        user: stripUser(updatedUser)
+                    },
+                    success: true
+                })
+            }
+            else {
                 return res.status(401).json({
                     error: {
                         name: "Invalid credentials",
@@ -1081,37 +1091,55 @@ module.exports = function(mainSocket, sessionSocket) {
                     message: "Unauthorized",
                     statusCode: 401,
                     data: {
-                        session: null
+                        user: null
                     },
                     success: false
                 })
             }
-            else {
-                /* Need to emit end-session event to all participants */
-
-                await mongooseQuery.updateSession(req.params.id, {
-                    endTime: Date.now(),
-                    live: false,
-                    playerState: {},
-                    queueState: {}
-                }).catch(err => {
-                    res.sendStatus(404)
-                })
-
-                let sessions = await mongooseQuery.getSessions().catch(err => {
-                    mainSocket.emit('error')
-                })
-                mainSocket.emit('top-sessions', sessions)
-
-                return res.status(200).json({
-                    message: "Fetch successful",
-                    statusCode: 200,
-                    success: true
-                })
-            }
         }
-
+        else {
+            return res.status(401).json({
+                error: {
+                    name: "Invalid credentials",
+                    message: "Unauthorized"
+                },
+                message: "Unauthorized",
+                statusCode: 401,
+                data: {
+                    user: null
+                },
+                success: false
+            })
+        }
     });
+
+    apiRouter.post('/session/leaveSession', async (req, res) => {
+        if (req.user && req.user.currentSession) {
+            var user = stripUser(req.user)
+            var updatedUser = await mongooseQuery.updateUser(user._id, {
+                currentSession: null
+            }).catch(err => res.sendStatus(404))
+
+            return res.status(200).json({
+                message: "Leave success",
+                statusCode: 200,
+                data: {
+                    user: stripUser(updatedUser)
+                },
+                success: true
+            })
+        }
+        else {
+            return res.status(400).json({
+                message: "Invalid request",
+                statusCode: 400,
+                data: {
+                    user: null
+                },
+                success: true
+            })
+        }
+    })
 
     apiRouter.get('/search', async (req, res) => {
         if (req.user) {
@@ -1141,7 +1169,7 @@ module.exports = function(mainSocket, sessionSocket) {
     })
 
     apiRouter.get('/search/query=:search', async (req, res) => {
-        let sessionMatches = await mongooseQuery.getSessionsFromQuery(req.params.search, true)
+        let sessionMatches = await mongooseQuery.getSessionsFromQuery(req.params.search, true, true)
                                         .catch(err => res.sendStatus(404));
                                         
         let collectionMatches = await mongooseQuery.getCollectionsFromQuery(req.params.search, true)

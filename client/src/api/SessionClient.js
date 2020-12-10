@@ -76,7 +76,7 @@ class SessionClient {
         if (action in this.onActions) {
             var ind = this.onActions[action].findIndex(x => x == handler)
             if (ind > -1) {
-                var handler = this.onActions.splice(ind, 1)[0]
+                var handler = this.onActions[action].splice(ind, 1)[0]
                 return handler.destroy()
             }
             else {
@@ -90,6 +90,7 @@ class SessionClient {
     */
     parseAction = (action, ...args) => {
         console.log(action);
+        console.log(args);
         switch (action) {
             case "chat":
                 this.receiveChat(args[0])
@@ -139,7 +140,6 @@ class SessionClient {
         })
     }
     joinSession = (id, callback) => {
-        console.log("JOIN SESSION")
         this.socket.emit("join", id, (response) => {
             if (response.status === 200) {
                 console.log("Session joined")
@@ -154,7 +154,19 @@ class SessionClient {
     leaveSession = (callback) => {
         this.socket.emit("leave", (response) => {
             if (response.status === 200) {
-                console.log("Session joined")
+                console.log("Session Left")
+            }
+            
+            if (callback) {
+                callback(response)
+            }
+        })
+    }
+
+    endSession = (callback) => {
+        this.socket.emit("end", (response) => {
+            if (response.status === 200) {
+                console.log("Session ended")
             }
             
             if (callback) {

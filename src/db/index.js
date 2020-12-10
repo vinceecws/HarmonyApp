@@ -167,6 +167,20 @@ exports.changeBiography = async function(userObject, updateFieldsObject){
     return user;
     
 }
+exports.changePrivateMode = async function(userObject, updateFieldsObject){
+    console.log('update private mode for user');
+    
+    /*let user = await connection.then(async () => {
+        return await User.findOneAndUpdate(userObject, {$set:{'local.username':updateFieldsObject.username}}, {new: true});
+    }).catch(error => {return error});*/
+    
+    let user = await connection.then(async () => {
+        return await User.findOneAndUpdate(userObject, {$set:{'privateMode':updateFieldsObject.privateMode}}, {new: true});
+    }).catch(error => {return error});
+    
+    return user;
+    
+}
 exports.changePassword = async function(userObject, updateFieldsObject){
     console.log('update password for user');
     /*let user = await connection.then(async () => {
@@ -201,7 +215,7 @@ exports.deleteCollection = async function(collectionObject, lean=false){
     
 }
 
-exports.createSession = async function(hostId, hostName, name, startTime, initialQueue){
+exports.createSession = async function(hostId, hostName, name, startTime){
     let session = await new Session({
         hostId: hostId,
         hostName: hostName,
@@ -209,9 +223,7 @@ exports.createSession = async function(hostId, hostName, name, startTime, initia
         startTime: startTime,
         streams: 0,
         likes: 0,
-        live: false,
-        initialQueue: initialQueue,
-        actionLog: []
+        live: false
     }).save().catch(error => {return error});
     
     return session;
@@ -251,9 +263,11 @@ exports.getSession = async function(sessionObject, lean=false) {
     return session;
 }
 
-exports.getSessions = async function(){
+exports.getLiveSessions = async () => {
     let sessions = await connection.then(async () => {
-        return await Session.find({});
+        return await Session.find({
+            live: true
+        })
     }).catch(error => {return error});
     return sessions;
 }
@@ -277,17 +291,10 @@ exports.updateSession = async function(sessionID, updateObject, lean=false){
     return session;
 }
 
-exports.deleteSession = async function(sessionObject, lean=false){
-    console.log('Delete session');
-    let session = await connection.then(async () => {
-        if (lean) {
-            return await Session.findOneAndRemove(sessionObject).lean()
-        }
-        else {
-            return await Session.findOneAndRemove(sessionObject)
-        }
+exports.deleteSession = async function(sessionObject){
+    await connection.then(async () => {
+        return await Session.findOneAndRemove(sessionObject)
     }).catch(error => {return error});
-
 }
 
 
@@ -315,7 +322,7 @@ exports.getUsersFromQuery = async function(query, lean=false){
     return users;
 }
 
-exports.getSessionsFromQuery = async function(query, lean=false){
+exports.getSessionsFromQuery = async function(query, live=false, lean=false){
     let sessions = await connection.then(async () => {
         if (lean) {
             return await Session.find({'$or': [

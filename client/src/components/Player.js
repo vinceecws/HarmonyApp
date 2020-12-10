@@ -13,6 +13,7 @@ class Player extends React.Component {
         this.state = {
             user: this.props.user,
             showTitleTicker: false,
+            showCreatorTicker: false,
             paused: this.props.playerAPI.isPaused(),
             repeat: this.props.queue.getRepeat(),
             shuffle: this.props.queue.getShuffle(),
@@ -23,8 +24,8 @@ class Player extends React.Component {
     }
 
     componentDidMount = () => {
-        this.playerActionListener = this.props.sessionClient.subscribeToAction("player", this.handleApplyPlayerState.bind(this))
-        this.queueActionListener = this.props.sessionClient.subscribeToAction("queue", this.handleApplyPlayerState.bind(this))
+        this.playerActionListener = this.props.sessionClient.subscribeToAction("rcvdPlayer", this.handleApplyPlayerState.bind(this))
+        this.queueActionListener = this.props.sessionClient.subscribeToAction("rcvdQueue", this.handleApplyPlayerState.bind(this))
 
         this.currentSongChangeListener = this.props.queue.subscribeToEvent("currentSongChange", this.handleQueueStateChange.bind(this))
         this.repeatStateChangeListener = this.props.queue.subscribeToEvent("repeatStateChange", this.handleQueueStateChange.bind(this))
@@ -50,8 +51,8 @@ class Player extends React.Component {
     }
 
     componentWillUnmount = () => {
-        this.playerActionListener = this.props.sessionClient.unsubscribeFromAction("player", this.playerActionListener)
-        this.queueActionListener = this.props.sessionClient.unsubscribeFromAction("queue", this.queueActionListener)
+        this.playerActionListener = this.props.sessionClient.unsubscribeFromAction("rcvdPlayer", this.playerActionListener)
+        this.queueActionListener = this.props.sessionClient.unsubscribeFromAction("rcvdQueue", this.queueActionListener)
 
         this.currentSongChangeListener = this.props.queue.unsubscribeFromEvent("currentSongChange", this.currentSongChangeListener)
         this.repeatStateChangeListener = this.props.queue.unsubscribeFromEvent("repeatStateChange", this.repeatStateChangeListener)
@@ -74,36 +75,46 @@ class Player extends React.Component {
         })
     }
 
-    handleCreateSession = (initialQueue) => {
+    handleShowCreatorTicker = () => {
+        this.setState({
+            showCreatorTicker: true
+        })
+    }
+
+    handleHideCreatorTicker = () => {
+        this.setState({
+            showCreatorTicker: false
+        })
+    }
+
+    handleCreateSession = () => {
         this.props.axiosWrapper.axiosPost('/api/session/newSession', {
-            name: `${this.props.user.username}'s Live Session`,
-            initialQueue: initialQueue
+            name: `${this.state.user.username}'s Live Session`
         }, (function(res, data) {
 			if (data.success) {
-                this.props.switchScreen(mainScreens.SESSION, {
-                    sessionId: data.data.sessionId
-                })
+                this.props.handleUpdateUser(data.data.user)
+                this.props.switchScreen(mainScreens.SESSION, data.data.sessionId)
 			}
 		}).bind(this), true)
     }
 
     handleEmitPlayerState = (action, subaction, ...args) => {
-        if (!(this.props.currentSession && this.isHost())) {
+        if (!this.shouldEmitActions()) {
             return
         }
 
-        var username = this.props.user.username
-        var userId = this.props.user._id
+        var username = this.state.user.username
+        var userId = this.state.user._id
         var data = {}
         
         if (action === "player") {
             data.subaction = subaction
-            this.sessionClient.emitPlayer(username, userId, data)
+            this.props.sessionClient.emitPlayer(username, userId, data)
         }
         else if (action === "queue") {
             data.subaction = subaction
             data.state = args[0]
-            this.sessionClient.emitQueue(username, userId, data)
+            this.props.sessionClient.emitQueue(username, userId, data)
         }
     }
 
@@ -130,7 +141,7 @@ class Player extends React.Component {
     }
 
     handleApplyPlayerState = (action, actionObj) => {
-        if (this.props.currentSession && this.isHost()) {
+        if (!this.shouldReceiveActions()) {
             return
         }
 
@@ -230,7 +241,7 @@ class Player extends React.Component {
     }
 
     handleSetPlay = (val) => {
-        if (this.playerAPI.isPaused() !== val) {
+        if (!this.props.playerAPI.isPaused() !== val) {
             this.handleTogglePlay()
         }
     }
@@ -241,7 +252,6 @@ class Player extends React.Component {
         var futureQueue
 
         if (!this.props.playerAPI.isPlayerInit()) { //Initialize on first use
-            this.handleEmitPlayerState("player", "play")
             if (this.props.queue.currentSongIsEmpty()) {
                 hasNext = this.props.queue.nextSong()
             }
@@ -251,45 +261,43 @@ class Player extends React.Component {
 
             if (hasNext) {
                 currentSong = this.props.queue.getCurrentSong()
+                this.props.playerAPI.initIFrameAPI(currentSong._id)
                 if (this.props.shouldStartSession()) {
-                    futureQueue = this.props.queue.getFutureQueue()
-                    futureQueue.unshift(currentSong)
-                    this.handleCreateSession(futureQueue)
+                    this.handleCreateSession()
                 }
                 else {
-                    this.props.playerAPI.initIFrameAPI(currentSong._id)
+                    this.handleEmitPlayerState("player", "play")
                 }
             }
             return
         }
 
         if (this.state.paused) {
-            this.handleEmitPlayerState("player", "play")
             if (this.props.queue.currentSongIsEmpty()) {
                 hasNext = this.props.queue.nextSong()
 
                 if (hasNext) {
                     currentSong = this.props.queue.getCurrentSong()
+                    this.props.playerAPI.loadVideoById(currentSong._id)
                     if (this.props.shouldStartSession()) {
-                        futureQueue = this.props.queue.getFutureQueue()
-                        futureQueue.unshift(currentSong)
-                        this.handleCreateSession(futureQueue)
+                        this.handleCreateSession()
                     }
                     else {
-                        this.props.playerAPI.loadVideoById(currentSong._id)
+                        this.handleEmitPlayerState("player", "play")
                     }
                 }
+                return
             }
             else {
                 currentSong = this.props.queue.getCurrentSong()
+                this.props.playerAPI.playVideo()
                 if (this.props.shouldStartSession()) {
-                    futureQueue = this.props.queue.getFutureQueue()
-                    futureQueue.unshift(currentSong)
-                    this.handleCreateSession(futureQueue)
+                    this.handleCreateSession()
                 }
                 else {
-                    this.props.playerAPI.playVideo()
+                    this.handleEmitPlayerState("player", "play")
                 }
+                return
             }
         }
         else {
@@ -326,12 +334,12 @@ class Player extends React.Component {
 
     handleToggleShuffle = (e) => {
         this.props.queue.toggleShuffle()
-        this.handleEmitPlayerState("queue", "shuffle", this.props.queue.getShuffle())
+        this.handleEmitPlayerState("queue", "set_shuffle", this.props.queue.getShuffle())
     }
 
     handleToggleRepeat = (e) => {
         this.props.queue.toggleRepeat()
-        this.handleEmitPlayerState("queue", "repeat", this.props.queue.getRepeat())
+        this.handleEmitPlayerState("queue", "set_repeat", this.props.queue.getRepeat())
     }
 
     getSongProgress = () => {
@@ -397,51 +405,56 @@ class Player extends React.Component {
     }
 
     getPlayerControlsDisabled = () => {
-        return this.props.currentSession && !this.isHost() //In a live Session and not the host
+        return this.shouldReceiveActions()
     }
 
     getSeekDisabled = () => {
-        return this.props.currentSession //In a live Session
+        return this.shouldReceiveActions() || this.shouldEmitActions()
     }
 
-    /*
-        Is user hosting their own session?
-        True, if logged-in user is hosting a live Session, logged-in user is hosting a private Session, or guest user is hosting an offline Session
-        False, if logged-in user is participating in a live Session, or guest user is participating in a live Session
-    */
-    isHost = () => {
-        if (this.props.user) { //Logged-in
-            if (this.props.currentSession) { //In a live Session
-                if (this.props.user.live) { //Hosting
-                    return true 
-                }
-                else { //Participating
-                    return false
-                }
-            }
-            else { //Private session or no session
+    shouldEmitActions = () => {
+        /* True if logged-in, in a Session, hosting and not in Private Mode */
+        if (this.state.user && this.state.user.currentSession && this.state.user.hosting && this.state.user.live) {
+            return true
+        }
+        return false
+    }
+
+    shouldReceiveActions = () => {
+        /* True if in a live Session, and not hosting */
+        if (this.state.user) {
+            if (this.state.user.currentSession && !this.state.user.hosting) {
                 return true
             }
+            return false
         }
-        else { //Guest
-            if (this.props.currentSession) { //In a live Session, participating
-                return false
-            }
-            else {
-                return true //Offline session or no session
-            }
+        else if (this.props.currentSession) {
+            return true
         }
+        return false
     }
 
     render(){
         var title
+        var creator
         if (this.state.showTitleTicker) {
-            title =  <Ticker speed={6}>
+            title =  
+                    <Ticker speed={6}>
                         {({index}) => (<h1 id="player-song-title-ticker" className="body-text color-contrasted">{this.getSongName()}</h1>)}
-                     </Ticker>;
+                    </Ticker>
         }
         else {
             title = <h1 className="body-text color-contrasted">{this.getSongName()}</h1>
+        }
+
+        if (this.state.showCreatorTicker) {
+            creator =  
+                    <Ticker speed={6}>
+                        {({index}) => (<h1 id="player-song-title-ticker" className="body-text color-contrasted">{this.getArtist()}</h1>)}
+                    </Ticker>
+        }
+        else {
+            creator = <h1 className="body-text color-contrasted">{this.getArtist()}</h1>
         }
         return(
             <Container id="player-container" fluid>
@@ -456,7 +469,9 @@ class Player extends React.Component {
                                 <div className="fade-single-line-overflow body-text color-contrasted" onMouseEnter={this.handleShowTitleTicker} onMouseLeave={this.handleHideTitleTicker}>
                                     {title}
                                 </div>
-                                <div className="fade-single-line-overflow tiny-text color-contrasted">{this.getArtist()}</div>
+                                <div className="fade-single-line-overflow body-text color-contrasted" onMouseEnter={this.handleShowCreatorTicker} onMouseLeave={this.handleHideCreatorTicker}>
+                                    {creator}
+                                </div>
                                 {
                                     !this.props.queue.currentSongIsEmpty() && this.state.user ?
                                     <Button id="player-song-favorite-button">

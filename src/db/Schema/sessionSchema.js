@@ -17,9 +17,6 @@ const sessionSchema = new mongoose.Schema({
     startTime: {
         type: Number
     },
-    endTime: {
-        type: Number
-    },
     streams: {
         type: Number
     },
@@ -28,7 +25,7 @@ const sessionSchema = new mongoose.Schema({
     },
     live: {
         type: Boolean,
-        required: [true, "A session must be either live or passed"]
+        default: false
     }
 })
 

@@ -14,7 +14,6 @@ class SettingsScreen extends React.Component{
             new_password:"",
             confirm_password: "",
             biography: "",
-            privateMode: false,
             loading: true,
             profileUser: null,
             changeUsername_invalidPassword: false,
@@ -50,6 +49,11 @@ class SettingsScreen extends React.Component{
             changePassword_validated: false
         })
     }
+    clearBiography = () => {
+        this.setState({
+            biography: this.props.user.biography
+        })
+    }
     handleCloseUsernameModal = () => {
         
         this.props.history.goBack()
@@ -58,16 +62,31 @@ class SettingsScreen extends React.Component{
     handleCloseBiographyModal = () => {
         
         this.props.history.goBack()
-        this.setState({
-            biography: ""
-        })
+        this.clearBiography()
     }
     handleClosePasswordModal = () => {
         
         this.props.history.goBack()
         this.clearPasswordCredentials()
     }
+    handlePrivateToggle = () =>{
+        this.props.axiosWrapper.axiosPost('/api/settings/changePrivateMode', {
+                privateMode: !this.state.profileUser.privateMode
+                
+        }, (function(res, data) {
+            if (data.success) {
+                this.props.handleUpdateUser(data.data.user);  
+                this.setState({
+                    profileUser: data.data.user
+                })
+            }
+        }).bind(this), true);
+        
+    }
     handleUsernameChange = (e) => {
+        if(e.target.value.length > this.state.character_limit){
+            e.target.value = e.target.value.substring(0, this.state.character_limit)
+        }
         if(!(e.target.value.length > this.state.character_limit)){
             this.setState({
                 username: e.target.value,
@@ -77,6 +96,9 @@ class SettingsScreen extends React.Component{
 
     }
     handleBiographyChange = (e) => {
+        if(e.target.value.length > this.state.character_limit){
+            e.target.value = e.target.value.substring(0, this.state.character_limit)
+        }
         if(!(e.target.value.length > this.state.character_limit)){
             this.setState({
                 biography: e.target.value
@@ -87,6 +109,9 @@ class SettingsScreen extends React.Component{
     }
 
     handleChangeUsernamePassword = (e) => {
+        if(e.target.value.length > this.state.character_limit){
+            e.target.value = e.target.value.substring(0, this.state.character_limit)
+        }
         if(!(e.target.value.length > this.state.character_limit)){
             this.setState({
                 password: e.target.value,
@@ -96,6 +121,9 @@ class SettingsScreen extends React.Component{
         }
     }
     handleChangeNewPassword = (e) => {
+        if(e.target.value.length > this.state.character_limit){
+            e.target.value = e.target.value.substring(0, this.state.character_limit)
+        }
         if(!(e.target.value.length > this.state.character_limit)){
             this.setState({
                 new_password: e.target.value
@@ -104,6 +132,9 @@ class SettingsScreen extends React.Component{
     }
 
     handleChangeUsernameConfirmPassword = (e) => {
+        if(e.target.value.length > this.state.character_limit){
+            e.target.value = e.target.value.substring(0, this.state.character_limit)
+        }
         if(!(e.target.value.length > this.state.character_limit)){
             this.setState({
             confirm_password: e.target.value
@@ -112,7 +143,7 @@ class SettingsScreen extends React.Component{
         
     }
     handleValidateBiography = (e) =>{
-        return this.state.biography.length < this.state.character_limit;
+        return this.state.biography.length <= this.state.character_limit;
     }
     handleValidateUsername = (e) =>{
          if (this.state.username.trim() === ""){
@@ -204,6 +235,7 @@ class SettingsScreen extends React.Component{
                         changeUsername_taken: false,
                         changeUsername_invalidPassword: false
                     });
+                    this.handleCloseUsernameModal();
                 }
                 else {
                     if(data.statusCode === 409){
@@ -232,7 +264,7 @@ class SettingsScreen extends React.Component{
     }
     handleBiography = (e) => {
         e.preventDefault();
-        if(this.state.biography.length < this.state.character_limit){
+        if(this.state.biography.length <= this.state.character_limit){
             this.props.axiosWrapper.axiosPost('/api/settings/changeBiography', {
                     
                     biography: this.state.biography
@@ -243,6 +275,7 @@ class SettingsScreen extends React.Component{
                     this.setState({
                         changeBiography_validated: true
                     })
+                    this.handleCloseBiographyModal();
                 }
             }).bind(this), true)
         }
@@ -268,7 +301,7 @@ class SettingsScreen extends React.Component{
                     this.setState({
                         changePassword_invalidPassword: false
                     });
-                    this.clearPasswordCredentials();
+                    this.handleClosePasswordModal();
                 }
                 else {
                     // Handle username taken prompting here
@@ -290,13 +323,14 @@ class SettingsScreen extends React.Component{
         
     }
     getPrivateMode = () =>{
-    	return this.state.user.privateMode;
+    	return this.state.privateMode;
     }
     fetchUser = () => {
         this.props.axiosWrapper.axiosGet('/api/settings', (function(res, data) {
             if (data.success) {
                 this.setState({
                     profileUser: data.data.user,
+                    biography: data.data.user.biography,
                     loading: false
                 })
             }
@@ -314,7 +348,7 @@ class SettingsScreen extends React.Component{
                         <div className='body-text color-contrasted'>SETTINGS</div>
             			<div className='row'>
                             <div style={{position: 'relative', left:'15px', height:'30px'}}>
-                                    <input type="checkbox" id="customSwitch1" className='checkbox'/>
+                                    <input type="checkbox" defaultChecked={this.state.profileUser.privateMode}  id="customSwitch1" className='checkbox' onClick={this.handlePrivateToggle} value={this.state.profileUser.privateMode}/>
                                     <label for='customSwitch1' className='switch'></label>
                                     <label style={{position:'relative',bottom:'12px', left:'15px', color:'white'}}>Private Mode</label>
                             </div>
