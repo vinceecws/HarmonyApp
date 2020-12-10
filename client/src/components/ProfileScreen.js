@@ -249,7 +249,7 @@ class ProfileScreen extends React.Component{
 	fetchUserData = () => {
 		if (this.state.profileUser) {
 			if (this.state.profileUser.sessions.length > 0) {
-				this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.userId + '/sessions', (function(res, data) {
+				this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.profileUser._id + '/sessions', (function(res, data) {
 					if (data.success) {
 						this.setState({
 							sessions: data.data.sessions,
@@ -260,12 +260,13 @@ class ProfileScreen extends React.Component{
 			}
 			else if (this.state.sessions_loading) {
 				this.setState({
+					sessions: [],
 					sessions_loading: false
 				})
 			}
 
 			if (this.state.profileUser.playlists.length > 0) {
-				this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.userId + '/playlists', (function(res, data) {
+				this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.profileUser._id + '/playlists', (function(res, data) {
 					if (data.success) {
 						this.setState({
 							playlists: data.data.playlists,
@@ -276,6 +277,7 @@ class ProfileScreen extends React.Component{
 			}
 			else if (this.state.playlists_loading) {
 				this.setState({
+					playlists: [],
 					playlists_loading: false
 				})
 			}
@@ -292,14 +294,14 @@ class ProfileScreen extends React.Component{
 			}
 			else if (this.state.likedSongs_loading) {
 				this.setState({
+					likedSongs: [],
 					likedSongs_loading: false
 				})
 			}
 
 			if (this.state.profileUser.likedCollections.length > 0) {
-				this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.userId + '/likedCollections', (function(res, data) {
+				this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.profileUser._id + '/likedCollections', (function(res, data) {
 					if (data.success && data.data.likedCollections.length > 0) {
-						console.log(true)
 						this.setState({
 							likedCollections: data.data.likedCollections,
 							likedCollections_loading: false
@@ -311,6 +313,7 @@ class ProfileScreen extends React.Component{
 			}
 			else if (this.state.likedCollections_loading) {
 				this.setState({
+					likedCollections: [],
 					likedCollections_loading: false
 				})
 			}

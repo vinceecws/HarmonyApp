@@ -200,7 +200,6 @@ class SessionScreen extends React.Component {
 					this.props.playVideo(queueState.current_song._id)
 					this.props.playerAPI.pauseVideo()
 				}
-				console.log("SEEK")
 				this.props.playerAPI.seekTo(time)
 			}
 			this.setState({
@@ -366,7 +365,7 @@ class SessionScreen extends React.Component {
 		if (data?.data?.session) { //Live Session is loaded
 			session = data.data.session
 			if (this.state.user) { //User is logged in
-				if (String(session.hostId) === String(this.state.user._id)) { 
+				if (session.hostId === this.state.user._id) { 
 					if (this.state.user.privateMode) {
 						sessionRole = sessionRoles.USER_PRIVATE_HOST
 					}
@@ -464,7 +463,6 @@ class SessionScreen extends React.Component {
 				subaction: "get_session_state"
 			}
 			if (this.isGuest()) {
-				this.props.handleUpdateCurrentSession(this.state.id)
 				this.props.sessionClient.emitSession("", "", data)
 			}
 			else {
