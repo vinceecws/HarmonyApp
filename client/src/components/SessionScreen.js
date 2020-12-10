@@ -590,7 +590,7 @@ class SessionScreen extends React.Component {
 								{line1}
 							</div>
 							<Link  className="subtitle color-accented" to="/login">	
-								<Button className="session-screen-empty-notice-button bg-color-harmony" onClick ={this.state.role === sessionRoles.GUEST_PARTICIPANT ? this.handleLeaveSession : false}>
+								<Button className="session-screen-empty-notice-button bg-color-harmony" onClick ={this.state.role === sessionRoles.GUEST_PARTICIPANT ? this.handleLeaveSession : ()=>{}}>
 									<div className="subtitle color-accented">
 										{line2}
 									</div>

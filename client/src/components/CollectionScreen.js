@@ -303,11 +303,25 @@ class CollectionScreen extends React.Component{
         this.props.axiosWrapper.axiosGet('/api/collection/delete/' + this.state.collectionId, (function(res, data){
             if (data.success){
                 this.props.handleUpdateUser(data.data.user);
-                this.props.switchScreen(mainScreens.PROFILE, {
-                    userId: data.data.user._id
-                })
+                this.props.switchScreen(mainScreens.PROFILE, data.data.user._id)
             }
         }).bind(this), true)
+    }
+
+    onCreateSession = () => {
+        this.props.axiosWrapper.axiosGet('/api/session/newSession', (function(res, data){
+            if (data.success){
+                //how to initialize session queue to songs in collection?
+                this.props.handleUpdateUser(data.data.user)
+                this.props.playVideo(this.state.songList[0]);
+                for (let i = 1; i < this.state.songList.length; i++){
+                    this.props.queue.addSongToFutureQueue(this.state.songList[i])
+                }
+                this.switchScreen(mainScreens.SESSION, data.data.sessionId)
+                console.log('Created session from playlist')
+            }
+        }).bind(this, true))
+        
     }
 
     //reorder songlist (persistant)
@@ -315,13 +329,13 @@ class CollectionScreen extends React.Component{
         console.log(result);
         if (result.destination !== null && result.source !== null){
             //update frontend
-            /*
+            
             let newStateSongList = _.cloneDeep(this.state.songList);
             let movedSong = newStateSongList[result.source];
             newStateSongList.splice(result.source.index, 1);
             newStateSongList.splice(result.destination.index, 0, movedSong);
             this.setState({songList: newStateSongList});
-            */
+            
 
             //update backend
             let newSongList = this.state.collection.songList;
@@ -430,11 +444,19 @@ class CollectionScreen extends React.Component{
                                                 Edit Description
                                             </Button>
                                         </Dropdown.Item>
+                                        
                                         <Dropdown.Item>
                                             <Button onClick={this.onDeleteCollection}>
                                                 Delete Collection
                                             </Button>
                                         </Dropdown.Item>
+                                        {this.state.songList.length > 0 ?
+                                        (<Dropdown.Item>
+                                            <Button onClick={this.onCreateSession}>
+                                                Start Session from Collection
+                                            </Button>
+                                        </Dropdown.Item>) : <div></div>
+                                        }
                                     </Dropdown.Menu>
                                 </Dropdown> 
                             </div>
@@ -456,7 +478,7 @@ class CollectionScreen extends React.Component{
                     
                     <div className='row' style={{paddingTop: '5px', border: '2px solid black', backgroundColor: 'grey'}}>
                         <h5 className='collection-page-text' style={{marginLeft: '10px', marginRight: '30%'}}>Title</h5>
-                        <h5 className='collection-page-text' style={{marginRight: '20%'}}>Artist</h5>
+                        <h5 className='collection-page-text' style={{marginRight: '20%'}}>Creator</h5>
                         <h5 className='collection-page-text' style={{marginRight: '10%'}}>Date Added</h5>
                         <h5 className='collection-page-text' style={{marginRight: '10%'}}>Duration</h5>
                     </div>
