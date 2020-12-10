@@ -14,7 +14,8 @@ class SessionScreen extends React.Component {
 		super(props);
 
 		this.state = {
-			loading: true,
+			loading: false,
+			unloading: false,
 			error: false,
 			id: null,
 			hostId: null,
@@ -46,7 +47,7 @@ class SessionScreen extends React.Component {
 		this.chatActionListener = this.props.sessionClient.unsubscribeFromAction("rcvdChat", this.chatActionListener)
 		this.sessionActionListener = this.props.sessionClient.unsubscribeFromAction("rcvdSession", this.sessionActionListener)
 		
-		this.futureQueueChangeListener = this.props.queue.unsubscribeFromEvent("futureQueueChange", this.futureQueueChangeListener);
+		this.futureQueueChangeListener = this.props.queue.unsubscribeFromEvent("futureQueueChange", this.futureQueueChangeListener)
 		this.pastQueueChangeListener = this.props.queue.unsubscribeFromEvent("pastQueueChange", this.pastQueueChangeListener)
 	}
 
@@ -57,36 +58,36 @@ class SessionScreen extends React.Component {
             })
 		}
 
+		if (!this.state.loading && !this.state.unloading) {
+			if (this.props.screenProps) {
+				//If screen is active and new sessionId is passed
+				if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
+					this.setState({
+						id: this.props.screenProps.sessionId,
+						loading: true,
+					}, () => {
+						this.props.axiosWrapper.axiosGet("/api/session/" + this.state.id, this.setSessionRole, true)
+					}) //This still has to handle quitting the current session before joining new session
+				}
+				//If screen is active and no sessionId is passed
+				else if (prevState.id && this.props.screenProps.sessionId == null) {
+					this.setState({
+						id: null,
+						loading: true,
+					}, () => {
+						this.setSessionRole()
+					})
+				}
 
-        if (this.props.screenProps) {
-			//If screen is active and new sessionId is passed
-			if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
-				this.setState({
-					id: this.props.screenProps.sessionId,
-					loading: true,
-				}, () => {
-					this.props.axiosWrapper.axiosGet("/api/session/" + this.state.id, this.setSessionRole, true)
-				}) //This still has to handle quitting the current session before joining new session
 			}
-			//If screen is active and no sessionId is passed
-			else if (prevState.id && this.props.screenProps.sessionId == null) {
+			else if (prevState.id && this.state.id == null) {
 				this.setState({
-					id: null,
-					loading: true,
+					loading: true
 				}, () => {
 					this.setSessionRole()
 				})
 			}
-
 		}
-		else if (prevState.id && this.state.id == null) {
-			this.setState({
-				loading: true
-			}, () => {
-				this.setSessionRole()
-			})
-		}
-        
 	}
 
 	/*
@@ -198,20 +199,18 @@ class SessionScreen extends React.Component {
 					this.props.playVideo(queueState.current_song._id)
 					this.props.playerAPI.pauseVideo()
 				}
+				console.log("SEEK")
 				this.props.playerAPI.seekTo(time)
 			}
-
+			this.setState({
+				loading: false
+			})
 			this.props.queue.setFutureQueue(queueState.future_queue)
 			this.props.queue.setPastQueue(queueState.past_queue)
 			this.props.queue.setOriginalFutureQueue(queueState.original_future_queue)
 
 			this.props.queue.setShuffle(playerState.shuffle)
 			this.props.queue.setRepeat(playerState.repeat)
-
-			this.setState({
-				loading: false
-			})
-
 		}
 	}
 
@@ -274,7 +273,9 @@ class SessionScreen extends React.Component {
 				}
 				this.props.sessionClient.emitSession(this.state.user.username, this.state.user._id, actionData)
 				this.props.sessionClient.endSession()
-				this.props.handleUpdateUser(data.data.user, this.handleTearDown)
+				this.handleBeginTearDown(() => {
+					this.props.handleUpdateUser(data.data.user, this.handleTearDown)
+				})
 			}
 		}, true)
 	}
@@ -282,13 +283,17 @@ class SessionScreen extends React.Component {
 	handleLeaveSession = () => {
 		if (this.isGuest()) {
 			this.props.sessionClient.leaveSession()
-			this.props.handleUpdateCurrentSession(null, this.handleTearDown)
+			this.handleBeginTearDown(() => {
+				this.props.handleUpdateCurrentSession(null, this.handleTearDown)
+			})
 		}
 		else {
 			this.props.axiosWrapper.axiosPost('/api/session/leaveSession', {}, (res, data) => {
 				if (data.success) {
 					this.props.sessionClient.leaveSession()
-					this.props.handleUpdateUser(data.data.user, this.handleTearDown)
+					this.handleBeginTearDown(() => {
+						this.props.handleUpdateUser(data.data.user, this.handleTearDown)
+					})
 				}
 			}, true)
 		}
@@ -384,7 +389,6 @@ class SessionScreen extends React.Component {
 				sessionRole = sessionRoles.GUEST_NON_PARTICIPANT
 			}
 		}
-		console.log("assigned session role: "+ sessionRole)
 		this.setState({
 			role: sessionRole
 		}, () => {
@@ -396,7 +400,6 @@ class SessionScreen extends React.Component {
 		if (session) {
 			if (this.shouldEmitActions()) {
             	this.setState({
-	        		id: session._id,
 					hostId: session.hostId,
 					hostName : session.hostName,
 					name: session.name,
@@ -407,7 +410,6 @@ class SessionScreen extends React.Component {
 			}
 			else if (this.shouldReceiveActions()) {
 				this.setState({	
-					id: session._id,
 					hostId: session.hostId,
 					hostName: session.hostName,
 					name: session.name,
@@ -473,21 +475,27 @@ class SessionScreen extends React.Component {
 				loading: false,
 				error: true
 			})
-		}
+		}	
 	}
 
 	/*
 		Tear-down functions
 	*/
 
+	handleBeginTearDown = (callback) => {
+		this.setState({
+			unloading: true
+		}, callback)
+	}
+
 	handleTearDown = () => {
 		this.props.playerAPI.pauseVideo()
 		this.props.playerAPI.seekTo(0)
+		this.props.switchScreen(mainScreens.SESSION, null)
+		this.props.switchScreen(mainScreens.HOME)
 		this.setState({
-			id: null
-		}, () => {
-			this.props.switchScreen(mainScreens.SESSION, null)
-			this.props.switchScreen(mainScreens.HOME)
+			id: null,
+			unloading: false
 		})
 	}
 
@@ -499,7 +507,7 @@ class SessionScreen extends React.Component {
         return (this.state.role === sessionRoles.GUEST_NON_PARTICIPANT || this.state.role === sessionRoles.USER_PRIVATE_HOST || this.state.role === sessionRoles.USER_PUBLIC_HOST || this.state.role === sessionRoles.USER_NON_PARTICIPANT);
 	}
 	
-    isGuest = () =>{
+    isGuest = () => {
     	return (this.state.role === sessionRoles.GUEST_PARTICIPANT || this.state.role === sessionRoles.GUEST_NON_PARTICIPANT) && !this.state.user;
 	}
 
