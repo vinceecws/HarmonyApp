@@ -324,16 +324,38 @@ exports.getUsersFromQuery = async function(query, lean=false){
 exports.getSessionsFromQuery = async function(query, live=false, lean=false){
     let sessions = await connection.then(async () => {
         if (lean) {
-            return await Session.find({'$or': [
-                {'name': {'$regex': query, '$options': 'i'}},
-                {'hostName': {'$regex': query, '$options': 'i'}}
-            ]}).lean()
+            if (live) {
+                return await Session.find({'$and': [
+                    {'$or':[
+                        {name: {'$regex': query, '$options': 'i'}},
+                        {hostName: {'$regex': query, '$options': 'i'}}]
+                    },
+                    {live: true}
+                ]}).lean()
+            }
+            else {
+                return await Session.find({'$or': [
+                    {name: {'$regex': query, '$options': 'i'}},
+                    {hostName: {'$regex': query, '$options': 'i'}}
+                ]}).lean()
+            }
         }
         else {
-            return await Session.find({'$or': [
-                {'name': {'$regex': query, '$options': 'i'}},
-                {'hostName': {'$regex': query, '$options': 'i'}}
-            ]})
+            if (live) {
+                return await Session.find({'$and': [
+                    {'$or':[
+                        {name: {'$regex': query, '$options': 'i'}},
+                        {hostName: {'$regex': query, '$options': 'i'}}]
+                    },
+                    {live: true}
+                ]})
+            }
+            else {
+                return await Session.find({'$or': [
+                    {name: {'$regex': query, '$options': 'i'}},
+                    {hostName: {'$regex': query, '$options': 'i'}}
+                ]})
+            }
         }
     }).catch(error => {return error});
     return sessions;
