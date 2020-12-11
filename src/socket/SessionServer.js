@@ -75,7 +75,6 @@ class SessionServer {
         else {
             clientSocket.emit("session-error", "Client is not authenticated")
         }
-        console.log("session ready in server")
     }
 
     joinSession = (clientSocket, sessionId) => {
@@ -167,7 +166,6 @@ class SessionServer {
     emitSession = (clientSocket, sessionObj) => {
         var newSessionObj = this.createActionObj("session", sessionObj.username, sessionObj.userId, sessionObj.data)
         this.socket.to([...clientSocket.rooms][1]).emit("session", newSessionObj)
-        console.log("EMIT SESSION IN SERVER: "+sessionObj)
     }
 }
 

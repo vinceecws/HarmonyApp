@@ -65,16 +65,23 @@ class SessionScreen extends React.Component {
 				if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
 					this.setState({
 						id: this.props.screenProps.sessionId,
-						loading: true,
+						loading: true
 					}, () => {
-						this.props.axiosWrapper.axiosGet("/api/session/" + this.state.id, this.setSessionRole, true)
+						this.props.axiosWrapper.axiosGet("/api/session/" + this.state.id, (res, data) => {
+							if (this.state.user) {
+								this.props.handleUpdateUser(data.data.user, this.setSessionRole.bind(this, data))
+							}
+							else {
+								this.props.handleUpdateCurrentSession(data.data.session._id, this.setSessionRole.bind(this, data))
+							}
+						}, true)
 					}) //This still has to handle quitting the current session before joining new session
 				}
 				//If screen is active and no sessionId is passed
 				else if (prevState.id && this.props.screenProps.sessionId == null) {
 					this.setState({
 						id: null,
-						loading: true,
+						loading: true
 					}, () => {
 						this.setSessionRole()
 					})
@@ -359,7 +366,7 @@ class SessionScreen extends React.Component {
 	/*
 		Build-up functions
 	*/
-	setSessionRole = (_, data) => { 
+	setSessionRole = (data) => { 
 		var sessionRole
 		var session
 		if (data?.data?.session) { //Live Session is loaded
@@ -463,6 +470,7 @@ class SessionScreen extends React.Component {
 				subaction: "get_session_state"
 			}
 			if (this.isGuest()) {
+				this.props.handleUpdateCurrentSession(this.state.id)
 				this.props.sessionClient.emitSession("", "", data)
 			}
 			else {
