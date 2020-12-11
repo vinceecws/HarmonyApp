@@ -201,7 +201,6 @@ exports.changePassword = async function(userObject, updateFieldsObject){
     return user;
     
 }
-//updateCollection({'_id': '5faaa7f7f098b317d81e5585'}, {name: 'the bigger crunch'});
 
 exports.deleteCollection = async function(collectionObject, lean=false){
     let collection = await connection.then(async () => {

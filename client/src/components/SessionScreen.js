@@ -143,6 +143,7 @@ class SessionScreen extends React.Component {
 	}
 
 	handleSessionAction = (action, actionObj) => {
+		console.log(actionObj)
 		if (actionObj.action === 'session'){
 			switch(actionObj.data.subaction){
 				case 'end_session':

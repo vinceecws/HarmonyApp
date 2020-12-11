@@ -89,6 +89,7 @@ class SessionClient {
         Action receivers
     */
     parseAction = (action, ...args) => {
+        console.log(action)
         switch (action) {
             case "chat":
                 this.receiveChat(args[0])
