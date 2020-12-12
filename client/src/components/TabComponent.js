@@ -5,9 +5,6 @@ import { mainScreens } from '../const'
 class TabComponent extends React.Component{
     constructor(props){
         super(props)
-        this.state = {
-            lastScreen: mainScreens.HOME
-        }
     }
 
     handleSwitchScreen = (newScreen) => {
@@ -18,7 +15,7 @@ class TabComponent extends React.Component{
     }
 
     getTabComponentClass = (screen) => {
-        return screen === this.state.lastScreen ? 'tab-component-link-selected ' : 'tab-component-link '
+        return screen === this.props.currentScreen ? 'tab-component-link-selected ' : 'tab-component-link '
     }
 
     render(){
@@ -26,13 +23,13 @@ class TabComponent extends React.Component{
             <div id="tab-component-container">
                 <ul id='tab-component-nav-container' className='nav'>
                     <li className='nav-item tab-component-link-container'>
-                        <div className={this.getTabComponentClass(mainScreens.HOME) + 'title color-accented'} onClick={() => this.handleSwitchScreen(mainScreens.HOME)} to={'/main'}>Home</div>
+                        <div className={this.getTabComponentClass(mainScreens.HOME) + 'title color-accented'} onClick={() => this.handleSwitchScreen(mainScreens.HOME)}>Home</div>
                     </li>
                     <li className='nav-item tab-component-link-container'>
-                        <div className={this.getTabComponentClass(mainScreens.SESSION) + 'title color-accented'} onClick={() => this.handleSwitchScreen(mainScreens.SESSION)} to={'/main'}>Session</div>
+                        <div className={this.getTabComponentClass(mainScreens.SESSION) + 'title color-accented'} onClick={() => this.handleSwitchScreen(mainScreens.SESSION)}>Session</div>
                     </li>
                     <li className='nav-item tab-component-link-container'>
-                        <div className={this.getTabComponentClass(mainScreens.SEARCH) + 'title color-accented'} onClick={() => this.handleSwitchScreen(mainScreens.SEARCH)} to={'/main'}>Search</div>
+                        <div className={this.getTabComponentClass(mainScreens.SEARCH) + 'title color-accented'} onClick={() => this.handleSwitchScreen(mainScreens.SEARCH)}>Search</div>
                     </li>
                 </ul>
                 <AccountLink switchScreen={this.props.switchScreen} auth={this.props.auth} user={this.props.user} axiosWrapper={this.props.axiosWrapper} handleLogOut={this.props.handleLogOut} history={this.props.history}/>

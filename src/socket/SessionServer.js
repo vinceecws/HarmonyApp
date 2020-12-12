@@ -1,4 +1,5 @@
-const mongooseQuery = require('../db');
+const mongooseQuery = require('../db')
+const stripUser = require('../routes').stripUser
 
 class SessionServer {
 
@@ -9,11 +10,15 @@ class SessionServer {
     }
 
     initSocket = () => {
-        this.socket.on('connect', async (socket) => {
+        this.socket.on('connect', (socket) => {
             /* Access equivalent of PassportJS's "req.user" here as "socket.request.user" */
 
             socket.onAny((event, ...args) => {
                 this.parseAction(event, socket, ...args)
+            })
+
+            socket.on('disconnecting', () => {
+                this.terminateSession(socket)
             })
         })
     }
@@ -62,6 +67,54 @@ class SessionServer {
     }
 
     /*
+        terminateSession handles the graceful termination of the application on the client-side.
+        It handles, if you are a Session host, ending the Session; if you are a participant, leaving the Session.
+    */
+    async terminateSession (clientSocket) {
+        if (![...clientSocket.rooms][1]) { //If not in a Session
+            return
+        }
+        var user = clientSocket.request.user
+        if (user) {
+            //Temporary solution until socket.request.user gets passed updated User
+            user = await mongooseQuery.getUser({_id: user._id}, true)
+            user = stripUser(user)
+            if (user.hosting) { //Host
+                var actionObj = this.createActionObj("session", user.username, user._id, {
+                    subaction: "end_session"
+                })
+                this.socket.to(String(user.currentSession)).emit("session", actionObj)
+
+                await mongooseQuery.deleteSession({
+                    _id: user.currentSession
+                })
+                await mongooseQuery.updateUser(user._id, {
+                    currentSession: null,
+                    hosting: false,
+                    live: false
+                })
+            }
+            else { //User participant
+                await mongooseQuery.updateSession(user.currentSession, {
+                    $inc: {
+                        streams: -1
+                    }
+                })
+                await mongooseQuery.updateUser(user._id, {
+                    currentSession: null
+                })
+            }
+        }
+        else { //Guest participant
+            this.leaveSession(clientSocket)
+        }
+
+        mongooseQuery.getLiveSessions().then(sessions => {
+            this.mainSocket.emit('top-sessions', sessions)
+        })
+    }
+
+    /*
         clientSocket is the socket associated with the emitting client, which has an id that is different from the user id.
         sessionId is the id of the Socket IO room of the Session, same as the session id.
     */
@@ -75,7 +128,6 @@ class SessionServer {
         else {
             clientSocket.emit("session-error", "Client is not authenticated")
         }
-        console.log("session ready in server")
     }
 
     joinSession = (clientSocket, sessionId) => {
@@ -167,7 +219,6 @@ class SessionServer {
     emitSession = (clientSocket, sessionObj) => {
         var newSessionObj = this.createActionObj("session", sessionObj.username, sessionObj.userId, sessionObj.data)
         this.socket.to([...clientSocket.rooms][1]).emit("session", newSessionObj)
-        console.log("EMIT SESSION IN SERVER: "+sessionObj)
     }
 }
 

@@ -1,9 +1,10 @@
 import React from 'react'
 import Spinner from './Spinner'
-import {icon_music_1, icon_like, icon_play_2, icon_pause_3, icon_add_3, 
-    icon_up_arrow, icon_down_arrow, menu_button_white, delete_button_white} from '../graphics'
+import { icon_music_1, icon_like, menu_button_white, delete_button_white } from '../graphics'
+import { ReactComponent as FavoriteButton } from '../graphics/music_player_pack/035-like.svg'
+import { ReactComponent as DeleteButton } from '../graphics/user_pack/delete-button-white.svg'
 import { Image, Button, Dropdown, ButtonGroup, Modal } from 'react-bootstrap';
-import {Droppable, DragDropContext, Draggable} from 'react-beautiful-dnd'
+import { Droppable, DragDropContext, Draggable } from 'react-beautiful-dnd'
 import { mainScreens } from '../const'
 
 const _ = require('lodash');
@@ -234,8 +235,9 @@ class CollectionScreen extends React.Component{
         }
     }
 
-    getDurationString(duration){
-        //console.log('Duration: ', duration);
+    getSongDuration(duration){
+        console.log('Duration: ', duration);
+        return duration[2] + ':' + duration[4] + duration[5];
         //return String(duration / 60).padStart(2, '0') + ':' + String(duration % 60)
     }
 
@@ -354,6 +356,11 @@ class CollectionScreen extends React.Component{
         return false;
     }
 
+    getCollectionFavoriteButtonClass = () => {
+
+        return this.state.favorited ? "collection-favorite-button-icon-on" : "collection-favorite-button-icon"
+    }
+
     render(){
         var component
         if (this.state.loading) {
@@ -418,7 +425,7 @@ class CollectionScreen extends React.Component{
                         </div>
 
                         {/* Queue Buttons */}
-                        <div className='col'>
+                        <div className='col' style={{display: 'flex',  justifyContent: 'center'}}>
                             {this.ownsCollection() ?
                             <div className='row'>
                                 <Dropdown className="search-screen-results-category-list-item-img-overlay-dropdown" as={ButtonGroup}>
@@ -456,9 +463,8 @@ class CollectionScreen extends React.Component{
                         }
                         {this.props.user ? 
                             <div className='row'>
-                                <Button id='player-song-favorite-button' style={{position: 'relative',  paddingTop: '5%'}}>
-                                    <Image className={'player-song-favorite-button-icon'} onClick={this.onPressLikeCollection} src={icon_like} 
-                                            style={{minHeight: '40px', minWidth: '40px', marginTop: '20px', backgroundColor: this.state.favorited ? '#00e400' : 'transparent'}} roundedCircle/>
+                                <Button className='collection-favorite-button' style={{position: 'relative',  paddingTop: '5%'}}>
+                                    <FavoriteButton className={this.getCollectionFavoriteButtonClass()} onClick={this.onPressLikeCollection}/>
                                 </Button>
                             </div>
                             : <div></div>
@@ -469,10 +475,9 @@ class CollectionScreen extends React.Component{
                     {/* Queue List */}
                     
                     <div className='row' style={{paddingTop: '5px', border: '2px solid black', backgroundColor: 'grey'}}>
-                        <h5 className='collection-page-text' style={{marginLeft: '10px', marginRight: '30%'}}>Title</h5>
-                        <h5 className='collection-page-text' style={{marginRight: '20%'}}>Creator</h5>
-                        <h5 className='collection-page-text' style={{marginRight: '10%'}}>Date Added</h5>
-                        <h5 className='collection-page-text' style={{marginRight: '10%'}}>Duration</h5>
+                        <h5 className='collection-page-text' style={{marginLeft: '1%', minWidth: '40%'}}>Title</h5>
+                        <h5 className='collection-page-text' style={{minWidth: '30%'}}>Creator</h5>
+                        <h5 className='collection-page-text' style={{minWidth: '20%'}}>Duration</h5>
                     </div>
 
                     {/* Songs */}
@@ -486,24 +491,21 @@ class CollectionScreen extends React.Component{
                                     (<Draggable key={e._id} draggableId={e._id} index={i} style={{minWidth: '100%'}}>
                                         {(provided) => 
                                         (<li className="collection-page-rows" style={{minWidth: '90vw'}} {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
-                                            <div style={{display: 'flex', alignItems: 'center'}}>
-                                                <div className='collection-song-title ellipsis-multi-line-overflow'  style={{display: 'inline-block', marginLeft: '15px', marginRight: '2.5%', width: '27%'}} onClick={() => this.onPlayCollection(e, i)}>{e.name}</div>
-                                                <div className='collection-song-title ellipsis-multi-line-overflow' style={{display: 'inline-block', width: '20%', marginRight: '2%'}}><div>{e.creator}</div></div>
-                                                <div className='collection-page-text' style={{display: 'inline-block', marginRight: '10.5%'}}>{this.getDateAdded()}</div>
-                                                <div className='collection-page-text' style={{display: 'inline-block', marginRight: '5%'}}>{this.getDurationString(e.duration, i)} </div>
+                                            <div style={{display: 'flex', alignItems: 'center', height: '40px'}}>
+                                                <div className='collection-song-title ellipsis-multi-line-overflow'  style={{display: 'inline-block', marginLeft: '1%', minWidth: '35%', marginRight: '5%'}} onClick={() => this.onPlayCollection(e, i)}>{e.name}</div>
+                                                <div className='collection-song-title ellipsis-multi-line-overflow' style={{display: 'inline-block', minWidth: '25%', marginRight: '5%'}}>{e.creator}</div>
+                                                <div className='collection-page-text' style={{display: 'inline-block', minWidth: '15%', marginRight: '5%'}}>{this.getSongDuration(e.duration)} </div>
                                                 { this.props.user ? 
-                                                    <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}}>
+                                                    <Button className='collection-song-favorite-button' style={{position: 'relative', display: 'inline-block', height: '40px', width: '40px'}}>
                                                         {/* Fix during implementation */}
-                                                        <Image className='player-song-favorite-button-icon' src={icon_like} 
-                                                                style={{maxHeight: '25px', maxWidth: '25px', backgroundColor: e.favorited ? '#00e400' : 'transparent'}} 
-                                                                onClick={() => this.onPressLikeSong(e)} roundedCircle/>
+                                                        <FavoriteButton onClick={() => this.onPressLikeSong(e)} className={e.favorited ? "collection-song-favorite-button-icon-on" : "collection-song-favorite-button-icon"}/>
                                                     </Button>
                                                     : <div></div>
                                                 }
                                                 { this.ownsCollection() ? 
-                                                <Button id='player-song-favorite-button' style={{position: 'relative', display: 'inline-block'}} 
+                                                <Button className='collection-song-favorite-button' style={{position: 'relative', display: 'inline-block', height: '40px', width: '40px'}} 
                                                         onClick={() => this.onPressDeleteSong(e)}>
-                                                    <img src={delete_button_white} style={{maxHeight: '25px', maxWidth: '25px'}}></img>
+                                                    <DeleteButton className="collection-song-favorite-button-icon"/>
                                                 </Button>
                                                 : <div></div>
                                                 }

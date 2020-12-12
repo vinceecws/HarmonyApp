@@ -27,4 +27,13 @@ const collectionSchema = new mongoose.Schema ({
     }
 })
 
+collectionSchema.post('findOneAndRemove', function (next) {
+    this.model('userSchema').updateMany({}, {
+        $pull: {
+            likedSongs: this._id
+        }
+    })
+    next()
+})
+
 module.exports = collectionSchema

@@ -301,14 +301,12 @@ class ProfileScreen extends React.Component{
 
 			if (this.state.profileUser.likedCollections.length > 0) {
 				this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.profileUser._id + '/likedCollections', (function(res, data) {
-					if (data.success && data.data.likedCollections.length > 0) {
+					if (data.success) {
 						this.setState({
 							likedCollections: data.data.likedCollections,
 							likedCollections_loading: false
 						})
 					}
-					else {
-						this.setState({ likedCollections_loading: false})}
 				}).bind(this), true)
 			}
 			else if (this.state.likedCollections_loading) {
@@ -355,9 +353,9 @@ class ProfileScreen extends React.Component{
 							<div id='profile-screen-biography' className='body-text color-contrasted' rows='5' cols='35'>{this.state.profileUser.biography}</div>
 							<div id='profile-screen-summary' className='row'>
 								<div id='profile-screen-summary-text' className='body-text color-contrasted'>
-									{this.state.profileUser.sessions.length} Session(s) ⋅  
-									{" " + this.state.profileUser.playlists.length} Playlist(s) ⋅  
-									{" " + this.state.profileUser.likedSongs.length} Liked Song(s) ⋅  
+									{this.state.sessions.length} Session(s) ⋅  
+									{" " + this.state.playlists.length} Playlist(s) ⋅  
+									{" " + this.state.likedSongs.length} Liked Song(s) ⋅  
 									{" " + this.state.likedCollections.length} Liked Collection(s)
 								</div>
 							</div>

@@ -560,26 +560,6 @@ body, html {
   padding-right: 8px;
 }
 
-.collection-song-title {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 100%;
-  width: 120px;
-  text-align: left;
-  overflow: hidden;
-  color: lightgrey;
-  font-family: BalsamiqSans;
-  --max-lines: 1;
-  --lh: 1.4rem;
-}
-
-
-.collection-song-title:hover {
-  text-decoration: underline;
-  cursor: pointer;
-}
-
 #player-controls {
   padding: 0;
   width: calc((100% - 300px - 200px));
@@ -1105,6 +1085,27 @@ body, html {
   cursor: pointer;
 }
 
+/* Collection screen */
+
+.collection-song-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  width: 120px;
+  text-align: left;
+  overflow: hidden;
+  color: lightgrey;
+  font-family: BalsamiqSans;
+  --max-lines: 1;
+  --lh: 1.4rem;
+}
+
+.collection-song-title:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .collection-page-text {
   font-family: BalsamiqSans;
   color: whitesmoke;
@@ -1116,6 +1117,51 @@ body, html {
 
 .collection-page-rows:nth-child(even) {
   background: grey;
+}
+
+.collection-favorite-button {
+  margin: auto;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.collection-favorite-button-icon {
+  height: 40px;
+  width: 40px;
+}
+
+.collection-favorite-button-icon-on {
+  fill: #00e400;
+  height: 40px;
+  width: 40px;
+}
+
+.collection-favorite-button-icon:hover, .collection-favorite-button-icon-on:hover{
+  height: 43px;
+  width: 43px;
+}
+
+.collection-song-favorite-button {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.collection-song-favorite-button-icon {
+  height: 25px;
+  width: 25px;
+}
+
+.collection-song-favorite-button-icon-on {
+  fill: #00e400;
+  height: 25px;
+  width: 25px;
+}
+
+.collection-song-favorite-button-icon:hover, .collection-song-favorite-button-icon-on:hover{
+  height: 27px;
+  width: 27px;
 }
 
 /* Profile Screen */
