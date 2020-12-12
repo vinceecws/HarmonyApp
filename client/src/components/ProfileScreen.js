@@ -358,7 +358,7 @@ class ProfileScreen extends React.Component{
 									{this.state.profileUser.sessions.length} Session(s) ⋅  
 									{" " + this.state.profileUser.playlists.length} Playlist(s) ⋅  
 									{" " + this.state.profileUser.likedSongs.length} Liked Song(s) ⋅  
-									{" " + this.state.profileUser.likedCollections.length} Liked Collection(s)
+									{" " + this.state.likedCollections.length} Liked Collection(s)
 								</div>
 							</div>
 						</div>

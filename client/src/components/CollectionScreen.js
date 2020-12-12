@@ -303,7 +303,6 @@ class CollectionScreen extends React.Component{
         if (this.props.shouldStartSession()){
             this.createSession();
         }
-        
     }
 
     createSession = () => {
@@ -322,13 +321,13 @@ class CollectionScreen extends React.Component{
         console.log(result);
         if (result.destination !== null && result.source !== null){
             //update frontend
-            
+            /*
             let newStateSongList = _.cloneDeep(this.state.songList);
             let movedSong = newStateSongList[result.source];
             newStateSongList.splice(result.source.index, 1);
             newStateSongList.splice(result.destination.index, 0, movedSong);
             this.setState({songList: newStateSongList});
-            
+            */
 
             //update backend
             let newSongList = this.state.collection.songList;

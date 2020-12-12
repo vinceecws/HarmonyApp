@@ -677,6 +677,7 @@ module.exports = function(mainSocket, sessionSocket) {
                     newlikedCollections.push(p);
                 }
             }
+
             let updatedUser = await mongooseQuery.updateUser(req.user._id, {playlists: newPlaylists, likedCollections: newlikedCollections});
             return res.status(200).json({
                 message: "Collection deleted",
