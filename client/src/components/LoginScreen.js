@@ -1,7 +1,18 @@
 import React from 'react';
 import { Link, Route, Redirect } from 'react-router-dom'
-import { icon_speak_2, icon_speak_1, icon_radio, icon_album, icon_disc_1, icon_disc_2, icon_music_album_1, icon_music_album_2, icon_sound_mixer_1, icon_sound_mixer_2 } from '../graphics'
+import { yin_yang_fill_color_harmony } from '../graphics'
 import { Form, Col, Button } from 'react-bootstrap'
+
+import { ReactComponent as IconSpeak1 } from '../graphics/music_player_pack/009-speak.svg'
+import { ReactComponent as IconSpeak2 } from '../graphics/music_player_pack/018-speak.svg'
+import { ReactComponent as IconRadio } from '../graphics/music_player_pack/031-radio.svg'
+import { ReactComponent as IconMusicAlbum1 } from '../graphics/music_player_pack/010-music album.svg'
+import { ReactComponent as IconDisc1 } from '../graphics/music_player_pack/032-disc.svg'
+import { ReactComponent as IconDisc2 } from '../graphics/music_player_pack/045-disc.svg'
+import { ReactComponent as IconMusicAlbum2 } from '../graphics/music_player_pack/033-music album.svg'
+import { ReactComponent as IconSoundMixer1 } from '../graphics/music_player_pack/034-sound mixer.svg'
+import { ReactComponent as IconSoundMixer2 } from '../graphics/music_player_pack/041-sound mixer.svg'
+
 
 class LoginScreen extends React.Component{
 
@@ -207,73 +218,69 @@ class LoginScreen extends React.Component{
             return <Redirect to='/login'/>
         }
         return (
-            <div className='container' style={{backgroundColor: 'lightgreen', 
-                                               height: '100vh', minHeight: '100vh',
-                                               width: '100vw', minWidth: '100vw'}}>
-                <div className='row' style={{marginLeft: '20%'}}>
-                    <div className='col' style={{marginTop: '60px'}}>
+            <div id='login-screen' className='container'>
+                <div id='login-screen-top-container' className='row'>
+                    <div id='login-screen-logo-container' className='col'>
                         <div>
-                            <img style={{maxHeight: '280px'}} src={icon_music_album_1}></img>
+                            <img style={{maxHeight: '280px'}} src={yin_yang_fill_color_harmony}></img>
                         </div>
                     </div>
-                    <div className='col' style={{marginTop: '60px', marginLeft: '10%'}}>
-
-                        <h2 style={{marginBottom: '20px'}}>Log-in</h2>
-                        <Form noValidate onSubmit={this.handleLogin}>
-                            <Form.Row>
-                                <Form.Group as={Col} controlId="login-username">
-                                    <Form.Label>Username</Form.Label>
-                                    <Form.Control
-                                        required
-                                        value={this.state.login_username}
-                                        type="text"
-                                        onChange={this.handleLoginUsernameChange}
-                                        placeholder="Username"
-                                    />
-                                </Form.Group>
-                            </Form.Row>
-                            <Form.Row>
-                                <Form.Group as={Col} controlId="login-password">
-                                    <Form.Label>Password</Form.Label>
-                                    <Form.Control
-                                        required
-                                        value={this.state.login_password}
-                                        type="password"
-                                        onChange={this.handleLoginPasswordChange}
-                                        isInvalid={this.handleInvalidateLogin()}
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        Invalid username or password.
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-                            </Form.Row>
-                            <Button type="submit">Login</Button>
-                        </Form>
-                        <Link to={'/login/signup'}>
-                            <button className="btn btn-link" style={{marginTop: '10px'}} data-toggle='modal' data-target='#registrationModal'>Or create an account</button><br/>
-                        </Link>
-                        <Link to="/main" style={{marginTop: '20px', boxShadow: '3px 3px', 
-                                        backgroundColor: 'cornsilk', fontSize: '20px',
-                                        padding: '10px 15px'}}>Continue As Guest</Link>
+                    <div id='login-screen-login-container' className='col'>
+                        <div id='login-screen-login-form-container'>
+                            <h2>Log-in</h2>
+                            <Form noValidate onSubmit={this.handleLogin}>
+                                <Form.Row>
+                                    <Form.Group as={Col} controlId="login-username">
+                                        <Form.Label>Username</Form.Label>
+                                        <Form.Control
+                                            required
+                                            value={this.state.login_username}
+                                            type="text"
+                                            onChange={this.handleLoginUsernameChange}
+                                            placeholder="Username"
+                                        />
+                                    </Form.Group>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Form.Group as={Col} controlId="login-password">
+                                        <Form.Label>Password</Form.Label>
+                                        <Form.Control
+                                            required
+                                            value={this.state.login_password}
+                                            type="password"
+                                            onChange={this.handleLoginPasswordChange}
+                                            isInvalid={this.handleInvalidateLogin()}
+                                        />
+                                        <Form.Control.Feedback type="invalid">
+                                            Invalid username or password.
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </Form.Row>
+                                <Button type="submit" id='login-screen-login-form-container-login-button' className='bg-color-harmony'>Login</Button>
+                            </Form>
+                            <Link to={'/login/signup'}>
+                                <button className="btn btn-link color-accented" style={{marginTop: '10px'}} data-toggle='modal' data-target='#registrationModal'>Or create an account</button><br/>
+                            </Link>
+                            <Link to="/main" className="bg-color-harmony color-accented" style={{marginTop: '20px', boxShadow: '3px 3px', fontSize: '20px', padding: '10px 15px'}}>Continue As Guest</Link>
+                        </div>
                     </div>
                 </div>
-
-                <div className='row' style={{minWidth: '100vw', marginTop: '3%'}}>
-                    <div className='row' style={{marginLeft: '40%'}}>
-                        <h1>Listen Together</h1>
+                <div id='login-screen-bottom-container' className='row'>
+                    <div id='login-screen-title-container' className='row'>
+                        <div id='login-screen-title'>Listen Together</div>
                     </div>
-                    <div className='row' style={{marginTop: '2%', marginLeft: '25%'}}>
-                    <div style={{display: 'flex', justifyContent: 'center', padding: '10px 20px'}}>
-                        <img style={{maxHeight: '80px', marginRight: '5%'}} src={icon_disc_2}></img>
-                        <img style={{maxHeight: '80px', marginRight: '5%'}} src={icon_music_album_2}></img>
-                        <img style={{maxHeight: '80px', marginRight: '5%'}} src={icon_speak_1}></img>
-                        <img style={{maxHeight: '80px', marginRight: '5%'}} src={icon_radio}></img>
-                        <img style={{maxHeight: '80px', marginRight: '5%'}} src={icon_album}></img>
-                        <img style={{maxHeight: '80px', marginRight: '5%'}} src={icon_sound_mixer_1}></img>
-                        <img style={{maxHeight: '80px', marginRight: '5%'}} src={icon_disc_1}></img>
-                        <img style={{maxHeight: '80px', marginRight: '5%'}} src={icon_speak_2}></img>
-                        <img style={{maxHeight: '80px', marginRight: '5%'}} src={icon_sound_mixer_2}></img>
-                    </div>
+                    <div id='login-screen-graphic-container' className='row'>
+                        <div className='login-screen-display-container'>
+                            <IconSpeak1 className="login-screen-display-icon"/>
+                            <IconSpeak2 className="login-screen-display-icon"/>
+                            <IconRadio className="login-screen-display-icon"/>
+                            <IconMusicAlbum1 className="login-screen-display-icon"/>
+                            <IconDisc1 className="login-screen-display-icon"/>
+                            <IconDisc2 className="login-screen-display-icon"/>
+                            <IconMusicAlbum2 className="login-screen-display-icon"/>
+                            <IconSoundMixer1 className="login-screen-display-icon"/>
+                            <IconSoundMixer2 className="login-screen-display-icon"/>
+                        </div>
                     </div>
                 </div>
 
@@ -283,10 +290,10 @@ class LoginScreen extends React.Component{
                     <div id="signup-modal">
                         <div className="modal-dialog">
                             {/* Modal Content */}
-                            <div className="modal-content">
+                            <div id="login-screen-signup-modal-content" className="modal-content bg-color-jet color-accented">
                                 <div className="modal-header">
                                     <h3>Sign-Up</h3>
-                                    <button type="button" className="close" data-dismiss="modal" onClick={data => this.handleCloseSignUpModal(data)}>&times;</button>
+                                    <button type="button" className="close color-accented" data-dismiss="modal" onClick={data => this.handleCloseSignUpModal(data)}>&times;</button>
                                 </div>
                                 <div className="modal-body">
                                     <p>Create A New Account:</p>
@@ -350,11 +357,11 @@ class LoginScreen extends React.Component{
                                                 </Form.Control.Feedback>
                                             </Form.Group>
                                         </Form.Row>
-                                        <Button type="submit">Sign Up</Button>
+                                        <Button type="submit" id="login-screen-signup-modal-signup-button" className="bg-color-harmony">Sign Up</Button>
                                     </Form>
                                 </div>
                                 <div className="modal-footer">
-                                    <button type="button" className="btn btn-default" data-dismiss="modal" onClick={data => this.handleCloseSignUpModal(data)}>Close</button>
+                                    <button type="button" className="btn btn-default bg-color-harmony color-accented" data-dismiss="modal" onClick={data => this.handleCloseSignUpModal(data)}>Close</button>
                                 </div>
                             </div>
                         </div>
