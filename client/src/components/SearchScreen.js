@@ -1,4 +1,5 @@
 import React from 'react'
+import Spinner from './Spinner';
 import { ListGroup, Image, Button, CardDeck, Card, InputGroup, FormControl, Dropdown, DropdownButton, ButtonGroup, Modal } from 'react-bootstrap'
 import { delete_cross_white, delete_button_white, icon_play_white_1, menu_button_white, icon_music_1, icon_sound_mixer_1, icon_playlist_2, icon_profile_image } from '../graphics'
 import SuggestionsAPI from '../api/SuggestionsAPI'
@@ -16,29 +17,47 @@ class SearchScreen extends React.Component {
         this.state = {
             user: this.props.user,
             query: "",
+            history: [],
             playlists: [],
             suggestions: [],
             res: {},
             newCollectionName: "",
             currentSongTarget: "",
             showDropdown: false,
-            showCreateCollectionModal: false
+            showCreateCollectionModal: false,
+            history_loading: true,
+            playlists_loading: true
         }
     }
 
     componentDidMount = () => {
         if (this.state.user) {
-            this.fetchPlaylists()
+            this.setState({
+                history_loading: true,
+                playlists_loading: true
+            }, () => {
+                this.fetchPlaylists()
+                this.fetchHistory()
+            })
+        }
+        else {
+            this.setState({
+                history_loading: false,
+                playlists_loading: false
+            })
         }
     }
 
     componentDidUpdate = (prevProps, prevState) => {
         if (!_.isEqual(prevState.user, this.props.user)) {
             this.setState({
-                user: this.props.user
+                user: this.props.user,
+                history_loading: true,
+                playlists_loading: true
             }, () => {
                 if (this.state.user) {
                     this.fetchPlaylists()
+                    this.fetchHistory()
                 }
             })
         }
@@ -158,8 +177,18 @@ class SearchScreen extends React.Component {
         }).bind(this), true)
     }
 
-    handleGoToHistoryItem = (e) => {
-        
+    handleGoToHistoryItem = (obj, e) => {
+        if (obj.type === "collection") {
+            this.props.switchScreen(mainScreens.COLLECTION, obj._id)
+            this.handlePrependHistory(obj)
+        }
+        else if (obj.type === "user") {
+            this.props.switchScreen(mainScreens.PROFILE, obj._id)
+            this.handlePrependHistory(obj)
+        }
+        else if (obj.type === "song") {
+            this.handlePlayItem(obj)
+        }
     }
 
     handleGoToResultItem = (obj, e) => {
@@ -168,18 +197,28 @@ class SearchScreen extends React.Component {
         }
         else if (obj.type === "collection") {
             this.props.switchScreen(mainScreens.COLLECTION, obj._id)
+            this.handlePrependHistory(obj)
         }
         else if (obj.type === "user") {
             this.props.switchScreen(mainScreens.PROFILE, obj._id)
+            this.handlePrependHistory(obj)
         }
     }
 
     handleGoToResultCreator = (obj, e) => {
         if (obj.type === "session") {
             this.props.switchScreen(mainScreens.PROFILE, obj.hostId)
+            this.handlePrependHistory({
+                type: "user",
+                _id: obj.hostId
+            })
         }
         else if (obj.type === "collection") {
             this.props.switchScreen(mainScreens.PROFILE, obj.ownerId)
+            this.handlePrependHistory({
+                type: "user",
+                _id: obj.ownerId
+            })
         }
     }
 
@@ -190,6 +229,7 @@ class SearchScreen extends React.Component {
             if (this.props.shouldStartSession()) {
                 this.handleCreateSession()
             }
+            this.handlePrependHistory(obj)
         }
         else if (obj.type === "session") {
             this.props.switchScreen(mainScreens.SESSION, obj._id)
@@ -208,6 +248,7 @@ class SearchScreen extends React.Component {
                         this.handleCreateSession()
                     }
                 })
+                this.handlePrependHistory(obj)
             }
         }
     }
@@ -265,25 +306,55 @@ class SearchScreen extends React.Component {
 
     handleRemoveHistory = (e, index) => {
         e.stopPropagation()
-        // var newHistory = this.reindexArray(this.state.user.history.filter(ele => ele.index !== index))
-        // this.setState({
-        //     history: newHistory
-        // })
+        if (!this.state.user) {
+            return
+        }
+
+        this.props.axiosWrapper.axiosPost('/api/search/history/remove/' + index, {}, (function(res, data) {
+            if (data.success) {
+                this.props.handleUpdateUser(data.data.user)
+            }
+        }).bind(this), true)
     }
 
-    reindexArray = (array) => {
-        array = JSON.parse(JSON.stringify(array))
-        for (var i = 0; i < array.length; i++) {
-            array[i].index = i
+    handlePrependHistory = (obj) => {
+        if (!this.state.user) {
+            return
         }
-        return array
+        this.props.axiosWrapper.axiosPost('/api/search/history/prepend', {
+            type: obj.type,
+            _id: obj._id
+        }, (function(res, data) {
+            if (data.success) {
+                this.props.handleUpdateUser(data.data.user)
+            }
+        }).bind(this), true)
     }
 
     fetchPlaylists = () => {
         this.props.axiosWrapper.axiosGet('/api/search', (function(res, data) {
             if (data.success) {
                 this.setState({
-                    playlists: data.data.playlists
+                    playlists: data.data.playlists,
+                    playlists_loading: false
+                })
+            }
+        }).bind(this), true)
+    }
+
+    fetchHistory = () => {
+        this.props.axiosWrapper.axiosGet('/api/search/history', (function(res, data) {
+            if (data.success) {
+                Promise.all(data.data.history.map((obj) => {
+                    if (obj.type === "song") {
+                        return this.props.fetchVideoById(obj._id, true)
+                    }
+                    return obj
+                })).then((history) => {
+                    this.setState({
+                        history: history,
+                        history_loading: false
+                    })
                 })
             }
         }).bind(this), true)
@@ -312,6 +383,34 @@ class SearchScreen extends React.Component {
         }
     }
 
+    getHistoryItemCreator = (obj) => {
+        if (obj.type === "collection") {
+            return obj.ownerName
+        }
+        return obj.creator
+    }
+
+    getHistoryItemName = (obj) => {
+        if (obj.type === "user") {
+            return obj.username
+        }
+        return obj.name
+    }
+
+    getHistoryItemImage = (obj) => {
+        if (obj.type === "song") {
+            return obj.image_high ? obj.image_high : obj.image_med ? obj.image_med : obj.image_std ? obj.image_std : obj.image ? obj.image : icon_music_1
+        }
+        else if (obj.type === "collection") {
+            return obj.image ? obj.image : icon_playlist_2
+        }
+        else if (obj.type === "user") {
+            return obj.image ? obj.image : icon_profile_image
+        }
+
+        return obj.image 
+    }
+
     getCharLengthClass = () => {
         return this.state.newCollectionName.length === 0 || this.handleValidateNewCollectionName() ? "color-accented body-text" : "color-alert body-text"
     }
@@ -330,219 +429,235 @@ class SearchScreen extends React.Component {
 
     render() {
         var component
-        component = (
-            <div className="search-screen-container">
-                <Modal contentClassName="search-screen-modal" show={this.state.showCreateCollectionModal}>
-                    <Modal.Header onHide={this.handleHideCreateCollectionModal} closeButton>
-                        <Modal.Title className="title color-accented">Create A New Playlist</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <p className="subtitle color-accented">Playlist Name:</p>
-                        <input className="body-text" value={this.state.newCollectionName} onChange={this.handleNewCollectionNameChange}></input>
-                        <div className={this.getCharLengthClass()}>{this.state.newCollectionName.length}/{this.newCollectionNameMaxLength}</div>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button className="body-text bg-color-harmony color-accented" onClick={this.handleCreateCollection} disabled={!this.handleValidateNewCollectionName()}>Create</Button>
-                    </Modal.Footer>
-				</Modal>   
-                <div className="search-screen-search-box-group-container">
-                    <InputGroup className="search-screen-search-box-container">
-                        <FormControl 
-                            className="search-screen-search-box body-text" 
-                            placeholder="Search sessions, collections and more"
-                            value={this.state.query} 
-                            onChange={e => this.handleSearchQueryChange(e)}
-                            onKeyDown={e => this.handleSearchQueryKeydown(e)}/>
-                        <InputGroup.Append>
-                            <Button className="search-screen-search-box-clear-button" onClick={e => this.handleClearSearchBox(e)}>
-                                <Image className="search-screen-search-box-clear-button-icon" src={delete_button_white}/>
-                            </Button>
-                        </InputGroup.Append>
-                    </InputGroup> 
-                    <Dropdown role='menu'>
-                        <Dropdown.Menu id="search-screen-search-box-suggestions-dropdown" show={this.getShowSuggestions()}>
-                            {
-                                this.state.suggestions.map((suggestion, ind) => 
-                                    <Dropdown.Item eventKey={String(ind)} key={ind} onSelect={(key, e) => this.handleSelectSuggestion(key, e)}>{suggestion}</Dropdown.Item>
-                                )
-                            }
-                        </Dropdown.Menu>
-                    </Dropdown>
-                </div>
-                <div className={this.getHistoryClass()}>
-                    {
-                        this.props.auth ? 
-                        <div className="search-screen-history-title super-title color-accented">
-                            Your Recent History
-                        </div> :
-                        <div></div>
-                    }
-                    <ListGroup>
-                        {
-                            this.state.user ? this.state.user.history.map((obj, ind) => 
-                                <ListGroup.Item className="search-screen-history-item" key={ind} onClick={e => this.handleGoToHistoryItem(e)} action>
-                                    <div className="search-screen-history-item-type title color-contrasted">{obj.type.capitalize()}</div>
-                                    <div className="search-screen-history-item-container">
-                                        <Image className="search-screen-history-item-display-image" src={obj.image}/>
-                                        <div className="search-screen-history-item-display-container">
-                                            <div className="subtitle color-accented">{obj.name}</div>
-                                            <div className="body-text color-accented">{obj.creator}</div>
-                                        </div>
-                                    </div>
-                                    <div className="search-screen-history-item-remove-button" onClick={e => this.handleRemoveHistory(e, obj.index)}>
-                                        <Image className="search-screen-history-item-remove-button-icon" src={delete_cross_white}/>
-                                    </div>
-                                </ListGroup.Item>
-                                ) :
-                                <div></div>
-                        }
-                    </ListGroup>
-                </div>
-                <div className={this.getResultsClass()}>
-                    {Object.keys(this.state.res).map((category, cat_ind) => this.state.res[category] !== undefined && this.state.res[category].length > 0 ?
-                        <div className="search-screen-results-category-container" key={cat_ind}>
-                            <div className="search-screen-results-category-name title color-contrasted">{category.capitalize()}</div>
-                            <CardDeck className="search-screen-results-category-list">
+        if (this.state.playlists_loading || this.state.history_loading) {
+            component = <Spinner/>
+        }
+        else {
+            component = (
+                <div className="search-screen-container">
+                    <Modal contentClassName="search-screen-modal" show={this.state.showCreateCollectionModal}>
+                        <Modal.Header onHide={this.handleHideCreateCollectionModal} closeButton>
+                            <Modal.Title className="title color-accented">Create A New Playlist</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <p className="subtitle color-accented">Playlist Name:</p>
+                            <input className="body-text" value={this.state.newCollectionName} onChange={this.handleNewCollectionNameChange}></input>
+                            <div className={this.getCharLengthClass()}>{this.state.newCollectionName.length}/{this.newCollectionNameMaxLength}</div>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button className="body-text bg-color-harmony color-accented" onClick={this.handleCreateCollection} disabled={!this.handleValidateNewCollectionName()}>Create</Button>
+                        </Modal.Footer>
+                    </Modal>   
+                    <div className="search-screen-search-box-group-container">
+                        <InputGroup className="search-screen-search-box-container">
+                            <FormControl 
+                                className="search-screen-search-box body-text" 
+                                placeholder="Search sessions, collections and more"
+                                value={this.state.query} 
+                                onChange={e => this.handleSearchQueryChange(e)}
+                                onKeyDown={e => this.handleSearchQueryKeydown(e)}/>
+                            <InputGroup.Append>
+                                <Button className="search-screen-search-box-clear-button" onClick={e => this.handleClearSearchBox(e)}>
+                                    <Image className="search-screen-search-box-clear-button-icon" src={delete_button_white}/>
+                                </Button>
+                            </InputGroup.Append>
+                        </InputGroup> 
+                        <Dropdown role='menu'>
+                            <Dropdown.Menu id="search-screen-search-box-suggestions-dropdown" show={this.getShowSuggestions()}>
                                 {
-                                    this.state.res[category].map((obj, item_ind) => 
-                                        <Card className="search-screen-results-category-list-item" key={item_ind}>
-                                            {obj.type === "session" && obj.live === true ? 
-                                                <Card.Text className="search-screen-results-list-item-live-indicator tiny-text color-accented">LIVE</Card.Text> :
-                                                <div></div>
-                                            }
-                                            {obj.type === "user" && obj.live === true ? 
-                                                <Card.Text className="search-screen-results-list-item-streaming-indicator tiny-text color-accented">STREAMING NOW</Card.Text> :
-                                                <div></div>
-                                            }
-                                            {
-                                                obj.type === "song" ? 
-                                                    <div className="search-screen-results-category-list-item-img-overlay-trigger">
-                                                        <div className="search-screen-results-category-list-item-img-overlay-container">
-                                                            <Dropdown className="search-screen-results-category-list-item-img-overlay-dropdown" as={ButtonGroup}>
-                                                                <Dropdown.Toggle split className="search-screen-results-category-list-item-img-overlay-dropdown-button no-caret">
-                                                                    <Image className="search-screen-results-category-list-item-img-overlay-dropdown-button-icon" src={menu_button_white} />
-                                                                </Dropdown.Toggle>
-                                                                <Dropdown.Menu className="search-screen-results-category-list-item-img-overlay-dropdown-menu">
-                                                                    <Dropdown.Item>
-                                                                        <Button onClick={this.props.queue.addSongToFutureQueue.bind(this, obj)}>
-                                                                            Add To Queue
-                                                                        </Button>
-                                                                    </Dropdown.Item>
-                                                                    {
-                                                                        this.props.auth ?
-                                                                        <div>
-                                                                            <DropdownItem as="div" onMouseEnter={this.handleMouseEnterDropdown} onMouseLeave={this.handleMouseLeaveDropdown}>
-                                                                                <DropdownButton
-                                                                                    as={ButtonGroup}
-                                                                                    key="right"
-                                                                                    className="search-screen-results-category-list-item-img-overlay-dropdown-menu-collection"
-                                                                                    drop="right"
-                                                                                    variant="secondary"
-                                                                                    title="Add To Playlist"
-                                                                                    show={this.state.showDropdown}
-                                                                                >
-                                                                                    {
-                                                                                        this.state.playlists.map((playlist, playlist_ind) => 
-                                                                                            <Dropdown.Item as="div" key={playlist_ind} onClick={this.handleAddSongToCollection.bind(this, obj._id, playlist._id)}>{playlist.name}</Dropdown.Item>
-                                                                                        )
-                                                                                    }
-                                                                                    {
-                                                                                        this.state.playlists.length > 0 ?
-                                                                                        <Dropdown.Divider /> :
-                                                                                        <div></div>
-                                                                                    }
-                                                                                    <Dropdown.Item onClick={this.handleShowCreateCollectionModal.bind(this, obj._id)}>Create Playlist</Dropdown.Item>
-                                                                                </DropdownButton>
-                                                                            </DropdownItem>
-                                                                            {
-                                                                                this.state.user && !this.state.user.likedSongs.includes(obj._id) ? 
-                                                                                <Dropdown.Item>
-                                                                                    <Button onClick={this.handleAddSongToFavorites.bind(this, obj._id)}>
-                                                                                        Save To Favorites
-                                                                                    </Button>
-                                                                                </Dropdown.Item> :
-                                                                                <Dropdown.Item>
-                                                                                    <Button onClick={this.handleRemoveSongFromFavorites.bind(this, obj._id)}>
-                                                                                        Remove From Favorites
-                                                                                    </Button>
-                                                                                </Dropdown.Item>
-                                                                            }
-                                                                        </div>
-                                                                        : <div></div>
-                                                                    }
-                                                                </Dropdown.Menu>
-                                                            </Dropdown>
-                                                            <Button className="search-screen-results-category-list-item-img-overlay-play-button" onClick={this.handlePlayItem.bind(this, obj)}>
-                                                                <Image className="search-screen-results-category-list-item-img-overlay-play-button-icon" src={icon_play_white_1} roundedCircle/>
-                                                            </Button>
-                                                        </div>
-                                                        <Card.Img className="search-screen-results-category-list-item-img" src={obj.image_high ? obj.image_high : obj.image_med ? obj.image_med : obj.image_std ? obj.image_std : obj.image ? obj.image : icon_music_1} />
-                                                    </div> 
-                                                    : obj.type === "session" ?
-                                                    <div className="search-screen-results-category-list-item-img-overlay-trigger">
-                                                        <div className="search-screen-results-category-list-item-img-overlay-container">
-                                                            <Button className="search-screen-results-category-list-item-img-overlay-join-button bg-color-harmony" onClick={this.handlePlayItem.bind(this, obj)}>
-                                                                <div className="search-screen-results-category-list-item-img-overlay-join-button-text color-accented tiny-text">{obj.live ? "JOIN SESSION" : "PLAY AGAIN"}</div>
-                                                            </Button>
-                                                        </div>
-                                                        <Card.Img className="search-screen-results-category-list-item-img" src={obj.image ? obj.image : icon_sound_mixer_1} />
-                                                    </div>
-                                                    : obj.type === "collection" ?
-                                                    <div className="search-screen-results-category-list-item-img-overlay-trigger">
-                                                        <div className="search-screen-results-category-list-item-img-overlay-container">
-                                                            <Dropdown className="search-screen-results-category-list-item-img-overlay-dropdown" as={ButtonGroup}>
-                                                                <Dropdown.Toggle split className="search-screen-results-category-list-item-img-overlay-dropdown-button no-caret">
-                                                                    <Image className="search-screen-results-category-list-item-img-overlay-dropdown-button-icon" src={menu_button_white} />
-                                                                </Dropdown.Toggle>
-                                                                <Dropdown.Menu className="search-screen-results-category-list-item-img-overlay-dropdown-menu">
-                                                                    <Dropdown.Item>
-                                                                        <Button onClick={this.handleAddCollectionToFutureQueue.bind(this, obj)}>
-                                                                            Add To Queue
-                                                                        </Button>
-                                                                    </Dropdown.Item>
-                                                                    {
-                                                                        this.props.auth ?
-                                                                        <div>
-                                                                            {
-                                                                                this.state.user && !this.state.user.likedCollections.includes(obj._id) ? 
-                                                                                <Dropdown.Item>
-                                                                                    <Button onClick={this.handleAddCollectionToFavorites.bind(this, obj._id)}>
-                                                                                        Save To Favorites
-                                                                                    </Button>
-                                                                                </Dropdown.Item> :
-                                                                                <Dropdown.Item>
-                                                                                    <Button onClick={this.handleRemoveCollectionFromFavorites.bind(this, obj._id)}>
-                                                                                        Remove From Favorites
-                                                                                    </Button>
-                                                                                </Dropdown.Item>
-                                                                            }
-                                                                        </div>
-                                                                        : <div></div>
-                                                                    }
-                                                                </Dropdown.Menu>
-                                                            </Dropdown>
-                                                            <Button className="search-screen-results-category-list-item-img-overlay-play-button" onClick={this.handlePlayItem.bind(this, obj)}>
-                                                                <Image className="search-screen-results-category-list-item-img-overlay-play-button-icon" src={icon_play_white_1} roundedCircle/>
-                                                            </Button>
-                                                        </div>
-                                                        <Card.Img className="search-screen-results-category-list-item-img" src={obj.image ? obj.image : icon_playlist_2} />
-                                                    </div>
-                                                    : <Card.Img className="search-screen-results-category-list-item-img" src={obj.image ? obj.image : icon_profile_image} />
-                                            }
-                                            <Card.Body className="search-screen-results-category-list-item-body">
-                                                <div className="search-screen-results-category-list-item-body-title ellipsis-multi-line-overflow subtitle color-jet" onClick={this.handleGoToResultItem.bind(this, obj)}>{obj.type === "user" ? obj.username : obj.name}</div>
-                                                <div className="search-screen-results-category-list-item-body-creator ellipsis-multi-line-overflow body-text color-jet" onClick={this.handleGoToResultCreator.bind(this, obj)}>{obj.type === "session" ? obj.hostName : obj.type === "collection" ? obj.ownerName : obj.type === "song" ? obj.creator : ""}</div>
-                                            </Card.Body>
-                                        </Card>
-                                        )
+                                    this.state.suggestions.map((suggestion, ind) => 
+                                        <Dropdown.Item eventKey={String(ind)} key={ind} onSelect={(key, e) => this.handleSelectSuggestion(key, e)}>{suggestion}</Dropdown.Item>
+                                    )
                                 }
-                            </CardDeck>
-                        </div> : 
-                        <div key={cat_ind}></div>)
-                    }
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </div>
+                    <div className={this.getHistoryClass()}>
+                        {
+                            this.props.auth ? 
+                            <div className="search-screen-history-title super-title color-accented">
+                                Your Recent History
+                            </div> :
+                            <div></div>
+                        }
+                        <ListGroup>
+                            {
+                                this.state.user ? this.state.history.map((obj, ind) => 
+                                    <ListGroup.Item className="search-screen-history-item" key={ind} onClick={e => this.handleGoToHistoryItem(obj, e)} action>
+                                        <div className="search-screen-history-item-type title color-contrasted">{obj.type.capitalize()}</div>
+                                        <div className="search-screen-history-item-container">
+                                            {
+                                                obj.type === "collection" || obj.type === "song" ?
+                                                <div className="search-screen-history-item-img-overlay-trigger">
+                                                    <div className="search-screen-history-item-img-overlay-container">
+                                                        <div className="search-screen-history-item-img-overlay-play-button" onClick={this.handlePlayItem.bind(this, obj)}>
+                                                            <Image className="search-screen-history-item-img-overlay-play-button-icon" src={icon_play_white_1} roundedCircle/>
+                                                        </div>
+                                                    </div>
+                                                    <Image className="search-screen-history-item-display-image" src={this.getHistoryItemImage(obj)}/>
+                                                </div>
+                                                : <Image className="search-screen-history-item-display-image" src={this.getHistoryItemImage(obj)}/>
+                                            }
+                                            <div className="search-screen-history-item-display-container">
+                                                <div className="subtitle color-accented">{this.getHistoryItemName(obj)}</div>
+                                                <div className="body-text color-accented">{this.getHistoryItemCreator(obj)}</div>
+                                            </div>
+                                        </div>
+                                        <div className="search-screen-history-item-remove-button" onClick={e => this.handleRemoveHistory(e, ind)}>
+                                            <Image className="search-screen-history-item-remove-button-icon" src={delete_cross_white}/>
+                                        </div>
+                                    </ListGroup.Item>
+                                    ) :
+                                    <div></div>
+                            }
+                        </ListGroup>
+                    </div>
+                    <div className={this.getResultsClass()}>
+                        {Object.keys(this.state.res).map((category, cat_ind) => this.state.res[category] !== undefined && this.state.res[category].length > 0 ?
+                            <div className="search-screen-results-category-container" key={cat_ind}>
+                                <div className="search-screen-results-category-name title color-contrasted">{category.capitalize()}</div>
+                                <CardDeck className="search-screen-results-category-list">
+                                    {
+                                        this.state.res[category].map((obj, item_ind) => 
+                                            <Card className="search-screen-results-category-list-item" key={item_ind}>
+                                                {obj.type === "session" && obj.live === true ? 
+                                                    <Card.Text className="search-screen-results-list-item-live-indicator tiny-text color-accented">LIVE</Card.Text> :
+                                                    <div></div>
+                                                }
+                                                {obj.type === "user" && obj.live === true ? 
+                                                    <Card.Text className="search-screen-results-list-item-streaming-indicator tiny-text color-accented">STREAMING NOW</Card.Text> :
+                                                    <div></div>
+                                                }
+                                                {
+                                                    obj.type === "song" ? 
+                                                        <div className="search-screen-results-category-list-item-img-overlay-trigger">
+                                                            <div className="search-screen-results-category-list-item-img-overlay-container">
+                                                                <Dropdown className="search-screen-results-category-list-item-img-overlay-dropdown" as={ButtonGroup}>
+                                                                    <Dropdown.Toggle split className="search-screen-results-category-list-item-img-overlay-dropdown-button no-caret">
+                                                                        <Image className="search-screen-results-category-list-item-img-overlay-dropdown-button-icon" src={menu_button_white} />
+                                                                    </Dropdown.Toggle>
+                                                                    <Dropdown.Menu className="search-screen-results-category-list-item-img-overlay-dropdown-menu">
+                                                                        <Dropdown.Item>
+                                                                            <Button onClick={this.props.queue.addSongToFutureQueue.bind(this, obj)}>
+                                                                                Add To Queue
+                                                                            </Button>
+                                                                        </Dropdown.Item>
+                                                                        {
+                                                                            this.props.auth ?
+                                                                            <div>
+                                                                                <DropdownItem as="div" onMouseEnter={this.handleMouseEnterDropdown} onMouseLeave={this.handleMouseLeaveDropdown}>
+                                                                                    <DropdownButton
+                                                                                        as={ButtonGroup}
+                                                                                        key="right"
+                                                                                        className="search-screen-results-category-list-item-img-overlay-dropdown-menu-collection"
+                                                                                        drop="right"
+                                                                                        variant="secondary"
+                                                                                        title="Add To Playlist"
+                                                                                        show={this.state.showDropdown}
+                                                                                    >
+                                                                                        {
+                                                                                            this.state.playlists.map((playlist, playlist_ind) => 
+                                                                                                <Dropdown.Item as="div" key={playlist_ind} onClick={this.handleAddSongToCollection.bind(this, obj._id, playlist._id)}>{playlist.name}</Dropdown.Item>
+                                                                                            )
+                                                                                        }
+                                                                                        {
+                                                                                            this.state.playlists.length > 0 ?
+                                                                                            <Dropdown.Divider /> :
+                                                                                            <div></div>
+                                                                                        }
+                                                                                        <Dropdown.Item onClick={this.handleShowCreateCollectionModal.bind(this, obj._id)}>Create Playlist</Dropdown.Item>
+                                                                                    </DropdownButton>
+                                                                                </DropdownItem>
+                                                                                {
+                                                                                    this.state.user && !this.state.user.likedSongs.includes(obj._id) ? 
+                                                                                    <Dropdown.Item>
+                                                                                        <Button onClick={this.handleAddSongToFavorites.bind(this, obj._id)}>
+                                                                                            Save To Favorites
+                                                                                        </Button>
+                                                                                    </Dropdown.Item> :
+                                                                                    <Dropdown.Item>
+                                                                                        <Button onClick={this.handleRemoveSongFromFavorites.bind(this, obj._id)}>
+                                                                                            Remove From Favorites
+                                                                                        </Button>
+                                                                                    </Dropdown.Item>
+                                                                                }
+                                                                            </div>
+                                                                            : <div></div>
+                                                                        }
+                                                                    </Dropdown.Menu>
+                                                                </Dropdown>
+                                                                <Button className="search-screen-results-category-list-item-img-overlay-play-button" onClick={this.handlePlayItem.bind(this, obj)}>
+                                                                    <Image className="search-screen-results-category-list-item-img-overlay-play-button-icon" src={icon_play_white_1} roundedCircle/>
+                                                                </Button>
+                                                            </div>
+                                                            <Card.Img className="search-screen-results-category-list-item-img" src={obj.image_high ? obj.image_high : obj.image_med ? obj.image_med : obj.image_std ? obj.image_std : obj.image ? obj.image : icon_music_1} />
+                                                        </div> 
+                                                        : obj.type === "session" ?
+                                                        <div className="search-screen-results-category-list-item-img-overlay-trigger">
+                                                            <div className="search-screen-results-category-list-item-img-overlay-container">
+                                                                <Button className="search-screen-results-category-list-item-img-overlay-join-button bg-color-harmony" onClick={this.handlePlayItem.bind(this, obj)}>
+                                                                    <div className="search-screen-results-category-list-item-img-overlay-join-button-text color-accented tiny-text">{obj.live ? "JOIN SESSION" : "PLAY AGAIN"}</div>
+                                                                </Button>
+                                                            </div>
+                                                            <Card.Img className="search-screen-results-category-list-item-img" src={obj.image ? obj.image : icon_sound_mixer_1} />
+                                                        </div>
+                                                        : obj.type === "collection" ?
+                                                        <div className="search-screen-results-category-list-item-img-overlay-trigger">
+                                                            <div className="search-screen-results-category-list-item-img-overlay-container">
+                                                                <Dropdown className="search-screen-results-category-list-item-img-overlay-dropdown" as={ButtonGroup}>
+                                                                    <Dropdown.Toggle split className="search-screen-results-category-list-item-img-overlay-dropdown-button no-caret">
+                                                                        <Image className="search-screen-results-category-list-item-img-overlay-dropdown-button-icon" src={menu_button_white} />
+                                                                    </Dropdown.Toggle>
+                                                                    <Dropdown.Menu className="search-screen-results-category-list-item-img-overlay-dropdown-menu">
+                                                                        <Dropdown.Item>
+                                                                            <Button onClick={this.handleAddCollectionToFutureQueue.bind(this, obj)}>
+                                                                                Add To Queue
+                                                                            </Button>
+                                                                        </Dropdown.Item>
+                                                                        {
+                                                                            this.props.auth ?
+                                                                            <div>
+                                                                                {
+                                                                                    this.state.user && !this.state.user.likedCollections.includes(obj._id) ? 
+                                                                                    <Dropdown.Item>
+                                                                                        <Button onClick={this.handleAddCollectionToFavorites.bind(this, obj._id)}>
+                                                                                            Save To Favorites
+                                                                                        </Button>
+                                                                                    </Dropdown.Item> :
+                                                                                    <Dropdown.Item>
+                                                                                        <Button onClick={this.handleRemoveCollectionFromFavorites.bind(this, obj._id)}>
+                                                                                            Remove From Favorites
+                                                                                        </Button>
+                                                                                    </Dropdown.Item>
+                                                                                }
+                                                                            </div>
+                                                                            : <div></div>
+                                                                        }
+                                                                    </Dropdown.Menu>
+                                                                </Dropdown>
+                                                                <Button className="search-screen-results-category-list-item-img-overlay-play-button" onClick={this.handlePlayItem.bind(this, obj)}>
+                                                                    <Image className="search-screen-results-category-list-item-img-overlay-play-button-icon" src={icon_play_white_1} roundedCircle/>
+                                                                </Button>
+                                                            </div>
+                                                            <Card.Img className="search-screen-results-category-list-item-img" src={obj.image ? obj.image : icon_playlist_2} />
+                                                        </div>
+                                                        : <Card.Img className="search-screen-results-category-list-item-img" src={obj.image ? obj.image : icon_profile_image} />
+                                                }
+                                                <Card.Body className="search-screen-results-category-list-item-body">
+                                                    <div className="search-screen-results-category-list-item-body-title ellipsis-multi-line-overflow subtitle color-jet" onClick={this.handleGoToResultItem.bind(this, obj)}>{obj.type === "user" ? obj.username : obj.name}</div>
+                                                    <div className="search-screen-results-category-list-item-body-creator ellipsis-multi-line-overflow body-text color-jet" onClick={this.handleGoToResultCreator.bind(this, obj)}>{obj.type === "session" ? obj.hostName : obj.type === "collection" ? obj.ownerName : obj.type === "song" ? obj.creator : ""}</div>
+                                                </Card.Body>
+                                            </Card>
+                                            )
+                                    }
+                                </CardDeck>
+                            </div> : 
+                            <div key={cat_ind}></div>)
+                        }
+                    </div>
                 </div>
-            </div>
-        )
+            )
+        }
 
         return(
 			<div className={this.props.visible ? "visible" : "hidden"}>

@@ -403,7 +403,7 @@ class ProfileScreen extends React.Component{
 									<div className='card-deck profile-screen-category-container'>
 										{
 											this.state.sessions_loading ? 
-											<Spinner/> :
+											<div></div> :
 											this.state.sessions.map((session, session_ind) => 
 												<div key={session_ind} className='card profile-screen-category-item-card'>
 													<img className="card-img-top profile-screen-category-item-card-image" src={session.image}/>
@@ -433,7 +433,7 @@ class ProfileScreen extends React.Component{
 									<div className='card-deck profile-screen-category-container'>
 										{
 											this.state.playlists_loading ? 
-											<Spinner/> :
+											<div></div> :
 											this.state.playlists.map((playlist, playlist_ind) => 
 												<div key={playlist_ind} className='card profile-screen-category-item-card'>
 													<div className="profile-screen-category-item-card-image-overlay-trigger">
@@ -507,7 +507,7 @@ class ProfileScreen extends React.Component{
 									<div className='card-deck profile-screen-category-container'>
 										{
 											this.state.likedSongs_loading ? 
-											<Spinner/> :
+											<div></div> :
 											this.state.likedSongs.map((song, song_ind) => 
 												<div key={song_ind} className='card profile-screen-category-item-card'>
 													<div className="profile-screen-category-item-card-image-overlay-trigger">
@@ -597,7 +597,7 @@ class ProfileScreen extends React.Component{
 									<div className='card-deck profile-screen-category-container'>
 										{
 											this.state.likedCollections_loading ? 
-											<Spinner/> :
+											<div></div> :
 											this.state.likedCollections.map((collection, collection_ind) => 
 												<div key={collection_ind} className='card profile-screen-category-item-card'>
 													<div className="profile-screen-category-item-card-image-overlay-trigger">
