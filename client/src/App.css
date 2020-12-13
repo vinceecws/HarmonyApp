@@ -540,11 +540,15 @@ body, html {
   padding: 0px 10px 0px 10px;
 }
 
-#tab-component-login-button, #tab-component-login-button:hover {
+#tab-component-login-button {
   position: absolute;
   right: 20px;
   top: 10px;
   text-decoration: none;
+}
+
+#tab-component-login-button:hover {
+  text-decoration: underline;
 }
 
 #tab-component-account-link-container {

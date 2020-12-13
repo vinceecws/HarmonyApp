@@ -108,24 +108,6 @@ class PlayerAPI {
                     })
                 })
             }
-            else {
-                this.player = new window.YT.Player('yt-player', {
-                    videoId: id,
-                    playerVars: {
-                        origin: window.location.origin,
-                        autoplay: 1,
-                        enablejsapi: 1
-                    },
-                    events: {
-                        onReady: this.onPlayerReady.bind(this),
-                        onStateChange: this.onPlayerStateChange.bind(this),
-                        onPlaybackQualityChange: this.onPlayerPlaybackQualityChange.bind(this),
-                        onPlaybackRateChange: this.onPlayerPlaybackRateChange.bind(this),
-                        onError: this.onPlayerError.bind(this),
-                        onApiChange: this.onPlayerApiChange.bind(this)
-                    }
-                })
-            }
         }
     }
 

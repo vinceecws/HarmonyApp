@@ -32,12 +32,6 @@ class App extends React.Component {
     constructor(props) {
         super(props)
         this.axiosWrapper = new AxiosWrapper()
-        this.playerAPI = new PlayerAPI()
-        this.dataAPI = new DataAPI(() => {
-            this.setState({
-                dataAPI_loading: false
-            })
-        })
         this.queue = new Queue()
         if (process.env.REACT_APP_NODE_ENV === 'development') {
             this.mainSocket = io('http://localhost:4000/main', {
@@ -57,6 +51,15 @@ class App extends React.Component {
             currentSession: null,
             dataAPI_loading: true
         }
+    }
+
+    componentDidMount = () => {
+        this.playerAPI = new PlayerAPI()
+        this.dataAPI = new DataAPI(() => {
+            this.setState({
+                dataAPI_loading: false
+            })
+        })
     }
     
     componentDidUpdate = (prevProps, prevState) => {
