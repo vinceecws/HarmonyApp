@@ -26,6 +26,15 @@
   100% { transform: translate(0%, 0); }
 }
 
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .super-title {
   font-family: BalsamiqSans;
   font-size: xx-large;
@@ -114,16 +123,45 @@ body, html {
   text-align: center;
 }
 
+.app-main-logo {
+  --length: 38px;
+  height: var(--length);
+  width: var(--length);
+  position: absolute;
+  left: 50%;
+  cursor: pointer;
+
+}
+
+.app-spinner-container {
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  position: absolute;
+}
+
+.app-spinner {
+  --length: 80px;
+  height: var(--length);
+  width: var(--length);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin-left: calc(var(--length) * -0.5);
+  margin-top: calc(var(--length) * -0.5);
+  animation: spinner 2s linear infinite;
+}
+
 .Session-Side-List {
   height: 100%;
   overflow-y: scroll;
-  background-color: #282c34;
+  background-color: #171717;
   text-align: left;
   width: 100%;
   flex-direction: column;
   justify-content: center;
-  color: black;
-  
+  background-color: #171717;
 }
 
 .list-group-session :nth-child(even) .list-group-item  {
@@ -319,7 +357,7 @@ body, html {
   right: 0;
   width: 30%;
   height: 100%;
-  background: linear-gradient(to right, rgba(80, 80, 80, 0), rgba(80, 80, 80, 1) 50%);
+  background: linear-gradient(to right, rgba(41, 41, 41, 0), rgba(41, 41, 41, 1) 50%);
 }
 
 .ellipsis-multi-line-overflow {
@@ -382,8 +420,8 @@ body, html {
 }
 
 #screen-container {
-
   background-color: #171717;
+  background-image: linear-gradient(to top left, black , #171717);
   padding: 0;
   width: 100%;
   min-width: 560px;
@@ -402,12 +440,13 @@ body, html {
 #tab-component-container {
   width: 100%;
   display: flex;
+  align-items: center;
   flex-wrap: nowrap;
+  background-color: #171717;
 }
 
 #tab-component-nav-container {
   padding: 0px 10px 0px 10px;
-  background-color: #505050;
 }
 
 #tab-component-login-button, #tab-component-login-button:hover {
@@ -465,14 +504,14 @@ body, html {
 
 .tab-component-link:hover {
   color: lightgray;
-  border-bottom: solid 1px black;
+  border-bottom: solid 1px white;
   cursor: pointer;
 }
 
 .tab-component-link-selected {
   padding: 0 !important;
   margin: 5px 15px 5px 15px !important;
-  border-bottom: solid 1px black;
+  border-bottom: solid 1px white;
 }
 
 .tab-component-link-selected:hover {
@@ -488,7 +527,7 @@ body, html {
 
 #player-container {
   height: 120px;
-  background-color: #505050;
+  background-color: #292929;
   width: 100%;
   min-height: 120px;
   display: flex;
@@ -603,6 +642,10 @@ body, html {
   width: 70% !important;
 }
 
+.player-progress-bar {
+
+}
+
 .player-progress-display {
   padding: 10px;
   width: 50px;
@@ -644,6 +687,7 @@ body, html {
 .player-song-favorite-button-icon {
   height: 25px;
   width: 25px;
+  fill: rgb(158, 158, 158);
 }
 
 .player-song-favorite-button-icon:hover {
@@ -665,6 +709,7 @@ body, html {
 .player-control-button-icon {
   height: 35px;
   width: 35px;
+  fill: gray;
 }
 
 .player-control-button-icon-on {
@@ -849,13 +894,50 @@ body, html {
 }
 
 .search-screen-history-item:hover {
-  background-color: darkgray !important;
+  background-color: #212121 !important;
 }
 
 .search-screen-history-item-container {
   display: flex;
   padding: 10px;
   justify-content: left;
+}
+
+.search-screen-history-item-img-overlay-trigger {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  height: 60px;
+  width: 60px;
+  position: relative;
+}
+
+.search-screen-history-item-img-overlay-trigger:hover .search-screen-history-item-img-overlay-container {
+  position: absolute;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+.search-screen-history-item-img-overlay-container {
+  display: none;
+}
+
+.search-screen-history-item-img-overlay-play-button {
+  
+}
+
+.search-screen-history-item-img-overlay-play-button-icon {
+  height: 40px;
+  width: 40px;
+}
+
+.search-screen-history-item-img-overlay-play-button-icon:hover {
+  height: 43px;
+  width: 43px;
 }
 
 .search-screen-history-item-display-image {
@@ -885,6 +967,11 @@ body, html {
 .search-screen-history-item-remove-button-icon {
   height: 20px;
   width: 20px;
+}
+
+.search-screen-history-item-remove-button-icon:hover {
+  height: 22px;
+  width: 22px;
 }
 
 /* Results */

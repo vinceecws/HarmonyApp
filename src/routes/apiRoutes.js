@@ -1,6 +1,7 @@
 const express = require("express")
 const mongooseQuery = require('../db');
 const stripUser = require('./index').stripUser
+const _ = require('lodash');
 
 module.exports = function(mainSocket, sessionSocket) {
 
@@ -1150,17 +1151,147 @@ module.exports = function(mainSocket, sessionSocket) {
 
     apiRouter.get('/search', async (req, res) => {
         if (req.user) {
-            let user = await mongooseQuery.getUser({
-                _id: req.user._id
-            }).catch(err => res.sendStatus(404));
-
-            let playlists = await mongooseQuery.getCollection(user.playlists)
+            let playlists = await mongooseQuery.getCollection(req.user.playlists)
 
             return res.status(200).json({
                 message: "Fetch successful",
                 statusCode: 200,
                 data: {
                     playlists: playlists
+                },
+                success: true
+            })
+        }
+        else {
+            return res.status(200).json({
+                message: "Unauthenticated",
+                statusCode: 200,
+                data: null,
+                success: false
+            })
+        }
+    })
+
+    apiRouter.get('/search/history', async (req, res) => {
+        /*
+            Recursively fetch Collections and Users
+        */
+        if (req.user) {
+            let userHistory = _.cloneDeep(req.user.history)
+            let history = []
+            let obj
+
+            for (var i = 0; i < userHistory.length; i++) {
+                if (userHistory[i].type === "user") {
+                    obj = await mongooseQuery.getUser({
+                        _id: userHistory[i]._id
+                    }, true)
+                    obj = stripUser(obj)
+                    obj.type = "user"
+                    history.push(obj)
+                }
+                else if (userHistory[i].type === "collection") {
+                    obj = await mongooseQuery.getCollection({
+                        _id: userHistory[i]._id
+                    }, true)
+                    obj.type = "collection"
+                    history.push(obj)
+                }
+                else if (userHistory[i].type === "song") {
+                    history.push(userHistory[i])
+                }
+            }
+            return res.status(200).json({
+                message: "Fetch successful",
+                statusCode: 200,
+                data: {
+                    history: history
+                },
+                success: true
+            })
+        }
+        else {
+            return res.status(200).json({
+                message: "Unauthenticated",
+                statusCode: 200,
+                data: null,
+                success: false
+            })
+        }
+    })
+
+    apiRouter.post('/search/history/prepend', async (req, res) => {
+        /*
+            Check if (type, id) combination exists
+                If it does, then just move it up to the top
+                Otherwise, prepend at the top
+        */
+
+       if (req.user) {
+        let userHistory = _.cloneDeep(req.user.history)
+        let ind = userHistory.findIndex(obj => obj.type === req.body.type && obj._id === req.body._id)
+
+        let historyObj
+        if (ind >= 0) {
+            historyObj = userHistory.splice(ind, 1)[0]
+        }
+        else {
+            historyObj = {
+                type: req.body.type,
+                _id: req.body._id
+            }
+        }
+        userHistory.unshift(historyObj)
+
+        let updatedUser = await mongooseQuery.updateUser({
+            _id: req.user._id
+        }, {
+            history: userHistory
+        }, true)
+
+        return res.status(200).json({
+            message: "Prepend successful",
+            statusCode: 200,
+            data: {
+                user: stripUser(updatedUser)
+            },
+            success: true
+        })
+    }
+    else {
+        return res.status(200).json({
+            message: "Unauthenticated",
+            statusCode: 200,
+            data: null,
+            success: false
+        })
+    }
+    })
+
+    apiRouter.post('/search/history/remove/:ind', async (req, res) => {
+        if (!req.params.ind) {
+            return res.status(400).json({
+                message: "Bad request",
+                statusCode: 400,
+                data: null,
+                success: false
+            })
+        }
+
+        if (req.user) {
+            let userHistory = _.cloneDeep(req.user.history)
+            userHistory.splice(req.params.ind, 1)
+            let updatedUser = await mongooseQuery.updateUser({
+                _id: req.user._id
+            }, {
+                history: userHistory
+            })
+
+            return res.status(200).json({
+                message: "Removal successful",
+                statusCode: 200,
+                data: {
+                    user: stripUser(updatedUser)
                 },
                 success: true
             })
@@ -1214,7 +1345,7 @@ module.exports = function(mainSocket, sessionSocket) {
             let filteredCollections = [];
             let filteredUsers = [];
             for (let s of sessionMatches){
-                if (String(s.hostId) !== String(thisUser._id) && s.live){
+                if (String(s.hostId) !== String(thisUser._id)){
                     filteredSessions.push(s);
                 }
             }

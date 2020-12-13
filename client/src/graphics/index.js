@@ -68,3 +68,6 @@ export const menu_button = require('./user_pack/menu-button.svg')
 export const menu_button_white = require('./user_pack/menu-button-white.svg')
 export const plus_button = require('./user_pack/plus-button.svg')
 export const plus_button_white = require('./user_pack/plus-button-white.svg')
+
+export const yin_yang_color_harmony = require('./yin-yang-color-harmony.svg')
+export const yin_yang_fill_color_harmony = require('./yin-yang-fill-color-harmony.svg')

@@ -8,9 +8,10 @@ import DataAPI from './api/DataAPI'
 import PlayerAPI from './api/PlayerAPI'
 import Queue from './components/Queues/Queue'
 
+import Spinner from './components/Spinner.js'
 import MainApp from './components/MainApp.js'
 import LoginScreen from './components/LoginScreen.js'
-import { Container } from 'react-bootstrap';
+import { Container } from 'react-bootstrap'
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
@@ -32,7 +33,11 @@ class App extends React.Component {
         super(props)
         this.axiosWrapper = new AxiosWrapper()
         this.playerAPI = new PlayerAPI()
-        this.dataAPI = new DataAPI()
+        this.dataAPI = new DataAPI(() => {
+            this.setState({
+                dataAPI_loading: false
+            })
+        })
         this.queue = new Queue()
         if (process.env.REACT_APP_NODE_ENV === 'development') {
             this.mainSocket = io('http://localhost:4000/main', {
@@ -49,7 +54,8 @@ class App extends React.Component {
         this.state = {
             auth: false,
             user: null,
-            currentSession: null
+            currentSession: null,
+            dataAPI_loading: true
         }
     }
     
@@ -98,37 +104,42 @@ class App extends React.Component {
     }
 
     render() {
-        return (
-            <Container id="app-container">
-                <Router>
-                    <Switch>
-                        <Route path={['/main']} render={(props) => <MainApp {...props} 
-                            auth={this.state.auth} 
-                            user={this.state.user} 
-                            currentSession={this.state.currentSession}
-                            mainSocket={this.mainSocket}
-                            sessionClient={this.sessionClient} 
-                            playerAPI={this.playerAPI} 
-                            dataAPI={this.dataAPI} 
-                            queue={this.queue}
-                            handleLogOut={this.handleLogOut} 
-                            handleUpdateUser={this.handleUpdateUser} 
-                            handleUpdateCurrentSession={this.handleUpdateCurrentSession} 
-                            axiosWrapper={this.axiosWrapper}/>} 
-                        />
-                        <Route path={['/', '/login']} render={(props) => <LoginScreen {...props} 
-                            auth={this.state.auth} 
-                            user={this.state.user}
-                            playerAPI={this.playerAPI}  
-                            currentSession={this.state.currentSession} 
-                            handleAuthenticate={this.handleAuthenticate} 
-                            handleUpdateCurrentSession={this.handleUpdateCurrentSession}
-                            axiosWrapper={this.axiosWrapper} />} 
-                        />
-                    </Switch>
-                </Router>
-            </Container>
-        );
+        if (this.state.dataAPI_loading) {
+            return <Spinner/>
+        }
+        else {
+            return (
+                <Container id="app-container">
+                    <Router>
+                        <Switch>
+                            <Route path={['/main']} render={(props) => <MainApp {...props} 
+                                auth={this.state.auth} 
+                                user={this.state.user} 
+                                currentSession={this.state.currentSession}
+                                mainSocket={this.mainSocket}
+                                sessionClient={this.sessionClient} 
+                                playerAPI={this.playerAPI} 
+                                dataAPI={this.dataAPI} 
+                                queue={this.queue}
+                                handleLogOut={this.handleLogOut} 
+                                handleUpdateUser={this.handleUpdateUser} 
+                                handleUpdateCurrentSession={this.handleUpdateCurrentSession} 
+                                axiosWrapper={this.axiosWrapper}/>} 
+                            />
+                            <Route path={['/', '/login']} render={(props) => <LoginScreen {...props} 
+                                auth={this.state.auth} 
+                                user={this.state.user}
+                                playerAPI={this.playerAPI}  
+                                currentSession={this.state.currentSession} 
+                                handleAuthenticate={this.handleAuthenticate} 
+                                handleUpdateCurrentSession={this.handleUpdateCurrentSession}
+                                axiosWrapper={this.axiosWrapper} />} 
+                            />
+                        </Switch>
+                    </Router>
+                </Container>
+            )
+        }
     }
 
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { ReactComponent as Yinyang } from '../graphics/yin-yang-fill-color-harmony.svg'
 import AccountLink from './AccountLink.js'
 import { mainScreens } from '../const'
 
@@ -32,6 +33,7 @@ class TabComponent extends React.Component{
                         <div className={this.getTabComponentClass(mainScreens.SEARCH) + 'title color-accented'} onClick={() => this.handleSwitchScreen(mainScreens.SEARCH)}>Search</div>
                     </li>
                 </ul>
+                <Yinyang className="app-main-logo" onClick={() => this.handleSwitchScreen(mainScreens.HOME)}></Yinyang>
                 <AccountLink switchScreen={this.props.switchScreen} auth={this.props.auth} user={this.props.user} axiosWrapper={this.props.axiosWrapper} handleLogOut={this.props.handleLogOut} history={this.props.history}/>
             </div>
         )
