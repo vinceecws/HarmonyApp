@@ -417,13 +417,13 @@ class SettingsScreen extends React.Component{
                         {/* Modal */}
                         <Route path={'/main/changeUsername'} render={() => { 
                             return(
-                            <div id="changeUsernameModal" style={{position: 'relative', transform: 'translate(0, -60%)'}}>
+                            <div id="changeUsernameModal" className="user-prompt-modal">
                                 <div className="modal-dialog">
                                     {/* Modal Content */}
-                                    <div className="modal-content">
+                                    <div className="modal-content bg-color-jet color-accented">
                                         <div className="modal-header">
                                             <h3>Change Username</h3>
-                                            <button type="button" className="close" data-dismiss="modal" onClick={data => this.handleCloseUsernameModal(data)}>&times;</button>
+                                            <button type="button" className="close color-accented" data-dismiss="modal" onClick={data => this.handleCloseUsernameModal(data)}>&times;</button>
                                         </div>
                                         <div className="modal-body">
                                             <p>Update your username:</p>
@@ -469,11 +469,11 @@ class SettingsScreen extends React.Component{
                                                 </Form.Group>
                                             </Form.Row>
                                        
-                                        <Button type="submit">Submit</Button>
+                                        <Button className="bg-color-harmony"  type="submit">Submit</Button>
                                     </Form>
                                         </div>
                                         <div className="modal-footer">
-                                            <button type="button" className="btn btn-default" data-dismiss="modal" onClick={data => this.handleCloseUsernameModal(data)}>Close</button>
+                                            <button type="button" className="btn btn-default bg-color-harmony color-accented" data-dismiss="modal" onClick={data => this.handleCloseUsernameModal(data)}>Close</button>
                                         </div>
                                         
                                     </div>
@@ -483,13 +483,13 @@ class SettingsScreen extends React.Component{
                         {/* Modal */}
                         <Route path={'/main/changeBiography'} render={() => { 
                             return(
-                            <div id="changeBiographyModal" style={{position: 'relative', transform: 'translate(0, -50%)'}}>
+                            <div id="changeBiographyModal" className="user-prompt-modal">
                                 <div className="modal-dialog">
                                     {/* Modal Content */}
-                                    <div className="modal-content">
+                                    <div className="modal-content bg-color-jet color-accented">
                                         <div className="modal-header">
                                             <h3>Change Biography</h3>
-                                            <button type="button" className="close" data-dismiss="modal" onClick={data => this.handleCloseBiographyModal(data)}>&times;</button>
+                                            <button type="button" className="close color-accented" data-dismiss="modal" onClick={data => this.handleCloseBiographyModal(data)}>&times;</button>
                                         </div>
                                         <div className="modal-body">
                                             <p>Update your Biography:</p>
@@ -511,11 +511,11 @@ class SettingsScreen extends React.Component{
                                                         <Form.Control.Feedback>{this.state.biography.length}/{this.state.character_limit}</Form.Control.Feedback>
                                                     </Form.Group>
                                                 </Form.Row>
-                                                <Button type="submit">Submit</Button>
+                                                <Button className="bg-color-harmony" type="submit">Submit</Button>
                                             </Form>  
                                         </div>
                                         <div className="modal-footer">
-                                            <button type="button" className="btn btn-default" data-dismiss="modal" onClick={data => this.handleCloseBiographyModal(data)}>Close</button>
+                                            <button type="button" className="btn btn-default bg-color-harmony color-accented" data-dismiss="modal" onClick={data => this.handleCloseBiographyModal(data)}>Close</button>
                                         </div>
                                         
                                     </div>
@@ -525,13 +525,13 @@ class SettingsScreen extends React.Component{
                         {/* Modal */}
                         <Route path={'/main/changePassword'} render={() => { 
                             return(
-                            <div id="changePasswordModal" style={{position: 'relative', transform: 'translate(0, -50%)'}}>
+                            <div id="changePasswordModal" className="user-prompt-modal">
                                 <div className="modal-dialog">
                                     {/* Modal Content */}
-                                    <div className="modal-content">
+                                    <div className="modal-content bg-color-jet color-accented">
                                         <div className="modal-header">
                                             <h3>Change Password</h3>
-                                            <button type="button" className="close" data-dismiss="modal" onClick={data => this.handleClosePasswordModal(data)}>&times;</button>
+                                            <button type="button" className="close color-accented" data-dismiss="modal" onClick={data => this.handleClosePasswordModal(data)}>&times;</button>
                                         </div>
                                         <div className="modal-body">
                                             <p>Change your Password:</p>
@@ -598,10 +598,10 @@ class SettingsScreen extends React.Component{
                                                     </Form.Row>
                                                     
                                                     
-                                                    <Button type="submit">Submit</Button>
+                                                    <Button className="bg-color-harmony"  type="submit">Submit</Button>
                                                 </Form>
                                         <div className="modal-footer">
-                                            <button type="button" className="btn btn-default" data-dismiss="modal" onClick={data => this.handleClosePasswordModal(data)}>Close</button>
+                                            <button type="button" className="btn btn-default bg-color-harmony color-accented" data-dismiss="modal" onClick={data => this.handleClosePasswordModal(data)}>Close</button>
                                         </div>
                                         </div>
                                     </div>
@@ -610,20 +610,20 @@ class SettingsScreen extends React.Component{
                         )}}/>
                         <Route path={'/main/attemptedPrivateChange'} render={() => { 
                             return(
-                            <div id="attemptPrivateChangeModal" style={{position: 'relative', transform: 'translate(0, -120%)'}}>
+                            <div id="attemptPrivateChangeModal" className="user-prompt-modal">
                                 <div className="modal-dialog">
                                     {/* Modal Content */}
-                                    <div className="modal-content">
+                                    <div className="modal-content bg-color-jet color-accented">
                                         <div className="modal-header">
                                             <h3>Private Mode Locked</h3>
-                                            <button type="button" className="close" data-dismiss="modal" onClick={data => this.props.history.goBack()}>&times;</button>
+                                            <button type="button" className="close color-accented" data-dismiss="modal" onClick={data => this.props.history.goBack()}>&times;</button>
                                         </div>
                                         <div className="modal-body">
                                             <p>Private mode is locked while you are hosting</p>
                                             
                                         </div>
                                         <div className="modal-footer">
-                                            <button type="button" className="btn btn-default" data-dismiss="modal" onClick={data => this.props.history.goBack()}>Close</button>
+                                            <button type="button" className="btn btn-default bg-color-harmony color-accented" data-dismiss="modal" onClick={data => this.props.history.goBack()}>Close</button>
                                         </div>
                                         
                                     </div>

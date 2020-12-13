@@ -177,22 +177,24 @@ class MainApp extends React.Component {
                 <Route path={'/main/sessionExpiredUser'} render={() => { 
 
                             return(
-                            <div id="sessionExpiredUser" style={{position: 'absolute', transform: 'translate(0, -100%)',backgroundColor: 'rgba(52, 52, 52, 0.6)', width:'100%', height:'100%'}}>
-                                <div className="modal-dialog">
-                                    {/* Modal Content */}
-                                    <div className="modal-content">
-                                        <div className="modal-header">
-                                            <h3>Session Ended</h3>
-                                            <button type="button" className="close" data-dismiss="modal" onClick={data => this.handleCloseModal(data)}>&times;</button>
-                                        </div>
-                                        <div className="modal-body">
-                                            <p>The Host has ended the Session</p>
+                            <div id="sessionExpiredUser" className="user-prompt-modal">
+                                <div classname="login-screen-signup-modal-content"  >
+                                    <div className="modal-dialog">
+                                        {/* Modal Content */}
+                                        <div className="modal-content bg-color-jet color-accented">
+                                            <div className="modal-header">
+                                                <h3>Session Ended</h3>
+                                                <button type="button" className="close color-accented" data-dismiss="modal" onClick={data => this.handleCloseModal(data)}>&times;</button>
+                                            </div>
+                                            <div className="modal-body">
+                                                <p>The Host has ended the Session</p>
+                                                
+                                            </div>
+                                            <div className="modal-footer">
+                                                <button type="button" className="btn btn-default bg-color-harmony color-accented" data-dismiss="modal" onClick={data => this.handleCloseModal(data)}>Close</button>
+                                            </div>
                                             
                                         </div>
-                                        <div className="modal-footer">
-                                            <button type="button" className="btn btn-default" data-dismiss="modal" onClick={data => this.handleCloseModal(data)}>Close</button>
-                                        </div>
-                                        
                                     </div>
                                 </div>
                             </div>
