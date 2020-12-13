@@ -17,6 +17,7 @@ class SettingsScreen extends React.Component{
             loading: true,
             hosting: false,
             profileUser: null,
+            attemptedPrivateChange: false,
             changeUsername_invalidPassword: false,
             changeUsername_taken: false,
             changeUsername_validated: false,
@@ -84,8 +85,14 @@ class SettingsScreen extends React.Component{
                 }
             }).bind(this), true);
         }
+        else{
+            this.showPrivateChangePrompt()
+        }
         
         
+    }
+    showPrivateChangePrompt = () =>{
+        return 
     }
     handleUsernameChange = (e) => {
         if(e.target.value.length > this.state.character_limit){
@@ -341,7 +348,26 @@ class SettingsScreen extends React.Component{
             }
         }).bind(this), true)
     }
-
+    renderCheckbox = () => {
+        if(this.state.hosting){
+            return <Link to={'main/attemptedPrivateChange'}>
+                            <div style={{position: 'relative', left:'15px', height:'30px'}}>
+                                    <input type="checkbox"   id="customSwitch1" className='checkbox' onChange={this.handlePrivateToggle} checked={this.state.profileUser.privateMode}/>
+                                    <label htmlFor='customSwitch1' className='switch'></label>
+                                    <label style={{position:'relative',bottom:'12px', left:'15px', color:'white'}}>Private Mode</label>
+                                    
+                            </div>
+                    </Link>
+        }
+        else{
+            return <div style={{position: 'relative', left:'15px', height:'30px'}}>
+                                    <input type="checkbox"   id="customSwitch1" className='checkbox' onChange={this.handlePrivateToggle} checked={this.state.profileUser.privateMode}/>
+                                    <label htmlFor='customSwitch1' className='switch'></label>
+                                    <label style={{position:'relative',bottom:'12px', left:'15px', color:'white'}}>Private Mode</label>
+                                    
+            </div>
+        }
+    }
 	render() {
         var component
         if (this.state.loading) {
@@ -352,11 +378,7 @@ class SettingsScreen extends React.Component{
             		<div style={{fontFamily: 'BalsamiqSans', maxWidth:'100%', padding:'1em'}}>
                         <div className='body-text color-contrasted'>SETTINGS</div>
             			<div className='row'>
-                            <div style={{position: 'relative', left:'15px', height:'30px'}}>
-                                    <input disabled={this.state.hosting} type="checkbox" defaultChecked={this.state.profileUser.privateMode}  id="customSwitch1" className='checkbox' onClick={this.handlePrivateToggle} value={this.state.profileUser.privateMode}/>
-                                    <label htmlFor='customSwitch1' className='switch'></label>
-                                    <label style={{position:'relative',bottom:'12px', left:'15px', color:'white'}}>Private Mode</label>
-                            </div>
+                            {this.renderCheckbox()}
                             
             			</div>
                         <div className='row' style={{position: 'relative', left:'15px', height:'30px', color:'white'}}>
@@ -582,6 +604,28 @@ class SettingsScreen extends React.Component{
                                             <button type="button" className="btn btn-default" data-dismiss="modal" onClick={data => this.handleClosePasswordModal(data)}>Close</button>
                                         </div>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}}/>
+                        <Route path={'/main/attemptedPrivateChange'} render={() => { 
+                            return(
+                            <div id="attemptPrivateChangeModal" style={{position: 'relative', transform: 'translate(0, -120%)'}}>
+                                <div className="modal-dialog">
+                                    {/* Modal Content */}
+                                    <div className="modal-content">
+                                        <div className="modal-header">
+                                            <h3>Private Mode Locked</h3>
+                                            <button type="button" className="close" data-dismiss="modal" onClick={data => this.props.history.goBack()}>&times;</button>
+                                        </div>
+                                        <div className="modal-body">
+                                            <p>Private mode is locked while you are hosting</p>
+                                            
+                                        </div>
+                                        <div className="modal-footer">
+                                            <button type="button" className="btn btn-default" data-dismiss="modal" onClick={data => this.props.history.goBack()}>Close</button>
+                                        </div>
+                                        
                                     </div>
                                 </div>
                             </div>

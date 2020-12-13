@@ -293,6 +293,7 @@ class SessionScreen extends React.Component {
 			this.props.sessionClient.leaveSession()
 			this.handleBeginTearDown(() => {
 				this.props.handleUpdateCurrentSession(null, this.handleTearDown)
+				this.props.toggleModal();
 			})
 		}
 		else {
@@ -301,6 +302,7 @@ class SessionScreen extends React.Component {
 					this.props.sessionClient.leaveSession()
 					this.handleBeginTearDown(() => {
 						this.props.handleUpdateUser(data.data.user, this.handleTearDown)
+						this.props.toggleModal();
 					})
 				}
 			}, true)
@@ -501,6 +503,7 @@ class SessionScreen extends React.Component {
 		this.props.playerAPI.seekTo(0)
 		this.props.switchScreen(mainScreens.SESSION, null)
 		this.props.switchScreen(mainScreens.HOME)
+
 		this.setState({
 			id: null,
 			unloading: false
