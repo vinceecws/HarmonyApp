@@ -235,26 +235,14 @@ class CollectionScreen extends React.Component{
         }
     }
 
-    getDurationString(duration){
-        //console.log('Duration: ', duration);
+    getSongDuration(duration){
+        console.log('Duration: ', duration);
+        return duration[2] + ':' + duration[4] + duration[5];
         //return String(duration / 60).padStart(2, '0') + ':' + String(duration % 60)
     }
 
     getDateAdded(date){
         return '10/30/2020'
-    }
-
-    sortByTitle = (e) =>{
-        let sortedList = [];
-
-    }
-
-    sortByDateAdded = (e) =>{
-        let sortedList = [];
-    }
-
-    sortByArtist = (e) => {
-        let sortedList = [];
     }
 
     showEditNameModal = () => {
@@ -309,21 +297,25 @@ class CollectionScreen extends React.Component{
         }).bind(this), true)
     }
 
-    onCreateSession = () => {
+    onPlayCollection = (song, index) => {
+        this.props.playVideo(song._id);
+        for (let i = index + 1; i < this.state.songList.length; i++){
+            this.props.queue.addSongToFutureQueue(this.state.songList[i]);
+        }
+        if (this.props.shouldStartSession()){
+            this.createSession();
+        }
+    }
+
+    createSession = () => {
         this.props.axiosWrapper.axiosPost('/api/session/newSession', 
         {name: `${this.props.user.username}'s Live Session`}, 
         (function(res, data){
             if (data.success){
-                //how to initialize session queue to songs in collection?
-                this.props.playVideo(this.state.songList[0]._id);
-                for (let i = 1; i < this.state.songList.length; i++){
-                    this.props.queue.addSongToFutureQueue(this.state.songList[i])
-                }
                 this.props.handleUpdateUser(data.data.user)
                 this.props.switchScreen(mainScreens.SESSION, data.data.sessionId)
             }
         }).bind(this), true)
-        
     }
 
     //reorder songlist (persistant)
@@ -331,13 +323,13 @@ class CollectionScreen extends React.Component{
         console.log(result);
         if (result.destination !== null && result.source !== null){
             //update frontend
-            
+            /*
             let newStateSongList = _.cloneDeep(this.state.songList);
             let movedSong = newStateSongList[result.source];
             newStateSongList.splice(result.source.index, 1);
             newStateSongList.splice(result.destination.index, 0, movedSong);
             this.setState({songList: newStateSongList});
-            
+            */
 
             //update backend
             let newSongList = this.state.collection.songList;
@@ -459,7 +451,7 @@ class CollectionScreen extends React.Component{
                                         </Dropdown.Item>
                                         {this.state.songList.length > 0 ?
                                         (<Dropdown.Item>
-                                            <Button onClick={this.onCreateSession}>
+                                            <Button onClick={() => this.onPlayCollection(this.state.songList[0], 0)}>
                                                 Start Session from Collection
                                             </Button>
                                         </Dropdown.Item>) : <div></div>
@@ -483,10 +475,9 @@ class CollectionScreen extends React.Component{
                     {/* Queue List */}
                     
                     <div className='row' style={{paddingTop: '5px', border: '2px solid black', backgroundColor: 'grey'}}>
-                        <h5 className='collection-page-text' style={{marginLeft: '10px', marginRight: '30%'}}>Title</h5>
-                        <h5 className='collection-page-text' style={{marginRight: '20%'}}>Creator</h5>
-                        <h5 className='collection-page-text' style={{marginRight: '10%'}}>Date Added</h5>
-                        <h5 className='collection-page-text' style={{marginRight: '10%'}}>Duration</h5>
+                        <h5 className='collection-page-text' style={{marginLeft: '1%', minWidth: '40%'}}>Title</h5>
+                        <h5 className='collection-page-text' style={{minWidth: '30%'}}>Creator</h5>
+                        <h5 className='collection-page-text' style={{minWidth: '20%'}}>Duration</h5>
                     </div>
 
                     {/* Songs */}
@@ -501,10 +492,9 @@ class CollectionScreen extends React.Component{
                                         {(provided) => 
                                         (<li className="collection-page-rows" style={{minWidth: '90vw'}} {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
                                             <div style={{display: 'flex', alignItems: 'center', height: '40px'}}>
-                                                <div className='collection-song-title ellipsis-multi-line-overflow'  style={{display: 'inline-block', marginLeft: '15px', marginRight: '2.5%', width: '27%'}} onClick={() => this.onPressPlaySong(e, i)}>{e.name}</div>
-                                                <div className='collection-song-title ellipsis-multi-line-overflow' style={{display: 'inline-block', width: '20%', marginRight: '2%'}}><div>{e.creator}</div></div>
-                                                <div className='collection-page-text' style={{display: 'inline-block', marginRight: '10.5%'}}>{this.getDateAdded()}</div>
-                                                <div className='collection-page-text' style={{display: 'inline-block', marginRight: '5%'}}>{this.getDurationString(e.duration, i)} </div>
+                                                <div className='collection-song-title ellipsis-multi-line-overflow'  style={{display: 'inline-block', marginLeft: '1%', minWidth: '35%', marginRight: '5%'}} onClick={() => this.onPlayCollection(e, i)}>{e.name}</div>
+                                                <div className='collection-song-title ellipsis-multi-line-overflow' style={{display: 'inline-block', minWidth: '25%', marginRight: '5%'}}>{e.creator}</div>
+                                                <div className='collection-page-text' style={{display: 'inline-block', minWidth: '15%', marginRight: '5%'}}>{this.getSongDuration(e.duration)} </div>
                                                 { this.props.user ? 
                                                     <Button className='collection-song-favorite-button' style={{position: 'relative', display: 'inline-block', height: '40px', width: '40px'}}>
                                                         {/* Fix during implementation */}

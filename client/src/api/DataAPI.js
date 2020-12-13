@@ -47,7 +47,7 @@ class DataAPI {
                         image_maxres: obj.snippet.thumbnails.maxres ? obj.snippet.thumbnails.maxres.url : null,
                         image_med: obj.snippet.thumbnails.medium ? obj.snippet.thumbnails.medium.url : null,
                         image_std: obj.snippet.thumbnails.standard ? obj.snippet.thumbnails.standard.url: null,
-                        duration: Date.parse(obj.contentDetails.duration)
+                        duration: obj.contentDetails.duration
                     }
                 } 
                 else {
