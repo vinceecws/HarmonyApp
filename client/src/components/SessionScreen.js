@@ -149,6 +149,7 @@ class SessionScreen extends React.Component {
 				case 'end_session':
 					if (this.shouldReceiveActions()) {
 						this.handleLeaveSession()
+						this.props.toggleModal();
 					}
 					break;
 				case 'change_name':
@@ -293,7 +294,7 @@ class SessionScreen extends React.Component {
 			this.props.sessionClient.leaveSession()
 			this.handleBeginTearDown(() => {
 				this.props.handleUpdateCurrentSession(null, this.handleTearDown)
-				this.props.toggleModal();
+				
 			})
 		}
 		else {
@@ -302,7 +303,7 @@ class SessionScreen extends React.Component {
 					this.props.sessionClient.leaveSession()
 					this.handleBeginTearDown(() => {
 						this.props.handleUpdateUser(data.data.user, this.handleTearDown)
-						this.props.toggleModal();
+						
 					})
 				}
 			}, true)
