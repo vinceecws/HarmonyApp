@@ -490,9 +490,9 @@ class Player extends React.Component {
                             </Button>
                         </Row>
                         <Row id="player-progress-bar-container">
-                            <div className="player-progress-display body-text">{this.getSongProgress()}</div>
+                            <div className="player-progress-display body-text color-contrasted">{this.getSongProgress()}</div>
                             <RangeSlider className="player-progress-bar" variant="dark" tooltip="off" value={this.state.currentTime} onChange={e => this.handleMoveSlider(e.target.value)} onAfterChange={e => this.handleSeek(e.target.value)} min={0} max={this.props.playerAPI.getDuration()} disabled={this.getSeekDisabled()}/>
-                            <div className="player-progress-display body-text">{this.getSongDuration()}</div>
+                            <div className="player-progress-display body-text color-contrasted">{this.getSongDuration()}</div>
                         </Row>
                     </Col>
                     <Col id="player-volume-container">

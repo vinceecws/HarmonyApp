@@ -490,7 +490,7 @@ class SearchScreen extends React.Component {
                                                 obj.type === "collection" || obj.type === "song" ?
                                                 <div className="search-screen-history-item-img-overlay-trigger">
                                                     <div className="search-screen-history-item-img-overlay-container">
-                                                        <div className="search-screen-history-item-img-overlay-play-button" onClick={this.handlePlayItem.bind(this, obj)}>
+                                                        <div className="search-screen-history-item-img-overlay-play-button" onClick={(e) => {e.stopPropagation(); this.handlePlayItem(obj)}}>
                                                             <Image className="search-screen-history-item-img-overlay-play-button-icon" src={icon_play_white_1} roundedCircle/>
                                                         </div>
                                                     </div>
