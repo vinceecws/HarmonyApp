@@ -659,7 +659,18 @@ class SessionScreen extends React.Component {
 			line2 = "Login or Sign-up to start a session"
 
 		}
-		if(line1 && line2){
+		else if(this.state.role === sessionRoles.USER_NON_PARTICIPANT){
+			if(this.props.queue.getFutureQueue().length > 0 || this.props.queue.getCurrentSong()){
+				line1 = "Ready to share your collection?"
+				line2 = "Start your session now"
+			}
+			else{
+				line1 = "It looks like you're not listening to anything."
+				line2 = "Try searching for some songs to play?"
+			}
+			
+		}
+		if(line1 && line2 && this.isGuest()){
 			return <div className="user-prompt-modal" style={{height:'78%', top:'61%', textAlign:'center'}}>
 							<div className="subtitle color-accented" style={{ marginTop:'200px'}}>
 								{line1}
@@ -672,6 +683,41 @@ class SessionScreen extends React.Component {
 								</Button>
 							</Link>
 						</div>
+		}
+		else if(line1 && line2 && this.state.role === sessionRoles.USER_NON_PARTICIPANT){
+			if(this.props.queue.getFutureQueue().length > 0 || this.props.queue.getCurrentSong()){
+				console.log(this.props.queue.getCurrentSong());
+				console.log(this.props.queue.getFutureQueue());
+				return <div className="user-prompt-modal" style={{height:'78%', top:'61%', textAlign:'center'}}>
+								<div className="subtitle color-accented" style={{ marginTop:'200px'}}>
+									{line1}
+								</div>
+								
+									<Button className="session-screen-empty-notice-button bg-color-harmony" onClick ={()=>{this.props.axiosWrapper.axiosPost('/api/session/newSession', {
+																													            name: `${this.props.user.username}'s Live Session`
+																													        }, (function(res, data) {
+																																if (data.success) {
+																													                this.props.handleUpdateUser(data.data.user)
+																													                this.props.switchScreen(mainScreens.SESSION, data.data.sessionId)
+																																}
+																															}).bind(this), true)}}>
+										<div className="subtitle color-accented">
+											{line2}
+										</div>
+									</Button>
+								
+							</div>
+			}
+			else{
+				return <div className="user-prompt-modal" style={{height:'78%', top:'61%', textAlign:'center'}}>
+							<div className="subtitle color-accented" style={{ marginTop:'200px'}}>
+								{line1}
+							</div>
+								<div className="subtitle color-accented">
+									{line2}
+								</div>
+						</div>
+			}
 		}
 		if(this.state.role === sessionRoles.USER_PRIVATE_HOST){
 			return <div className="user-prompt-modal" style={{height:'78%', top:'61%', textAlign:'center'}}>
