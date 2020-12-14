@@ -63,7 +63,7 @@ class SessionScreen extends React.Component {
 			if (this.props.screenProps) {
 				//If screen is active and new sessionId is passed
 				if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
-					if((this.isHost() && !this.isNonParticipant()) && prevState.id !== null && this.props.screenProps.sessionId !== null){
+					if((this.isHost() && !this.isNonParticipant()) && prevState.id !== null && this.props.screenProps.sessionId !== null){ //host switching between two live sessions
 						if(!this.props.isHostHopPromptShowing && !this.props.isHostSwitchingSessions && !this.hostSwitchingSessions){
 							console.log("bring up prompt to switch")
 							this.props.showHostHopSessionModal();
@@ -75,7 +75,7 @@ class SessionScreen extends React.Component {
 								
 								this.hostSwitchingSessions = false;
 								this.props.disableHostSwitchingSessions();
-								this.handleHostHopSession();
+								this.handleHopSession();
 								
 
 							}
@@ -86,7 +86,11 @@ class SessionScreen extends React.Component {
 						}
 						
 					}
-					else{
+					else if((!this.isHost() && !this.isNonParticipant()) && prevState.id !== null && this.props.screenProps.sessionId !== null){ //a user switching between two sessions
+						this.handleHopSession();
+						
+					}
+					else{ //switching to a session default case
 						this.setState({
 							id: this.props.screenProps.sessionId,
 							loading: true
@@ -318,20 +322,43 @@ class SessionScreen extends React.Component {
 			}
 		}, true)
 	}
-	handleHostHopSession = () => {
-		this.props.axiosWrapper.axiosPost('/api/session/endSession', {}, (res, data) => {
-			if (data.success) {
-				var actionData = {
-					subaction: "end_session"
+	handleHopSession = () => {
+		if(this.isHost() && !this.isNonParticipant()){
+			this.props.axiosWrapper.axiosPost('/api/session/endSession', {}, (res, data) => {
+				if (data.success) {
+					var actionData = {
+						subaction: "end_session"
+					}
+					this.props.sessionClient.emitSession(this.state.user.username, this.state.user._id, actionData)
+					this.props.sessionClient.endSession()
+					this.handleBeginTearDown(() => {
+						this.props.handleUpdateUser(data.data.user, this.handleTearDownHop)
+					})
+					
 				}
-				this.props.sessionClient.emitSession(this.state.user.username, this.state.user._id, actionData)
-				this.props.sessionClient.endSession()
+			}, true)
+		}
+		else{
+			if (this.isGuest()) {
+				this.props.sessionClient.leaveSession()
 				this.handleBeginTearDown(() => {
-					this.props.handleUpdateUser(data.data.user, this.handleTearDownHostHop)
+					this.props.handleUpdateCurrentSession(null, this.handleTearDownHop)
+					
 				})
-				
 			}
-		}, true)
+			else {
+				this.props.axiosWrapper.axiosPost('/api/session/leaveSession', {}, (res, data) => {
+					if (data.success) {
+						this.props.sessionClient.leaveSession()
+						this.handleBeginTearDown(() => {
+							this.props.handleUpdateUser(data.data.user, this.handleTearDownHop)
+							
+						})
+					}
+				}, true)
+			}
+		}
+		
 	}
 
 	handleLeaveSession = () => {
@@ -555,7 +582,7 @@ class SessionScreen extends React.Component {
 			unloading: false
 		})
 	}
-	handleTearDownHostHop = () => {
+	handleTearDownHop = () => {
 		this.props.playerAPI.pauseVideo()
 		this.props.playerAPI.seekTo(0)
 		this.setState({
