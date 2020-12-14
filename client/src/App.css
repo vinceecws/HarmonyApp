@@ -156,6 +156,7 @@ body, html {
 .Session-Side-List {
   height: 100%;
   overflow-y: scroll;
+  overflow-x: hidden;
   background-color: #171717;
   text-align: left;
   width: 100%;
@@ -313,12 +314,12 @@ body, html {
 }
 
 .session-entry-text-ticker {
-  padding-right: 8px;
+  padding-right: 5px;
 }
 
 .list-group-sessionScreen{
   height: 100%;
-  max-width: 98%;
+  max-width: 100%;
   overflow:scroll;
   overflow-x: hidden;
 }
