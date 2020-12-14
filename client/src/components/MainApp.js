@@ -136,7 +136,6 @@ class MainApp extends React.Component {
     }
 
     render() {
-        console.log(this.props.playerAPI.isPlayerInit())
         return(
             <div id="main-app-container">
                 <Row id="top-container">

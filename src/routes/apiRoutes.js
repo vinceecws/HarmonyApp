@@ -33,7 +33,6 @@ module.exports = function(mainSocket, sessionSocket) {
 
     apiRouter.post('/collection/uploadImage/:collectionId', async (req, res) => {
         
-        //console.log(req.body);
         if (req.params.collectionId == null){
             
             return res.status(401).json({
@@ -50,8 +49,8 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else {
-            let updatedCollection = await mongooseQuery.updateCollection(req.params.collectionId, {image: req.body});
-            //console.log(updatedCollection)
+            let image = Buffer.from(req.body.image)
+            let updatedCollection = await mongooseQuery.updateCollection(req.params.collectionId, {image: image});
             return res.status(200).json({
                 message: 'Update Successful',
                 statusCode: 200,
@@ -690,7 +689,10 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else{
-            let collection = await mongooseQuery.getCollection({'_id': req.params.id});
+            let collection = await mongooseQuery.getCollection({'_id': req.params.id}, true);
+            if (collection.image) {
+                collection.image = collection.image.toString()
+            }
             return res.status(200).json({
                 message: "Fetch success",
                 statusCode: 200,
