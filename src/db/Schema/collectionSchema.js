@@ -24,6 +24,9 @@ const collectionSchema = new mongoose.Schema ({
     likes: {
         type: Number,
         default: 0
+    },
+    image: {
+        type: Buffer
     }
 })
 
