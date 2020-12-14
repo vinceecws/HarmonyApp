@@ -63,6 +63,14 @@ class SessionScreen extends React.Component {
 			if (this.props.screenProps) {
 				//If screen is active and new sessionId is passed
 				if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
+					if(prevState.id !== null && this.state.user.hosting){
+						this.props.showHostSwapSessionModal();
+						if(this.props.isHostSwitchingSessions){
+							this.handleEndSession();
+						}
+					}
+					
+					
 					this.setState({
 						id: this.props.screenProps.sessionId,
 						loading: true
@@ -149,7 +157,7 @@ class SessionScreen extends React.Component {
 				case 'end_session':
 					if (this.shouldReceiveActions()) {
 						this.handleLeaveSession()
-						this.props.toggleModal();
+						this.props.showSessionEndedModal();
 					}
 					break;
 				case 'change_name':
