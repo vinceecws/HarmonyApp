@@ -686,8 +686,6 @@ class SessionScreen extends React.Component {
 		}
 		else if(line1 && line2 && this.state.role === sessionRoles.USER_NON_PARTICIPANT){
 			if(this.props.queue.getFutureQueue().length > 0 || this.props.queue.getCurrentSong()){
-				console.log(this.props.queue.getCurrentSong());
-				console.log(this.props.queue.getFutureQueue());
 				return <div className="user-prompt-modal" style={{height:'78%', top:'61%', textAlign:'center'}}>
 								<div className="subtitle color-accented" style={{ marginTop:'200px'}}>
 									{line1}
