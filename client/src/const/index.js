@@ -5,8 +5,8 @@ export const youtube_data_api_oauth_scope = "https://www.googleapis.com/auth/you
 export const google_oauth2_src = "https://apis.google.com/js/platform.js"
 
 export const google_oauth2_client_id = '1062386445238-hpt4garm04t6lfcn82brmbic5gng7u8i.apps.googleusercontent.com'
-export const youtube_data_api_key = 'AIzaSyD2baf28I9I_FGcSCKay1GARnAMghlcQW0'
-// export const youtube_data_api_key = 'AIzaSyAAvijnMt1vaI6Z2gwSJE-MOCoygHwSEvM' //Sebastian's
+// export const youtube_data_api_key = 'AIzaSyD2baf28I9I_FGcSCKay1GARnAMghlcQW0'
+export const youtube_data_api_key = 'AIzaSyAAvijnMt1vaI6Z2gwSJE-MOCoygHwSEvM' //Sebastian's
 
 /*
     The 6 screens of the main app

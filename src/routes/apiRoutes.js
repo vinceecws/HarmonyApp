@@ -2,10 +2,68 @@ const express = require("express")
 const mongooseQuery = require('../db');
 const stripUser = require('./index').stripUser
 const _ = require('lodash');
+const path = require('path')
+
+const multer = require('multer');
+const storage = multer.diskStorage({
+    destination: function(req, file, cb){
+        cb(null, './uploads/');
+    },
+    filename: function(req, file, cb){
+        cb(null, new Date().toISOString + file.originalname);
+    }
+})
+
+const fileFilter = function(req, file, cb){
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'img/png'){
+        cb(null, true);
+    }
+    else {
+        cb(new Error('Invalid File Type'), false);
+    }
+}
+
+const upload = multer({storage: storage, limits: {fileSize: 1024 * 1024 * 3},
+                        fileFilter: fileFilter});
+
 
 module.exports = function(mainSocket, sessionSocket) {
 
     apiRouter = express.Router()
+
+    apiRouter.post('/collection/uploadImage/:collectionId', async (req, res) => {
+        
+        //console.log(req.body);
+        if (req.params.collectionId == null){
+            
+            return res.status(401).json({
+                error: {
+                    name: "Bad request",
+                    message: "Invalid collectionId"
+                },
+                message: "Invalid collectionId",
+                statusCode: 401,
+                data: {
+                    collection: null
+                },
+                success: false
+            })
+        }
+        else {
+            let updatedCollection = await mongooseQuery.updateCollection(req.params.collectionId, {image: req.body});
+            //console.log(updatedCollection)
+            return res.status(200).json({
+                message: 'Update Successful',
+                statusCode: 200,
+                data: {
+                    collection: updatedCollection
+                },
+                success: true
+            })
+        }
+        
+
+    })
 
     apiRouter.post('/addSongToFavorites/:songId', async (req, res) => {
         let songId = req.params.songId

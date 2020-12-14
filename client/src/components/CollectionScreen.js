@@ -25,8 +25,13 @@ class CollectionScreen extends React.Component{
             collectionDescription: '',
             playing: false,
             favorited: false,
-            songPlaying: null
+            songPlaying: null,
+            showUploadImageModal: false,
+            uploadedImage: null,
+            imageType: null,
+            collectionImageSrc: null
         }
+        this.onUploadImage = this.onUploadImage.bind(this);
     }
 
     componentDidUpdate = (prevProps, prevState) => {
@@ -226,7 +231,8 @@ class CollectionScreen extends React.Component{
                                 loading: false,
                                 collectionName: data.data.collection.name,
                                 favorited: this.isCollectionFavorited(data.data.collection),
-                                songList: s
+                                songList: s,
+                                collectionImageSrc: data.data.collection.image === undefined ? null : URL.createObjectURL(data.data.collection.image)
                             })
                         })
                     }
@@ -236,9 +242,7 @@ class CollectionScreen extends React.Component{
     }
 
     getSongDuration(duration){
-        console.log('Duration: ', duration);
         return duration[2] + ':' + duration[4] + duration[5];
-        //return String(duration / 60).padStart(2, '0') + ':' + String(duration % 60)
     }
 
     getDateAdded(date){
@@ -356,10 +360,54 @@ class CollectionScreen extends React.Component{
         return false;
     }
 
+    onUploadImage = (file) => {
+        this.setState({uploadedImage: file});
+        
+    }
+
+    onSubmitUploadImage = () => {
+        if (this.state.uploadedImage !== null){
+            this.setState({imageType: this.state.uploadedImage[0].type});
+            this.hideUploadImageModal();
+            /*
+            let data = new FormData();
+            data.append('file', this.state.uploadedImage[0], this.state.uploadedImage[0].name)
+            console.log(data);
+            */
+            this.props.axiosWrapper.axiosPost('/api/collection/uploadImage/' + this.state.collectionId, 
+                this.state.uploadedImage[0], (function(res, data){
+                    if (data.success){
+                        this.setState({collectionImageSrc: URL.createObjectURL(this.state.uploadedImage[0])})
+                    }
+                    else {
+                        console.log('lol faiil')
+                    }
+                }).bind(this), true)
+        }
+    }
+
+    showUploadImageModal = () => {
+        this.setState({showUploadImageModal: true});
+    }
+
+    hideUploadImageModal = () => {
+        this.setState({showUploadImageModal: false});
+    }
+
+    hexToBase64 = (str) => {
+        return btoa(String.fromCharCode.apply(null, str.replace(/\r|\n/g, "").replace(/([\da-fA-F]{2}) ?/g, "0x$1 ").replace(/ +$/, "").split(" ")));
+    }
+
+    setImage = (imageData) => {
+        this.setState({collectionImageSrc: 'data:' + this.state.imageType + ';base64,' + this.hexToBase64(imageData)})
+    }
+    
+
     getCollectionFavoriteButtonClass = () => {
 
         return this.state.favorited ? "collection-favorite-button-icon-on" : "collection-favorite-button-icon"
     }
+
 
     render(){
         var component
@@ -379,7 +427,7 @@ class CollectionScreen extends React.Component{
 						</Modal.Body>
 						<Modal.Footer>
 							<Button variant="secondary" onClick={this.hideEditNameModal}>Close</Button>
-							<Button variant="primary" onClick={this.onEditName}>Edit</Button>
+							<Button variant="primary" onClick={this.onEditName}>OK</Button>
 						</Modal.Footer>
 					</Modal>
                     
@@ -393,7 +441,22 @@ class CollectionScreen extends React.Component{
 						</Modal.Body>
 						<Modal.Footer>
 							<Button variant="secondary" onClick={this.hideEditDescriptionModal}>Close</Button>
-							<Button variant="primary" onClick={this.onEditDescription}>Edit</Button>
+							<Button variant="primary" onClick={this.onEditDescription}>OK</Button>
+						</Modal.Footer>
+					</Modal>
+
+
+                    <Modal show={this.state.showUploadImageModal}>
+						<Modal.Header onHide={this.hideUploadImageModal} closeButton>
+							<Modal.Title>Add Image to Collection</Modal.Title>
+						</Modal.Header>
+						<Modal.Body>
+							<p>Upload Image (PNG, JPG):</p>
+							<input type='file' accept='image/jpep, image/png' onChange={e => this.onUploadImage(e.target.files)}></input>
+						</Modal.Body>
+						<Modal.Footer>
+							<Button variant="secondary" onClick={this.hideUploadImageModal}>Close</Button>
+							<Button variant="primary" onClick={this.onSubmitUploadImage}>OK</Button>
 						</Modal.Footer>
 					</Modal>
 
@@ -401,7 +464,7 @@ class CollectionScreen extends React.Component{
                     {/* Header */}
                     <div className='row' style={{backgroundColor: 'grey', border: '2px solid black', }}>
                         <div className='col' style={{maxWidth: '20%', paddingTop: '10px', paddingBottom: '10px'}}>
-                            <img src={icon_music_1} style={{maxHeight: '100px'}}></img>
+                            <img src={this.state.collectionImageSrc == null ? icon_music_1 : this.state.collectionImageSrc} style={{maxHeight: '100px'}}></img>
                         </div>
 
                         {/* Collection Info */}
@@ -443,7 +506,11 @@ class CollectionScreen extends React.Component{
                                                 Edit Description
                                             </Button>
                                         </Dropdown.Item>
-                                        
+                                        <Dropdown.Item>
+                                            <Button onClick={this.showUploadImageModal}>
+                                                Upload Collection Image
+                                            </Button>
+                                        </Dropdown.Item>
                                         <Dropdown.Item>
                                             <Button onClick={this.onDeleteCollection}>
                                                 Delete Collection

@@ -56,8 +56,12 @@ if (process.env.REACT_APP_NODE_ENV === 'development') {
     app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
 }
 
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({
+    limit: '3mb',
+    parameterLimit: 100000,
+    extended: false 
+}))
+app.use(bodyParser.json({limit: '3mb'}))
 app.use(mongoSession)
 app.use(passport.initialize())
 app.use(passport.session())
