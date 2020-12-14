@@ -332,14 +332,26 @@ class Player extends React.Component {
     }
 
     getSongProgress = () => {
-        var sec = parseInt(this.state.currentTime) % 60
-        var min = parseInt(this.state.currentTime / 60)
+        var time = parseInt(this.state.currentTime)
+
+        if (isNaN(time)) {
+            return "0:00"
+        }
+
+        var sec = time % 60
+        var min = parseInt(time / 60)
         return min + ":" + String(sec).padStart(2, '0');
     }
 
     getSongDuration = () => {
-        var sec = parseInt(this.props.playerAPI.getDuration() % 60)
-        var min = parseInt(this.props.playerAPI.getDuration() / 60)
+        var duration = parseInt(this.props.playerAPI.getDuration())
+
+        if (isNaN(duration)) {
+            return "0:00"
+        }
+
+        var sec = duration % 60
+        var min = parseInt(duration / 60)
         return min + ":" + String(sec).padStart(2, '0');
     }
 
@@ -491,7 +503,7 @@ class Player extends React.Component {
                         </Row>
                         <Row id="player-progress-bar-container">
                             <div className="player-progress-display body-text color-contrasted">{this.getSongProgress()}</div>
-                            <RangeSlider className="player-progress-bar" variant="dark" tooltip="off" value={this.state.currentTime} onChange={e => this.handleMoveSlider(e.target.value)} onAfterChange={e => this.handleSeek(e.target.value)} min={0} max={this.props.playerAPI.getDuration()} disabled={this.getSeekDisabled()}/>
+                            <RangeSlider className="player-progress-bar" variant="dark" tooltip="off" value={this.state.currentTime} onChange={e => this.handleMoveSlider(e.target.value)} onAfterChange={e => this.handleSeek(e.target.value)} min={0} max={isNaN(this.props.playerAPI.getDuration()) ? 0 : this.props.playerAPI.getDuration()} disabled={this.getSeekDisabled()}/>
                             <div className="player-progress-display body-text color-contrasted">{this.getSongDuration()}</div>
                         </Row>
                     </Col>

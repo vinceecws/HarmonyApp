@@ -33,8 +33,11 @@ class PlayerAPI {
     onPlayerReady = (e) => { //Called when initial player is loaded
         this._playerBuffering = false
         this._playerReady = true
-        this._bufferQueue.forEach(fn => fn()) //Flush buffered queue of function calls
-        this._bufferQueue = []
+        //Flush buffer queue and break if player is buffering again
+        while (this._bufferQueue.length > 0 && !this._playerBuffering) {
+            this._bufferQueue.shift()()
+        }
+
         this.player.playVideo()
         if (this.subscribedEvents.onPlayerReady) {
             this.subscribedEvents.onPlayerReady(e)
@@ -47,8 +50,10 @@ class PlayerAPI {
         }
         else {
             this._playerBuffering = false
-            this._bufferQueue.forEach(fn => fn()) //Flush buffered queue of function calls
-            this._bufferQueue = []
+            //Flush buffer queue and break if player is buffering again
+            while (this._bufferQueue.length > 0 && !this._playerBuffering) {
+                this._bufferQueue.shift()()
+            }
         }
 
         if (this.subscribedEvents.onPlayerStateChange) {
@@ -138,14 +143,14 @@ class PlayerAPI {
         return null
     }
 
-    loadVideoById = (id) => {
+    loadVideoById = (id, calledFromBuffer=false) => {
         if (!this._playerBuffering && this._playerReady && this.player) {
             this._playerBuffering = true
             this.player.loadVideoById(id)
             this.player.playVideo()
         }
         else if (this._playerBuffering) {
-            this._bufferQueue.push(this.loadVideoById.bind(this, id))
+            this._bufferQueue.push(this.loadVideoById.bind(this, id, true))
         }
     }
 
