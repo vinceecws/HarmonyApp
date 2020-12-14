@@ -13,7 +13,7 @@ const _ = require('lodash')
 class SessionScreen extends React.Component {
 	constructor(props){
 		super(props);
-
+		this.hostSwitchingSessions = false;
 		this.state = {
 			loading: false,
 			unloading: false,
@@ -63,27 +63,47 @@ class SessionScreen extends React.Component {
 			if (this.props.screenProps) {
 				//If screen is active and new sessionId is passed
 				if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
-					if(prevState.id !== null && this.state.user.hosting){
-						this.props.showHostSwapSessionModal();
-						if(this.props.isHostSwitchingSessions){
-							this.handleEndSession();
+					if((this.isHost() && !this.isNonParticipant()) && prevState.id !== null && this.props.screenProps.sessionId !== null){
+						if(!this.props.isHostHopPromptShowing && !this.props.isHostSwitchingSessions && !this.hostSwitchingSessions){
+							console.log("bring up prompt to switch")
+							this.props.showHostHopSessionModal();
+							this.hostSwitchingSessions = true;
 						}
+						else{
+							if(this.props.isHostSwitchingSessions && this.hostSwitchingSessions){
+								console.log("ending the session");
+								
+								this.hostSwitchingSessions = false;
+								this.props.disableHostSwitchingSessions();
+								this.handleHostHopSession();
+								
+
+							}
+							else if(!this.props.isHostHopPromptShowing && !this.props.isHostSwitchingSessions){
+								this.hostSwitchingSessions = false;
+							}
+							
+						}
+						
+					}
+					else{
+						this.setState({
+							id: this.props.screenProps.sessionId,
+							loading: true
+						}, () => {
+							this.props.axiosWrapper.axiosGet("/api/session/" + this.state.id, (res, data) => {
+								if (this.state.user) {
+									this.hostSwitchingSessions = false;
+									this.props.handleUpdateUser(data.data.user, this.setSessionRole.bind(this, data))
+								}
+								else {
+									this.hostSwitchingSessions = false;
+									this.props.handleUpdateCurrentSession(data.data.session._id, this.setSessionRole.bind(this, data))
+								}
+							}, true)
+						}) 
 					}
 					
-					
-					this.setState({
-						id: this.props.screenProps.sessionId,
-						loading: true
-					}, () => {
-						this.props.axiosWrapper.axiosGet("/api/session/" + this.state.id, (res, data) => {
-							if (this.state.user) {
-								this.props.handleUpdateUser(data.data.user, this.setSessionRole.bind(this, data))
-							}
-							else {
-								this.props.handleUpdateCurrentSession(data.data.session._id, this.setSessionRole.bind(this, data))
-							}
-						}, true)
-					}) //This still has to handle quitting the current session before joining new session
 				}
 				//If screen is active and no sessionId is passed
 				else if (prevState.id && this.props.screenProps.sessionId == null) {
@@ -91,6 +111,7 @@ class SessionScreen extends React.Component {
 						id: null,
 						loading: true
 					}, () => {
+						this.hostSwitchingSessions = false;
 						this.setSessionRole()
 					})
 				}
@@ -100,6 +121,7 @@ class SessionScreen extends React.Component {
 				this.setState({
 					loading: true
 				}, () => {
+					this.hostSwitchingSessions = false;
 					this.setSessionRole()
 				})
 			}
@@ -293,6 +315,21 @@ class SessionScreen extends React.Component {
 				this.handleBeginTearDown(() => {
 					this.props.handleUpdateUser(data.data.user, this.handleTearDown)
 				})
+			}
+		}, true)
+	}
+	handleHostHopSession = () => {
+		this.props.axiosWrapper.axiosPost('/api/session/endSession', {}, (res, data) => {
+			if (data.success) {
+				var actionData = {
+					subaction: "end_session"
+				}
+				this.props.sessionClient.emitSession(this.state.user.username, this.state.user._id, actionData)
+				this.props.sessionClient.endSession()
+				this.handleBeginTearDown(() => {
+					this.props.handleUpdateUser(data.data.user, this.handleTearDownHostHop)
+				})
+				
 			}
 		}, true)
 	}
@@ -517,6 +554,26 @@ class SessionScreen extends React.Component {
 			id: null,
 			unloading: false
 		})
+	}
+	handleTearDownHostHop = () => {
+		this.props.playerAPI.pauseVideo()
+		this.props.playerAPI.seekTo(0)
+		this.setState({
+			id: this.props.screenProps.sessionId,
+			unloading: false,
+			loading: true
+		}, () => {
+			this.props.axiosWrapper.axiosGet("/api/session/" + this.state.id, (res, data) => {
+				if (this.state.user) {
+					this.hostSwitchingSessions = false;
+					this.props.handleUpdateUser(data.data.user, this.setSessionRole.bind(this, data))
+				}
+				else {
+					this.hostSwitchingSessions = false;
+					this.props.handleUpdateCurrentSession(data.data.session._id, this.setSessionRole.bind(this, data))
+				}
+			}, true)
+		}) 
 	}
 
 	/*
