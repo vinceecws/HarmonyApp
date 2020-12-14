@@ -13,7 +13,7 @@ const _ = require('lodash')
 class SessionScreen extends React.Component {
 	constructor(props){
 		super(props);
-
+		this.hostSwitchingSessions = false;
 		this.state = {
 			loading: false,
 			unloading: false,
@@ -63,19 +63,47 @@ class SessionScreen extends React.Component {
 			if (this.props.screenProps) {
 				//If screen is active and new sessionId is passed
 				if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
-					this.setState({
-						id: this.props.screenProps.sessionId,
-						loading: true
-					}, () => {
-						this.props.axiosWrapper.axiosGet("/api/session/" + this.state.id, (res, data) => {
-							if (this.state.user) {
-								this.props.handleUpdateUser(data.data.user, this.setSessionRole.bind(this, data))
+					if((this.isHost() && !this.isNonParticipant()) && prevState.id !== null && this.props.screenProps.sessionId !== null){
+						if(!this.props.isHostHopPromptShowing && !this.props.isHostSwitchingSessions && !this.hostSwitchingSessions){
+							console.log("bring up prompt to switch")
+							this.props.showHostHopSessionModal();
+							this.hostSwitchingSessions = true;
+						}
+						else{
+							if(this.props.isHostSwitchingSessions && this.hostSwitchingSessions){
+								console.log("ending the session");
+								
+								this.hostSwitchingSessions = false;
+								this.props.disableHostSwitchingSessions();
+								this.handleHostHopSession();
+								
+
 							}
-							else {
-								this.props.handleUpdateCurrentSession(data.data.session._id, this.setSessionRole.bind(this, data))
+							else if(!this.props.isHostHopPromptShowing && !this.props.isHostSwitchingSessions){
+								this.hostSwitchingSessions = false;
 							}
-						}, true)
-					}) //This still has to handle quitting the current session before joining new session
+							
+						}
+						
+					}
+					else{
+						this.setState({
+							id: this.props.screenProps.sessionId,
+							loading: true
+						}, () => {
+							this.props.axiosWrapper.axiosGet("/api/session/" + this.state.id, (res, data) => {
+								if (this.state.user) {
+									this.hostSwitchingSessions = false;
+									this.props.handleUpdateUser(data.data.user, this.setSessionRole.bind(this, data))
+								}
+								else {
+									this.hostSwitchingSessions = false;
+									this.props.handleUpdateCurrentSession(data.data.session._id, this.setSessionRole.bind(this, data))
+								}
+							}, true)
+						}) 
+					}
+					
 				}
 				//If screen is active and no sessionId is passed
 				else if (prevState.id && this.props.screenProps.sessionId == null) {
@@ -83,6 +111,7 @@ class SessionScreen extends React.Component {
 						id: null,
 						loading: true
 					}, () => {
+						this.hostSwitchingSessions = false;
 						this.setSessionRole()
 					})
 				}
@@ -92,6 +121,7 @@ class SessionScreen extends React.Component {
 				this.setState({
 					loading: true
 				}, () => {
+					this.hostSwitchingSessions = false;
 					this.setSessionRole()
 				})
 			}
@@ -149,7 +179,7 @@ class SessionScreen extends React.Component {
 				case 'end_session':
 					if (this.shouldReceiveActions()) {
 						this.handleLeaveSession()
-						this.props.toggleModal();
+						this.props.showSessionEndedModal();
 					}
 					break;
 				case 'change_name':
@@ -285,6 +315,21 @@ class SessionScreen extends React.Component {
 				this.handleBeginTearDown(() => {
 					this.props.handleUpdateUser(data.data.user, this.handleTearDown)
 				})
+			}
+		}, true)
+	}
+	handleHostHopSession = () => {
+		this.props.axiosWrapper.axiosPost('/api/session/endSession', {}, (res, data) => {
+			if (data.success) {
+				var actionData = {
+					subaction: "end_session"
+				}
+				this.props.sessionClient.emitSession(this.state.user.username, this.state.user._id, actionData)
+				this.props.sessionClient.endSession()
+				this.handleBeginTearDown(() => {
+					this.props.handleUpdateUser(data.data.user, this.handleTearDownHostHop)
+				})
+				
 			}
 		}, true)
 	}
@@ -510,6 +555,26 @@ class SessionScreen extends React.Component {
 			unloading: false
 		})
 	}
+	handleTearDownHostHop = () => {
+		this.props.playerAPI.pauseVideo()
+		this.props.playerAPI.seekTo(0)
+		this.setState({
+			id: this.props.screenProps.sessionId,
+			unloading: false,
+			loading: true
+		}, () => {
+			this.props.axiosWrapper.axiosGet("/api/session/" + this.state.id, (res, data) => {
+				if (this.state.user) {
+					this.hostSwitchingSessions = false;
+					this.props.handleUpdateUser(data.data.user, this.setSessionRole.bind(this, data))
+				}
+				else {
+					this.hostSwitchingSessions = false;
+					this.props.handleUpdateCurrentSession(data.data.session._id, this.setSessionRole.bind(this, data))
+				}
+			}, true)
+		}) 
+	}
 
 	/*
 		Check functions
@@ -596,8 +661,8 @@ class SessionScreen extends React.Component {
 
 		}
 		if(line1 && line2){
-			return <div className="session-screen-empty-notice-button-container">
-							<div className="subtitle color-accented" style={{position:'absolute', marginTop:'-200px'}}>
+			return <div className="user-prompt-modal" style={{height:'78%', top:'61%', textAlign:'center'}}>
+							<div className="subtitle color-accented" style={{ marginTop:'200px'}}>
 								{line1}
 							</div>
 							<Link  className="subtitle color-accented" to="/login">	
@@ -610,14 +675,14 @@ class SessionScreen extends React.Component {
 						</div>
 		}
 		if(this.state.role === sessionRoles.USER_PRIVATE_HOST){
-			return 	<div className="session-screen-empty-notice-button-container">
-						<div className="subtitle color-accented" style={{position:'absolute', marginTop:'-200px'}}>
+			return <div className="user-prompt-modal" style={{height:'78%', top:'61%', textAlign:'center'}}>
+						<div className="subtitle color-accented" style={{ marginTop:'200px'}}>
 							Chat disabled for Private Session
 						</div>	
 					</div>
 		}
 		else{
-			return <ChatFeed chatLog={this.state.chatLog} user={this.state.user}  />;
+			return
 		}
 
 		
@@ -660,19 +725,22 @@ class SessionScreen extends React.Component {
 	        					{this.renderEndButton()}
 	        				</div>
 	        			</div>
-	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
-	        				{this.renderSuggestionButton()}
-	        				
-	        			</div>
-	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
-	        				
-	        				<input disabled={this.isNonParticipant() || this.isGuest() || this.state.role === sessionRoles.USER_PRIVATE_HOST} type='text' name='MessageSender' placeholder={this.isGuest() ? 'Login or sign-up to join the chat' : 'Send your message here...'} onChange={this.handleTextChange} onKeyPress={this.handleChatKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
-	        				<div style={{width:'5%', display:'block', textAlign:'center', marginTop:'5px'}}>{this.state.messageText.length}/250</div>
+	        			<div className='row' style={{height:'78%'}}>
+		        			{this.renderSuggestionButton()}
+		        			<div className='row bg-color-contrasted' style={{height:'calc(100% - 40px)',width:'100%',marginLeft:'0px',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
+		        				
+		        				<ChatFeed chatLog={this.state.chatLog} user={this.state.user}  />
+		        			</div>
+		        			<div className='row' style={{height:'40px',width:'100%',marginLeft:'0px',border: '3px solid black',backgroundColor:'white'}}>
+		        				
+		        				<input disabled={this.isNonParticipant() || this.isGuest() || this.state.role === sessionRoles.USER_PRIVATE_HOST} type='text' name='MessageSender' placeholder={this.isGuest() ? 'Login or sign-up to join the chat' : 'Send your message here...'} onChange={this.handleTextChange} onKeyPress={this.handleChatKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
+		        				<div style={{width:'5%', display:'block', textAlign:'center', marginTop:'5px'}}>{this.state.messageText.length}/250</div>
+		        			</div>
 	        			</div>
 	        		</div>
 	        		<div className='col-sm-4' style={{height:'100%', overflow:'auto'}}>
 						<DragDropContext onDragEnd={this.handleOnDragEnd}>
-							<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
+							<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black'}}>
 								Up Next
 							</div>
 							<div className='row' style={{height:'43%', overflow:'auto'}}>
@@ -683,7 +751,7 @@ class SessionScreen extends React.Component {
 										
 								</Droppable>
 							</div>
-							<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
+							<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black'}}>
 								Previously Played
 							</div>
 							<div className='row' style={{height:'43%', overflow:'auto'}}>
@@ -721,24 +789,27 @@ class SessionScreen extends React.Component {
 	        					<div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button  className="bg-color-harmony" variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}} onClick={this.handleLeaveSession}>Leave Session</Button></div>
 	        				</div>
 	        			</div>
-	        			<div className='row bg-color-contrasted' style={{height:'calc(78% - 40px)',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
-	        				{this.renderSuggestionButton()}
-	        			
-	        			</div>
-	        			<div className='row' style={{height:'40px',border: '3px solid black',backgroundColor:'white'}}>
-	        				
-	        				<input type='text' disabled={this.isNonParticipant() || this.isGuest()} name='MessageSender' placeholder={this.isGuest() ? 'Login or sign-up to join the chat' : 'Send your message here...'} onChange={this.handleTextChange} onKeyPress={this.handleChatKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
-	        				<div  style={{width:'5%', display:'block', textAlign:'center', marginTop:'5px'}}>{this.state.messageText.length}/250</div>
+	        			<div className='row' style={{height:'78%'}}>
+		        			{this.renderSuggestionButton()}
+		        			<div className='row bg-color-contrasted' style={{height:'calc(100% - 40px)',width:'100%',marginLeft:'0px',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
+		        				
+		        				<ChatFeed chatLog={this.state.chatLog} user={this.state.user}  />
+		        			</div>
+		        			<div className='row' style={{height:'40px',width:'100%',marginLeft:'0px',border: '3px solid black',backgroundColor:'white'}}>
+		        				
+		        				<input disabled={this.isNonParticipant() || this.isGuest() || this.state.role === sessionRoles.USER_PRIVATE_HOST} type='text' name='MessageSender' placeholder={this.isGuest() ? 'Login or sign-up to join the chat' : 'Send your message here...'} onChange={this.handleTextChange} onKeyPress={this.handleChatKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
+		        				<div style={{width:'5%', display:'block', textAlign:'center', marginTop:'5px'}}>{this.state.messageText.length}/250</div>
+		        			</div>
 	        			</div>
 	        		</div>
 	        		<div className='col-sm-4' style={{height:'100%'}}>
-						<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
+						<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black'}}>
 							Up Next
 						</div>
 						<div className='row' style={{height:'43%'}}>
 							<QueueComponent Queue={this.state.futureQueue} fetchVideoById={this.props.fetchVideoById}/>
 						</div>
-						<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%', border: '3px solid black'}}>
+						<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%',minHeight:'40px', border: '3px solid black'}}>
 							Previously Played
 						</div>
 						<div className='row' style={{height:'43%'}}>
