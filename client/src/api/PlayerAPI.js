@@ -143,7 +143,7 @@ class PlayerAPI {
         return null
     }
 
-    loadVideoById = (id, calledFromBuffer=false) => {
+    loadVideoById = (id) => {
         if (!this._playerBuffering && this._playerReady && this.player) {
             this._playerBuffering = true
             this.player.loadVideoById(id)
@@ -184,7 +184,9 @@ class PlayerAPI {
 
     seekTo = (time) => {
         if (!this._playerBuffering && this._playerReady && this.player) {
-            this._playerBuffering = true
+            if (!this.isPaused()) {
+                this._playerBuffering = true //YT Player API does not change state if seeking is done during pause
+            }
             this.player.seekTo(time)
         }
         else if (this._playerBuffering) {
