@@ -54,6 +54,7 @@ class App extends React.Component {
     }
 
     componentDidMount = () => {
+        this.checkCredentials()
         this.playerAPI = new PlayerAPI()
         this.dataAPI = new DataAPI(() => {
             this.setState({
@@ -75,6 +76,17 @@ class App extends React.Component {
             }
             this.queue = new Queue()
         }
+    }
+
+    checkCredentials = () => {
+        this.axiosWrapper.axiosGet('/auth', (function(res, data) {
+            if (data.success) {
+                this.handleAuthenticate(data.data.user)
+                if (data.data.user.currentSession) {
+                    this.handleUpdateCurrentSession(data.data.user.currentSession)
+                }
+            }
+        }).bind(this), true)
     }
 
     handleLogOut = () => {
