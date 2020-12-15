@@ -111,6 +111,24 @@ exports.getCollection = async function(collectionObject, lean=false) {
     return collection;
 }
 
+exports.getTopCollections = async function(max=15, lean=false) {
+
+    var collection = await connection.then(async () => {
+        if (lean) {
+            return await Collection.find({}).sort({
+                likes: -1
+            }).limit(max).lean()
+        }
+        else {
+            return await Collection.find({}).sort({
+                likes: -1
+            }).limit(max)
+        }
+    }).catch(error => {return error})
+
+    return collection
+}
+
 exports.updateCollection = async function(collectionId, updateFieldsObject, lean=false){
     let collection = await connection.then(async () => {
         if (lean) {

@@ -705,11 +705,62 @@ module.exports = function(mainSocket, sessionSocket) {
     });
 
     apiRouter.get('/home', async (req, res) => {
-        //Suggestions only
-    });
+        var suggestions = []
+        var elements = []
+        if (req.user) { //Listen again, Recommended for you
+            let userHistory = _.cloneDeep(req.user.history)
+            let obj
+
+            for (var i = 0; i < userHistory.length; i++) {
+                if (userHistory[i].type === "user") {
+                    continue
+                }
+                else if (userHistory[i].type === "collection") {
+                    obj = await mongooseQuery.getCollection({
+                        _id: userHistory[i]._id
+                    }, true)
+                    obj.type = "collection"
+                    elements.push(obj)
+                }
+                else if (userHistory[i].type === "song") {
+                    elements.push(userHistory[i])
+                }
+            }
+
+            if (elements.length >= 4) { //Include only if there's enough to show
+                suggestions.push({
+                    categoryName: "Listen Again",
+                    suggestions: elements
+                })
+            }
+        }
+
+        elements = await mongooseQuery.getTopCollections(max=15, lean=true)
+
+        elements = elements.map(collection => {
+            collection.type = "collection"
+            return collection
+        })
+
+        if (elements.length >= 4) { //Include only if there's enough to show
+            suggestions.push({
+                categoryName: "Recommended For You",
+                suggestions: elements
+            })
+        }
+
+        return res.status(200).json({
+            message: "Generated suggestions",
+            statusCode: 200,
+            data: {
+                suggestions: suggestions
+            },
+            success: true
+        })
+    })
 
     apiRouter.get('/collection/delete/:id', async (req, res) => {
-        if(req.params.id == null){
+        if (req.params.id == null) {
             return res.status(404).json({
                 error: {
                     name: "Invalid session",

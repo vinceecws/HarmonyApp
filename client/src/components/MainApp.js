@@ -147,6 +147,10 @@ class MainApp extends React.Component {
         return this.dataAPI.fetchVideoById(id, snippet)
     }
 
+    fetchMostPopular = (max=15, snippet=false) => {
+        return this.dataAPI.fetchMostPopular(max, snippet)
+    }
+
     shouldStartSession = () => {
         return this.props.user && !this.props.user.hosting
     }
@@ -160,7 +164,7 @@ class MainApp extends React.Component {
                 <Row id="mid-container" style={{marginLeft:'0px'}}>
                     <Col id="side-list-container" sm={2} md={2} lg={2} xl={2}>
                     <header className='Session-Side-List'>
-                        <SessionSideList switchScreen={this.switchScreen} axiosWrapper={this.props.axiosWrapper} mainSocket={this.props.mainSocket} />
+                        <SessionSideList switchScreen={this.switchScreen} axiosWrapper={this.props.axiosWrapper} sessionManager={this.props.sessionManager} />
                     </header>
                     </Col>
                     <Col id="screen-container">
@@ -170,7 +174,7 @@ class MainApp extends React.Component {
                         <ProfileScreen visible={this.getScreenVisibility(mainScreens.PROFILE)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.PROFILE)} auth={this.props.auth} handleUpdateUser={this.props.handleUpdateUser} fetchVideoById={this.fetchVideoById} user={this.props.user} playVideo={this.playVideo} queue={this.queue} currentSession={this.props.currentSession} shouldStartSession={this.shouldStartSession} axiosWrapper={this.props.axiosWrapper}/>
                         <CollectionScreen visible={this.getScreenVisibility(mainScreens.COLLECTION)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.COLLECTION)} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} queue={this.queue} dataAPI={this.dataAPI} playVideo={this.playVideo} playerAPI={this.playerAPI} currentSession={this.props.currentSession} shouldStartSession={this.shouldStartSession}/>
                         <SettingsScreen visible={this.getScreenVisibility(mainScreens.SETTINGS)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.SETTINGS)} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} currentSession={this.props.currentSession} history={this.props.history}/>
-                        <HomeScreen visible={this.getScreenVisibility(mainScreens.HOME)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.HOME)} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} currentSession={this.props.currentSession} shouldStartSession={this.shouldStartSession}/>
+                        <HomeScreen visible={this.getScreenVisibility(mainScreens.HOME)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.HOME)} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} currentSession={this.props.currentSession} shouldStartSession={this.shouldStartSession} playVideo={this.playVideo} fetchMostPopular={this.fetchMostPopular} fetchVideoById={this.fetchVideoById} queue={this.queue} shouldStartSession={this.shouldStartSession} sessionManager={this.props.sessionManager}/>
                     </Col>
                 </Row>
                 <Row id="bottom-container">
