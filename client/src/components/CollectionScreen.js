@@ -47,8 +47,7 @@ class CollectionScreen extends React.Component{
             if(this.props.screenProps.collectionId){
                this.setState({
                     collectionId: this.props.screenProps.collectionId,
-                    loading: true,
-                    error: false
+                    loading: true
                 }, this.fetchCollection) 
             }
             
@@ -237,6 +236,7 @@ class CollectionScreen extends React.Component{
                             this.setState({ 
                                 collection: data.data.collection,
                                 loading: false,
+                                error: false,
                                 collectionName: data.data.collection.name,
                                 favorited: this.isCollectionFavorited(data.data.collection),
                                 songList: s,
@@ -437,8 +437,8 @@ class CollectionScreen extends React.Component{
         if (this.state.loading) {
             component = <Spinner/>
         }
-        else if(this.state.error){
-            component = <div classname="user-prompt-modal">Oops, collection not found!</div>
+        else if(this.state.error && !this.state.loading){
+            component = <div className="color-accented body-text error-404-display">Oops, collection not found</div>
         }
         else {
             component = (

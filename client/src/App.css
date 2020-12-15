@@ -34,7 +34,13 @@
     transform: rotate(360deg);
   }
 }
-
+.error-404-display{
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  top: 50%;
+}
 .super-title {
   font-family: BalsamiqSans;
   font-size: xx-large;
