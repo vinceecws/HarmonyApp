@@ -411,6 +411,14 @@ body, html {
   
 }
 
+.session-screen-chat-container {
+  height: 100%;
+  width: 100%;
+}
+
+.blur {
+  filter: blur(8px);
+}
 
 /* Settings Screen */
 
