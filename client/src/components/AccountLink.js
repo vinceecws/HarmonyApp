@@ -7,13 +7,19 @@ import { mainScreens } from '../const'
 class AccountLink extends React.Component {
 
     handleLogOutAccount = () => {
-        this.props.axiosWrapper.axiosGet('/auth/logout', (function(res, data) {
-            if (data.success) {
-                this.props.handleLogOut()
-                this.props.history.push("/login")
-            }
-            
-        }).bind(this), true)
+        if(this.props.user.hosting && !this.props.isHostLoggingOut){
+            this.props.showHostLoggingOutModal();
+        }
+        else{
+            this.props.axiosWrapper.axiosGet('/auth/logout', (function(res, data) {
+                if (data.success) {
+                    this.props.handleLogOut()
+                    this.props.history.push("/login")
+                }
+                
+            }).bind(this), true)
+        }
+        
     }
 
     render() {

@@ -59,8 +59,15 @@ class SessionScreen extends React.Component {
                 user: this.props.user
             })
 		}
-
+		
 		if (!this.state.loading && !this.state.unloading) {
+			if(this.props.isHostLoggingOut){
+				console.log("ending the session");
+				this.props.disableHostSwitching();
+				this.handleEndSessionLogout();
+				
+				
+			}
 			if (this.props.screenProps) {
 				//If screen is active and new sessionId is passed
 				if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
@@ -75,7 +82,7 @@ class SessionScreen extends React.Component {
 								console.log("ending the session");
 								
 								this.hostSwitchingSessions = false;
-								this.props.disableHostSwitchingSessions();
+								this.props.disableHostSwitching();
 								this.handleHopSession();
 								
 
@@ -97,6 +104,7 @@ class SessionScreen extends React.Component {
 							loading: true
 						}, () => {
 							this.props.axiosWrapper.axiosGet("/api/session/" + this.state.id, (res, data) => {
+								console.log(data);
 								if (this.state.user) {
 									this.hostSwitchingSessions = false;
 									this.props.handleUpdateUser(data.data.user, this.setSessionRole.bind(this, data))
@@ -322,6 +330,20 @@ class SessionScreen extends React.Component {
 			}
 		}, true)
 	}
+	handleEndSessionLogout = () => {
+		this.props.axiosWrapper.axiosPost('/api/session/endSession', {}, (res, data) => {
+			if (data.success) {
+				var actionData = {
+					subaction: "end_session"
+				}
+				this.props.sessionClient.emitSession(this.state.user.username, this.state.user._id, actionData)
+				this.props.sessionClient.endSession()
+				this.handleBeginTearDown(() => {
+					this.props.handleUpdateUser(data.data.user, this.handleTearDownLogout)
+				})
+			}
+		}, true)
+	}
 	handleHopSession = () => {
 		if(this.isHost() && !this.isNonParticipant()){
 			this.props.axiosWrapper.axiosPost('/api/session/endSession', {}, (res, data) => {
@@ -480,6 +502,7 @@ class SessionScreen extends React.Component {
 	}
 
 	initSession = (session) => {
+		console.log(session);
 		if (session) {
 			if (this.shouldEmitActions()) {
             	this.setState({
@@ -587,6 +610,28 @@ class SessionScreen extends React.Component {
 			live: false
 		})
 	}
+	handleTearDownLogout = () => {
+		if (!this.props.playerAPI.isPaused()) {
+			this.props.playerAPI.pauseVideo()
+		}
+		this.props.playerAPI.seekTo(0)
+		this.props.axiosWrapper.axiosGet('/auth/logout', (function(res, data) {
+	            if (data.success) {
+	            	this.setState({
+						id: null,
+						unloading: false,
+						live: false
+					})
+	                this.props.handleLogOut()
+
+	                this.props.history.push("/login")
+	                
+	            }
+	            
+	        }).bind(this), true)
+
+		
+	}
 	handleTearDownHop = () => {
 		if (!this.props.playerAPI.isPaused()) {
 			this.props.playerAPI.pauseVideo()
@@ -609,7 +654,7 @@ class SessionScreen extends React.Component {
 			}, true)
 		}) 
 	}
-
+	
 	/*
 		Check functions
 	*/
