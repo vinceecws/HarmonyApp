@@ -689,18 +689,35 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else{
-            let collection = await mongooseQuery.getCollection({'_id': req.params.id}, true);
-            if (collection.image) {
-                collection.image = collection.image.toString()
+            let collection = await mongooseQuery.getCollection({'_id': req.params.id}, true).catch(err => res.sendStatus(404));
+            console.log(collection)
+            if(collection === null){
+                return res.status(404).json({
+                    error: {
+                        name: "Invalid Collection",
+                        message: "Not found"
+                    },
+                    message: "Collection not found",
+                    statusCode: 404,
+                    data: {
+                        collection: null
+                    },
+                    success: false
+                })
             }
-            return res.status(200).json({
-                message: "Fetch success",
-                statusCode: 200,
-                data: {
-                    collection: collection
-                },
-                success: true
-            })
+            else{
+               if (collection.image) {
+                    collection.image = collection.image.toString()
+                }
+                return res.status(200).json({
+                    message: "Fetch success",
+                    statusCode: 200,
+                    data: {
+                        collection: collection
+                    },
+                    success: true
+                }) 
+            }
         }
     });
 

@@ -777,6 +777,12 @@ class SessionScreen extends React.Component {
 																																if (data.success) {
 																													                this.props.handleUpdateUser(data.data.user)
 																													                this.props.switchScreen(mainScreens.SESSION, data.data.sessionId)
+																													                if (!this.props.playerAPI.isPlayerInit()) { //Initialize on first use
+																															            this.props.playerAPI.initIFrameAPI(this.props.queue.getCurrentSong()._id)
+																															        }
+																															        else {
+																															            this.playerAPI.loadVideoById(this.props.queue.getCurrentSong()._id)
+																															        }
 																																}
 																															}).bind(this), true)}}>
 										<div className="subtitle color-accented">
