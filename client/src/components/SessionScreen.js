@@ -104,7 +104,6 @@ class SessionScreen extends React.Component {
 							loading: true
 						}, () => {
 							this.props.axiosWrapper.axiosGet("/api/session/" + this.state.id, (res, data) => {
-								console.log(data);
 								if (this.state.user) {
 									this.hostSwitchingSessions = false;
 									this.props.handleUpdateUser(data.data.user, this.setSessionRole.bind(this, data))
@@ -502,7 +501,6 @@ class SessionScreen extends React.Component {
 	}
 
 	initSession = (session) => {
-		console.log(session);
 		if (session) {
 			if (this.shouldEmitActions()) {
             	this.setState({
