@@ -30,24 +30,6 @@ class LoginScreen extends React.Component{
         }
     }
 
-    componentDidMount = () => {
-        this.props.playerAPI.destroyIFrameAPI()
-        this.checkCredentials()
-    }
-
-    checkCredentials = () => {
-        this.props.axiosWrapper.axiosGet('/auth', (function(res, data) {
-            if (data.success) {
-                this.clearSignUpCredentials()
-                this.props.handleAuthenticate(data.data.user)
-                if (data.data.user.currentSession) {
-                    this.props.handleUpdateCurrentSession(data.data.user.currentSession)
-                }
-                this.props.history.push("/main")
-            }
-        }).bind(this), true)
-    }
-
     clearLoginCredentials = () => {
         this.setState({
             login_validated: false,
@@ -214,8 +196,8 @@ class LoginScreen extends React.Component{
     }
 
     render(){
-        if (this.props.auth) {
-            return <Redirect to='/login'/>
+        if (this.props.user) {
+            return <Redirect to='/main'/>
         }
         return (
             <div id='login-screen' className='container'>

@@ -36,22 +36,6 @@ class MainApp extends React.Component {
         }
     }
 
-    componentDidMount = () => {
-        this.checkCredentials()
-    }
-
-    checkCredentials = () => {
-        this.props.axiosWrapper.axiosGet('/auth', (function(res, data) {
-            if (data.success) {
-                this.props.handleAuthenticate(data.data.user)
-                if (data.data.user.currentSession) {
-                    this.props.handleUpdateCurrentSession(data.data.user.currentSession)
-                }
-                this.props.history.push("/main")
-            }
-        }).bind(this), true)
-    }
-
     /* Screen navigation */
 
     switchScreen = (...args) => {
