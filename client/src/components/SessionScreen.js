@@ -23,6 +23,7 @@ class SessionScreen extends React.Component {
 			hostName: null,
 			name: null,
 			startTime: null,
+			live: false,
 			pastQueue: [],
 			futureQueue: [],
 			chatLog: [],
@@ -495,7 +496,8 @@ class SessionScreen extends React.Component {
 					hostId: session.hostId,
 					hostName: session.hostName,
 					name: session.name,
-					startTime: session.startTime
+					startTime: session.startTime,
+					live: true
 				}, this.initSessionClient)
 			}
 			else if (this.shouldIgnoreActions()) {
@@ -537,7 +539,8 @@ class SessionScreen extends React.Component {
 		if (this.shouldEmitActions()) {
 			this.props.sessionClient.readySession()
 			this.setState({
-				loading: false
+				loading: false,
+				live: true
 			})
 		}
 		else if (this.shouldReceiveActions()) {
@@ -580,7 +583,8 @@ class SessionScreen extends React.Component {
 
 		this.setState({
 			id: null,
-			unloading: false
+			unloading: false,
+			live: false
 		})
 	}
 	handleTearDownHop = () => {
@@ -668,7 +672,7 @@ class SessionScreen extends React.Component {
 	*/
 	renderEndButton = () => {
 		if (this.state.role === sessionRoles.USER_PRIVATE_HOST || this.state.role === sessionRoles.USER_PUBLIC_HOST) {
-			return <div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button className="bg-color-harmony" variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}} onClick={this.handleEndSession}>End Session</Button></div>
+			return <div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}><Button className="bg-color-harmony" variant="primary" style={{height:'30px' ,fontSize:'.65rem'}} onClick={this.handleEndSession}>End</Button></div>
 
 		}
 		else {
@@ -761,6 +765,14 @@ class SessionScreen extends React.Component {
 
 		
 	}
+	showLiveIcon = () =>{
+		if(this.state.live){
+			return <div className="search-screen-results-list-item-live-indicator tiny-text color-accented"style={{position: 'relative',width: '50px',right: '0px'}}>LIVE</div>
+		}
+		else{
+			return
+		}
+	}
 
 	formatTime = () => {
 		if (!this.state.startTime) {
@@ -793,9 +805,9 @@ class SessionScreen extends React.Component {
 	        						{this.state.hostName}
 	        					</div>
 	        				</div>
-	        				<div className='col' style={{maxWidth:'15%', textAlign: 'right',height:'100%', padding:'1em', minWidth:'5%',color:'white',  float:'right'}}>
-	        					<div className='row body-text' style={{height:'30%', display:'block', textAlign:'center'}}>{this.state.live}<img src={icon_radio} style={{width:'30px'}}/></div>
-	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}>{this.formatTime()}</div>
+	        				<div className='col' style={{maxWidth:'15%', textAlign: 'center',height:'90%', minWidth:'5%',color:'white',padding:'.1em',  float:'right', top:'10%'}}>
+	        					<div className='row' style={{height:'30%', display:'block', textAlign:'center'}}>{this.showLiveIcon()}</div>
+	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center',top: '6px',position: 'relative'}}>{this.formatTime()}</div>
 	        					{this.renderEndButton()}
 	        				</div>
 	        			</div>
@@ -855,10 +867,10 @@ class SessionScreen extends React.Component {
 	        						{this.state.hostName}
 	        					</div>
 	        				</div>
-	        				<div className='col' style={{maxWidth:'15%', textAlign: 'right',height:'100%', padding:'1em', minWidth:'5%',color:'white',  float:'right'}}>
-	        					<div className='row body-text' style={{height:'30%', display:'block', textAlign:'center'}}>{this.state.live}<img src={icon_radio} style={{width:'30px'}}/></div>
-	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center'}}>{this.formatTime()}</div>
-	        					<div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button  className="bg-color-harmony" variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}} onClick={this.handleLeaveSession}>Leave Session</Button></div>
+	        				<div className='col' style={{maxWidth:'15%', textAlign: 'center',height:'90%', minWidth:'5%',color:'white',padding:'.1em',  float:'right', top:'10%'}}>
+	        					<div className='row' style={{height:'30%', display:'block', textAlign:'center'}}>{this.showLiveIcon()}</div>
+	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center',top: '6px',position: 'relative'}}>{this.formatTime()}</div>
+	        					<div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button  className="bg-color-harmony" variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}} onClick={this.handleLeaveSession}>Leave</Button></div>
 	        				</div>
 	        			</div>
 	        			<div className='row' style={{height:'78%'}}>
