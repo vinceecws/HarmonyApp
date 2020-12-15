@@ -30,10 +30,6 @@ class LoginScreen extends React.Component{
         }
     }
 
-    componentDidMount = () => {
-        this.props.playerAPI.destroyIFrameAPI()
-    }
-
     clearLoginCredentials = () => {
         this.setState({
             login_validated: false,

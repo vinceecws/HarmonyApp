@@ -66,6 +66,7 @@ class App extends React.Component {
     componentDidUpdate = (prevProps, prevState) => {
         if ((this.state.user && !prevState.user) || (!this.state.user && prevState.user)) {
             this.sessionClient.disconnect()
+            this.playerAPI.destroyIFrameAPI()
             if (process.env.REACT_APP_NODE_ENV === 'development') {
                 this.sessionClient = new SessionClient(io('http://localhost:4000/session', {
                     withCredentials: true
