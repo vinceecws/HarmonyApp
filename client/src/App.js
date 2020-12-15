@@ -125,6 +125,7 @@ class App extends React.Component {
                                 dataAPI={this.dataAPI} 
                                 queue={this.queue}
                                 handleLogOut={this.handleLogOut} 
+                                handleAuthenticate={this.handleAuthenticate} 
                                 handleUpdateUser={this.handleUpdateUser} 
                                 handleUpdateCurrentSession={this.handleUpdateCurrentSession} 
                                 axiosWrapper={this.axiosWrapper}/>} 

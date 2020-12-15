@@ -232,7 +232,7 @@ class CollectionScreen extends React.Component{
                                 collectionName: data.data.collection.name,
                                 favorited: this.isCollectionFavorited(data.data.collection),
                                 songList: s,
-                                collectionImageSrc: data.data.collection.image === undefined ? null : URL.createObjectURL(data.data.collection.image)
+                                collectionImageSrc: data.data.collection.image ? this.setImage(data.data.collection.image) : null
                             })
                         })
                     }
@@ -369,20 +369,23 @@ class CollectionScreen extends React.Component{
         if (this.state.uploadedImage !== null){
             this.setState({imageType: this.state.uploadedImage[0].type});
             this.hideUploadImageModal();
-            /*
-            let data = new FormData();
-            data.append('file', this.state.uploadedImage[0], this.state.uploadedImage[0].name)
-            console.log(data);
-            */
-            this.props.axiosWrapper.axiosPost('/api/collection/uploadImage/' + this.state.collectionId, 
-                this.state.uploadedImage[0], (function(res, data){
-                    if (data.success){
-                        this.setState({collectionImageSrc: URL.createObjectURL(this.state.uploadedImage[0])})
-                    }
-                    else {
-                        console.log('error')
-                    }
+            new Promise((resolve, reject) => {
+                var reader = new FileReader()
+
+                reader.onload = function() {
+                    resolve(reader.result)
+                }
+                
+                reader.readAsBinaryString(this.state.uploadedImage[0])
+            }).then(binary => {
+                this.props.axiosWrapper.axiosPost('/api/collection/uploadImage/' + this.state.collectionId, {
+                    image: binary, contentType: this.state.uploadedImage[0].type
+                }, (function(res, data){
+                        if (data.success){
+                            this.setState({collectionImageSrc: URL.createObjectURL(this.state.uploadedImage[0])})
+                        }
                 }).bind(this), true)
+            })
         }
     }
 
@@ -398,8 +401,8 @@ class CollectionScreen extends React.Component{
         return btoa(String.fromCharCode.apply(null, str.replace(/\r|\n/g, "").replace(/([\da-fA-F]{2}) ?/g, "0x$1 ").replace(/ +$/, "").split(" ")));
     }
 
-    setImage = (imageData) => {
-        this.setState({collectionImageSrc: 'data:' + this.state.imageType + ';base64,' + this.hexToBase64(imageData)})
+    setImage = (image) => {
+        return 'data:' + image.contentType + ';base64,' + btoa(image.data);
     }
     
 
@@ -452,7 +455,7 @@ class CollectionScreen extends React.Component{
 						</Modal.Header>
 						<Modal.Body>
 							<p>Upload Image (PNG, JPG):</p>
-							<input type='file' accept='image/jpep, image/png' onChange={e => this.onUploadImage(e.target.files)}></input>
+							<input type='file' accept='image/jpg, image/png' onChange={e => this.onUploadImage(e.target.files)}></input>
 						</Modal.Body>
 						<Modal.Footer>
 							<Button variant="secondary" onClick={this.hideUploadImageModal}>Close</Button>

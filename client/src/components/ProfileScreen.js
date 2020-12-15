@@ -141,7 +141,15 @@ class ProfileScreen extends React.Component{
         })).then((songs) => {
             songs.forEach(song => this.props.queue.addSongToFutureQueue(song))
         })
-    }
+	}
+	
+	handleDeleteCollection = (collectionId, e) => {
+		this.props.axiosWrapper.axiosGet('/api/collection/delete/' + collectionId, (function(res, data){
+            if (data.success){
+                this.props.handleUpdateUser(data.data.user);
+            }
+        }).bind(this), true)
+	}
 
     handleAddCollectionToFavorites = (collectionId, e) => {
         this.props.axiosWrapper.axiosPost('/api/addCollectionToFavorites/' + collectionId, {}, (function(res, data) {
@@ -464,6 +472,13 @@ class ProfileScreen extends React.Component{
 																					</Button>
 																				</Dropdown.Item>
 																			}
+																			{this.state.user && this.state.user._id === this.state.profileUser._id ?
+																				<Dropdown.Item>
+																					<Button onClick={this.handleDeleteCollection.bind(this, playlist._id)}>
+																						Delete Collection
+																					</Button>
+																				</Dropdown.Item> : <div></div>
+																			}
 																		</div>
 																		: <div></div>
 																	}
@@ -473,7 +488,7 @@ class ProfileScreen extends React.Component{
 																<Image className="profile-screen-category-item-card-image-overlay-play-button-icon" src={icon_play_white_1} roundedCircle/>
 															</Button>
 														</div>
-														<Card.Img className="profile-screen-category-item-card-image" src={playlist.image ? playlist.image : icon_playlist_2} />
+														<Card.Img className="profile-screen-category-item-card-image" src={playlist.image ? 'data:' + playlist.image.contentType + ';base64,' + btoa(playlist.image.data) : icon_playlist_2} />
 													</div>
 													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
 														<h1 className="card-title profile-screen-category-item-card-name ellipsis-multi-line-overflow subtitle color-jet" onClick={this.handleGoToItem.bind(this, playlist)}>{playlist.name}</h1>
@@ -637,7 +652,7 @@ class ProfileScreen extends React.Component{
 																<Image className="profile-screen-category-item-card-image-overlay-play-button-icon" src={icon_play_white_1} roundedCircle/>
 															</Button>
 														</div>
-														<Card.Img className="profile-screen-category-item-card-image" src={collection.image ? collection.image : icon_list} />
+														<Card.Img className="profile-screen-category-item-card-image" src={collection.image ? 'data:' + collection.image.contentType + ';base64,' + btoa(collection.image.data) : icon_list} />
 													</div>
 													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
 														<h1 className="card-title profile-screen-category-item-card-name ellipsis-multi-line-overflow subtitle color-jet" onClick={this.handleGoToItem.bind(this, collection)}>{collection.name}</h1>
