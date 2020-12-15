@@ -226,7 +226,7 @@ class CollectionScreen extends React.Component{
                                     song.favorited = false;
                                 }
                             }
-                            console.log(data.data.collection.image)
+
                             this.setState({ 
                                 collection: data.data.collection,
                                 loading: false,

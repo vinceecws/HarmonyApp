@@ -340,7 +340,7 @@ module.exports = function(mainSocket, sessionSocket) {
     apiRouter.post('/createCollectionWithSong/:collectionName&:songId', async (req, res) => {
         let collectionName = req.params.collectionName
         let songId = req.params.songId
-
+        console.log(songId)
         if (collectionName == null || songId == null){
             return res.status(401).json({
                 error: {
@@ -719,8 +719,11 @@ module.exports = function(mainSocket, sessionSocket) {
                     obj = await mongooseQuery.getCollection({
                         _id: userHistory[i]._id
                     }, true)
-                    obj.type = "collection"
-                    elements.push(obj)
+
+                    if (obj) {
+                        obj.type = "collection"
+                        elements.push(obj)
+                    }
                 }
                 else if (userHistory[i].type === "song") {
                     elements.push(userHistory[i])
@@ -1311,16 +1314,20 @@ module.exports = function(mainSocket, sessionSocket) {
                     obj = await mongooseQuery.getUser({
                         _id: userHistory[i]._id
                     }, true)
-                    obj = stripUser(obj)
-                    obj.type = "user"
-                    history.push(obj)
+                    if (obj) {
+                        obj = stripUser(obj)
+                        obj.type = "user"
+                        history.push(obj)
+                    }
                 }
                 else if (userHistory[i].type === "collection") {
                     obj = await mongooseQuery.getCollection({
                         _id: userHistory[i]._id
                     }, true)
-                    obj.type = "collection"
-                    history.push(obj)
+                    if (obj) {
+                        obj.type = "collection"
+                        history.push(obj)
+                    }
                 }
                 else if (userHistory[i].type === "song") {
                     history.push(userHistory[i])

@@ -36,7 +36,20 @@ class DataAPI {
                 videoCategoryId: "10",
                 regionCode: "US"
             }).then((response) => {
-                return response.result.items.map(res => this.constructVideoResultObj(res))
+                return response.result.items.map(obj => ({
+                    _id: obj.id,
+                    type: "song",
+                    name: this.unescapeHTML(obj.snippet.title),
+                    creatorId: obj.snippet.channelId,
+                    creator: this.unescapeHTML(obj.snippet.channelTitle),
+                    likes: parseInt(obj.statistics.likeCount),
+                    image: obj.snippet.thumbnails.default ? obj.snippet.thumbnails.default.url : null,
+                    image_high: obj.snippet.thumbnails.high ? obj.snippet.thumbnails.high.url : null,
+                    image_maxres: obj.snippet.thumbnails.maxres ? obj.snippet.thumbnails.maxres.url : null,
+                    image_med: obj.snippet.thumbnails.medium ? obj.snippet.thumbnails.medium.url : null,
+                    image_std: obj.snippet.thumbnails.standard ? obj.snippet.thumbnails.standard.url: null,
+                    duration: obj.contentDetails.duration
+                }))
             }, (err) => {
                 return err
             }, this)

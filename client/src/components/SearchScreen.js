@@ -59,6 +59,12 @@ class SearchScreen extends React.Component {
                     this.fetchPlaylists()
                     this.fetchHistory()
                 }
+                else {
+                    this.setState({
+                        history_loading: false,
+                        playlists_loading: false
+                    })
+                }
             })
         }
     }
@@ -474,7 +480,7 @@ class SearchScreen extends React.Component {
                     </div>
                     <div className={this.getHistoryClass()}>
                         {
-                            this.props.auth ? 
+                            this.state.user ? 
                             <div className="search-screen-history-title super-title color-accented">
                                 Your Recent History
                             </div> :
@@ -543,7 +549,7 @@ class SearchScreen extends React.Component {
                                                                             </Button>
                                                                         </Dropdown.Item>
                                                                         {
-                                                                            this.props.auth ?
+                                                                            this.state.user ?
                                                                             <div>
                                                                                 <DropdownItem as="div" onMouseEnter={this.handleMouseEnterDropdown} onMouseLeave={this.handleMouseLeaveDropdown}>
                                                                                     <DropdownButton
@@ -615,7 +621,7 @@ class SearchScreen extends React.Component {
                                                                             </Button>
                                                                         </Dropdown.Item>
                                                                         {
-                                                                            this.props.auth ?
+                                                                            this.state.user ?
                                                                             <div>
                                                                                 {
                                                                                     this.state.user && !this.state.user.likedCollections.includes(obj._id) ? 
