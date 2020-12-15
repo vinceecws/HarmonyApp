@@ -1,6 +1,5 @@
 import React from 'react';
 import { CardDeck, Card } from 'react-bootstrap';
-import { genSampleSuggestions } from '../test/genSamples'
 import { icon_music_1, icon_playlist_2, icon_profile_image } from '../graphics'
 import Spinner from './Spinner';
 import { mainScreens } from '../const'
@@ -129,7 +128,7 @@ class HomeScreen extends React.Component {
         this.props.fetchMostPopular(15, true).then(res => {
             var newSuggestions = _.cloneDeep(this.state.suggestions)
             var updatedCategory = {
-                categoryName: "Most Popular on YouTube",
+                categoryName: "Popular on YouTube",
                 suggestions: res
             }
             newSuggestions = this.setCategory(newSuggestions, updatedCategory)
@@ -167,8 +166,6 @@ class HomeScreen extends React.Component {
                 })
             }
         }).bind(this), true)
-
-        //return genSampleSuggestions()
     }
 
     getItemCreator = (obj) => {
