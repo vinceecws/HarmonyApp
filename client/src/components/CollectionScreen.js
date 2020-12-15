@@ -380,7 +380,7 @@ class CollectionScreen extends React.Component{
                         this.setState({collectionImageSrc: URL.createObjectURL(this.state.uploadedImage[0])})
                     }
                     else {
-                        console.log('lol faiil')
+                        console.log('error')
                     }
                 }).bind(this), true)
         }

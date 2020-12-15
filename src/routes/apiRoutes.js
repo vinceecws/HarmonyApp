@@ -3,6 +3,7 @@ const mongooseQuery = require('../db');
 const stripUser = require('./index').stripUser
 const _ = require('lodash');
 const path = require('path')
+const fs = require('fs')
 
 const multer = require('multer');
 const storage = multer.diskStorage({
@@ -34,6 +35,9 @@ module.exports = function(mainSocket, sessionSocket) {
     apiRouter.post('/collection/uploadImage/:collectionId', async (req, res) => {
         
         //console.log(req.body);
+        //let url = URL.createObjectURL(req.body)
+        //let data = fs.readFileSync(url)
+
         if (req.params.collectionId == null){
             
             return res.status(401).json({
