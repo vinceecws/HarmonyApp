@@ -1146,32 +1146,45 @@ module.exports = function(mainSocket, sessionSocket) {
         }
         else{
             var session = await mongooseQuery.getSession({'_id': req.params.id});
-            if (req.user){
-                var user = stripUser(req.user)
-                var updatedUser = await mongooseQuery.updateUser(user._id, {
-                        currentSession: session._id
-                    }).catch(err => res.sendStatus(404))
+            if(session.id === req.params.id){
+                if (req.user){
+                    var user = stripUser(req.user)
+                    var updatedUser = await mongooseQuery.updateUser(user._id, {
+                            currentSession: session._id
+                        }).catch(err => res.sendStatus(404))
 
-                return res.status(200).json({
-                    message: "Fetch success",
-                    statusCode: 200,
-                    data: {
-                        session: session,
-                        user: stripUser(updatedUser)
-                    },
-                    success: true
+                    return res.status(200).json({
+                        message: "Fetch success",
+                        statusCode: 200,
+                        data: {
+                            session: session,
+                            user: stripUser(updatedUser)
+                        },
+                        success: true
+                    })
+                }
+                else {
+                    return res.status(200).json({
+                        message: "Fetch success",
+                        statusCode: 200,
+                        data: {
+                            session: session,
+                        },
+                        success: true
+                    })
+                }
+            }
+            else{
+                return res.status(404).json({
+                    message: "Failed to find session",
+                        statusCode: 404,
+                        data: {
+                            session: null,
+                        },
+                        success: false
                 })
             }
-            else {
-                return res.status(200).json({
-                    message: "Fetch success",
-                    statusCode: 200,
-                    data: {
-                        session: session,
-                    },
-                    success: true
-                })
-            }
+            
         }
     });
 

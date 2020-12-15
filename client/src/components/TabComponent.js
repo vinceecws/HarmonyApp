@@ -34,7 +34,7 @@ class TabComponent extends React.Component{
                     </li>
                 </ul>
                 <Yinyang className="app-main-logo" onClick={() => this.handleSwitchScreen(mainScreens.HOME)}></Yinyang>
-                <AccountLink switchScreen={this.props.switchScreen} auth={this.props.auth} user={this.props.user} axiosWrapper={this.props.axiosWrapper} handleLogOut={this.props.handleLogOut} history={this.props.history}/>
+                <AccountLink showHostLoggingOutModal={this.props.showHostLoggingOutModal} isHostLoggingOut={this.props.isHostLoggingOut} switchScreen={this.props.switchScreen} auth={this.props.auth} user={this.props.user} axiosWrapper={this.props.axiosWrapper} handleLogOut={this.props.handleLogOut} history={this.props.history}/>
             </div>
         )
     }
