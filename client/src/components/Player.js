@@ -250,7 +250,6 @@ class Player extends React.Component {
 
     handleTogglePlay = () => {
         var currentSong
-
         if (!this.props.playerAPI.isPlayerInit()) { //Initialize on first use
             currentSong = this.props.queue.getCurrentSong()
             if (currentSong) {
@@ -279,6 +278,7 @@ class Player extends React.Component {
             return
         }
         else {
+            console.log("PAUSING")
             this.handleEmitPlayerState("player", "pause")
             this.props.playerAPI.pauseVideo()
         }

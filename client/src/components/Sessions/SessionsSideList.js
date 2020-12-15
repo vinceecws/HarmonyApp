@@ -14,24 +14,22 @@ class SessionSideList extends React.Component{
     }
 
     componentDidMount = () => {
-        this.initSocket()
+        this.topSessionsListener = this.props.sessionManager.subscribeToAction("rcvdTopSessions", this.handleSetTopSessions.bind(this))
+        this.props.sessionManager.emitGetTopSessions()
     } 
 
-    initSocket = () => {
-        if (this.props.mainSocket) {
-            this.props.mainSocket.on('top-sessions', (topSessions) => {
-                if (topSessions) {
-                    this.setState({
-                        loading: false,
-                        sessions: topSessions
-                    })
-                }
-            })
-            this.props.mainSocket.emit('get-top-sessions')
-        }
+    componentWillUnmount = () => {
+        this.topSessionsListener = this.props.sessionManager.unsubscribeFromAction("rcvdTopSessions", this.topSessionsListener)
     }
 
-    render(){
+    handleSetTopSessions = (event, sessions) => {
+        this.setState({
+            loading: false,
+            sessions: sessions
+        })
+    }
+
+    render() {
         if (this.state.loading) {
             return <Spinner/>
         }

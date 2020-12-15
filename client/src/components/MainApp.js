@@ -25,6 +25,7 @@ class MainApp extends React.Component {
         this.queue = this.props.queue
         this.isHostSwitchingSessions = false;
         this.isHostHopPromptShowing = false;
+        this.isHostLoggingOut = false;
         this.state = {
             displayEndedSessionModal: false,
             currentScreen: mainScreens.HOME,
@@ -34,22 +35,6 @@ class MainApp extends React.Component {
                 collectionId: null
             }
         }
-    }
-
-    componentDidMount = () => {
-        this.checkCredentials()
-    }
-
-    checkCredentials = () => {
-        this.props.axiosWrapper.axiosGet('/auth', (function(res, data) {
-            if (data.success) {
-                this.props.handleAuthenticate(data.data.user)
-                if (data.data.user.currentSession) {
-                    this.props.handleUpdateCurrentSession(data.data.user.currentSession)
-                }
-                this.props.history.push("/main")
-            }
-        }).bind(this), true)
     }
 
     /* Screen navigation */
@@ -104,6 +89,9 @@ class MainApp extends React.Component {
     showSessionEndedModal = () => {
         this.props.history.push('/main/sessionExpiredUser');
     }
+    showHostLoggingOutModal = () => {
+        this.props.history.push('/main/hostLoggingOut');
+    }
     showHostHopSessionModal = () => {
         this.props.history.push('/main/hostSwitchSessions');
         this.isHostHopPromptShowing = true;
@@ -125,8 +113,15 @@ class MainApp extends React.Component {
         this.handleCloseModal();
 
     }
-    disableHostSwitchingSessions = () =>{
+    handleHostLoggingOut = () => {
+        this.isHostLoggingOut = true;
+        
+        this.handleCloseModal();
+
+    }
+    disableHostSwitching = () =>{
         this.isHostSwitchingSessions = false;
+        this.isHostLoggingOut = false;
     }
 
     /*
@@ -163,6 +158,10 @@ class MainApp extends React.Component {
         return this.dataAPI.fetchVideoById(id, snippet)
     }
 
+    fetchMostPopular = (max=15, snippet=false) => {
+        return this.dataAPI.fetchMostPopular(max, snippet)
+    }
+
     shouldStartSession = () => {
         return this.props.user && !this.props.user.hosting
     }
@@ -171,22 +170,22 @@ class MainApp extends React.Component {
         return(
             <div id="main-app-container">
                 <Row id="top-container">
-                    <TabComponent switchScreen={this.switchScreen} currentScreen={this.state.currentScreen} auth={this.props.auth} user={this.props.user} axiosWrapper={this.props.axiosWrapper} handleLogOut={this.props.handleLogOut} history={this.props.history} currentSession={this.props.currentSession}/>
+                    <TabComponent showHostLoggingOutModal={this.showHostLoggingOutModal} isHostLoggingOut={this.isHostLoggingOut} switchScreen={this.switchScreen} currentScreen={this.state.currentScreen} auth={this.props.auth} user={this.props.user} axiosWrapper={this.props.axiosWrapper} handleLogOut={this.props.handleLogOut} history={this.props.history} currentSession={this.props.currentSession}/>
                 </Row>
                 <Row id="mid-container" style={{marginLeft:'0px'}}>
                     <Col id="side-list-container" sm={2} md={2} lg={2} xl={2}>
                     <header className='Session-Side-List'>
-                        <SessionSideList switchScreen={this.switchScreen} axiosWrapper={this.props.axiosWrapper} mainSocket={this.props.mainSocket} />
+                        <SessionSideList switchScreen={this.switchScreen} axiosWrapper={this.props.axiosWrapper} sessionManager={this.props.sessionManager} />
                     </header>
                     </Col>
                     <Col id="screen-container">
 
                         <SearchScreen visible={this.getScreenVisibility(mainScreens.SEARCH)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.SEARCH)} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} dataAPI={this.dataAPI} fetchVideoById={this.fetchVideoById} queryVideos={this.queryVideos} playVideo={this.playVideo} queue={this.queue} currentSession={this.props.currentSession} shouldStartSession={this.shouldStartSession} axiosWrapper={this.props.axiosWrapper}/>
-                        <SessionScreen visible={this.getScreenVisibility(mainScreens.SESSION)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.SESSION)} clearScreenProps={this.clearScreenProps} disableHostSwitchingSessions={this.disableHostSwitchingSessions} isHostHopPromptShowing={this.isHostHopPromptShowing} showHostHopSessionModal={this.showHostHopSessionModal} showSessionEndedModal={this.showSessionEndedModal} isHostSwitchingSessions = {this.isHostSwitchingSessions} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} handleUpdateCurrentSession={this.props.handleUpdateCurrentSession} fetchVideoById={this.fetchVideoById} queue={this.queue} playVideo={this.playVideo} axiosWrapper={this.props.axiosWrapper} currentSession={this.props.currentSession} sessionClient={this.props.sessionClient} playerAPI={this.playerAPI}/>
+                        <SessionScreen visible={this.getScreenVisibility(mainScreens.SESSION)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.SESSION)} history={this.props.history} isHostLoggingOut={this.isHostLoggingOut} handleLogOut={this.props.handleLogOut} clearScreenProps={this.clearScreenProps} disableHostSwitching={this.disableHostSwitching} isHostHopPromptShowing={this.isHostHopPromptShowing} showHostHopSessionModal={this.showHostHopSessionModal} showSessionEndedModal={this.showSessionEndedModal} isHostSwitchingSessions = {this.isHostSwitchingSessions} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} handleUpdateCurrentSession={this.props.handleUpdateCurrentSession} fetchVideoById={this.fetchVideoById} queue={this.queue} playVideo={this.playVideo} axiosWrapper={this.props.axiosWrapper} currentSession={this.props.currentSession} sessionClient={this.props.sessionClient} playerAPI={this.playerAPI}/>
                         <ProfileScreen visible={this.getScreenVisibility(mainScreens.PROFILE)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.PROFILE)} auth={this.props.auth} handleUpdateUser={this.props.handleUpdateUser} fetchVideoById={this.fetchVideoById} user={this.props.user} playVideo={this.playVideo} queue={this.queue} currentSession={this.props.currentSession} shouldStartSession={this.shouldStartSession} axiosWrapper={this.props.axiosWrapper}/>
                         <CollectionScreen visible={this.getScreenVisibility(mainScreens.COLLECTION)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.COLLECTION)} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} queue={this.queue} dataAPI={this.dataAPI} playVideo={this.playVideo} playerAPI={this.playerAPI} currentSession={this.props.currentSession} shouldStartSession={this.shouldStartSession}/>
                         <SettingsScreen visible={this.getScreenVisibility(mainScreens.SETTINGS)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.SETTINGS)} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} currentSession={this.props.currentSession} history={this.props.history}/>
-                        <HomeScreen visible={this.getScreenVisibility(mainScreens.HOME)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.HOME)} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} currentSession={this.props.currentSession} shouldStartSession={this.shouldStartSession}/>
+                        <HomeScreen visible={this.getScreenVisibility(mainScreens.HOME)} switchScreen={this.switchScreen} screenProps={this.getScreenProps(mainScreens.HOME)} auth={this.props.auth} user={this.props.user} handleUpdateUser={this.props.handleUpdateUser} axiosWrapper={this.props.axiosWrapper} currentSession={this.props.currentSession} shouldStartSession={this.shouldStartSession} playVideo={this.playVideo} fetchMostPopular={this.fetchMostPopular} fetchVideoById={this.fetchVideoById} queue={this.queue} shouldStartSession={this.shouldStartSession} sessionManager={this.props.sessionManager}/>
                     </Col>
                 </Row>
                 <Row id="bottom-container">
@@ -209,7 +208,7 @@ class MainApp extends React.Component {
 
                             return(
                             <div id="sessionExpiredUser" className="user-prompt-modal">
-                                <div classname="login-screen-signup-modal-content"  >
+                                <div className="login-screen-signup-modal-content"  >
                                     <div className="modal-dialog">
                                         {/* Modal Content */}
                                         <div className="modal-content bg-color-jet color-accented">
@@ -233,7 +232,7 @@ class MainApp extends React.Component {
                 <Route path={'/main/hostSwitchSessions'} render={() => { 
 
                             return(
-                            <div id="sessionExpiredUser" className="user-prompt-modal">
+                            <div id="hostSwitchSessions" className="user-prompt-modal">
                                 <div classname="login-screen-signup-modal-content"  >
                                     <div className="modal-dialog">
                                         {/* Modal Content */}
@@ -248,6 +247,32 @@ class MainApp extends React.Component {
                                             </div>
                                             <div className="modal-footer">
                                                 <button type="button" className="btn btn-default bg-color-harmony color-accented"  onClick={data => this.handleHostHopSession(data)}>Ok</button>
+                                                <button type="button" className="btn btn-default bg-color-harmony color-accented" data-dismiss="modal" onClick={data => this.handleCloseHostHopModal(data)}>Close</button>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}}/>
+                <Route path={'/main/hostLoggingOut'} render={() => { 
+
+                            return(
+                            <div id="hostLoggingOut" className="user-prompt-modal">
+                                <div classname="login-screen-signup-modal-content"  >
+                                    <div className="modal-dialog">
+                                        {/* Modal Content */}
+                                        <div className="modal-content bg-color-jet color-accented">
+                                            <div className="modal-header">
+                                                <h3>Session Change Detected</h3>
+                                                <button type="button" className="close color-accented" data-dismiss="modal" onClick={data => this.handleCloseHostHopModal(data)}>&times;</button>
+                                            </div>
+                                            <div className="modal-body">
+                                                <p>You are currently hosting a session. Logging out will end this session. Do you wish to continue?</p>
+                                                
+                                            </div>
+                                            <div className="modal-footer">
+                                                <button type="button" className="btn btn-default bg-color-harmony color-accented"  onClick={data => this.handleHostLoggingOut(data)}>Ok</button>
                                                 <button type="button" className="btn btn-default bg-color-harmony color-accented" data-dismiss="modal" onClick={data => this.handleCloseHostHopModal(data)}>Close</button>
                                             </div>
                                             

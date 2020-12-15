@@ -3,6 +3,7 @@ import axios from 'axios';
 
 import { io } from 'socket.io-client'
 import SessionClient from './api/SessionClient.js'
+import SessionManager from './api/SessionManager.js';
 
 import DataAPI from './api/DataAPI'
 import PlayerAPI from './api/PlayerAPI'
@@ -34,15 +35,15 @@ class App extends React.Component {
         this.axiosWrapper = new AxiosWrapper()
         this.queue = new Queue()
         if (process.env.REACT_APP_NODE_ENV === 'development') {
-            this.mainSocket = io('http://localhost:4000/main', {
+            this.sessionManager = new SessionManager(io('http://localhost:4000/main', {
                 withCredentials: true
-            })
+            }))
             this.sessionClient = new SessionClient(io('http://localhost:4000/session', {
                 withCredentials: true
             }))
         }
         else {
-            this.mainSocket = io('/main')
+            this.sessionManager = new SessionManager(io('/main'))
             this.sessionClient = new SessionClient(io('/session'))
         }
         this.state = {
@@ -54,6 +55,7 @@ class App extends React.Component {
     }
 
     componentDidMount = () => {
+        this.checkCredentials()
         this.playerAPI = new PlayerAPI()
         this.dataAPI = new DataAPI(() => {
             this.setState({
@@ -65,6 +67,7 @@ class App extends React.Component {
     componentDidUpdate = (prevProps, prevState) => {
         if ((this.state.user && !prevState.user) || (!this.state.user && prevState.user)) {
             this.sessionClient.disconnect()
+            this.playerAPI.destroyIFrameAPI()
             if (process.env.REACT_APP_NODE_ENV === 'development') {
                 this.sessionClient = new SessionClient(io('http://localhost:4000/session', {
                     withCredentials: true
@@ -77,13 +80,22 @@ class App extends React.Component {
         }
     }
 
+    checkCredentials = () => {
+        this.axiosWrapper.axiosGet('/auth', (function(res, data) {
+            if (data.success) {
+                this.handleAuthenticate(data.data.user)
+                if (data.data.user.currentSession) {
+                    this.handleUpdateCurrentSession(data.data.user.currentSession)
+                }
+            }
+        }).bind(this), true)
+    }
+
     handleLogOut = () => {
         this.setState({
                 auth: false,
                 user: null
             })
-        
-        
     }
 
     handleAuthenticate = (user) => {
@@ -119,7 +131,7 @@ class App extends React.Component {
                                 auth={this.state.auth} 
                                 user={this.state.user} 
                                 currentSession={this.state.currentSession}
-                                mainSocket={this.mainSocket}
+                                sessionManager={this.sessionManager}
                                 sessionClient={this.sessionClient} 
                                 playerAPI={this.playerAPI} 
                                 dataAPI={this.dataAPI} 

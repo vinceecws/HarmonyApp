@@ -27,6 +27,24 @@ class DataAPI {
         return doc.value;
     }
 
+    fetchMostPopular = (max=15, snippet=false) => {
+        if (this._dataAPIReady) {
+            var res = window.gapi.client.youtube.videos.list({
+                part: snippet ? ["snippet", "statistics", "contentDetails"] : ["contentDetails"],
+                maxResults: max,
+                chart: "mostPopular",
+                videoCategoryId: "10",
+                regionCode: "US"
+            }).then((response) => {
+                return response.result.items.map(res => this.constructVideoResultObj(res))
+            }, (err) => {
+                return err
+            }, this)
+
+            return res
+        }
+    }
+
     fetchVideoById = (id, snippet=false) => {
         if (this._dataAPIReady) {
             var res = window.gapi.client.youtube.videos.list({

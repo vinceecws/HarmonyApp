@@ -707,11 +707,62 @@ module.exports = function(mainSocket, sessionSocket) {
     });
 
     apiRouter.get('/home', async (req, res) => {
-        //Suggestions only
-    });
+        var suggestions = []
+        var elements = []
+        if (req.user) { //Listen again, Recommended for you
+            let userHistory = _.cloneDeep(req.user.history)
+            let obj
+
+            for (var i = 0; i < userHistory.length; i++) {
+                if (userHistory[i].type === "user") {
+                    continue
+                }
+                else if (userHistory[i].type === "collection") {
+                    obj = await mongooseQuery.getCollection({
+                        _id: userHistory[i]._id
+                    }, true)
+                    obj.type = "collection"
+                    elements.push(obj)
+                }
+                else if (userHistory[i].type === "song") {
+                    elements.push(userHistory[i])
+                }
+            }
+
+            if (elements.length >= 4) { //Include only if there's enough to show
+                suggestions.push({
+                    categoryName: "Listen Again",
+                    suggestions: elements
+                })
+            }
+        }
+
+        elements = await mongooseQuery.getTopCollections(max=15, lean=true)
+
+        elements = elements.map(collection => {
+            collection.type = "collection"
+            return collection
+        })
+
+        if (elements.length >= 4) { //Include only if there's enough to show
+            suggestions.push({
+                categoryName: "Recommended For You",
+                suggestions: elements
+            })
+        }
+
+        return res.status(200).json({
+            message: "Generated suggestions",
+            statusCode: 200,
+            data: {
+                suggestions: suggestions
+            },
+            success: true
+        })
+    })
 
     apiRouter.get('/collection/delete/:id', async (req, res) => {
-        if(req.params.id == null){
+        if (req.params.id == null) {
             return res.status(404).json({
                 error: {
                     name: "Invalid session",
@@ -1097,32 +1148,45 @@ module.exports = function(mainSocket, sessionSocket) {
         }
         else{
             var session = await mongooseQuery.getSession({'_id': req.params.id});
-            if (req.user){
-                var user = stripUser(req.user)
-                var updatedUser = await mongooseQuery.updateUser(user._id, {
-                        currentSession: session._id
-                    }).catch(err => res.sendStatus(404))
+            if(session.id === req.params.id){
+                if (req.user){
+                    var user = stripUser(req.user)
+                    var updatedUser = await mongooseQuery.updateUser(user._id, {
+                            currentSession: session._id
+                        }).catch(err => res.sendStatus(404))
 
-                return res.status(200).json({
-                    message: "Fetch success",
-                    statusCode: 200,
-                    data: {
-                        session: session,
-                        user: stripUser(updatedUser)
-                    },
-                    success: true
+                    return res.status(200).json({
+                        message: "Fetch success",
+                        statusCode: 200,
+                        data: {
+                            session: session,
+                            user: stripUser(updatedUser)
+                        },
+                        success: true
+                    })
+                }
+                else {
+                    return res.status(200).json({
+                        message: "Fetch success",
+                        statusCode: 200,
+                        data: {
+                            session: session,
+                        },
+                        success: true
+                    })
+                }
+            }
+            else{
+                return res.status(404).json({
+                    message: "Failed to find session",
+                        statusCode: 404,
+                        data: {
+                            session: null,
+                        },
+                        success: false
                 })
             }
-            else {
-                return res.status(200).json({
-                    message: "Fetch success",
-                    statusCode: 200,
-                    data: {
-                        session: session,
-                    },
-                    success: true
-                })
-            }
+            
         }
     });
 
