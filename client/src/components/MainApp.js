@@ -169,7 +169,8 @@ class MainApp extends React.Component {
     */
 
     shouldStartSession = () => {
-        return this.props.user && !this.props.user.hosting
+        /* True if logged-in, not in a Session */
+        return this.props.user && !this.props.user.currentSession
     }
 
     shouldEmitActions = () => {
