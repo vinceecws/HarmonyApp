@@ -162,7 +162,7 @@ class SessionScreen extends React.Component {
 					 this.props.queue.moveSongFromPastQueue(actionObj.data.from,actionObj.data.to);
 					 break;
                  case "add_song":
-					 this.props.queue.addSongToFutureQueue(actionObj.data.songId);
+					 this.props.queue.addSongToFutureQueue(actionObj.data.song);
 					 break;
                  case "del_song":
 					 this.props.queue.removeSongFromFutureQueue(actionObj.data.index);
