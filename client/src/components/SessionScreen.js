@@ -510,6 +510,8 @@ class SessionScreen extends React.Component {
 	}
 
 	setImage = (image) => {
+
+		console.log('Image: ', image.contentType, typeof image.data);
 		return 'data:' + image.contentType + ';base64,' + btoa(image.data);
 	}
 
@@ -873,6 +875,7 @@ class SessionScreen extends React.Component {
 	        			<div className='row' style={{height:'22%', border: '3px solid black', borderRadius: '25px'}}>
 	        				<div className='col' style={{maxWidth:'35%', height:'100%', padding:'1em'}}>
 	        					<img src={this.state.sessionImgSrc ? this.state.sessionImgSrc : yin_yang_fill_color_harmony } style={{display: 'block', margin: 'auto', height:'90%'}} alt=""/>
+
 	        				</div>
 	        				<div className='col' style={{maxWidth:'50%', minWidth:'50%',height:'100%', padding:'1em', color:'white'}}>
 	        					<div className='title session-title-text'>
@@ -935,6 +938,7 @@ class SessionScreen extends React.Component {
 	        			<div className='row' style={{height:'22%', border: '3px solid black', borderRadius: '25px'}}>
 	        				<div className='col' style={{maxWidth:'35%', height:'100%', padding:'1em'}}>
 	        					<img src={this.state.sessionImgSrc ? this.state.sessionImgSrc : yin_yang_fill_color_harmony } style={{display: 'block', margin: 'auto', height:'90%'}} alt=""/>
+
 	        				</div>
 	        				<div className='col' style={{maxWidth:'50%', minWidth:'50%',height:'100%', padding:'1em', color:'white'}}>
 	        					<div className='title session-title-text'>
