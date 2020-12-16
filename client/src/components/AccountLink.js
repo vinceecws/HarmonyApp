@@ -22,13 +22,17 @@ class AccountLink extends React.Component {
         
     }
 
+    setImage = (image) => {
+        return 'data:' + image.contentType + ';base64,' + btoa(image.data);
+    }
+
     render() {
         if (this.props.auth) {
             return (
                 <Dropdown id="tab-component-account-link-container" as={ButtonGroup}>
                     <Button id="tab-component-account-link-button">
                         <div onClick={() => this.props.switchScreen(mainScreens.PROFILE, this.props.user._id)}>
-                            <Image id="tab-component-account-link-image" src={this.props.user.image ? this.props.user.image : icon_profile_image} />
+                            <Image id="tab-component-account-link-image" src={this.props.user.image && this.props.user.image.data ? this.setImage(this.props.user.image) : icon_profile_image} />
                         </div>
                     </Button>
                     <Dropdown.Toggle split id="tab-component-account-link-dropdown-button" />

@@ -28,7 +28,8 @@ class CollectionScreen extends React.Component{
             songPlaying: null,
             showUploadImageModal: false,
             uploadedImage: null,
-            collectionImageSrc: null
+            collectionImageSrc: null,
+            error: false
         }
         this.onUploadImage = this.onUploadImage.bind(this);
     }
@@ -41,10 +42,15 @@ class CollectionScreen extends React.Component{
         }
         //If screen is now active
         if (!prevProps.visible && this.props.visible) {
-            this.setState({
-                collectionId: this.props.screenProps.collectionId,
-                loading: true
-            }, this.fetchCollection)
+            
+            if(this.props.screenProps.collectionId){
+               this.setState({
+                    collectionId: this.props.screenProps.collectionId,
+                    loading: true
+                }, this.fetchCollection) 
+            }
+            
+            
         }
     }
 
@@ -228,15 +234,24 @@ class CollectionScreen extends React.Component{
                             this.setState({ 
                                 collection: data.data.collection,
                                 loading: false,
+                                error: false,
                                 collectionName: data.data.collection.name,
                                 favorited: this.isCollectionFavorited(data.data.collection),
                                 songList: s,
-                                collectionImageSrc: data.data.collection.image ? this.setImage(data.data.collection.image) : null
+                                collectionImageSrc: data.data.collection.image && data.data.collection.image.data ? this.setImage(data.data.collection.image) : null
                             })
                         })
                     }
                 }
-            }).bind(this), true)
+
+            }).bind(this), true, (function(res, data){
+                console.log("erorr callback")
+                    this.setState({
+                        error:true,
+                        loading:false
+                    })
+            
+            }).bind(this))
         }
     }
 
@@ -410,6 +425,9 @@ class CollectionScreen extends React.Component{
         if (this.state.loading) {
             component = <Spinner/>
         }
+        else if(this.state.error && !this.state.loading){
+            component = <div className="color-accented body-text error-404-display">Oops, collection not found</div>
+        }
         else {
             component = (
                 <div className='container' style={{minWidth: '100%'}}>
@@ -459,8 +477,8 @@ class CollectionScreen extends React.Component{
 
                     {/* Header */}
                     <div className='row' style={{backgroundColor: 'grey', border: '2px solid black', }}>
-                        <div className='col' style={{maxWidth: '20%', paddingTop: '10px', paddingBottom: '10px'}}>
-                            <img src={this.state.collectionImageSrc == null ? icon_music_1 : this.state.collectionImageSrc} style={{maxHeight: '100px'}}></img>
+                        <div className='col' style={{maxWidth: '30vw', maxHeight: '15vw', paddingTop: '10px', paddingBottom: '10px'}}>
+                            <img src={this.state.collectionImageSrc == null ? icon_music_1 : this.state.collectionImageSrc} style={{maxWidth: '100%', maxHeight: '100%'}}></img>
                         </div>
 
                         {/* Collection Info */}

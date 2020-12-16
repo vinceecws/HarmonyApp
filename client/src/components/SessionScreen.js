@@ -30,6 +30,7 @@ class SessionScreen extends React.Component {
 			messageText: "",
 			role: sessionRoles.GUEST_NON_PARTICIPANT,
 			user: this.props.user,
+			sessionImgSrc: null
 		}
 	}
 
@@ -58,19 +59,21 @@ class SessionScreen extends React.Component {
             this.setState({
                 user: this.props.user
             })
+            this.hostSwitchingSessions = false;
 		}
 		
 		if (!this.state.loading && !this.state.unloading) {
-			if(this.props.isHostLoggingOut){
-				console.log("ending the session");
-				this.props.disableHostSwitching();
-				this.handleEndSessionLogout();
-				
-				
-			}
+			
 			if (this.props.screenProps) {
 				//If screen is active and new sessionId is passed
 				if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
+					if(this.props.isHostLoggingOut){
+						console.log("ending the session");
+						this.props.disableHostSwitching();
+						this.handleEndSessionLogout();
+						
+						
+					}
 					if((this.isHost() && !this.isNonParticipant()) && prevState.id !== null && this.props.screenProps.sessionId !== null){ //host switching between two live sessions
 						if(!this.props.isHostHopPromptShowing && !this.props.isHostSwitchingSessions && !this.hostSwitchingSessions){
 							console.log("bring up prompt to switch")
@@ -500,6 +503,10 @@ class SessionScreen extends React.Component {
 		})
 	}
 
+	setImage = (image) => {
+		return 'date:' + image.contentType + ';base64,' + btoa(image.data);
+	}
+
 	initSession = (session) => {
 		if (session) {
 			if (this.shouldEmitActions()) {
@@ -509,7 +516,8 @@ class SessionScreen extends React.Component {
 					name: session.name,
 					startTime: session.startTime,
 					futureQueue: this.props.queue.getFutureQueue(),
-					pastQueue: this.props.queue.getPastQueue()
+					pastQueue: this.props.queue.getPastQueue(),
+					sessionImgSrc: session.image && session.image.data ? this.setImage(session.image) : null
 	        	}, this.initSessionClient)
 			}
 			else if (this.shouldReceiveActions()) {
@@ -518,7 +526,8 @@ class SessionScreen extends React.Component {
 					hostName: session.hostName,
 					name: session.name,
 					startTime: session.startTime,
-					live: true
+					live: true,
+					sessionImgSrc: session.image && session.image.data ? this.setImage(session.image) : null
 				}, this.initSessionClient)
 			}
 			else if (this.shouldIgnoreActions()) {
@@ -530,7 +539,8 @@ class SessionScreen extends React.Component {
 					startTime: session.startTime,
 					loading: false,
 					futureQueue: this.props.queue.getFutureQueue(),
-					pastQueue: this.props.queue.getPastQueue()
+					pastQueue: this.props.queue.getPastQueue(),
+					sessionImgSrc: session.image && session.image.data? this.setImage(session.image) : null
 				})
 			}
         }
@@ -775,6 +785,12 @@ class SessionScreen extends React.Component {
 																																if (data.success) {
 																													                this.props.handleUpdateUser(data.data.user)
 																													                this.props.switchScreen(mainScreens.SESSION, data.data.sessionId)
+																													                if (!this.props.playerAPI.isPlayerInit()) { //Initialize on first use
+																															            this.props.playerAPI.initIFrameAPI(this.props.queue.getCurrentSong()._id)
+																															        }
+																															        else {
+																															            this.playerAPI.loadVideoById(this.props.queue.getCurrentSong()._id)
+																															        }
 																																}
 																															}).bind(this), true)}}>
 										<div className="subtitle color-accented">
@@ -838,7 +854,7 @@ class SessionScreen extends React.Component {
         			<div className='col-sm-8' style={{height:'100%'}}>
 	        			<div className='row' style={{height:'22%', border: '3px solid black', borderRadius: '25px'}}>
 	        				<div className='col' style={{maxWidth:'35%', height:'100%', padding:'1em'}}>
-	        					<img src={icon_profile_image} style={{backgroundColor:'white',display: 'block', margin: 'auto', height:'90%', border: '3px solid black'}}/>
+	        					<img src={this.state.sessionImgSrc ? this.state.sessionImgSrc : icon_profile_image} style={{backgroundColor:'white',display: 'block', margin: 'auto', height:'90%', border: '3px solid black'}}/>
 	        				</div>
 	        				<div className='col' style={{maxWidth:'50%', minWidth:'50%',height:'100%', padding:'1em', color:'white'}}>
 	        					<div className='title session-title-text'>

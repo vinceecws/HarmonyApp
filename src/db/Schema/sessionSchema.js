@@ -28,7 +28,7 @@ const sessionSchema = new mongoose.Schema({
         default: false
     },
     image: {
-        data: Buffer,
+        data: String,
         contentType: String
     }
 })

@@ -23,6 +23,7 @@
     "react-scripts": "3.4.3",
     "react-strap": "0.0.1",
     "react-ticker": "^1.2.2",
+    "react-tippy": "^1.4.0",
     "socket.io-client": "^3.0.3"
   },
   "scripts": {

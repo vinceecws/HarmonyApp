@@ -2,7 +2,7 @@ import axios from 'axios';
 
 
 class AxiosWrapper {
-	axiosGet(path, callback, withCredentials=false) {
+	axiosGet(path, callback, withCredentials=false, errorCallback) {
 		return axios.get(path, {
 			withCredentials: withCredentials
 		})
@@ -14,6 +14,9 @@ class AxiosWrapper {
         })
         .catch(function (error){
             console.log(error);
+            if(errorCallback){
+                errorCallback();
+            }
         });
 	}
 	axiosPost(path, payload, callback, withCredentials=false, headers={}) {

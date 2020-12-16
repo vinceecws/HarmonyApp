@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema({
         ref: "Session"
     },
     image: {
-        data: Buffer,
+        data: String,
         contentType: String
     }
 })

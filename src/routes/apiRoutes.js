@@ -28,12 +28,10 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else {
-            let imageBuffer = Buffer.from(req.body.image);
+            let imageBuffer = Buffer.from(req.body.image).toString();
             let contentType = req.body.contentType;
-            
             let updatedCollection = await mongooseQuery.updateCollection(req.params.collectionId, 
                 {'image.data': imageBuffer, 'image.contentType': contentType});
-            console.log(updatedCollection.image)
             return res.status(200).json({
                 message: 'Update Successful',
                 statusCode: 200,
@@ -59,14 +57,11 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else {
-            let imageBuffer = Buffer.from(req.body.image);
+            let imageBuffer = Buffer.from(req.body.image).toString();
             let contentType = req.body.contentType;
             
             let updatedUser = await mongooseQuery.updateUser(req.user._id, 
                 {'image.data': imageBuffer, 'image.contentType': contentType}, true);
-            if (updatedUser.image){
-                updatedUser.image.data = updatedUser.image.data.toString();
-            }
             return res.status(200).json({
                 message: 'Update Successful',
                 data: {
@@ -354,7 +349,7 @@ module.exports = function(mainSocket, sessionSocket) {
     apiRouter.post('/createCollectionWithSong/:collectionName&:songId', async (req, res) => {
         let collectionName = req.params.collectionName
         let songId = req.params.songId
-
+        console.log(songId)
         if (collectionName == null || songId == null){
             return res.status(401).json({
                 error: {
@@ -531,9 +526,6 @@ module.exports = function(mainSocket, sessionSocket) {
         }
         else {
             let user = await mongooseQuery.getUser({'_id': req.params.id}, true);
-            if (user.image!== undefined){
-                user.image.data = user.image.data.toString();
-            }
             return res.status(200).json({
                 message: "Fetch success",
                 statusCode: 200,
@@ -564,11 +556,6 @@ module.exports = function(mainSocket, sessionSocket) {
         else {
             let user = await mongooseQuery.getUser({'_id': id})
             let sessions = await mongooseQuery.getSession(user.sessions, true)
-            for (let s of sessions){
-                if (s.image){
-                    s.image.data = s.image.data.toString();
-                }
-            }
             return res.status(200).json({
                 message: "Fetch success",
                 statusCode: 200,
@@ -601,11 +588,6 @@ module.exports = function(mainSocket, sessionSocket) {
         else {
             let user = await mongooseQuery.getUser({'_id': req.params.id})
             let playlists = await mongooseQuery.getCollection(user.playlists, true)
-            for (let p of playlists){
-                if (p.image){
-                    p.image.data = p.image.data.toString();
-                }
-            }
             return res.status(200).json({
                 message: "Fetch success",
                 statusCode: 200,
@@ -639,11 +621,6 @@ module.exports = function(mainSocket, sessionSocket) {
         else {
             let user = await mongooseQuery.getUser({'_id': req.params.id})
             let likedCollections = await mongooseQuery.getCollection(user.likedCollections, true)
-            for (let p of likedCollections){
-                if (p.image){
-                    p.image.data = p.image.data.toString();
-                }
-            }
             return res.status(200).json({
                 message: "Fetch success",
                 statusCode: 200,
@@ -718,18 +695,31 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else{
-            let collection = await mongooseQuery.getCollection({'_id': req.params.id}, true);
-            if (collection.image) {
-                collection.image.data = collection.image.data.toString();
+            let collection = await mongooseQuery.getCollection({'_id': req.params.id}, true).catch(err => res.sendStatus(404));
+            if(collection === null){
+                return res.status(404).json({
+                    error: {
+                        name: "Invalid Collection",
+                        message: "Not found"
+                    },
+                    message: "Collection not found",
+                    statusCode: 404,
+                    data: {
+                        collection: null
+                    },
+                    success: false
+                })
             }
-            return res.status(200).json({
-                message: "Fetch success",
-                statusCode: 200,
-                data: {
-                    collection: collection
-                },
-                success: true
-            })
+            else{
+                return res.status(200).json({
+                    message: "Fetch success",
+                    statusCode: 200,
+                    data: {
+                        collection: collection
+                    },
+                    success: true
+                }) 
+            }
         }
     });
 
@@ -748,8 +738,11 @@ module.exports = function(mainSocket, sessionSocket) {
                     obj = await mongooseQuery.getCollection({
                         _id: userHistory[i]._id
                     }, true)
-                    obj.type = "collection"
-                    elements.push(obj)
+
+                    if (obj) {
+                        obj.type = "collection"
+                        elements.push(obj)
+                    }
                 }
                 else if (userHistory[i].type === "song") {
                     elements.push(userHistory[i])
@@ -1139,6 +1132,10 @@ module.exports = function(mainSocket, sessionSocket) {
         else {
             var user = stripUser(req.user)
             var session = await mongooseQuery.createSession(user._id, user.username, req.body.name, Date.now()).catch(err => res.sendStatus(404))
+            if (user.image){
+                session = await mongooseQuery.updateSession(session._id, {image: user.image});
+                console.log('Session updated');
+            }
             var updatedUser = await mongooseQuery.updateUser(user._id, {
                 currentSession: session._id,
                 live: !user.privateMode,
@@ -1174,10 +1171,12 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else{
+            console.log('Session fetched');
             var session = await mongooseQuery.getSession({'_id': req.params.id}, true);
             if(session.id === req.params.id){
                 if (session.image){
-                    session.image.data = session.image.data.toString();
+                    //session.image.data = session.image.data.toString();
+                    console.log('Session fetched: ', typeof session.image.data);
                 }
                 if (req.user){
                     var user = stripUser(req.user)
@@ -1343,16 +1342,20 @@ module.exports = function(mainSocket, sessionSocket) {
                     obj = await mongooseQuery.getUser({
                         _id: userHistory[i]._id
                     }, true)
-                    obj = stripUser(obj)
-                    obj.type = "user"
-                    history.push(obj)
+                    if (obj) {
+                        obj = stripUser(obj)
+                        obj.type = "user"
+                        history.push(obj)
+                    }
                 }
                 else if (userHistory[i].type === "collection") {
                     obj = await mongooseQuery.getCollection({
                         _id: userHistory[i]._id
                     }, true)
-                    obj.type = "collection"
-                    history.push(obj)
+                    if (obj) {
+                        obj.type = "collection"
+                        history.push(obj)
+                    }
                 }
                 else if (userHistory[i].type === "song") {
                     history.push(userHistory[i])
@@ -1480,21 +1483,21 @@ module.exports = function(mainSocket, sessionSocket) {
                 data: {
                     sessions: sessionMatches.map(session => {
                         if (session.image){
-                            session.image.data = session.image.data.toString();
+                            //session.image.data = session.image.data.toString();
                         }
                         session.type = "session"
                         return session
                     }), 
                     collections: collectionMatches.map(collection => {
                         if (collection.image){
-                            collection.image.data = collection.image.data.toString();
+                            //collection.image.data = collection.image.data.toString();
                         }
                         collection.type = "collection"
                         return collection
                     }),
                     users: userMatches.map(user => {
                         if (user.image){
-                            user.image.data = user.image.data.toString();
+                            //user.image.data = user.image.data.toString();
                         }
                         var strippedUser = stripUser(user)
                         strippedUser.type = "user"
@@ -1513,7 +1516,7 @@ module.exports = function(mainSocket, sessionSocket) {
             for (let s of sessionMatches){
                 if (String(s.hostId) !== String(thisUser._id)){
                     if (s.image){
-                        s.image.data = s.image.data.toString();
+                        //s.image.data = s.image.data.toString();
                     }
                     filteredSessions.push(s);
                 }
@@ -1521,7 +1524,7 @@ module.exports = function(mainSocket, sessionSocket) {
             for (let c of collectionMatches){
                 if (!(thisUser.playlists.map(e => String(e)).includes(c._id))){
                     if (c.image){
-                        c.image.data = c.image.data.toString();
+                        //c.image.data = c.image.data.toString();
                     }
                     filteredCollections.push(c);
                 }
@@ -1529,7 +1532,7 @@ module.exports = function(mainSocket, sessionSocket) {
             for (let u of userMatches){
                 if (String(thisUser._id) !== String(u._id)){
                     if (u.image){
-                        u.image.data = u.image.data.toString();
+                        //u.image.data = u.image.data.toString();
                     }
                     let fetchedUser = stripUser(u)
                     filteredUsers.push(fetchedUser);

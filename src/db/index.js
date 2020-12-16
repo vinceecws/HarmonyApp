@@ -107,7 +107,7 @@ exports.getCollection = async function(collectionObject, lean=false) {
             }
         }).catch(error => {return error});
     }
-
+    
     return collection;
 }
 
