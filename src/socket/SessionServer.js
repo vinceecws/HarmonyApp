@@ -95,6 +95,10 @@ class SessionServer {
                 })
             }
             else { //User participant
+                var newChatObj = this.createActionObj("chat", user.username, user._id, {
+                    subaction: "leave"
+                })
+                this.socket.to(String(user.currentSession)).emit("chat", newChatObj)
                 await mongooseQuery.updateSession(user.currentSession, {
                     $inc: {
                         streams: -1
@@ -132,7 +136,16 @@ class SessionServer {
 
     joinSession = (clientSocket, sessionId) => {
         if (![...clientSocket.rooms][1]) { //If not already in a Session
-            clientSocket.join(sessionId);
+            clientSocket.join(sessionId)
+
+            if (clientSocket.request.user) {
+                var user = stripUser(clientSocket.request.user)
+                var newChatObj = this.createActionObj("chat", user.username, user._id, {
+                    subaction: "join"
+                })
+                this.socket.to([...clientSocket.rooms][1]).emit("chat", newChatObj);
+            }
+
             mongooseQuery.updateSession([...clientSocket.rooms][1], {
                 $inc: {
                     streams: 1
@@ -149,6 +162,13 @@ class SessionServer {
 
     leaveSession = (clientSocket) => {
         if ([...clientSocket.rooms][1]) { //If in a Session
+            if (clientSocket.request.user) {
+                var user = stripUser(clientSocket.request.user)
+                var newChatObj = this.createActionObj("chat", user.username, user._id, {
+                    subaction: "leave"
+                })
+                this.socket.to([...clientSocket.rooms][1]).emit("chat", newChatObj);
+            }
             mongooseQuery.updateSession([...clientSocket.rooms][1], {
                 $inc: {
                     streams: -1
