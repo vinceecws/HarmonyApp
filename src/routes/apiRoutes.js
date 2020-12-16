@@ -526,6 +526,21 @@ module.exports = function(mainSocket, sessionSocket) {
         }
         else {
             let user = await mongooseQuery.getUser({'_id': req.params.id}, true);
+            console.log(user);
+            if(user === null){
+                return res.status(404).json({
+                    error: {
+                        name: "Invalid User",
+                        message: "Not found"
+                    },
+                    message: "User not found",
+                    statusCode: 404,
+                    data: {
+                        user: null
+                    },
+                    success: false
+                })
+            }
             return res.status(200).json({
                 message: "Fetch success",
                 statusCode: 200,
@@ -534,6 +549,7 @@ module.exports = function(mainSocket, sessionSocket) {
                 },
                 success: true
             })
+
         }
     });
 
@@ -1157,6 +1173,7 @@ module.exports = function(mainSocket, sessionSocket) {
     });
 
     apiRouter.get('/session/:id', async (req, res) => {
+        console.log('Fetching Session')
         let id = req.params.id;
         if (id == null){
             return res.status(404).json({
@@ -1173,37 +1190,40 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else{
-            console.log('Session fetched');
-            var session = await mongooseQuery.getSession({'_id': req.params.id}, true);
-            if(session.id === req.params.id){
-                if (session.image){
-                    console.log('Session fetched: ', typeof session.image.data);
-                }
-                if (req.user){
-                    var user = stripUser(req.user)
-                    var updatedUser = await mongooseQuery.updateUser(user._id, {
-                            currentSession: session._id
-                        }).catch(err => res.sendStatus(404))
+            var session = await mongooseQuery.getSession({'_id': req.params.id});
+            if(session !== null){
+                console.log('Session not null')
+                if(session._id === req.params.id){
+                    console.log('SEssion id == params.id')
+                    if (session.image){
+                        console.log('Session fetched: ', typeof session.image.data);
+                    }
+                    if (req.user){
+                        var user = stripUser(req.user)
+                        var updatedUser = await mongooseQuery.updateUser(user._id, {
+                                currentSession: session._id
+                            }).catch(err => res.sendStatus(404))
 
-                    return res.status(200).json({
-                        message: "Fetch success",
-                        statusCode: 200,
-                        data: {
-                            session: session,
-                            user: stripUser(updatedUser)
-                        },
-                        success: true
-                    })
-                }
-                else {
-                    return res.status(200).json({
-                        message: "Fetch success",
-                        statusCode: 200,
-                        data: {
-                            session: session,
-                        },
-                        success: true
-                    })
+                        return res.status(200).json({
+                            message: "Fetch success",
+                            statusCode: 200,
+                            data: {
+                                session: session,
+                                user: stripUser(updatedUser)
+                            },
+                            success: true
+                        })
+                    }
+                    else {
+                        return res.status(200).json({
+                            message: "Fetch success",
+                            statusCode: 200,
+                            data: {
+                                session: session,
+                            },
+                            success: true
+                        })
+                    }
                 }
             }
             else{

@@ -29,7 +29,8 @@ class ProfileScreen extends React.Component{
 			newCollectionName: "",
 			showDropdown: false,
 			showCreateCollectionModal: false,
-			profileImageSrc: null
+			profileImageSrc: null,
+			error: false,
 		}
 	}
 
@@ -46,7 +47,8 @@ class ProfileScreen extends React.Component{
 						sessions_loading: true,
 						playlists_loading: true,
 						likedSongs_loading: true,
-						likedCollections_loading: true
+						likedCollections_loading: true,
+						error: false,
 					}, this.fetchUser)
 				}
 			})
@@ -60,7 +62,8 @@ class ProfileScreen extends React.Component{
 				sessions_loading: true,
 				playlists_loading: true,
 				likedSongs_loading: true,
-				likedCollections_loading: true
+				likedCollections_loading: true,
+				error: false
 			}, this.fetchUser)
 		}
 	}
@@ -289,7 +292,14 @@ class ProfileScreen extends React.Component{
 						loading: false
 					}, this.fetchUserData)
 				}
-			}).bind(this), true)
+			}).bind(this), true, (function(res, data){
+                console.log("erorr callback")
+                    this.setState({
+                        error:true,
+                        loading:false
+                    })
+            
+            }).bind(this))
 		}
 	}
 
@@ -377,6 +387,9 @@ class ProfileScreen extends React.Component{
 		if (this.state.loading) {
 			component = <Spinner/>
 		}
+		else if(this.state.error && !this.state.loading){
+            component = <div className="color-accented body-text error-404-display">Oops, profile not found</div>
+        }
 		else {
 			component = (
 				<div style={{fontFamily: 'BalsamiqSans', padding:'1em'}}>

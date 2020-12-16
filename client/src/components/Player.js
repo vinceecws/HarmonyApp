@@ -105,7 +105,6 @@ class Player extends React.Component {
         if (!this.props.shouldEmitActions()) {
             return
         }
-
         var username = this.state.user.username
         var userId = this.state.user._id
         var data = {}
@@ -253,6 +252,7 @@ class Player extends React.Component {
         var currentSong
         if (!this.props.playerAPI.isPlayerInit()) { //Initialize on first use
             currentSong = this.props.queue.getCurrentSong()
+
             if (currentSong) {
                 this.props.playerAPI.initIFrameAPI(currentSong._id)
                 if (this.props.shouldStartSession()) {

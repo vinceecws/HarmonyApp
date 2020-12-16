@@ -115,7 +115,14 @@ class SessionScreen extends React.Component {
 									this.hostSwitchingSessions = false;
 									this.props.handleUpdateCurrentSession(data.data.session._id, this.setSessionRole.bind(this, data))
 								}
-							}, true)
+							}, true, (function(res, data){
+			                console.log("erorr callback")
+			                    this.setState({
+			                        error:true,
+			                        loading:false
+			                    })
+            
+            				}).bind(this))
 						}) 
 					}
 					
@@ -156,6 +163,7 @@ class SessionScreen extends React.Component {
         	/* move_song, move_song_from_past, add_song, del_song*/
             switch (actionObj.data.subaction) {
 				// listen to only subactions that are not listened in Player.js
+
 				case "play_song":
 					this.props.playVideo(actionObj.data.songId)
 					break;
@@ -520,7 +528,8 @@ class SessionScreen extends React.Component {
 					startTime: session.startTime,
 					futureQueue: this.props.queue.getFutureQueue(),
 					pastQueue: this.props.queue.getPastQueue(),
-					sessionImgSrc: session.image && session.image.data ? this.setImage(session.image) : null
+					sessionImgSrc: session.image && session.image.data ? this.setImage(session.image) : null,
+					error: false
 	        	}, this.initSessionClient)
 			}
 			else if (this.shouldReceiveActions()) {
@@ -530,7 +539,8 @@ class SessionScreen extends React.Component {
 					name: session.name,
 					startTime: session.startTime,
 					live: true,
-					sessionImgSrc: session.image && session.image.data ? this.setImage(session.image) : null
+					sessionImgSrc: session.image && session.image.data ? this.setImage(session.image) : null,
+					error: false
 				}, this.initSessionClient)
 			}
 			else if (this.shouldIgnoreActions()) {
@@ -541,6 +551,7 @@ class SessionScreen extends React.Component {
 					hostName: this.state.user.username,
 					startTime: session.startTime,
 					loading: false,
+					error: false,
 					futureQueue: this.props.queue.getFutureQueue(),
 					pastQueue: this.props.queue.getPastQueue(),
 					sessionImgSrc: session.image && session.image.data? this.setImage(session.image) : null
@@ -554,6 +565,7 @@ class SessionScreen extends React.Component {
 				startTime: null,
 				chatLog: [],
 				loading: false,
+				error: false,
 				futureQueue: this.props.queue.getFutureQueue(),
 				pastQueue: this.props.queue.getPastQueue()
 			})
@@ -574,7 +586,8 @@ class SessionScreen extends React.Component {
 			this.props.sessionClient.readySession()
 			this.setState({
 				loading: false,
-				live: true
+				live: true,
+				error: false
 			})
 		}
 		else if (this.shouldReceiveActions()) {
@@ -618,7 +631,8 @@ class SessionScreen extends React.Component {
 		this.setState({
 			id: null,
 			unloading: false,
-			live: false
+			live: false,
+			error: false
 		})
 	}
 	handleTearDownLogout = () => {
@@ -631,7 +645,8 @@ class SessionScreen extends React.Component {
 	            	this.setState({
 						id: null,
 						unloading: false,
-						live: false
+						live: false,
+						error: false
 					})
 	                this.props.handleLogOut()
 
@@ -651,7 +666,8 @@ class SessionScreen extends React.Component {
 		this.setState({
 			id: this.props.screenProps.sessionId,
 			unloading: false,
-			loading: true
+			loading: true,
+			error: false
 		}, () => {
 			this.props.axiosWrapper.axiosGet("/api/session/" + this.state.id, (res, data) => {
 				if (this.state.user) {
@@ -662,7 +678,14 @@ class SessionScreen extends React.Component {
 					this.hostSwitchingSessions = false;
 					this.props.handleUpdateCurrentSession(data.data.session._id, this.setSessionRole.bind(this, data))
 				}
-			}, true)
+			}, true, (function(res, data){
+			                console.log("erorr callback")
+			                    this.setState({
+			                        error:true,
+			                        loading:false
+			                    })
+            
+            				}).bind(this))
 		}) 
 	}
 	
@@ -968,9 +991,9 @@ class SessionScreen extends React.Component {
     	else if (this.state.loading && !this.state.error){
     		component = <Spinner/>
     	}
-    	else {
-    		component = <div style={{color:'white'}}>Error 404</div>
-		}
+    	else if(this.state.error && !this.state.loading){
+            component = <div className="color-accented body-text error-404-display">Oops, Session not found</div>
+        }
 		
         return(
 			<div className={this.props.visible ? "visible" : "hidden"}>
