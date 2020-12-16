@@ -68,40 +68,30 @@ class SessionScreen extends React.Component {
 				//If screen is active and new sessionId is passed
 				if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
 					if(this.props.isHostLoggingOut){
-						console.log("ending the session");
 						this.props.disableHostSwitching();
 						this.handleEndSessionLogout();
-						
-						
+
 					}
 					if((this.isHost() && !this.isNonParticipant()) && prevState.id !== null && this.props.screenProps.sessionId !== null){ //host switching between two live sessions
 						if(!this.props.isHostHopPromptShowing && !this.props.isHostSwitchingSessions && !this.hostSwitchingSessions){
-							console.log("bring up prompt to switch")
 							this.props.showHostHopSessionModal();
 							this.hostSwitchingSessions = true;
 						}
-						else{
-							if(this.props.isHostSwitchingSessions && this.hostSwitchingSessions){
-								console.log("ending the session");
-								
+						else {
+							if (this.props.isHostSwitchingSessions && this.hostSwitchingSessions){
 								this.hostSwitchingSessions = false;
 								this.props.disableHostSwitching();
 								this.handleHopSession();
-								
-
 							}
-							else if(!this.props.isHostHopPromptShowing && !this.props.isHostSwitchingSessions){
+							else if (!this.props.isHostHopPromptShowing && !this.props.isHostSwitchingSessions){
 								this.hostSwitchingSessions = false;
 							}
-							
 						}
-						
 					}
-					else if((!this.isHost() && !this.isNonParticipant()) && prevState.id !== null && this.props.screenProps.sessionId !== null){ //a user switching between two sessions
+					else if ((!this.isHost() && !this.isNonParticipant()) && prevState.id !== null && this.props.screenProps.sessionId !== null){ //a user switching between two sessions
 						this.handleHopSession();
-						
 					}
-					else{ //switching to a session default case
+					else { //switching to a session default case
 						this.setState({
 							id: this.props.screenProps.sessionId,
 							loading: true
@@ -116,7 +106,6 @@ class SessionScreen extends React.Component {
 									this.props.handleUpdateCurrentSession(data.data.session._id, this.setSessionRole.bind(this, data))
 								}
 							}, true, (function(res, data){
-			                console.log("erorr callback")
 			                    this.setState({
 			                        error:true,
 			                        loading:false
@@ -679,13 +668,11 @@ class SessionScreen extends React.Component {
 					this.props.handleUpdateCurrentSession(data.data.session._id, this.setSessionRole.bind(this, data))
 				}
 			}, true, (function(res, data){
-			                console.log("erorr callback")
-			                    this.setState({
-			                        error:true,
-			                        loading:false
-			                    })
-            
-            				}).bind(this))
+				this.setState({
+					error:true,
+					loading:false
+				})
+			}).bind(this))
 		}) 
 	}
 	

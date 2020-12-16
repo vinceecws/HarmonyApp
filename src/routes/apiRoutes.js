@@ -349,7 +349,6 @@ module.exports = function(mainSocket, sessionSocket) {
     apiRouter.post('/createCollectionWithSong/:collectionName&:songId', async (req, res) => {
         let collectionName = req.params.collectionName
         let songId = req.params.songId
-        console.log(songId)
         if (collectionName == null || songId == null){
             return res.status(401).json({
                 error: {
@@ -526,7 +525,6 @@ module.exports = function(mainSocket, sessionSocket) {
         }
         else {
             let user = await mongooseQuery.getUser({'_id': req.params.id}, true);
-            console.log(user);
             if(user === null){
                 return res.status(404).json({
                     error: {
@@ -1131,7 +1129,6 @@ module.exports = function(mainSocket, sessionSocket) {
     });
 
     apiRouter.post('/session/newSession', async (req, res) => {
-        console.log('session created');
         if (!req.user) {
             return res.status(401).json({
                 error: {
@@ -1151,9 +1148,8 @@ module.exports = function(mainSocket, sessionSocket) {
             var session = await mongooseQuery.createSession(user._id, user.username, req.body.name, Date.now()).catch(err => res.sendStatus(404))
             if (user.image){
                 session = await mongooseQuery.updateSession(session._id, {image: user.image});
-                console.log('Session updated', session.image.contentType);
             }
-            console.log('Session: ', session.image.contentType)
+
             var updatedUser = await mongooseQuery.updateUser(user._id, {
                 currentSession: session._id,
                 live: !user.privateMode,
@@ -1173,7 +1169,7 @@ module.exports = function(mainSocket, sessionSocket) {
     });
 
     apiRouter.get('/session/:id', async (req, res) => {
-        console.log('Fetching Session')
+
         let id = req.params.id;
         if (id == null){
             return res.status(404).json({
@@ -1190,43 +1186,37 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else{
-            var session = await mongooseQuery.getSession({'_id': req.params.id});
-            if(session !== null){
-                console.log('Session not null')
-                if(session._id === req.params.id){
-                    console.log('SEssion id == params.id')
-                    if (session.image){
-                        console.log('Session fetched: ', typeof session.image.data);
-                    }
-                    if (req.user){
-                        var user = stripUser(req.user)
-                        var updatedUser = await mongooseQuery.updateUser(user._id, {
-                                currentSession: session._id
-                            }).catch(err => res.sendStatus(404))
+            var session = await mongooseQuery.getSession({'_id': req.params.id}, true);
+            if (session !== null) {
 
-                        return res.status(200).json({
-                            message: "Fetch success",
-                            statusCode: 200,
-                            data: {
-                                session: session,
-                                user: stripUser(updatedUser)
-                            },
-                            success: true
-                        })
-                    }
-                    else {
-                        return res.status(200).json({
-                            message: "Fetch success",
-                            statusCode: 200,
-                            data: {
-                                session: session,
-                            },
-                            success: true
-                        })
-                    }
+                if (req.user){
+                    var user = stripUser(req.user)
+                    var updatedUser = await mongooseQuery.updateUser(user._id, {
+                            currentSession: session._id
+                        }).catch(err => res.sendStatus(404))
+
+                    return res.status(200).json({
+                        message: "Fetch success",
+                        statusCode: 200,
+                        data: {
+                            session: session,
+                            user: stripUser(updatedUser)
+                        },
+                        success: true
+                    })
+                }
+                else {
+                    return res.status(200).json({
+                        message: "Fetch success",
+                        statusCode: 200,
+                        data: {
+                            session: session,
+                        },
+                        success: true
+                    })
                 }
             }
-            else{
+            else {
                 return res.status(404).json({
                     message: "Failed to find session",
                         statusCode: 404,
