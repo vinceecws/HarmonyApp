@@ -66,14 +66,19 @@ class SessionScreen extends React.Component {
 			
 			if (this.props.screenProps) {
 				//If screen is active and new sessionId is passed
-				if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
-					if(this.props.isHostLoggingOut){
+				if(this.props.isHostLoggingOut){
+						console.log("ending the session");
 						this.props.disableHostSwitching();
 						this.handleEndSessionLogout();
+						
+						
+				}
+				if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
+					
 
-					}
 					if((this.isHost() && !this.isNonParticipant()) && prevState.id !== null && this.props.screenProps.sessionId !== null){ //host switching between two live sessions
-						if(!this.props.isHostHopPromptShowing && !this.props.isHostSwitchingSessions && !this.hostSwitchingSessions){
+						if(!this.props.isHostSwitchingSessions && !this.hostSwitchingSessions){
+							console.log("bring up prompt to switch")
 							this.props.showHostHopSessionModal();
 							this.hostSwitchingSessions = true;
 						}
@@ -83,7 +88,8 @@ class SessionScreen extends React.Component {
 								this.props.disableHostSwitching();
 								this.handleHopSession();
 							}
-							else if (!this.props.isHostHopPromptShowing && !this.props.isHostSwitchingSessions){
+							else if(!this.props.isHostHopPromptShowing && !this.props.isHostSwitchingSessions){
+								this.props.switchScreen(mainScreens.SESSION, prevState.id);
 								this.hostSwitchingSessions = false;
 							}
 						}
@@ -885,7 +891,7 @@ class SessionScreen extends React.Component {
 	        			</div>
 	        			<div className='row' style={{height:'78%'}}>
 		        			{this.renderSuggestionButton()}
-							<div className='row bg-color-contrasted' style={{height:'calc(100% - 40px)',width:'100%',marginLeft:'0px',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
+							<div className='row bg-color-faded' style={{height:'calc(100% - 40px)',width:'100%',marginLeft:'0px',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
 								<ChatFeed chatLog={this.state.chatLog} user={this.state.user}  />
 							</div>
 							<div className='row' style={{height:'40px',width:'100%',marginLeft:'0px',border: '3px solid black',backgroundColor:'white'}}>
@@ -896,18 +902,18 @@ class SessionScreen extends React.Component {
 	        		</div>
 	        		<div className='col-sm-4' style={{height:'100%', overflow:'auto'}}>
 						<DragDropContext onDragEnd={this.handleOnDragEnd}>
-							<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black'}}>
+							<div className='row bg-color-faded title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black'}}>
 								Up Next
 							</div>
 							<div className='row' style={{height:'43%', overflow:'auto'}}>
 								<Droppable droppableId="futureQueue">
 									{(provided) => ( 
-										<QueueComponent Queue={this.state.futureQueue} 	queueType="future" isHost={this.isHost} fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.state.user}/>
+										<QueueComponent Queue={this.state.futureQueue} queueObject={this.props.queue} handleEmitQueueState={this.handleEmitQueueState}	queueType="future" isHost={this.isHost} fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.state.user}/>
 										)}
 										
 								</Droppable>
 							</div>
-							<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black'}}>
+							<div className='row bg-color-faded title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black'}}>
 								Previously Played
 							</div>
 							<div className='row' style={{height:'43%', overflow:'auto'}}>
@@ -947,7 +953,7 @@ class SessionScreen extends React.Component {
 	        			</div>
 	        			<div className='row' style={{height:'78%'}}>
 		        			{this.renderSuggestionButton()}
-		        			<div className='row bg-color-contrasted' style={{height:'calc(100% - 40px)',width:'100%',marginLeft:'0px',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
+		        			<div className='row bg-color-faded' style={{height:'calc(100% - 40px)',width:'100%',marginLeft:'0px',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
 		        				
 		        				<ChatFeed chatLog={this.state.chatLog} user={this.state.user}  />
 		        			</div>
@@ -959,13 +965,13 @@ class SessionScreen extends React.Component {
 	        			</div>
 	        		</div>
 	        		<div className='col-sm-4' style={{height:'100%'}}>
-						<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black'}}>
+						<div className='row bg-color-faded title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black'}}>
 							Up Next
 						</div>
 						<div className='row' style={{height:'43%'}}>
 							<QueueComponent Queue={this.state.futureQueue} fetchVideoById={this.props.fetchVideoById}/>
 						</div>
-						<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%',minHeight:'40px', border: '3px solid black'}}>
+						<div className='row bg-color-faded title session-title-text' style={{color:'white', height:'7%',minHeight:'40px', border: '3px solid black'}}>
 							Previously Played
 						</div>
 						<div className='row' style={{height:'43%'}}>

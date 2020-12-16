@@ -1,6 +1,8 @@
 import React from 'react';
 import Ticker from 'react-ticker';
+import {Button} from 'react-bootstrap';
 import { Draggable } from 'react-beautiful-dnd'
+
 class QueueEntry extends React.Component{
 	constructor(props){
 		super(props);
@@ -14,15 +16,26 @@ class QueueEntry extends React.Component{
 	handleLeave = () => {
 		this.setState({showTicker : false});
 	}
+	removeThisSong = () => {
+		this.props.queueObject.removeSongFromFutureQueue(this.props.index)
+		this.props.handleEmitQueueState("queue", "del_song", this.props.index)
+	}
 	render(){
 		let entry;
+		let deleteButton;
+		if(this.props.queueType==="future" && this.props.isHost){
+			deleteButton = <Button className="bg-color-harmony col" variant="primary" style={{width:'10%'}} onClick={this.removeThisSong}>X</Button>
+		}
+		else{
+			deleteButton = <></>
+		}
 		if(this.state.showTicker){
 			entry = <Ticker speed={14} height={27.2} mode="await" >
-							{({ index }) => (<h1 className='Session-Entry-Text body-text color-accented' style={{height:'100%'}} >{this.props.index+1} : {this.props.title} -- {this.props.artist}</h1>)}
-					</Ticker>;
+							{({ index }) => (<h1 className='Session-Entry-Text body-text color-accented col' style={{height:'100%'}} >{this.props.index+1} : {this.props.title} -- {this.props.artist}</h1>)}
+					</Ticker>
 
 		} else{
-			entry = <h1 className='Session-Entry-Text body-text color-accented' style={{height:'100%'}}>{this.props.index+1} : {this.props.title} -- {this.props.artist}</h1>;
+			entry = <h1 className='Session-Entry-Text body-text color-accented' style={{height:'100%', overflow:'hidden'}}>{this.props.index+1} : {this.props.title} -- {this.props.artist}</h1>;
 		}
 		let renderStuff;
 		if(this.props.isHost){
@@ -31,10 +44,12 @@ class QueueEntry extends React.Component{
 				<Draggable key={this.props.index+this.props.id+this.props.queueType} draggableId={this.props.id+this.props.index+this.props.queueType} index={this.props.index} >
 	            	{(provided) => (
 					<div className='list-group-item'  {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
-						<div>
+						<div className='col' style={{display:'inline-block', top:'5px', width:'85%'}}>
 						{entry}
 						</div>
-
+						<div className='col' style={{display:'inline-block'}}>
+						{deleteButton}
+						</div>
 						
 						
 					</div>
