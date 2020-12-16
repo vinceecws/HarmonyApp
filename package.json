@@ -7,7 +7,7 @@
     "build-start": "cross-env REACT_APP_NODE_ENV=development concurrently \"npm start --prefix client\" \"nodemon src/server.js\"",
     "start": "node src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client && npm install"
   },
   "author": "",
   "license": "ISC",
