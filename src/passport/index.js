@@ -11,6 +11,11 @@ exports.deserialize = function(id, done) {
         if (err) {
             return done(err)
         }
+        /*
+        user = user.toObject();
+        if (user.image){
+            user.image.data = user.image.data.toString();
+        }*/
         done(null, user)
     })
 }
@@ -35,7 +40,11 @@ exports.localLogIn = function(req, username, password, done) {
                 message: "Invalid password"
             })
         }
-
+        /*
+        user = user.toObject();
+        if (user.image){
+            user.image.data = user.image.data.toString();
+        }*/
         return done(null, user)
      })
 }

@@ -28,8 +28,9 @@ class ProfileScreen extends React.Component{
 			currentSongTarget: "",
 			newCollectionName: "",
 			showDropdown: false,
+			showCreateCollectionModal: false,
+			profileImageSrc: null,
 			error: false,
-			showCreateCollectionModal: false
 		}
 	}
 
@@ -172,7 +173,15 @@ class ProfileScreen extends React.Component{
         })).then((songs) => {
             songs.forEach(song => this.handleAddSongToFutureQueue(song))
         })
-    }
+	}
+	
+	handleDeleteCollection = (collectionId, e) => {
+		this.props.axiosWrapper.axiosGet('/api/collection/delete/' + collectionId, (function(res, data){
+            if (data.success){
+                this.props.handleUpdateUser(data.data.user);
+            }
+        }).bind(this), true)
+	}
 
     handleAddCollectionToFavorites = (collectionId, e) => {
         this.props.axiosWrapper.axiosPost('/api/addCollectionToFavorites/' + collectionId, {}, (function(res, data) {
@@ -297,6 +306,9 @@ class ProfileScreen extends React.Component{
 
 	fetchUserData = () => {
 		if (this.state.profileUser) {
+			if (this.state.profileUser.image && this.state.profileUser.image.data){
+				this.setState({profileImageSrc: this.setImage(this.state.profileUser.image)});
+			}
 			if (this.state.profileUser.sessions.length > 0) {
 				this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.profileUser._id + '/sessions', (function(res, data) {
 					if (data.success) {
@@ -367,6 +379,10 @@ class ProfileScreen extends React.Component{
 		}
 	}
 
+	setImage = (image) => {
+		return 'data:' + image.contentType + ';base64,' + btoa(image.data);
+	}
+
     render(){
 		var component
 		if (this.state.loading) {
@@ -391,10 +407,10 @@ class ProfileScreen extends React.Component{
 								<Button className="body-text bg-color-harmony color-accented" onClick={this.handleCreateCollection} disabled={!this.handleValidateNewCollectionName()}>Create</Button>
 							</Modal.Footer>
 					</Modal>
-					<div id='profile-screen-top-container' className='row'>
-						<div className='col-sm-1.3' style={{display:'flex', padding:'1em'}}>
+					<div id='profile-screen-top-container' className='row' style={{minHeight: '12vw', maxHeight: '15vw'}}>
+						<div className='col-sm-1.3' style={{display:'flex', padding:'1em', maxWidth: '20vw'}}>
 							<div id='container' style={{position:'relative'}}>
-									<img id="user-profile-image" src={this.state.profileUser.image ? this.state.profileUser.image : icon_profile_image} style={{width: '208px'}} alt=""/>
+									<img id="user-profile-image" src={this.state.profileUser.image && this.state.profileUser.image.data ? this.state.profileImageSrc : icon_profile_image} style={{width: '208px'}} alt=""/>
 							</div>
 						</div>
 						<div className='col'>
@@ -516,6 +532,13 @@ class ProfileScreen extends React.Component{
 																					</Button>
 																				</Dropdown.Item>
 																			}
+																			{this.state.user && this.state.user._id === this.state.profileUser._id ?
+																				<Dropdown.Item>
+																					<Button onClick={this.handleDeleteCollection.bind(this, playlist._id)}>
+																						Delete Collection
+																					</Button>
+																				</Dropdown.Item> : <div></div>
+																			}
 																		</div>
 																		: <div></div>
 																	}
@@ -525,7 +548,7 @@ class ProfileScreen extends React.Component{
 																<Image className="profile-screen-category-item-card-image-overlay-play-button-icon" src={icon_play_white_1} roundedCircle/>
 															</Button>
 														</div>
-														<Card.Img className="profile-screen-category-item-card-image" src={playlist.image ? playlist.image : icon_playlist_2} />
+														<Card.Img className="profile-screen-category-item-card-image" src={playlist.image && playlist.image.data ? this.setImage(playlist.image) : icon_playlist_2} />
 													</div>
 													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
 														<h1 className="card-title profile-screen-category-item-card-name ellipsis-multi-line-overflow subtitle color-jet" onClick={this.handleGoToItem.bind(this, playlist)}>{playlist.name}</h1>
@@ -689,7 +712,7 @@ class ProfileScreen extends React.Component{
 																<Image className="profile-screen-category-item-card-image-overlay-play-button-icon" src={icon_play_white_1} roundedCircle/>
 															</Button>
 														</div>
-														<Card.Img className="profile-screen-category-item-card-image" src={collection.image ? collection.image : icon_list} />
+														<Card.Img className="profile-screen-category-item-card-image" src={collection.image && collection.image.data ? this.setImage(collection.image) : icon_list} />
 													</div>
 													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
 														<h1 className="card-title profile-screen-category-item-card-name ellipsis-multi-line-overflow subtitle color-jet" onClick={this.handleGoToItem.bind(this, collection)}>{collection.name}</h1>

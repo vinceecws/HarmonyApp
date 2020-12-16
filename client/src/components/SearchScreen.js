@@ -431,15 +431,19 @@ class SearchScreen extends React.Component {
         return obj.name
     }
 
+    setImage = (image) => {
+        return 'data:' + image.contentType + ';base64,' + btoa(image.data);
+    }
+
     getHistoryItemImage = (obj) => {
         if (obj.type === "song") {
             return obj.image_high ? obj.image_high : obj.image_med ? obj.image_med : obj.image_std ? obj.image_std : obj.image ? obj.image : icon_music_1
         }
         else if (obj.type === "collection") {
-            return obj.image ? obj.image : icon_playlist_2
+            return obj.image && obj.image.data ? this.setImage(obj.image) : icon_playlist_2
         }
         else if (obj.type === "user") {
-            return obj.image ? obj.image : icon_profile_image
+            return obj.image && obj.image.data ? this.setImage(obj.image) : icon_profile_image
         }
 
         return obj.image 
@@ -633,7 +637,7 @@ class SearchScreen extends React.Component {
                                                                     <div className="search-screen-results-category-list-item-img-overlay-join-button-text color-accented tiny-text">{obj.live ? "JOIN SESSION" : "PLAY AGAIN"}</div>
                                                                 </Button>
                                                             </div>
-                                                            <Card.Img className="search-screen-results-category-list-item-img" src={obj.image ? obj.image : icon_sound_mixer_1} />
+                                                            <Card.Img className="search-screen-results-category-list-item-img" src={obj.image && obj.image.data ? this.setImage(obj.image) : icon_sound_mixer_1} />
                                                         </div>
                                                         : obj.type === "collection" ?
                                                         <div className="search-screen-results-category-list-item-img-overlay-trigger">
@@ -673,9 +677,9 @@ class SearchScreen extends React.Component {
                                                                     <Image className="search-screen-results-category-list-item-img-overlay-play-button-icon" src={icon_play_white_1} roundedCircle/>
                                                                 </Button>
                                                             </div>
-                                                            <Card.Img className="search-screen-results-category-list-item-img" src={obj.image ? obj.image : icon_playlist_2} />
+                                                            <Card.Img className="search-screen-results-category-list-item-img" src={obj.image && obj.image.data ? this.setImage(obj.image) : icon_playlist_2} />
                                                         </div>
-                                                        : <Card.Img className="search-screen-results-category-list-item-img" src={obj.image ? obj.image : icon_profile_image} />
+                                                        : <Card.Img className="search-screen-results-category-list-item-img" src={obj.image && obj.image.data ? this.setImage(obj.image) : icon_profile_image} />
                                                 }
                                                 <Card.Body className="search-screen-results-category-list-item-body">
                                                     <div className="search-screen-results-category-list-item-body-title ellipsis-multi-line-overflow subtitle color-jet" onClick={this.handleGoToResultItem.bind(this, obj)}>{obj.type === "user" ? obj.username : obj.name}</div>

@@ -12,7 +12,8 @@ exports.stripUser = function(user) {
         history: user.history, 
         likedSongs: user.likedSongs,
         likedCollections: user.likedCollections,
-        currentSession: user.currentSession
+        currentSession: user.currentSession,
+        image: user.image
     }
 
     return strippedUser

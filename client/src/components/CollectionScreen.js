@@ -28,7 +28,6 @@ class CollectionScreen extends React.Component{
             songPlaying: null,
             showUploadImageModal: false,
             uploadedImage: null,
-            imageType: null,
             collectionImageSrc: null,
             error: false
         }
@@ -193,7 +192,6 @@ class CollectionScreen extends React.Component{
                                     song.favorited = false;
                                 }
                             }
-
                             this.setState({ 
                                 collection: data.data.collection,
                                 loading: false,
@@ -201,7 +199,7 @@ class CollectionScreen extends React.Component{
                                 collectionName: data.data.collection.name,
                                 favorited: this.isCollectionFavorited(data.data.collection),
                                 songList: s,
-                                collectionImageSrc: data.data.collection.image ? URL.createObjectURL(data.data.collection.image) : null
+                                collectionImageSrc: data.data.collection.image && data.data.collection.image.data ? this.setImage(data.data.collection.image) : null
                             })
                         })
                     }
@@ -292,7 +290,9 @@ class CollectionScreen extends React.Component{
         for (let i = index + 1; i < this.state.songList.length; i++) {
             this.handleAddSongToFutureQueue(this.state.songList[i])
         }
+        console.log(this.props.shouldStartSession())
         if (this.props.shouldStartSession()){
+            console.log('Create session Called');
             this.createSession()
         }
     }
@@ -363,7 +363,6 @@ class CollectionScreen extends React.Component{
 
     onSubmitUploadImage = () => {
         if (this.state.uploadedImage !== null){
-            this.setState({imageType: this.state.uploadedImage[0].type});
             this.hideUploadImageModal();
             new Promise((resolve, reject) => {
                 var reader = new FileReader()
@@ -374,15 +373,11 @@ class CollectionScreen extends React.Component{
                 
                 reader.readAsBinaryString(this.state.uploadedImage[0])
             }).then(binary => {
-                console.log(typeof binary)
                 this.props.axiosWrapper.axiosPost('/api/collection/uploadImage/' + this.state.collectionId, {
-                    image: binary
+                    image: binary, contentType: this.state.uploadedImage[0].type
                 }, (function(res, data){
                         if (data.success){
                             this.setState({collectionImageSrc: URL.createObjectURL(this.state.uploadedImage[0])})
-                        }
-                        else {
-                            console.log('lol faiil')
                         }
                 }).bind(this), true)
             })
@@ -397,17 +392,12 @@ class CollectionScreen extends React.Component{
         this.setState({showUploadImageModal: false});
     }
 
-    hexToBase64 = (str) => {
-        return btoa(String.fromCharCode.apply(null, str.replace(/\r|\n/g, "").replace(/([\da-fA-F]{2}) ?/g, "0x$1 ").replace(/ +$/, "").split(" ")));
-    }
-
-    setImage = (imageData) => {
-        this.setState({collectionImageSrc: 'data:' + this.state.imageType + ';base64,' + this.hexToBase64(imageData)})
+    setImage = (image) => {
+        return 'data:' + image.contentType + ';base64,' + btoa(image.data);
     }
     
 
     getCollectionFavoriteButtonClass = () => {
-
         return this.state.favorited ? "collection-favorite-button-icon-on" : "collection-favorite-button-icon"
     }
 
@@ -469,8 +459,8 @@ class CollectionScreen extends React.Component{
 
                     {/* Header */}
                     <div className='row' style={{backgroundColor: 'grey', border: '2px solid black', }}>
-                        <div className='col' style={{maxWidth: '20%', paddingTop: '10px', paddingBottom: '10px'}}>
-                            <img src={this.state.collectionImageSrc == null ? icon_music_1 : this.state.collectionImageSrc} style={{maxHeight: '100px'}} alt=""></img>
+                        <div className='col' style={{maxWidth: '30vw', maxHeight: '15vw', paddingTop: '10px', paddingBottom: '10px'}}>
+                            <img src={this.state.collectionImageSrc == null ? icon_music_1 : this.state.collectionImageSrc} style={{maxWidth: '100%', maxHeight: '100%'}} alt=""></img>
                         </div>
 
                         {/* Collection Info */}

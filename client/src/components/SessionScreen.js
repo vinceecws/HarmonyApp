@@ -30,6 +30,7 @@ class SessionScreen extends React.Component {
 			messageText: "",
 			role: sessionRoles.GUEST_NON_PARTICIPANT,
 			user: this.props.user,
+			sessionImgSrc: null
 		}
 	}
 
@@ -513,6 +514,10 @@ class SessionScreen extends React.Component {
 		})
 	}
 
+	setImage = (image) => {
+		return 'date:' + image.contentType + ';base64,' + btoa(image.data);
+	}
+
 	initSession = (session) => {
 		if (session) {
 			if (this.shouldEmitActions()) {
@@ -523,6 +528,7 @@ class SessionScreen extends React.Component {
 					startTime: session.startTime,
 					futureQueue: this.props.queue.getFutureQueue(),
 					pastQueue: this.props.queue.getPastQueue(),
+					sessionImgSrc: session.image && session.image.data ? this.setImage(session.image) : null,
 					error: false
 	        	}, this.initSessionClient)
 			}
@@ -533,6 +539,7 @@ class SessionScreen extends React.Component {
 					name: session.name,
 					startTime: session.startTime,
 					live: true,
+					sessionImgSrc: session.image && session.image.data ? this.setImage(session.image) : null,
 					error: false
 				}, this.initSessionClient)
 			}
@@ -546,7 +553,8 @@ class SessionScreen extends React.Component {
 					loading: false,
 					error: false,
 					futureQueue: this.props.queue.getFutureQueue(),
-					pastQueue: this.props.queue.getPastQueue()
+					pastQueue: this.props.queue.getPastQueue(),
+					sessionImgSrc: session.image && session.image.data? this.setImage(session.image) : null
 				})
 			}
         }
@@ -871,7 +879,11 @@ class SessionScreen extends React.Component {
         			<div className='col-sm-8' style={{height:'100%'}}>
 	        			<div className='row' style={{height:'22%', border: '3px solid black', borderRadius: '25px'}}>
 	        				<div className='col' style={{maxWidth:'35%', height:'100%', padding:'1em'}}>
+<<<<<<< HEAD
+	        					<img src={this.state.sessionImgSrc ? this.state.sessionImgSrc : icon_profile_image} style={{backgroundColor:'white',display: 'block', margin: 'auto', height:'90%', border: '3px solid black'}}/>
+=======
 	        					<img src={icon_profile_image} style={{backgroundColor:'white',display: 'block', margin: 'auto', height:'90%', border: '3px solid black'}} alt=""/>
+>>>>>>> 93eb935cded303ae1920a8af4d9a3134df9b1ed3
 	        				</div>
 	        				<div className='col' style={{maxWidth:'50%', minWidth:'50%',height:'100%', padding:'1em', color:'white'}}>
 	        					<div className='title session-title-text'>
