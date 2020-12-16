@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom'
 import { Dropdown, ButtonGroup, Image, Button } from 'react-bootstrap'
-import { icon_profile_image } from '../graphics';
+import { yin_yang_gradient } from '../graphics';
 import { mainScreens } from '../const'
 
 class AccountLink extends React.Component {
@@ -32,7 +32,7 @@ class AccountLink extends React.Component {
                 <Dropdown id="tab-component-account-link-container" as={ButtonGroup}>
                     <Button id="tab-component-account-link-button">
                         <div onClick={() => this.props.switchScreen(mainScreens.PROFILE, this.props.user._id)}>
-                            <Image id="tab-component-account-link-image" src={this.props.user.image && this.props.user.image.data ? this.setImage(this.props.user.image) : icon_profile_image} />
+                            <Image id="tab-component-account-link-image" src={this.props.user.image && this.props.user.image.data ? this.setImage(this.props.user.image) : yin_yang_gradient} />
                         </div>
                     </Button>
                     <Dropdown.Toggle split id="tab-component-account-link-dropdown-button" />

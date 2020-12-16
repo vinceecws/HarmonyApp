@@ -71,3 +71,4 @@ export const plus_button_white = require('./user_pack/plus-button-white.svg')
 
 export const yin_yang_color_harmony = require('./yin-yang-color-harmony.svg')
 export const yin_yang_fill_color_harmony = require('./yin-yang-fill-color-harmony.svg')
+export const yin_yang_gradient = require('./yin-yang-gradient.svg')
