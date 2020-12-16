@@ -95,29 +95,6 @@ class CollectionScreen extends React.Component{
         }
     }
 
-    onPressPlayQueue = () =>{
-        if (this.state.songList.length > 0 && !this.state.playing){
-            this.setState({playing: true});
-            let futureQueue = this.state.collection.songList.slice(1);
-            this.props.playVideo(this.state.collection.songList[0]);
-            for (let s of futureQueue){
-                this.props.dataAPI.fetchVideoById(s, true).then((song) => {
-                    if (song.status === 403){
-                        console.log('Youtube Query Quota Exceeded');
-                    }
-                    else{
-                        this.props.queue.addSongToFutureQueue(song);
-                    }  
-                });
-            }
-        }
-        else if (this.state.playing){
-            this.setState({playing: false});
-            this.props.playerAPI.pauseVideo();
-        }
-    }
-
-
     onEditName = () => {
         if (this.state.collectionName.trim() !== ''){
             this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/' + this.state.collectionId, 
@@ -139,22 +116,6 @@ class CollectionScreen extends React.Component{
                     this.fetchCollection();
                 }
             }).bind(this), true);
-        }
-    }
-
-    onPressPlaySong = (song, index) => {
-        let futureQueue = this.state.collection.songList.slice(index + 1);
-        this.props.playVideo(song._id);
-        for (let s of futureQueue){
-            this.props.dataAPI.fetchVideoById(s, true).then((s) => {
-                if (s.status === 403){
-                    console.log('Youtube Query Quota Exceeded');
-                }
-                else{
-                    this.props.queue.addSongToFutureQueue(s);
-                    this.setState({playing: true, songPlaying: song._id});
-                }  
-            })
         }
     }
 
@@ -318,12 +279,21 @@ class CollectionScreen extends React.Component{
     }
 
     onPlayCollection = (song, index) => {
-        this.props.playVideo(song._id);
-        for (let i = index + 1; i < this.state.songList.length; i++){
-            this.props.queue.addSongToFutureQueue(this.state.songList[i]);
+        if (this.props.shouldEmitActions()) {
+            var data = {
+                subaction: "play_song",
+                songId: song._id
+            }
+            this.props.sessionClient.emitQueue(this.state.username, this.state.user._id, data)
+        }
+
+        this.props.playVideo(song._id)
+
+        for (let i = index + 1; i < this.state.songList.length; i++) {
+            this.handleAddSongToFutureQueue(this.state.songList[i])
         }
         if (this.props.shouldStartSession()){
-            this.createSession();
+            this.createSession()
         }
     }
 
@@ -364,6 +334,16 @@ class CollectionScreen extends React.Component{
         }
     }
 
+    handleAddSongToFutureQueue = (song) => {
+        if (this.props.shouldEmitActions()) {
+            var data = {
+                subaction: "add_song",
+                song: song
+            }
+            this.props.sessionClient.emitQueue(this.state.username, this.state.user._id, data)
+        }
+        this.props.queue.addSongToFutureQueue(song)
+    }
 
     ownsCollection = () => {
         if (this.props.user){
