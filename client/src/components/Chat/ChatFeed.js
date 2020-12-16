@@ -37,8 +37,6 @@ class ChatFeed extends React.Component{
                             <div style={{display: 'inline-block',maxWidth:'55%', padding:'1em',backgroundColor:'white', border: '3px solid black', borderRadius: '25px'}}>{item.data.message}</div>
                             </div>
                 }
-                
-                
             }
         });
                 
