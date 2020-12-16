@@ -132,7 +132,7 @@ class HomeScreen extends React.Component {
         Promise.all(collection.songList.map((songId) => {
             return this.props.fetchVideoById(songId, true)
         })).then((songs) => {
-            songs.forEach(song => this.props.queue.addSongToFutureQueue(song))
+            songs.forEach(song => this.handleAddSongToFutureQueue(song))
         })
     }
 
@@ -150,6 +150,17 @@ class HomeScreen extends React.Component {
                 this.props.handleUpdateUser(data.data.user)
             }
         }).bind(this), true)
+    }
+
+    handleAddSongToFutureQueue = (song) => {
+        if (this.props.shouldEmitActions()) {
+            var data = {
+                subaction: "add_song",
+                song: song
+            }
+            this.props.sessionClient.emitQueue(this.state.username, this.state.user._id, data)
+        }
+        this.props.queue.addSongToFutureQueue(song)
     }
 
     handleAddSongToFavorites = (songId, e) => {
@@ -228,11 +239,18 @@ class HomeScreen extends React.Component {
 
     handlePlayItem = (obj, e) => {
         if (obj.type === "song") {
-            this.props.playVideo(obj._id)
 
             if (this.props.shouldStartSession()) {
                 this.handleCreateSession()
             }
+            else if (this.props.shouldEmitActions()) {
+                var data = {
+                    subaction: "play_song",
+                    songId: obj._id
+                }
+                this.props.sessionClient.emitQueue(this.state.username, this.state.user._id, data)
+            }
+            this.props.playVideo(obj._id)
         }
         else if (obj.type === "session") {
             this.props.switchScreen(mainScreens.SESSION, obj._id)
@@ -240,12 +258,20 @@ class HomeScreen extends React.Component {
         else if (obj.type === "collection") {
             var songList = _.cloneDeep(obj.songList)
             if (songList.length > 0) {
-                this.props.playVideo(songList.shift())
+                var songId = songList.shift()
+				if (this.props.shouldEmitActions()) {
+                    var data = {
+                        subaction: "play_song",
+                        songId: songId
+                    }
+                    this.props.sessionClient.emitQueue(this.state.username, this.state.user._id, data)
+				}
+				this.props.playVideo(songId)
 
                 Promise.all(songList.map((songId) => {
                     return this.props.fetchVideoById(songId, true)
                 })).then((songs) => {
-                    songs.forEach(song => this.props.queue.addSongToFutureQueue(song))
+                    songs.forEach(song => this.handleAddSongToFutureQueue(song))
                 }).then(() => {
                     if (this.props.shouldStartSession()) {
                         this.handleCreateSession()
@@ -402,7 +428,7 @@ class HomeScreen extends React.Component {
                                                                 </Dropdown.Toggle>
                                                                 <Dropdown.Menu className="home-screen-category-list-item-img-overlay-dropdown-menu">
                                                                     <Dropdown.Item>
-                                                                        <Button onClick={this.props.queue.addSongToFutureQueue.bind(this, obj)}>
+                                                                        <Button onClick={this.handleAddSongToFutureQueue.bind(this, obj)} disabled={this.props.shouldReceiveActions()}>
                                                                             Add To Queue
                                                                         </Button>
                                                                     </Dropdown.Item>
@@ -474,7 +500,7 @@ class HomeScreen extends React.Component {
                                                                 </Dropdown.Toggle>
                                                                 <Dropdown.Menu className="home-screen-category-list-item-img-overlay-dropdown-menu">
                                                                     <Dropdown.Item>
-                                                                        <Button onClick={this.handleAddCollectionToFutureQueue.bind(this, obj)}>
+                                                                        <Button onClick={this.handleAddCollectionToFutureQueue.bind(this, obj)} disabled={this.props.shouldReceiveActions()}>
                                                                             Add To Queue
                                                                         </Button>
                                                                     </Dropdown.Item>
