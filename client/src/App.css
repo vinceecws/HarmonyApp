@@ -500,6 +500,7 @@ body, html {
   width: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 
 #main-app-container {
@@ -738,26 +739,44 @@ body, html {
   flex-wrap: nowrap;
 }
 
-#player-controls-main-container {
+.player-controls-main-container {
+  display: flex !important;
   height: 60% !important;
   align-items: center;
   justify-content: center;
 }
 
-#player-progress-bar-container {
+.player-progress-bar-container {
+  display: flex !important;
   height: 40% !important;
   justify-content: center;
   align-items: center;
 }
 
-#player-progress-bar-container span {
+.player-progress-bar-container span {
   display: inline-block !important;
   min-width: 250px;
   width: 70% !important;
 }
 
-.player-progress-bar {
+.player-controls-tooltip {
+  padding: 10px;
+  border-radius: 10px;
+}
 
+.player-controls-overlay {
+  position: absolute;        
+  z-index: 1000;
+  height: 60%;
+  width: 100%;
+  background: transparent;
+}
+
+.player-progress-bar-overlay {
+  position: absolute;        
+  height: 40%;
+  width: 100%;
+  background: transparent;
 }
 
 .player-progress-display {

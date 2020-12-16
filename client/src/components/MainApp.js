@@ -162,8 +162,34 @@ class MainApp extends React.Component {
         return this.dataAPI.fetchMostPopular(max, snippet)
     }
 
+    /* 
+        Session checkers 
+    */
+
     shouldStartSession = () => {
         return this.props.user && !this.props.user.hosting
+    }
+
+    shouldEmitActions = () => {
+        /* True if logged-in, in a Session, hosting and not in Private Mode */
+        if (this.props.user && this.props.user.currentSession && this.props.user.hosting && this.props.user.live) {
+            return true
+        }
+        return false
+    }
+
+    shouldReceiveActions = () => {
+        /* True if in a live Session, and not hosting */
+        if (this.props.user) {
+            if (this.props.user.currentSession && !this.props.user.hosting) {
+                return true
+            }
+            return false
+        }
+        else if (this.props.currentSession) {
+            return true
+        }
+        return false
     }
 
     render() {
@@ -201,7 +227,9 @@ class MainApp extends React.Component {
                         sessionClient={this.props.sessionClient}
                         axiosWrapper={this.props.axiosWrapper} 
                         history={this.props.history}
-                        shouldStartSession={this.shouldStartSession}         
+                        shouldStartSession={this.shouldStartSession}   
+                        shouldEmitActions={this.shouldEmitActions}
+                        shouldReceiveActions={this.shouldReceiveActions}      
                     />
                 </Row>
                 <Route path={'/main/sessionExpiredUser'} render={() => { 

@@ -2,6 +2,7 @@ import React from 'react';
 import Ticker from 'react-ticker';
 import RangeSlider from 'react-bootstrap-range-slider';
 import { Container, Row, Col, Image, Button } from 'react-bootstrap';
+import { Tooltip } from 'react-tippy';
 import { icon_play_2, icon_pause_3, icon_previous, icon_next, icon_repeat_3, icon_repeat_1, icon_shuffle_arrows, icon_volume_up_1, icon_no_sound } from '../graphics';
 import { ReactComponent as FavoriteButton } from '../graphics/music_player_pack/035-like.svg'
 import { repeatStates, mainScreens } from '../const'
@@ -101,7 +102,7 @@ class Player extends React.Component {
     }
 
     handleEmitPlayerState = (action, subaction, ...args) => {
-        if (!this.shouldEmitActions()) {
+        if (!this.props.shouldEmitActions()) {
             return
         }
 
@@ -143,7 +144,7 @@ class Player extends React.Component {
     }
 
     handleApplyPlayerState = (action, actionObj) => {
-        if (!this.shouldReceiveActions()) {
+        if (!this.props.shouldReceiveActions()) {
             return
         }
 
@@ -406,38 +407,36 @@ class Player extends React.Component {
     }
 
     getPlayerControlsDisabled = () => {
-        return this.shouldReceiveActions()
+        return this.props.shouldReceiveActions()
     }
 
     getSeekDisabled = () => {
-        return this.shouldReceiveActions() || this.shouldEmitActions()
+        return this.props.shouldReceiveActions() || this.props.shouldEmitActions()
     }
 
-    shouldEmitActions = () => {
-        /* True if logged-in, in a Session, hosting and not in Private Mode */
-        if (this.state.user && this.state.user.currentSession && this.state.user.hosting && this.state.user.live) {
-            return true
+    getPlayerControlsTooltipMessage = () => {
+        if (this.props.shouldReceiveActions()) {
+            return "Only the Host can control the player"
         }
-        return false
+        return ""
     }
 
-    shouldReceiveActions = () => {
-        /* True if in a live Session, and not hosting */
-        if (this.state.user) {
-            if (this.state.user.currentSession && !this.state.user.hosting) {
-                return true
-            }
-            return false
+    getPlayerProgressBarTooltipMessage = () => {
+        if (this.props.shouldReceiveActions()) {
+            return "Only the Host can control the player"
         }
-        else if (this.props.currentSession) {
-            return true
+        else if (this.props.shouldEmitActions()) {
+            return "Seeking is disabled in Live Sessions"
         }
-        return false
+        return ""
     }
 
     render(){
         var title
         var creator
+        var controlsTooltip = (<div className="player-controls-tooltip bg-color-jet color-accented tiny-text">{this.getPlayerControlsTooltipMessage()}</div>)
+        var progressBarTooltip = (<div className="player-controls-tooltip bg-color-jet color-accented tiny-text">{this.getPlayerProgressBarTooltipMessage()}</div>)
+
         if (this.state.showTitleTicker) {
             title =  
                     <Ticker speed={6}>
@@ -484,7 +483,12 @@ class Player extends React.Component {
                         </Row>
                     </Col>
                     <Col id="player-controls">
-                        <Row id="player-controls-main-container"> 
+                        <Tooltip className="player-controls-main-container" html={controlsTooltip} disabled={!this.getPlayerControlsDisabled()} followCursor={true} arrow={true} delay={0} hideDelay={0}>
+                            {   
+                                this.getPlayerControlsDisabled() ?
+                                    <div className="player-controls-overlay"></div>
+                                    : <div></div>
+                            }
                             <Button className="player-control-button" onClick={e => this.handleToggleRepeat(e)} disabled={this.getPlayerControlsDisabled()}>
                                 <Image className={this.getRepeatButtonIconClass()} src={this.getRepeatButtonIcon()} roundedCircle/>
                             </Button>
@@ -500,12 +504,17 @@ class Player extends React.Component {
                             <Button className="player-control-button" onClick={e => this.handleToggleShuffle(e)} disabled={this.getPlayerControlsDisabled()}>
                                 <Image className={this.getShuffleButtonIconClass()} src={icon_shuffle_arrows} roundedCircle/>
                             </Button>
-                        </Row>
-                        <Row id="player-progress-bar-container">
+                        </Tooltip>
+                        <Tooltip className="player-progress-bar-container" html={progressBarTooltip} disabled={!this.getSeekDisabled()} followCursor={true} arrow={true} delay={0} hideDelay={0}>
+                            {   
+                                this.getSeekDisabled() ?
+                                    <div className="player-progress-bar-overlay"></div>
+                                    : <div></div>
+                            }
                             <div className="player-progress-display body-text color-contrasted">{this.getSongProgress()}</div>
                             <RangeSlider className="player-progress-bar" variant="dark" tooltip="off" value={this.state.currentTime} onChange={e => this.handleMoveSlider(e.target.value)} onAfterChange={e => this.handleSeek(e.target.value)} min={0} max={isNaN(this.props.playerAPI.getDuration()) ? 0 : this.props.playerAPI.getDuration()} disabled={this.getSeekDisabled()}/>
                             <div className="player-progress-display body-text color-contrasted">{this.getSongDuration()}</div>
-                        </Row>
+                        </Tooltip>
                     </Col>
                     <Col id="player-volume-container">
                         <Row>

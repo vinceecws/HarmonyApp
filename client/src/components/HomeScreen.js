@@ -364,7 +364,6 @@ class HomeScreen extends React.Component {
     }
 
     render() {
-        console.log(this.state.suggestions)
         var component
         if (!this.state.suggestions_loading && !this.state.playlists_loading) {
             component = 
