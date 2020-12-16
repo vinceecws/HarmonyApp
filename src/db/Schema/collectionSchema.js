@@ -26,8 +26,8 @@ const collectionSchema = new mongoose.Schema ({
         default: 0
     },
     image: {
-        type: Buffer,
-        default: null
+        data: String,
+        contentType: String
     }
 })
 

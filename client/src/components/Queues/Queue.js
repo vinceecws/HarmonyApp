@@ -56,10 +56,10 @@ class Queue {
 
     unsubscribeFromEvent = (event, handler) => {
         if (event in this.onChange) {
-            var ind = this.onChange[event].findIndex(x => x == handler)
+            var ind = this.onChange[event].findIndex(x => x === handler)
             if (ind > -1) {
-                var handler = this.onChange[event].splice(ind, 1)[0]
-                return handler.destroy()
+                var listener = this.onChange[event].splice(ind, 1)[0]
+                return listener.destroy()
             }
             else {
                 return null

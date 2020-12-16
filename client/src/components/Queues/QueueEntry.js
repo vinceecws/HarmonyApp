@@ -1,7 +1,8 @@
 import React from 'react';
 import Ticker from 'react-ticker';
-import {Droppable, DragDropContext, Draggable} from 'react-beautiful-dnd'
 import {Button} from 'react-bootstrap';
+import { Draggable } from 'react-beautiful-dnd'
+
 class QueueEntry extends React.Component{
 	constructor(props){
 		super(props);

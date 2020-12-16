@@ -3,28 +3,7 @@ const mongooseQuery = require('../db');
 const stripUser = require('./index').stripUser
 const _ = require('lodash');
 const path = require('path')
-
-const multer = require('multer');
-const storage = multer.diskStorage({
-    destination: function(req, file, cb){
-        cb(null, './uploads/');
-    },
-    filename: function(req, file, cb){
-        cb(null, new Date().toISOString + file.originalname);
-    }
-})
-
-const fileFilter = function(req, file, cb){
-    if (file.mimetype === 'image/jpeg' || file.mimetype === 'img/png'){
-        cb(null, true);
-    }
-    else {
-        cb(new Error('Invalid File Type'), false);
-    }
-}
-
-const upload = multer({storage: storage, limits: {fileSize: 1024 * 1024 * 3},
-                        fileFilter: fileFilter});
+const fs = require('fs')
 
 
 module.exports = function(mainSocket, sessionSocket) {
@@ -49,19 +28,49 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else {
-            let image = Buffer.from(req.body.image)
-            let updatedCollection = await mongooseQuery.updateCollection(req.params.collectionId, {image: image});
+            let imageBuffer = Buffer.from(req.body.image).toString();
+            let contentType = req.body.contentType;
+            let updatedCollection = await mongooseQuery.updateCollection(req.params.collectionId, 
+                {'image.data': imageBuffer, 'image.contentType': contentType});
             return res.status(200).json({
                 message: 'Update Successful',
                 statusCode: 200,
-                data: {
-                    collection: updatedCollection
-                },
                 success: true
             })
         }
-        
+    })
 
+    apiRouter.post('/settings/uploadImage', async (req, res) => {
+        
+        if (req.user == null){
+            return res.status(401).json({
+                error: {
+                    name: "Bad request",
+                    message: "Invalid collectionId"
+                },
+                message: "Invalid collectionId",
+                statusCode: 401,
+                data: {
+                    user: null
+                },
+                success: false
+            })
+        }
+        else {
+            let imageBuffer = Buffer.from(req.body.image).toString();
+            let contentType = req.body.contentType;
+            
+            let updatedUser = await mongooseQuery.updateUser(req.user._id, 
+                {'image.data': imageBuffer, 'image.contentType': contentType}, true);
+            return res.status(200).json({
+                message: 'Update Successful',
+                data: {
+                    user: stripUser(updatedUser)
+                },
+                statusCode: 200,
+                success: true
+            })
+        }
     })
 
     apiRouter.post('/addSongToFavorites/:songId', async (req, res) => {
@@ -340,7 +349,6 @@ module.exports = function(mainSocket, sessionSocket) {
     apiRouter.post('/createCollectionWithSong/:collectionName&:songId', async (req, res) => {
         let collectionName = req.params.collectionName
         let songId = req.params.songId
-        console.log(songId)
         if (collectionName == null || songId == null){
             return res.status(401).json({
                 error: {
@@ -516,8 +524,7 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else {
-            let user = await mongooseQuery.getUser({'_id': req.params.id});
-            console.log(user);
+            let user = await mongooseQuery.getUser({'_id': req.params.id}, true);
             if(user === null){
                 return res.status(404).json({
                     error: {
@@ -563,7 +570,6 @@ module.exports = function(mainSocket, sessionSocket) {
         else {
             let user = await mongooseQuery.getUser({'_id': id})
             let sessions = await mongooseQuery.getSession(user.sessions, true)
-            
             return res.status(200).json({
                 message: "Fetch success",
                 statusCode: 200,
@@ -596,7 +602,6 @@ module.exports = function(mainSocket, sessionSocket) {
         else {
             let user = await mongooseQuery.getUser({'_id': req.params.id})
             let playlists = await mongooseQuery.getCollection(user.playlists, true)
-            
             return res.status(200).json({
                 message: "Fetch success",
                 statusCode: 200,
@@ -630,7 +635,6 @@ module.exports = function(mainSocket, sessionSocket) {
         else {
             let user = await mongooseQuery.getUser({'_id': req.params.id})
             let likedCollections = await mongooseQuery.getCollection(user.likedCollections, true)
-            
             return res.status(200).json({
                 message: "Fetch success",
                 statusCode: 200,
@@ -721,9 +725,6 @@ module.exports = function(mainSocket, sessionSocket) {
                 })
             }
             else{
-               if (collection.image) {
-                    collection.image = collection.image.toString()
-                }
                 return res.status(200).json({
                     message: "Fetch success",
                     statusCode: 200,
@@ -1145,6 +1146,10 @@ module.exports = function(mainSocket, sessionSocket) {
         else {
             var user = stripUser(req.user)
             var session = await mongooseQuery.createSession(user._id, user.username, req.body.name, Date.now()).catch(err => res.sendStatus(404))
+            if (user.image){
+                session = await mongooseQuery.updateSession(session._id, {image: user.image});
+            }
+
             var updatedUser = await mongooseQuery.updateUser(user._id, {
                 currentSession: session._id,
                 live: !user.privateMode,
@@ -1164,6 +1169,7 @@ module.exports = function(mainSocket, sessionSocket) {
     });
 
     apiRouter.get('/session/:id', async (req, res) => {
+
         let id = req.params.id;
         if (id == null){
             return res.status(404).json({
@@ -1180,38 +1186,37 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else{
-            var session = await mongooseQuery.getSession({'_id': req.params.id});
-            if(session !== null){
-                if(session.id === req.params.id){
-                    if (req.user){
-                        var user = stripUser(req.user)
-                        var updatedUser = await mongooseQuery.updateUser(user._id, {
-                                currentSession: session._id
-                            }).catch(err => res.sendStatus(404))
+            var session = await mongooseQuery.getSession({'_id': req.params.id}, true);
+            if (session !== null) {
 
-                        return res.status(200).json({
-                            message: "Fetch success",
-                            statusCode: 200,
-                            data: {
-                                session: session,
-                                user: stripUser(updatedUser)
-                            },
-                            success: true
-                        })
-                    }
-                    else {
-                        return res.status(200).json({
-                            message: "Fetch success",
-                            statusCode: 200,
-                            data: {
-                                session: session,
-                            },
-                            success: true
-                        })
-                    }
+                if (req.user){
+                    var user = stripUser(req.user)
+                    var updatedUser = await mongooseQuery.updateUser(user._id, {
+                            currentSession: session._id
+                        }).catch(err => res.sendStatus(404))
+
+                    return res.status(200).json({
+                        message: "Fetch success",
+                        statusCode: 200,
+                        data: {
+                            session: session,
+                            user: stripUser(updatedUser)
+                        },
+                        success: true
+                    })
+                }
+                else {
+                    return res.status(200).json({
+                        message: "Fetch success",
+                        statusCode: 200,
+                        data: {
+                            session: session,
+                        },
+                        success: true
+                    })
                 }
             }
-            else{
+            else {
                 return res.status(404).json({
                     message: "Failed to find session",
                         statusCode: 404,

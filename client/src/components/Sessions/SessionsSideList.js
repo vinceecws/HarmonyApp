@@ -36,7 +36,7 @@ class SessionSideList extends React.Component{
         else if (this.state.sessions.length <= 0) {
             return (
                 <div className="session-side-list-notice-container">
-                    <div className="body-text color-accented">
+                    <div className="body-text color-faded">
                         No Live Sessions right now :(
                     </div>
                 </div>

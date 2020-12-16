@@ -28,8 +28,9 @@ class ProfileScreen extends React.Component{
 			currentSongTarget: "",
 			newCollectionName: "",
 			showDropdown: false,
+			showCreateCollectionModal: false,
+			profileImageSrc: null,
 			error: false,
-			showCreateCollectionModal: false
 		}
 	}
 
@@ -99,13 +100,14 @@ class ProfileScreen extends React.Component{
     }
 
 	handlePlayItem = (obj, e) => {
+		var data
         if (obj.type === "song") {
 			
 			if (this.props.shouldStartSession()) {
 				this.handleCreateSession()
 			} 
 			else if (this.props.shouldEmitActions()) {
-                var data = {
+                data = {
                     subaction: "play_song",
                     songId: obj._id
                 }
@@ -121,7 +123,7 @@ class ProfileScreen extends React.Component{
             if (songList.length > 0) {
 				var songId = songList.shift()
 				if (this.props.shouldEmitActions()) {
-                    var data = {
+                    data = {
                         subaction: "play_song",
                         songId: songId
                     }
@@ -171,7 +173,15 @@ class ProfileScreen extends React.Component{
         })).then((songs) => {
             songs.forEach(song => this.handleAddSongToFutureQueue(song))
         })
-    }
+	}
+	
+	handleDeleteCollection = (collectionId, e) => {
+		this.props.axiosWrapper.axiosGet('/api/collection/delete/' + collectionId, (function(res, data){
+            if (data.success){
+                this.props.handleUpdateUser(data.data.user);
+            }
+        }).bind(this), true)
+	}
 
     handleAddCollectionToFavorites = (collectionId, e) => {
         this.props.axiosWrapper.axiosPost('/api/addCollectionToFavorites/' + collectionId, {}, (function(res, data) {
@@ -296,6 +306,9 @@ class ProfileScreen extends React.Component{
 
 	fetchUserData = () => {
 		if (this.state.profileUser) {
+			if (this.state.profileUser.image && this.state.profileUser.image.data){
+				this.setState({profileImageSrc: this.setImage(this.state.profileUser.image)});
+			}
 			if (this.state.profileUser.sessions.length > 0) {
 				this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.profileUser._id + '/sessions', (function(res, data) {
 					if (data.success) {
@@ -366,6 +379,10 @@ class ProfileScreen extends React.Component{
 		}
 	}
 
+	setImage = (image) => {
+		return 'data:' + image.contentType + ';base64,' + btoa(image.data);
+	}
+
     render(){
 		var component
 		if (this.state.loading) {
@@ -390,10 +407,10 @@ class ProfileScreen extends React.Component{
 								<Button className="body-text bg-color-harmony color-accented" onClick={this.handleCreateCollection} disabled={!this.handleValidateNewCollectionName()}>Create</Button>
 							</Modal.Footer>
 					</Modal>
-					<div id='profile-screen-top-container' className='row'>
-						<div className='col-sm-1.3' style={{display:'flex', padding:'1em'}}>
+					<div id='profile-screen-top-container' className='row' style={{minHeight: '12vw', maxHeight: '15vw'}}>
+						<div className='col-sm-1.3' style={{display:'flex', padding:'1em', maxWidth: '20vw'}}>
 							<div id='container' style={{position:'relative'}}>
-									<img id="user-profile-image" src={this.state.profileUser.image ? this.state.profileUser.image : icon_profile_image} style={{width: '208px'}}/>
+									<img id="user-profile-image" src={this.state.profileUser.image && this.state.profileUser.image.data ? this.state.profileImageSrc : icon_profile_image} style={{width: '208px'}} alt=""/>
 							</div>
 						</div>
 						<div className='col'>
@@ -457,12 +474,12 @@ class ProfileScreen extends React.Component{
 											<div></div> :
 											this.state.sessions.map((session, session_ind) => 
 												<div key={session_ind} className='card profile-screen-category-item-card'>
-													<img className="card-img-top profile-screen-category-item-card-image" src={session.image}/>
+													<img className="card-img-top profile-screen-category-item-card-image" src={session.image} alt=""/>
 													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
 														<h1 className="card-title profile-screen-category-item-card-name ellipsis-multi-line-overflow subtitle color-jet" onClick={this.handleGoToItem.bind(this, session)}>{session.name}</h1>
 														<p className="body-text profile-screen-category-item-card-creator ellipsis-multi-line-overflow body-text color-jet">{session.hostName}</p>
-														<div className="profile-screen-category-item-card-likes">{this.formatCount(session.likes)} <img src={icon_like} className='profile-screen-category-item-card-likes-icon'/></div>
-														<div className="profile-screen-category-item-card-streams">{session.streams} <img src={session.image ? session.image : icon_sound_mixer_1} className='profile-screen-category-item-card-streams-icon'/></div>
+														<div className="profile-screen-category-item-card-likes">{this.formatCount(session.likes)} <img src={icon_like} className='profile-screen-category-item-card-likes-icon' alt=""/></div>
+														<div className="profile-screen-category-item-card-streams">{session.streams} <img src={session.image ? session.image : icon_sound_mixer_1} className='profile-screen-category-item-card-streams-icon' alt=""/></div>
 													</div>
 												</div>
 												)
@@ -515,6 +532,13 @@ class ProfileScreen extends React.Component{
 																					</Button>
 																				</Dropdown.Item>
 																			}
+																			{this.state.user && this.state.user._id === this.state.profileUser._id ?
+																				<Dropdown.Item>
+																					<Button onClick={this.handleDeleteCollection.bind(this, playlist._id)}>
+																						Delete Collection
+																					</Button>
+																				</Dropdown.Item> : <div></div>
+																			}
 																		</div>
 																		: <div></div>
 																	}
@@ -524,12 +548,12 @@ class ProfileScreen extends React.Component{
 																<Image className="profile-screen-category-item-card-image-overlay-play-button-icon" src={icon_play_white_1} roundedCircle/>
 															</Button>
 														</div>
-														<Card.Img className="profile-screen-category-item-card-image" src={playlist.image ? playlist.image : icon_playlist_2} />
+														<Card.Img className="profile-screen-category-item-card-image" src={playlist.image && playlist.image.data ? this.setImage(playlist.image) : icon_playlist_2} />
 													</div>
 													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
 														<h1 className="card-title profile-screen-category-item-card-name ellipsis-multi-line-overflow subtitle color-jet" onClick={this.handleGoToItem.bind(this, playlist)}>{playlist.name}</h1>
 														<p className="profile-screen-category-item-card-creator ellipsis-multi-line-overflow body-text color-jet">{playlist.ownerName}</p>
-														<p className="profile-screen-category-item-card-likes">{this.formatCount(playlist.likes)} <img src={icon_like} className='profile-screen-category-item-card-likes-icon'/></p>
+														<p className="profile-screen-category-item-card-likes">{this.formatCount(playlist.likes)} <img src={icon_like} className='profile-screen-category-item-card-likes-icon' alt=""/></p>
 													</div>
 												</div>
 											)
@@ -537,7 +561,7 @@ class ProfileScreen extends React.Component{
 										{
 											this.state.user && (this.state.user._id === this.state.profileUser._id) ? //Viewing own profile
 											<div className='card profile-screen-create-collection-card' onClick={this.handleShowCreateCollectionModal}>
-												<img className="profile-screen-create-collection-card-img" src={plus_button}/>
+												<img className="profile-screen-create-collection-card-img" src={plus_button} alt=""/>
 											</div> :
 											<div></div>
 										}
@@ -626,7 +650,7 @@ class ProfileScreen extends React.Component{
 													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
 														<h1 className="card-title profile-screen-category-item-card-name ellipsis-multi-line-overflow subtitle color-jet">{song.name}</h1>
 														<p className="profile-screen-category-item-card-creator ellipsis-multi-line-overflow body-text color-jet">{song.creator}</p>
-														<p className="profile-screen-category-item-card-likes">{this.formatCount(song.likes)} <img src={icon_like} className='profile-screen-category-item-card-likes-icon'/></p>
+														<p className="profile-screen-category-item-card-likes">{this.formatCount(song.likes)} <img src={icon_like} className='profile-screen-category-item-card-likes-icon' alt=""/></p>
 													</div>
 												</div>
 											)
@@ -688,12 +712,12 @@ class ProfileScreen extends React.Component{
 																<Image className="profile-screen-category-item-card-image-overlay-play-button-icon" src={icon_play_white_1} roundedCircle/>
 															</Button>
 														</div>
-														<Card.Img className="profile-screen-category-item-card-image" src={collection.image ? collection.image : icon_list} />
+														<Card.Img className="profile-screen-category-item-card-image" src={collection.image && collection.image.data ? this.setImage(collection.image) : icon_list} />
 													</div>
 													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
 														<h1 className="card-title profile-screen-category-item-card-name ellipsis-multi-line-overflow subtitle color-jet" onClick={this.handleGoToItem.bind(this, collection)}>{collection.name}</h1>
 														<p className="profile-screen-category-item-card-creator ellipsis-multi-line-overflow body-text color-jet" onClick={this.handleGoToCreator.bind(this, collection)}>{collection.ownerName}</p>
-														<p className="profile-screen-category-item-card-likes">{this.formatCount(collection.likes)} <img src={icon_like} className='profile-screen-category-item-card-likes-icon'/></p>
+														<p className="profile-screen-category-item-card-likes">{this.formatCount(collection.likes)} <img src={icon_like} className='profile-screen-category-item-card-likes-icon' alt=""/></p>
 													</div>
 												</div>
 											)

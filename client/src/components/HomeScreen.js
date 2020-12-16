@@ -238,13 +238,14 @@ class HomeScreen extends React.Component {
     }
 
     handlePlayItem = (obj, e) => {
+        var data
         if (obj.type === "song") {
 
             if (this.props.shouldStartSession()) {
                 this.handleCreateSession()
             }
             else if (this.props.shouldEmitActions()) {
-                var data = {
+                data = {
                     subaction: "play_song",
                     songId: obj._id
                 }
@@ -260,7 +261,7 @@ class HomeScreen extends React.Component {
             if (songList.length > 0) {
                 var songId = songList.shift()
 				if (this.props.shouldEmitActions()) {
-                    var data = {
+                    data = {
                         subaction: "play_song",
                         songId: songId
                     }
@@ -355,15 +356,19 @@ class HomeScreen extends React.Component {
         return obj.name
     }
 
+    setImage = (image) => {
+        return 'data:' + image.contentType + ';base64,' + btoa(image.data);
+    }
+
     getItemImage = (obj) => {
         if (obj.type === "song") {
             return obj.image_high ? obj.image_high : obj.image_med ? obj.image_med : obj.image_std ? obj.image_std : obj.image ? obj.image : icon_music_1
         }
         else if (obj.type === "collection") {
-            return obj.image ? obj.image : icon_playlist_2
+            return obj.image && obj.image.data ? this.setImage(obj.image) : icon_playlist_2
         }
         else if (obj.type === "user" || obj.type === "session") {
-            return obj.image ? obj.image : icon_profile_image
+            return obj.image && obj.image.data ? this.setImage(obj.image) : icon_profile_image
         }
 
         return obj.image 

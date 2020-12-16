@@ -244,7 +244,26 @@ class Player extends React.Component {
 
     handleSetPlay = (val) => {
         if (!this.props.playerAPI.isPaused() !== val) {
-            this.handleTogglePlay()
+            var currentSong
+            if (!this.props.playerAPI.isPlayerInit()) { //Initialize on first use
+                currentSong = this.props.queue.getCurrentSong()
+
+                if (currentSong) {
+                    this.props.playerAPI.initIFrameAPI(currentSong._id)
+                }
+                return
+            }
+
+            if (this.state.paused) {
+                currentSong = this.props.queue.getCurrentSong()
+                if (currentSong) {
+                    this.props.playerAPI.playVideo()
+                }
+                return
+            }
+            else {
+                this.props.playerAPI.pauseVideo()
+            }
         }
     }
 
@@ -433,8 +452,14 @@ class Player extends React.Component {
     render(){
         var title
         var creator
-        var controlsTooltip = (<div className="player-controls-tooltip bg-color-jet color-accented tiny-text">{this.getPlayerControlsTooltipMessage()}</div>)
-        var progressBarTooltip = (<div className="player-controls-tooltip bg-color-jet color-accented tiny-text">{this.getPlayerProgressBarTooltipMessage()}</div>)
+        var controlsTooltip
+        var progressBarTooltip
+        if (this.getPlayerControlsDisabled()) {
+            controlsTooltip = (<div className="player-controls-tooltip bg-color-jet color-accented tiny-text">{this.getPlayerControlsTooltipMessage()}</div>)
+        }
+        else if (this.getSeekDisabled()) {
+            progressBarTooltip = (<div className="player-controls-tooltip bg-color-jet color-accented tiny-text">{this.getPlayerProgressBarTooltipMessage()}</div>)
+        }
 
         if (this.state.showTitleTicker) {
             title =  
@@ -481,40 +506,84 @@ class Player extends React.Component {
                             </Col>
                         </Row>
                     </Col>
-                    <Col id="player-controls">
-                        <Tooltip className="player-controls-main-container" html={controlsTooltip} disabled={!this.getPlayerControlsDisabled()} followCursor={true} arrow={true} delay={0} hideDelay={0}>
-                            {   
-                                this.getPlayerControlsDisabled() ?
-                                    <div className="player-controls-overlay"></div>
-                                    : <div></div>
-                            }
-                            <Button className="player-control-button" onClick={e => this.handleToggleRepeat(e)} disabled={this.getPlayerControlsDisabled()}>
-                                <Image className={this.getRepeatButtonIconClass()} src={this.getRepeatButtonIcon()} roundedCircle/>
-                            </Button>
-                            <Button className="player-control-button" onClick={e => this.handlePreviousSong(e)} disabled={this.getPlayerControlsDisabled()}>
-                                <Image className="player-control-button-icon" src={icon_previous} roundedCircle/>
-                            </Button>
-                            <Button className="player-control-button" onClick={e => this.handleTogglePlay(e)} disabled={this.getPlayerControlsDisabled()}>
-                                <Image className="player-control-button-icon" src={this.getPlayButtonIcon()} roundedCircle/>
-                            </Button>
-                            <Button className="player-control-button" onClick={e => this.handleNextSong(e)} disabled={this.getPlayerControlsDisabled()}>
-                                <Image className="player-control-button-icon" src={icon_next} roundedCircle/>
-                            </Button>
-                            <Button className="player-control-button" onClick={e => this.handleToggleShuffle(e)} disabled={this.getPlayerControlsDisabled()}>
-                                <Image className={this.getShuffleButtonIconClass()} src={icon_shuffle_arrows} roundedCircle/>
-                            </Button>
-                        </Tooltip>
-                        <Tooltip className="player-progress-bar-container" html={progressBarTooltip} disabled={!this.getSeekDisabled()} followCursor={true} arrow={true} delay={0} hideDelay={0}>
-                            {   
-                                this.getSeekDisabled() ?
-                                    <div className="player-progress-bar-overlay"></div>
-                                    : <div></div>
-                            }
-                            <div className="player-progress-display body-text color-contrasted">{this.getSongProgress()}</div>
-                            <RangeSlider className="player-progress-bar" variant="dark" tooltip="off" value={this.state.currentTime} onChange={e => this.handleMoveSlider(e.target.value)} onAfterChange={e => this.handleSeek(e.target.value)} min={0} max={isNaN(this.props.playerAPI.getDuration()) ? 0 : this.props.playerAPI.getDuration()} disabled={this.getSeekDisabled()}/>
-                            <div className="player-progress-display body-text color-contrasted">{this.getSongDuration()}</div>
-                        </Tooltip>
-                    </Col>
+                    {
+                        this.getPlayerControlsDisabled() ?
+                        <Tooltip className="player-controls" html={controlsTooltip} arrow={true} delay={0} hideDelay={0}>
+                            <div className="player-controls-overlay"></div>
+                            <Row className="player-controls-main-container">
+                                <Button className="player-control-button" onClick={e => this.handleToggleRepeat(e)} disabled={true}>
+                                    <Image className={this.getRepeatButtonIconClass()} src={this.getRepeatButtonIcon()} roundedCircle/>
+                                </Button>
+                                <Button className="player-control-button" onClick={e => this.handlePreviousSong(e)} disabled={true}>
+                                    <Image className="player-control-button-icon" src={icon_previous} roundedCircle/>
+                                </Button>
+                                <Button className="player-control-button" onClick={e => this.handleTogglePlay(e)} disabled={true}>
+                                    <Image className="player-control-button-icon" src={this.getPlayButtonIcon()} roundedCircle/>
+                                </Button>
+                                <Button className="player-control-button" onClick={e => this.handleNextSong(e)} disabled={true}>
+                                    <Image className="player-control-button-icon" src={icon_next} roundedCircle/>
+                                </Button>
+                                <Button className="player-control-button" onClick={e => this.handleToggleShuffle(e)} disabled={true}>
+                                    <Image className={this.getShuffleButtonIconClass()} src={icon_shuffle_arrows} roundedCircle/>
+                                </Button>
+                            </Row>
+                            <Row className="player-progress-bar-container">
+                                <div className="player-progress-display body-text color-contrasted">{this.getSongProgress()}</div>
+                                <RangeSlider className="player-progress-bar" variant="dark" tooltip="off" value={this.state.currentTime} onChange={e => this.handleMoveSlider(e.target.value)} onAfterChange={e => this.handleSeek(e.target.value)} min={0} max={isNaN(this.props.playerAPI.getDuration()) ? 0 : this.props.playerAPI.getDuration()} disabled={true}/>
+                                <div className="player-progress-display body-text color-contrasted">{this.getSongDuration()}</div>
+                            </Row>
+                        </Tooltip> :
+                        this.getSeekDisabled() ?
+                        <Col className="player-controls">
+                            <Row className="player-controls-main-container">
+                                <Button className="player-control-button" onClick={e => this.handleToggleRepeat(e)}>
+                                    <Image className={this.getRepeatButtonIconClass()} src={this.getRepeatButtonIcon()} roundedCircle/>
+                                </Button>
+                                <Button className="player-control-button" onClick={e => this.handlePreviousSong(e)}>
+                                    <Image className="player-control-button-icon" src={icon_previous} roundedCircle/>
+                                </Button>
+                                <Button className="player-control-button" onClick={e => this.handleTogglePlay(e)}>
+                                    <Image className="player-control-button-icon" src={this.getPlayButtonIcon()} roundedCircle/>
+                                </Button>
+                                <Button className="player-control-button" onClick={e => this.handleNextSong(e)}>
+                                    <Image className="player-control-button-icon" src={icon_next} roundedCircle/>
+                                </Button>
+                                <Button className="player-control-button" onClick={e => this.handleToggleShuffle(e)}>
+                                    <Image className={this.getShuffleButtonIconClass()} src={icon_shuffle_arrows} roundedCircle/>
+                                </Button>
+                            </Row>
+                            <Tooltip className="player-progress-bar-container" html={progressBarTooltip} arrow={true} delay={0} hideDelay={0}>
+                                <div className="player-progress-bar-overlay"></div>
+                                <div className="player-progress-display body-text color-contrasted">{this.getSongProgress()}</div>
+                                <RangeSlider className="player-progress-bar" variant="dark" tooltip="off" value={this.state.currentTime} onChange={e => this.handleMoveSlider(e.target.value)} onAfterChange={e => this.handleSeek(e.target.value)} min={0} max={isNaN(this.props.playerAPI.getDuration()) ? 0 : this.props.playerAPI.getDuration()} disabled={true}/>
+                                <div className="player-progress-display body-text color-contrasted">{this.getSongDuration()}</div>
+                            </Tooltip>
+                        </Col> :
+                        <Col className="player-controls">
+                            <Row className="player-controls-main-container">
+                                <Button className="player-control-button" onClick={e => this.handleToggleRepeat(e)}>
+                                    <Image className={this.getRepeatButtonIconClass()} src={this.getRepeatButtonIcon()} roundedCircle/>
+                                </Button>
+                                <Button className="player-control-button" onClick={e => this.handlePreviousSong(e)}>
+                                    <Image className="player-control-button-icon" src={icon_previous} roundedCircle/>
+                                </Button>
+                                <Button className="player-control-button" onClick={e => this.handleTogglePlay(e)}>
+                                    <Image className="player-control-button-icon" src={this.getPlayButtonIcon()} roundedCircle/>
+                                </Button>
+                                <Button className="player-control-button" onClick={e => this.handleNextSong(e)}>
+                                    <Image className="player-control-button-icon" src={icon_next} roundedCircle/>
+                                </Button>
+                                <Button className="player-control-button" onClick={e => this.handleToggleShuffle(e)}>
+                                    <Image className={this.getShuffleButtonIconClass()} src={icon_shuffle_arrows} roundedCircle/>
+                                </Button>
+                            </Row>
+                            <Row className="player-progress-bar-container">
+                                <div className="player-progress-display body-text color-contrasted">{this.getSongProgress()}</div>
+                                <RangeSlider className="player-progress-bar" variant="dark" tooltip="off" value={this.state.currentTime} onChange={e => this.handleMoveSlider(e.target.value)} onAfterChange={e => this.handleSeek(e.target.value)} min={0} max={isNaN(this.props.playerAPI.getDuration()) ? 0 : this.props.playerAPI.getDuration()}/>
+                                <div className="player-progress-display body-text color-contrasted">{this.getSongDuration()}</div>
+                            </Row>
+                        </Col>
+                    }
                     <Col id="player-volume-container">
                         <Row>
                             <Button id="player-mute-button" className="player-control-button" onClick={e => this.handleToggleMute(e)}>
