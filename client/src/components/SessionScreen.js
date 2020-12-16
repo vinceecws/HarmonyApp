@@ -156,18 +156,21 @@ class SessionScreen extends React.Component {
         	/* move_song, move_song_from_past, add_song, del_song*/
             switch (actionObj.data.subaction) {
 				// listen to only subactions that are not listened in Player.js
-                 case "move_song":
-					 this.props.queue.moveSongInFutureQueue(actionObj.data.from,actionObj.data.to);
-					 break;
-                 case "move_song_from_past":
-					 this.props.queue.moveSongFromPastQueue(actionObj.data.from,actionObj.data.to);
-					 break;
-                 case "add_song":
-					 this.props.queue.addSongToFutureQueue(actionObj.data.songId);
-					 break;
-                 case "del_song":
-					 this.props.queue.removeSongFromFutureQueue(actionObj.data.index);
-					 break;
+				case "play_song":
+					this.props.playVideo(actionObj.data.songId)
+					break;
+				case "move_song":
+					this.props.queue.moveSongInFutureQueue(actionObj.data.from,actionObj.data.to);
+					break;
+				case "move_song_from_past":
+					this.props.queue.moveSongFromPastQueue(actionObj.data.from,actionObj.data.to);
+					break;
+				case "add_song":
+					this.props.queue.addSongToFutureQueue(actionObj.data.song);
+					break;
+				case "del_song":
+					this.props.queue.removeSongFromFutureQueue(actionObj.data.index);
+					break;
                 default:
                     break
             }

@@ -279,7 +279,6 @@ class Player extends React.Component {
             return
         }
         else {
-            console.log("PAUSING")
             this.handleEmitPlayerState("player", "pause")
             this.props.playerAPI.pauseVideo()
         }

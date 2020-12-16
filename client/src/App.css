@@ -343,6 +343,16 @@ body, html {
   white-space: nowrap;
 }
 
+.session-side-list-notice-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.session-side-list-title {
+  padding: 10px;
+}
 
 .session-entry-container, .session-entry-container:hover {
   text-decoration: none;

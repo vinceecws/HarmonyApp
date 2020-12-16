@@ -98,11 +98,18 @@ class ProfileScreen extends React.Component{
 
 	handlePlayItem = (obj, e) => {
         if (obj.type === "song") {
-			this.props.playVideo(obj._id)
 			
 			if (this.props.shouldStartSession()) {
 				this.handleCreateSession()
+			} 
+			else if (this.props.shouldEmitActions()) {
+                var data = {
+                    subaction: "play_song",
+                    songId: obj._id
+                }
+                this.props.sessionClient.emitQueue(this.state.username, this.state.user._id, data)
 			}
+			this.props.playVideo(obj._id)
         }
         else if (obj.type === "session") {
 			this.props.switchScreen(mainScreens.SESSION, obj._id)
@@ -110,12 +117,20 @@ class ProfileScreen extends React.Component{
         else if (obj.type === "collection") {
 			var songList = _.cloneDeep(obj.songList)
             if (songList.length > 0) {
-				this.props.playVideo(songList.shift())
+				var songId = songList.shift()
+				if (this.props.shouldEmitActions()) {
+                    var data = {
+                        subaction: "play_song",
+                        songId: songId
+                    }
+                    this.props.sessionClient.emitQueue(this.state.username, this.state.user._id, data)
+				}
+				this.props.playVideo(songId)
 
 				Promise.all(songList.map((songId) => {
 					return this.props.fetchVideoById(songId, true)
 				})).then((songs) => {
-					songs.forEach(song => this.props.queue.addSongToFutureQueue(song))
+					songs.forEach(song => this.handleAddSongToFutureQueue(song))
 				}).then(() => {
 					if (this.props.shouldStartSession()) {
                         this.handleCreateSession()
@@ -152,7 +167,7 @@ class ProfileScreen extends React.Component{
         Promise.all(collection.songList.map((songId) => {
             return this.props.fetchVideoById(songId, true)
         })).then((songs) => {
-            songs.forEach(song => this.props.queue.addSongToFutureQueue(song))
+            songs.forEach(song => this.handleAddSongToFutureQueue(song))
         })
 	}
 	
@@ -178,6 +193,17 @@ class ProfileScreen extends React.Component{
                 this.props.handleUpdateUser(data.data.user)
             }
         }).bind(this), true)
+	}
+	
+	handleAddSongToFutureQueue = (song) => {
+        if (this.props.shouldEmitActions()) {
+            var data = {
+                subaction: "add_song",
+                song: song
+            }
+            this.props.sessionClient.emitQueue(this.state.username, this.state.user._id, data)
+        }
+        this.props.queue.addSongToFutureQueue(song)
     }
 
 	handleAddSongToFavorites = (songId, e) => {
@@ -472,7 +498,7 @@ class ProfileScreen extends React.Component{
 																</Dropdown.Toggle>
 																<Dropdown.Menu className="profile-screen-category-item-card-image-overlay-dropdown-menu">
 																	<Dropdown.Item>
-																		<Button onClick={this.handleAddCollectionToFutureQueue.bind(this, playlist)}>
+																		<Button onClick={this.handleAddCollectionToFutureQueue.bind(this, playlist)} disabled={this.props.shouldReceiveActions()}>
 																			Add To Queue
 																		</Button>
 																	</Dropdown.Item>
@@ -553,7 +579,7 @@ class ProfileScreen extends React.Component{
 																</Dropdown.Toggle>
 																<Dropdown.Menu className="profile-screen-category-item-card-image-overlay-dropdown-menu">
 																	<Dropdown.Item>
-																		<Button onClick={this.props.queue.addSongToFutureQueue.bind(this, song)}>
+																		<Button onClick={this.handleAddSongToFutureQueue.bind(this, song)} disabled={this.props.shouldReceiveActions()}>
 																			Add To Queue
 																		</Button>
 																	</Dropdown.Item>
@@ -643,7 +669,7 @@ class ProfileScreen extends React.Component{
 																</Dropdown.Toggle>
 																<Dropdown.Menu className="profile-screen-category-item-card-image-overlay-dropdown-menu">
 																	<Dropdown.Item>
-																		<Button onClick={this.handleAddCollectionToFutureQueue.bind(this, collection)}>
+																		<Button onClick={this.handleAddCollectionToFutureQueue.bind(this, collection)} disabled={this.props.shouldReceiveActions()}>
 																			Add To Queue
 																		</Button>
 																	</Dropdown.Item>

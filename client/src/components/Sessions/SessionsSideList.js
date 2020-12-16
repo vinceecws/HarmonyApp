@@ -33,23 +33,37 @@ class SessionSideList extends React.Component{
         if (this.state.loading) {
             return <Spinner/>
         }
+        else if (this.state.sessions.length <= 0) {
+            return (
+                <div className="session-side-list-notice-container">
+                    <div className="body-text color-accented">
+                        No Live Sessions right now :(
+                    </div>
+                </div>
+            )
+        }
         else {
             return (
-                <div className='list-group list-group-session'>
-                    {
-                        this.state.sessions.sort((session1, session2) => session2.streams - session1.streams)
-                        .filter(session => session.live ? true : false)
-                        .map((session, ind) => <SessionEntry
-                            key={ind}
-                            id={session._id}
-                            hostId={session.hostId}
-                            hostName={session.hostName}
-                            name={session.name}
-                            image={session.image}
-                            streams={session.streams}
-                            switchScreen={this.props.switchScreen}
-                        /> )
-                    }
+                <div>
+                    <div className="session-side-list-title subtitle color-accented">
+                        Live Sessions
+                    </div>
+                    <div className='list-group list-group-session'>
+                        {
+                            this.state.sessions.sort((session1, session2) => session2.streams - session1.streams)
+                            .filter(session => session.live ? true : false)
+                            .map((session, ind) => <SessionEntry
+                                key={ind}
+                                id={session._id}
+                                hostId={session.hostId}
+                                hostName={session.hostName}
+                                name={session.name}
+                                image={session.image}
+                                streams={session.streams}
+                                switchScreen={this.props.switchScreen}
+                            /> )
+                        }
+                    </div>
                 </div>
             )
         }

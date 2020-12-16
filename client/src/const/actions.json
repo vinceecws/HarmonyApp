@@ -29,11 +29,11 @@
         "username": "abcd",
         "userId": "1234",
         "data": {
-            "subaction": "move_song", /* move_song, move_song_from_past, add_song, del_song, set_shuffle, set_repeat */
+            "subaction": "move_song", /* move_song, move_song_from_past, add_song, play_song, del_song, set_shuffle, set_repeat */
             "from": 0, /* move_song, move_song_from_past */
             "to": 1, /* move_song, move_song_from_past */
             "index": 3, /* del_song */
-            "songId": "dY7nv3mK2", /* add_song */
+            "song": {}, /* add_song, play_song */
             "state": 0 /* set_shuffle, set_repeat */
         }
     },
