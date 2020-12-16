@@ -606,7 +606,12 @@ body, html {
 
 #tab-component-account-link-container {
   position: absolute;
+  align-items: center;
   right: 0px;
+}
+
+#tab-component-account-link-username {
+  cursor: default;
 }
 
 #tab-component-account-link-button {

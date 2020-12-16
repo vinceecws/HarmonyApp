@@ -909,7 +909,7 @@ class SessionScreen extends React.Component {
 	        		</div>
 	        		<div className='col-sm-4' style={{height:'100%', overflow:'auto'}}>
 						<DragDropContext onDragEnd={this.handleOnDragEnd}>
-							<div className='row bg-color-faded title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black'}}>
+							<div className='row bg-color-faded title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black', paddingLeft: '3%'}}>
 								Up Next
 							</div>
 							<div className='row' style={{height:'43%', overflow:'auto'}}>
@@ -920,7 +920,7 @@ class SessionScreen extends React.Component {
 										
 								</Droppable>
 							</div>
-							<div className='row bg-color-faded title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black'}}>
+							<div className='row bg-color-faded title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black', paddingLeft: '3%'}}>
 								Previously Played
 							</div>
 							<div className='row' style={{height:'43%', overflow:'auto'}}>
