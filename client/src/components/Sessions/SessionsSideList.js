@@ -1,7 +1,7 @@
 import React from 'react';
 import SessionEntry from './sessionentry.js'
 import Spinner from '../Spinner';
-
+import { yin_yang_gradient  } from '../graphics';
 
 class SessionSideList extends React.Component{
     
@@ -62,7 +62,7 @@ class SessionSideList extends React.Component{
                                 hostId={session.hostId}
                                 hostName={session.hostName}
                                 name={session.name}
-                                image={session.image && session.image.data ? this.setImage(session.image) : ""}
+                                image={session.image && session.image.data ? this.setImage(session.image) : yin_yang_gradient}
                                 streams={session.streams}
                                 switchScreen={this.props.switchScreen}
                             /> )
