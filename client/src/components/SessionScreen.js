@@ -65,16 +65,18 @@ class SessionScreen extends React.Component {
 			
 			if (this.props.screenProps) {
 				//If screen is active and new sessionId is passed
-				if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
-					if(this.props.isHostLoggingOut){
+				if(this.props.isHostLoggingOut){
 						console.log("ending the session");
 						this.props.disableHostSwitching();
 						this.handleEndSessionLogout();
 						
 						
-					}
+				}
+				if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
+					
+
 					if((this.isHost() && !this.isNonParticipant()) && prevState.id !== null && this.props.screenProps.sessionId !== null){ //host switching between two live sessions
-						if(!this.props.isHostHopPromptShowing && !this.props.isHostSwitchingSessions && !this.hostSwitchingSessions){
+						if(!this.props.isHostSwitchingSessions && !this.hostSwitchingSessions){
 							console.log("bring up prompt to switch")
 							this.props.showHostHopSessionModal();
 							this.hostSwitchingSessions = true;
@@ -90,6 +92,7 @@ class SessionScreen extends React.Component {
 
 							}
 							else if(!this.props.isHostHopPromptShowing && !this.props.isHostSwitchingSessions){
+								this.props.switchScreen(mainScreens.SESSION, prevState.id);
 								this.hostSwitchingSessions = false;
 							}
 							
@@ -907,7 +910,7 @@ class SessionScreen extends React.Component {
 							<div className='row' style={{height:'43%', overflow:'auto'}}>
 								<Droppable droppableId="futureQueue">
 									{(provided) => ( 
-										<QueueComponent Queue={this.state.futureQueue} 	queueType="future" isHost={this.isHost} fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.state.user}/>
+										<QueueComponent Queue={this.state.futureQueue} queueObject={this.props.queue} handleEmitQueueState={this.handleEmitQueueState}	queueType="future" isHost={this.isHost} fetchVideoById={this.props.fetchVideoById} provided={provided}  user={this.state.user}/>
 										)}
 										
 								</Droppable>

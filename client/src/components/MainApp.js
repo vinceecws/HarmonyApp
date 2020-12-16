@@ -104,9 +104,11 @@ class MainApp extends React.Component {
     }
     handleCloseHostHopModal = () => {
         console.log("host is not leaving sessions anymore")
+        
         this.props.history.goBack();
         this.isHostHopPromptShowing = false
         this.isHostSwitchingSessions = false
+
     }
     handleHostHopSession = () => {
         console.log("host clicked ok")

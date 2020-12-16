@@ -19,6 +19,9 @@ class QueueComponent extends React.Component{
                 user={this.props.user}
                 queueType={this.props.queueType}
                 isHost={this.props.isHost}
+                queue={this.props.Queue}
+                queueObject={this.props.queueObject}
+                handleEmitQueueState={this.props.handleEmitQueueState}
             />
             :
             item
