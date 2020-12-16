@@ -116,6 +116,9 @@ class Player extends React.Component {
         else if (action === "queue") {
             data.subaction = subaction
             data.state = args[0]
+            if (subaction === "set_shuffle" && data.state) {
+                data.newFutureQueue = this.props.queue.getFutureQueue()
+            }
             this.props.sessionClient.emitQueue(username, userId, data)
         }
     }
@@ -168,7 +171,7 @@ class Player extends React.Component {
         else if (actionObj.action === "queue") {
             switch (actionObj.data.subaction) {
                 case "set_shuffle":
-                    this.props.queue.setShuffle(actionObj.data.state)
+                    this.props.queue.setShuffle(actionObj.data.state, actionObj.data.newFutureQueue)
                     break;
                 case "set_repeat":
                     this.props.queue.setRepeat(actionObj.data.state)

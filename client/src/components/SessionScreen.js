@@ -249,6 +249,7 @@ class SessionScreen extends React.Component {
 	*/
 
 	handleReceiveSessionState = (queueState, playerState, time) => {
+
 		if (this.state.loading && this.shouldReceiveActions()) {
 
 			if (queueState.current_song) {
@@ -268,7 +269,7 @@ class SessionScreen extends React.Component {
 			this.props.queue.setPastQueue(queueState.past_queue)
 			this.props.queue.setOriginalFutureQueue(queueState.original_future_queue)
 
-			this.props.queue.setShuffle(playerState.shuffle)
+			this.props.queue.setShuffleState(playerState.shuffle)
 			this.props.queue.setRepeat(playerState.repeat)
 		}
 	}
