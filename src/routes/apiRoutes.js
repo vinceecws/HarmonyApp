@@ -1115,6 +1115,7 @@ module.exports = function(mainSocket, sessionSocket) {
     });
 
     apiRouter.post('/session/newSession', async (req, res) => {
+        console.log('session created');
         if (!req.user) {
             return res.status(401).json({
                 error: {
@@ -1134,8 +1135,9 @@ module.exports = function(mainSocket, sessionSocket) {
             var session = await mongooseQuery.createSession(user._id, user.username, req.body.name, Date.now()).catch(err => res.sendStatus(404))
             if (user.image){
                 session = await mongooseQuery.updateSession(session._id, {image: user.image});
-                console.log('Session updated');
+                console.log('Session updated', session.image.contentType);
             }
+            console.log('Session: ', session.image.contentType)
             var updatedUser = await mongooseQuery.updateUser(user._id, {
                 currentSession: session._id,
                 live: !user.privateMode,
@@ -1175,7 +1177,6 @@ module.exports = function(mainSocket, sessionSocket) {
             var session = await mongooseQuery.getSession({'_id': req.params.id}, true);
             if(session.id === req.params.id){
                 if (session.image){
-                    //session.image.data = session.image.data.toString();
                     console.log('Session fetched: ', typeof session.image.data);
                 }
                 if (req.user){
@@ -1482,23 +1483,14 @@ module.exports = function(mainSocket, sessionSocket) {
                 statusCode: 200,
                 data: {
                     sessions: sessionMatches.map(session => {
-                        if (session.image){
-                            //session.image.data = session.image.data.toString();
-                        }
                         session.type = "session"
                         return session
                     }), 
                     collections: collectionMatches.map(collection => {
-                        if (collection.image){
-                            //collection.image.data = collection.image.data.toString();
-                        }
                         collection.type = "collection"
                         return collection
                     }),
                     users: userMatches.map(user => {
-                        if (user.image){
-                            //user.image.data = user.image.data.toString();
-                        }
                         var strippedUser = stripUser(user)
                         strippedUser.type = "user"
                         return strippedUser
@@ -1515,25 +1507,16 @@ module.exports = function(mainSocket, sessionSocket) {
             let filteredUsers = [];
             for (let s of sessionMatches){
                 if (String(s.hostId) !== String(thisUser._id)){
-                    if (s.image){
-                        //s.image.data = s.image.data.toString();
-                    }
                     filteredSessions.push(s);
                 }
             }
             for (let c of collectionMatches){
                 if (!(thisUser.playlists.map(e => String(e)).includes(c._id))){
-                    if (c.image){
-                        //c.image.data = c.image.data.toString();
-                    }
                     filteredCollections.push(c);
                 }
             }
             for (let u of userMatches){
                 if (String(thisUser._id) !== String(u._id)){
-                    if (u.image){
-                        //u.image.data = u.image.data.toString();
-                    }
                     let fetchedUser = stripUser(u)
                     filteredUsers.push(fetchedUser);
                 } 
