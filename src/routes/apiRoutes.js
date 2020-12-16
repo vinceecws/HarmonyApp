@@ -1188,7 +1188,6 @@ module.exports = function(mainSocket, sessionSocket) {
         else{
             var session = await mongooseQuery.getSession({'_id': req.params.id}, true);
             if (session !== null) {
-                console.log('Get session: ', session.image.contentType);
                 if (req.user){
                     var user = stripUser(req.user)
                     var updatedUser = await mongooseQuery.updateUser(user._id, {
