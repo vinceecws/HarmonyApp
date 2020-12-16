@@ -525,6 +525,7 @@ class SessionScreen extends React.Component {
 					startTime: session.startTime,
 					futureQueue: this.props.queue.getFutureQueue(),
 					pastQueue: this.props.queue.getPastQueue(),
+					chatlog: [],
 					sessionImgSrc: session.image && session.image.data ? this.setImage(session.image) : null,
 					error: false
 	        	}, this.initSessionClient)
@@ -536,6 +537,7 @@ class SessionScreen extends React.Component {
 					name: session.name,
 					startTime: session.startTime,
 					live: true,
+					chatlog: [],
 					sessionImgSrc: session.image && session.image.data ? this.setImage(session.image) : null,
 					error: false
 				}, this.initSessionClient)
@@ -549,6 +551,7 @@ class SessionScreen extends React.Component {
 					startTime: session.startTime,
 					loading: false,
 					error: false,
+					chatlog: [],
 					futureQueue: this.props.queue.getFutureQueue(),
 					pastQueue: this.props.queue.getPastQueue(),
 					sessionImgSrc: session.image && session.image.data? this.setImage(session.image) : null
@@ -570,6 +573,7 @@ class SessionScreen extends React.Component {
 		else {
 			this.setState({
 				loading: false,
+				chatlog: [],
 				error: true
 			})
 		}
