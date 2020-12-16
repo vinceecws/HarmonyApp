@@ -1,6 +1,6 @@
 import React from 'react';
 import Spinner from './Spinner';
-import { yin_yang_fill_color_harmony , icon_like, icon_music_1, plus_button, icon_play_white_1, menu_button_white, icon_sound_mixer_1, icon_list, icon_playlist_2 } from '../graphics';
+import { yin_yang_gradient , icon_like, icon_music_1, plus_button, icon_play_white_1, menu_button_white, icon_sound_mixer_1, icon_list, icon_playlist_2 } from '../graphics';
 import { Modal, Image, Card, Button, Dropdown, DropdownButton, ButtonGroup } from 'react-bootstrap'
 import DropdownItem from 'react-bootstrap/esm/DropdownItem'
 import { mainScreens } from '../const'
@@ -410,7 +410,7 @@ class ProfileScreen extends React.Component{
 					<div id='profile-screen-top-container' className='row' style={{minHeight: '12vw', maxHeight: '15vw'}}>
 						<div className='col-sm-1.3' style={{display:'flex', padding:'1em', maxWidth: '20vw'}}>
 							<div id='container' style={{position:'relative'}}>
-									<img id="user-profile-image" src={this.state.profileUser.image && this.state.profileUser.image.data ? this.state.profileImageSrc : yin_yang_fill_color_harmony } style={{width: '208px'}} alt=""/>
+									<img id="user-profile-image" src={this.state.profileUser.image && this.state.profileUser.image.data ? this.state.profileImageSrc : yin_yang_gradient } style={{width: '208px'}} alt=""/>
 							</div>
 						</div>
 						<div className='col'>

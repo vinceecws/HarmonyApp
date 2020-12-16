@@ -1,6 +1,6 @@
 import React from 'react';
 import { mainScreens, sessionRoles } from '../const'
-import { yin_yang_fill_color_harmony  } from '../graphics';
+import { yin_yang_gradient  } from '../graphics';
 import ChatFeed from './Chat/ChatFeed.js';
 import QueueComponent from './Queues/QueueComponent.js';
 import Spinner from './Spinner';
@@ -878,7 +878,7 @@ class SessionScreen extends React.Component {
         			<div className='col-sm-8' style={{height:'100%'}}>
 	        			<div className='row' style={{height:'22%', border: '3px solid black', borderRadius: '25px'}}>
 	        				<div className='col' style={{maxWidth:'35%', height:'100%', padding:'1em'}}>
-	        					<img src={this.state.sessionImgSrc ? this.state.sessionImgSrc : yin_yang_fill_color_harmony } style={{display: 'block', margin: 'auto', height:'90%'}} alt=""/>
+	        					<img src={this.state.sessionImgSrc ? this.state.sessionImgSrc : yin_yang_gradient } style={{display: 'block', margin: 'auto', height:'90%'}} alt=""/>
 
 	        				</div>
 	        				<div className='col' style={{maxWidth:'50%', minWidth:'50%',height:'100%', padding:'1em', color:'white'}}>
@@ -941,7 +941,7 @@ class SessionScreen extends React.Component {
         			<div className='col-sm-8' style={{height:'100%'}}>
 	        			<div className='row' style={{height:'22%', border: '3px solid black', borderRadius: '25px'}}>
 	        				<div className='col' style={{maxWidth:'35%', height:'100%', padding:'1em'}}>
-	        					<img src={this.state.sessionImgSrc ? this.state.sessionImgSrc : yin_yang_fill_color_harmony } style={{display: 'block', margin: 'auto', height:'90%'}} alt=""/>
+	        					<img src={this.state.sessionImgSrc ? this.state.sessionImgSrc : yin_yang_gradient } style={{display: 'block', margin: 'auto', height:'90%'}} alt=""/>
 
 	        				</div>
 	        				<div className='col' style={{maxWidth:'50%', minWidth:'50%',height:'100%', padding:'1em', color:'white'}}>
