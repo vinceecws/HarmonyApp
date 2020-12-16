@@ -24,7 +24,7 @@ class QueueEntry extends React.Component{
 		let entry;
 		let deleteButton;
 		if(this.props.queueType==="future" && this.props.isHost){
-			deleteButton = <Button className="bg-color-harmony col" variant="primary" style={{width:'10%'}} onClick={this.removeThisSong}>X</Button>
+			deleteButton = <Button className="queue-entry-delete-button col" variant="primary" onClick={this.removeThisSong}>X</Button>
 		}
 		else{
 			deleteButton = <></>
@@ -44,7 +44,7 @@ class QueueEntry extends React.Component{
 				<Draggable key={this.props.index+this.props.id+this.props.queueType} draggableId={this.props.id+this.props.index+this.props.queueType} index={this.props.index} >
 	            	{(provided) => (
 					<div className='list-group-item'  {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
-						<div className='col' style={{display:'inline-block', top:'5px', width:'85%'}}>
+						<div className='col' style={{display:'inline-block', top:'11px', width:'85%'}}>
 						{entry}
 						</div>
 						<div className='col' style={{display:'inline-block'}}>

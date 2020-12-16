@@ -440,8 +440,17 @@ body, html {
   width: 100%;
 }
 
-.blur {
-  filter: blur(8px);
+.queue-entry-delete-button {
+  border-color: transparent !important;
+  border-width: 0px !important;
+  background-color: transparent !important;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+  width: 15px;
+}
+
+.queue-entry-delete-button:hover {
+  width: 18px;
 }
 
 /* Settings Screen */
@@ -597,7 +606,12 @@ body, html {
 
 #tab-component-account-link-container {
   position: absolute;
+  align-items: center;
   right: 0px;
+}
+
+#tab-component-account-link-username {
+  cursor: default;
 }
 
 #tab-component-account-link-button {

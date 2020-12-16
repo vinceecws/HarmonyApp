@@ -188,7 +188,7 @@ class SessionScreen extends React.Component {
 			
 			this.state.chatLog.push(actionObj)
 			this.setState({
-				chatlog: this.state.chatLog
+				chatLog: this.state.chatLog
 			})
 		}
 	}
@@ -249,6 +249,7 @@ class SessionScreen extends React.Component {
 	*/
 
 	handleReceiveSessionState = (queueState, playerState, time) => {
+
 		if (this.state.loading && this.shouldReceiveActions()) {
 
 			if (queueState.current_song) {
@@ -268,7 +269,7 @@ class SessionScreen extends React.Component {
 			this.props.queue.setPastQueue(queueState.past_queue)
 			this.props.queue.setOriginalFutureQueue(queueState.original_future_queue)
 
-			this.props.queue.setShuffle(playerState.shuffle)
+			this.props.queue.setShuffleState(playerState.shuffle)
 			this.props.queue.setRepeat(playerState.repeat)
 		}
 	}
@@ -525,7 +526,7 @@ class SessionScreen extends React.Component {
 					startTime: session.startTime,
 					futureQueue: this.props.queue.getFutureQueue(),
 					pastQueue: this.props.queue.getPastQueue(),
-					chatlog: [],
+					chatLog: [],
 					sessionImgSrc: session.image && session.image.data ? this.setImage(session.image) : null,
 					error: false
 	        	}, this.initSessionClient)
@@ -537,7 +538,7 @@ class SessionScreen extends React.Component {
 					name: session.name,
 					startTime: session.startTime,
 					live: true,
-					chatlog: [],
+					chatLog: [],
 					sessionImgSrc: session.image && session.image.data ? this.setImage(session.image) : null,
 					error: false
 				}, this.initSessionClient)
@@ -551,7 +552,7 @@ class SessionScreen extends React.Component {
 					startTime: session.startTime,
 					loading: false,
 					error: false,
-					chatlog: [],
+					chatLog: [],
 					futureQueue: this.props.queue.getFutureQueue(),
 					pastQueue: this.props.queue.getPastQueue(),
 					sessionImgSrc: session.image && session.image.data? this.setImage(session.image) : null
@@ -573,7 +574,7 @@ class SessionScreen extends React.Component {
 		else {
 			this.setState({
 				loading: false,
-				chatlog: [],
+				chatLog: [],
 				error: true
 			})
 		}
@@ -908,7 +909,7 @@ class SessionScreen extends React.Component {
 	        		</div>
 	        		<div className='col-sm-4' style={{height:'100%', overflow:'auto'}}>
 						<DragDropContext onDragEnd={this.handleOnDragEnd}>
-							<div className='row bg-color-faded title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black'}}>
+							<div className='row bg-color-faded title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black', paddingLeft: '3%'}}>
 								Up Next
 							</div>
 							<div className='row' style={{height:'43%', overflow:'auto'}}>
@@ -919,7 +920,7 @@ class SessionScreen extends React.Component {
 										
 								</Droppable>
 							</div>
-							<div className='row bg-color-faded title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black'}}>
+							<div className='row bg-color-faded title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black', paddingLeft: '3%'}}>
 								Previously Played
 							</div>
 							<div className='row' style={{height:'43%', overflow:'auto'}}>

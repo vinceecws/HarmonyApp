@@ -322,16 +322,31 @@ class Queue {
         this.onChange.repeatStateChange.forEach(handler => handler.call(this.getRepeat()))
     }
 
-    setShuffle = (val) => {
+    setShuffle = (val, newFutureQueue) => {
         if (!(val === false || val === true)) {
             return
         }
-        if ((this._shuffle && val) || !(this._shuffle || val)) { //If current state is not equal to target state
+        if (val && newFutureQueue) {
+            this._shuffle = val
+            this._originalFutureQueue = _.cloneDeep(this._futureQueue)
+            this._futureQueue = newFutureQueue
+        }
+        else if (!val) {
+            this._shuffle = val
+            this._futureQueue = this._originalFutureQueue
+            this._originalFutureQueue = []
+        }
+
+        this.onChange.shuffleStateChange.forEach(handler => handler.call(this.getShuffle()))
+        this.onChange.futureQueueChange.forEach(handler => handler.call(this.getFutureQueue()))
+    }
+
+    setShuffleState = (val) => {
+        if (!(val === false || val === true)) {
             return
         }
-        else {
-            this.toggleShuffle()
-        }
+        this._shuffle = val
+        this.onChange.shuffleStateChange.forEach(handler => handler.call(this.getShuffle()))
     }
 }
 

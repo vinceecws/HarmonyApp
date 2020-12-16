@@ -30,6 +30,7 @@ class AccountLink extends React.Component {
         if (this.props.auth) {
             return (
                 <Dropdown id="tab-component-account-link-container" as={ButtonGroup}>
+                    <div id="tab-component-account-link-username" className="subtitle color-accented">{this.props.user.username}</div>
                     <Button id="tab-component-account-link-button">
                         <div onClick={() => this.props.switchScreen(mainScreens.PROFILE, this.props.user._id)}>
                             <Image id="tab-component-account-link-image" src={this.props.user.image && this.props.user.image.data ? this.setImage(this.props.user.image) : yin_yang_gradient} />

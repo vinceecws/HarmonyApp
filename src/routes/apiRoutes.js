@@ -1148,7 +1148,6 @@ module.exports = function(mainSocket, sessionSocket) {
             var session = await mongooseQuery.createSession(user._id, user.username, req.body.name, Date.now()).catch(err => res.sendStatus(404))
             if (user.image && user.image.data){
                 session = await mongooseQuery.updateSession(session._id, {image: user.image});
-                console.log('Fetch user image for session: ', typeof session.image.data)
             }
             var updatedUser = await mongooseQuery.updateUser(user._id, {
                 currentSession: session._id,
@@ -1188,9 +1187,6 @@ module.exports = function(mainSocket, sessionSocket) {
         else{
             var session = await mongooseQuery.getSession({'_id': req.params.id}, true);
             if (session !== null) {
-                if(session.image){
-                    console.log('Get session: ', session.image.contentType);
-                }
                 
                 if (req.user){
                     var user = stripUser(req.user)
