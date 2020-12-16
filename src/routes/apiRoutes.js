@@ -517,6 +517,21 @@ module.exports = function(mainSocket, sessionSocket) {
         }
         else {
             let user = await mongooseQuery.getUser({'_id': req.params.id});
+            console.log(user);
+            if(user === null){
+                return res.status(404).json({
+                    error: {
+                        name: "Invalid User",
+                        message: "Not found"
+                    },
+                    message: "User not found",
+                    statusCode: 404,
+                    data: {
+                        user: null
+                    },
+                    success: false
+                })
+            }
             return res.status(200).json({
                 message: "Fetch success",
                 statusCode: 200,
@@ -525,6 +540,7 @@ module.exports = function(mainSocket, sessionSocket) {
                 },
                 success: true
             })
+
         }
     });
 
@@ -690,7 +706,6 @@ module.exports = function(mainSocket, sessionSocket) {
         }
         else{
             let collection = await mongooseQuery.getCollection({'_id': req.params.id}, true).catch(err => res.sendStatus(404));
-            console.log(collection)
             if(collection === null){
                 return res.status(404).json({
                     error: {
@@ -1166,36 +1181,34 @@ module.exports = function(mainSocket, sessionSocket) {
         }
         else{
             var session = await mongooseQuery.getSession({'_id': req.params.id});
-            console.log(session.id)
-            console.log(session._id)
-            console.log(req.params.id)
-            console.log(session)
-            if(session.id === req.params.id){
-                if (req.user){
-                    var user = stripUser(req.user)
-                    var updatedUser = await mongooseQuery.updateUser(user._id, {
-                            currentSession: session._id
-                        }).catch(err => res.sendStatus(404))
+            if(session !== null){
+                if(session.id === req.params.id){
+                    if (req.user){
+                        var user = stripUser(req.user)
+                        var updatedUser = await mongooseQuery.updateUser(user._id, {
+                                currentSession: session._id
+                            }).catch(err => res.sendStatus(404))
 
-                    return res.status(200).json({
-                        message: "Fetch success",
-                        statusCode: 200,
-                        data: {
-                            session: session,
-                            user: stripUser(updatedUser)
-                        },
-                        success: true
-                    })
-                }
-                else {
-                    return res.status(200).json({
-                        message: "Fetch success",
-                        statusCode: 200,
-                        data: {
-                            session: session,
-                        },
-                        success: true
-                    })
+                        return res.status(200).json({
+                            message: "Fetch success",
+                            statusCode: 200,
+                            data: {
+                                session: session,
+                                user: stripUser(updatedUser)
+                            },
+                            success: true
+                        })
+                    }
+                    else {
+                        return res.status(200).json({
+                            message: "Fetch success",
+                            statusCode: 200,
+                            data: {
+                                session: session,
+                            },
+                            success: true
+                        })
+                    }
                 }
             }
             else{

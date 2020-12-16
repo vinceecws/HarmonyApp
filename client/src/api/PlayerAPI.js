@@ -158,6 +158,7 @@ class PlayerAPI {
         if (!this._playerBuffering && this._playerReady && this.player) {
             this._playerBuffering = true
             this.player.playVideo()
+            console.log(this);
         }
         else if (this._playerBuffering) {
             this._bufferQueue.push(this.playVideo)
@@ -167,6 +168,7 @@ class PlayerAPI {
     pauseVideo = () => {
         if (!this._playerBuffering && this._playerReady && this.player) {
             this.player.pauseVideo()
+            console.log(this.player)
         }
         else if (this._playerBuffering) {
             this._bufferQueue.push(this.pauseVideo)
@@ -198,6 +200,7 @@ class PlayerAPI {
         if (!this._playerBuffering && this._playerReady && this.player) {
             this._playerBuffering = true
             this.player.nextVideo()
+            console.log(this)
         }
         else if (this._playerBuffering) {
             this._bufferQueue.push(this.nextVideo)
@@ -208,6 +211,8 @@ class PlayerAPI {
         if (!this._playerBuffering && this._playerReady && this.player) {
             this._playerBuffering = true
             this.player.previousVideo()
+            console.log(this.player)
+            console.log(this);
         }
         else if (this._playerBuffering) {
             this._bufferQueue.push(this.previousVideo)
