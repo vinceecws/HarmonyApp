@@ -879,11 +879,7 @@ class SessionScreen extends React.Component {
         			<div className='col-sm-8' style={{height:'100%'}}>
 	        			<div className='row' style={{height:'22%', border: '3px solid black', borderRadius: '25px'}}>
 	        				<div className='col' style={{maxWidth:'35%', height:'100%', padding:'1em'}}>
-<<<<<<< HEAD
-	        					<img src={this.state.sessionImgSrc ? this.state.sessionImgSrc : icon_profile_image} style={{backgroundColor:'white',display: 'block', margin: 'auto', height:'90%', border: '3px solid black'}}/>
-=======
-	        					<img src={icon_profile_image} style={{backgroundColor:'white',display: 'block', margin: 'auto', height:'90%', border: '3px solid black'}} alt=""/>
->>>>>>> 93eb935cded303ae1920a8af4d9a3134df9b1ed3
+	        					<img src={this.state.sessionImgSrc ? this.state.sessionImgSrc : icon_profile_image} style={{backgroundColor:'white',display: 'block', margin: 'auto', height:'90%', border: '3px solid black'}} alt=""/>
 	        				</div>
 	        				<div className='col' style={{maxWidth:'50%', minWidth:'50%',height:'100%', padding:'1em', color:'white'}}>
 	        					<div className='title session-title-text'>
