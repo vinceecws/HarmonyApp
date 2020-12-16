@@ -4,8 +4,6 @@ import { Link, Route } from 'react-router-dom'
 import { Form, Col, Button } from 'react-bootstrap'
 import { Modal } from 'react-bootstrap'
 
-const _ = require('lodash')
-
 class SettingsScreen extends React.Component{
 	constructor (props) {
         super(props);

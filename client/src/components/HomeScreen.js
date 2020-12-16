@@ -238,13 +238,14 @@ class HomeScreen extends React.Component {
     }
 
     handlePlayItem = (obj, e) => {
+        var data
         if (obj.type === "song") {
 
             if (this.props.shouldStartSession()) {
                 this.handleCreateSession()
             }
             else if (this.props.shouldEmitActions()) {
-                var data = {
+                data = {
                     subaction: "play_song",
                     songId: obj._id
                 }
@@ -260,7 +261,7 @@ class HomeScreen extends React.Component {
             if (songList.length > 0) {
                 var songId = songList.shift()
 				if (this.props.shouldEmitActions()) {
-                    var data = {
+                    data = {
                         subaction: "play_song",
                         songId: songId
                     }

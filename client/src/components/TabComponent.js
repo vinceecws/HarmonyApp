@@ -4,9 +4,6 @@ import AccountLink from './AccountLink.js'
 import { mainScreens } from '../const'
 
 class TabComponent extends React.Component{
-    constructor(props){
-        super(props)
-    }
 
     handleSwitchScreen = (newScreen) => {
         this.setState({
