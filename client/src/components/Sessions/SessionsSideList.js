@@ -35,8 +35,10 @@ class SessionSideList extends React.Component{
         }
         else if (this.state.sessions.length <= 0) {
             return (
-                <div className="session-side-list-notice ellipsis-multi-line-overflow body-text color-accented">
-                    No Live Sessions right now.
+                <div className="session-side-list-notice-container">
+                    <div className="body-text color-accented">
+                        No Live Sessions right now :(
+                    </div>
                 </div>
             )
         }
