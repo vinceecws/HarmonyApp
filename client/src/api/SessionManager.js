@@ -61,10 +61,10 @@ class SessionManager {
 
     unsubscribeFromAction = (action, handler) => {
         if (action in this.onActions) {
-            var ind = this.onActions[action].findIndex(x => x == handler)
+            var ind = this.onActions[action].findIndex(x => x === handler)
             if (ind > -1) {
-                var handler = this.onActions[action].splice(ind, 1)[0]
-                return handler.destroy()
+                var listener = this.onActions[action].splice(ind, 1)[0]
+                return listener.destroy()
             }
             else {
                 return null

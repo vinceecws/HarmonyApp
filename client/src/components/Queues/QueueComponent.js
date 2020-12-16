@@ -1,7 +1,6 @@
 import React from 'react';
 import QueueEntry from './QueueEntry.js'
-import {Droppable, DragDropContext, Draggable} from 'react-beautiful-dnd'
-class QueueComponent extends React.Component{
+class QueueComponent extends React.Component {
 	
     render(){
         var QueueEntries = this.props.Queue;

@@ -204,7 +204,7 @@ class LoginScreen extends React.Component{
                 <div id='login-screen-top-container' className='row'>
                     <div id='login-screen-logo-container' className='col'>
                         <div>
-                            <img style={{maxHeight: '280px'}} src={yin_yang_fill_color_harmony}></img>
+                            <img style={{maxHeight: '280px'}} src={yin_yang_fill_color_harmony} alt=""></img>
                         </div>
                     </div>
                     <div id='login-screen-login-container' className='col'>

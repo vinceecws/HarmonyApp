@@ -78,6 +78,10 @@
   color: lightgray !important;
 }
 
+.color-faded {
+  color: gray !important;
+}
+
 .color-accented {
   color: whitesmoke !important;
 }
@@ -87,7 +91,11 @@
 }
 
 .bg-color-contrasted {
-  background-color: #505050 !important;
+  background-color: lightgray !important;
+}
+
+.bg-color-faded {
+  background-color: gray !important;
 }
 
 .bg-color-accented {
@@ -161,7 +169,7 @@ body, html {
 
 .Session-Side-List {
   height: 100%;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
   background-color: #171717;
   text-align: left;
@@ -730,7 +738,7 @@ body, html {
   padding-right: 8px;
 }
 
-#player-controls {
+.player-controls {
   padding: 0;
   width: calc((100% - 300px - 200px));
   height: 100%;
@@ -776,14 +784,13 @@ body, html {
 }
 
 .player-controls-tooltip {
-  padding: 10px;
-  border-radius: 10px;
+  padding: 5px;
+  background-color: transparent !important;
 }
 
 .player-controls-overlay {
   position: absolute;        
   z-index: 1000;
-  height: 60%;
   width: 100%;
   background: transparent;
 }

@@ -1166,6 +1166,10 @@ module.exports = function(mainSocket, sessionSocket) {
         }
         else{
             var session = await mongooseQuery.getSession({'_id': req.params.id});
+            console.log(session.id)
+            console.log(session._id)
+            console.log(req.params.id)
+            console.log(session)
             if(session.id === req.params.id){
                 if (req.user){
                     var user = stripUser(req.user)

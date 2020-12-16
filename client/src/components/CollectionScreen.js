@@ -1,6 +1,6 @@
 import React from 'react'
 import Spinner from './Spinner'
-import { icon_music_1, icon_like, menu_button_white, delete_button_white } from '../graphics'
+import { icon_music_1, menu_button_white } from '../graphics'
 import { ReactComponent as FavoriteButton } from '../graphics/music_player_pack/035-like.svg'
 import { ReactComponent as DeleteButton } from '../graphics/user_pack/delete-button-white.svg'
 import { Image, Button, Dropdown, ButtonGroup, Modal } from 'react-bootstrap';
@@ -470,7 +470,7 @@ class CollectionScreen extends React.Component{
                     {/* Header */}
                     <div className='row' style={{backgroundColor: 'grey', border: '2px solid black', }}>
                         <div className='col' style={{maxWidth: '20%', paddingTop: '10px', paddingBottom: '10px'}}>
-                            <img src={this.state.collectionImageSrc == null ? icon_music_1 : this.state.collectionImageSrc} style={{maxHeight: '100px'}}></img>
+                            <img src={this.state.collectionImageSrc == null ? icon_music_1 : this.state.collectionImageSrc} style={{maxHeight: '100px'}} alt=""></img>
                         </div>
 
                         {/* Collection Info */}
