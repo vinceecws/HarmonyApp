@@ -1,7 +1,7 @@
 import React from 'react';
 import SessionEntry from './sessionentry.js'
 import Spinner from '../Spinner';
-import { yin_yang_gradient  } from '../graphics';
+import { yin_yang_gradient  } from '../../graphics';
 
 class SessionSideList extends React.Component{
     
