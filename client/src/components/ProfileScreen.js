@@ -40,7 +40,7 @@ class ProfileScreen extends React.Component{
 				user: this.props.user
 			}, () => {
 				//Screen is active, user is viewing own profile, and changes are made
-				if (this.props.visible && this.state.profileUser._id === this.state.user._id) { 
+				if (this.props.visible && this.state.user && this.state.profileUser._id === this.state.user._id) { 
 					this.setState({
 						userId: this.state.profileUser._id,
 						loading: true,
