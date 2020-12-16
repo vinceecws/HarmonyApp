@@ -890,7 +890,7 @@ class SessionScreen extends React.Component {
 	        			</div>
 	        			<div className='row' style={{height:'78%'}}>
 		        			{this.renderSuggestionButton()}
-							<div className='row bg-color-contrasted' style={{height:'calc(100% - 40px)',width:'100%',marginLeft:'0px',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
+							<div className='row bg-color-faded' style={{height:'calc(100% - 40px)',width:'100%',marginLeft:'0px',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
 								<ChatFeed chatLog={this.state.chatLog} user={this.state.user}  />
 							</div>
 							<div className='row' style={{height:'40px',width:'100%',marginLeft:'0px',border: '3px solid black',backgroundColor:'white'}}>
@@ -901,7 +901,7 @@ class SessionScreen extends React.Component {
 	        		</div>
 	        		<div className='col-sm-4' style={{height:'100%', overflow:'auto'}}>
 						<DragDropContext onDragEnd={this.handleOnDragEnd}>
-							<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black'}}>
+							<div className='row bg-color-faded title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black'}}>
 								Up Next
 							</div>
 							<div className='row' style={{height:'43%', overflow:'auto'}}>
@@ -912,7 +912,7 @@ class SessionScreen extends React.Component {
 										
 								</Droppable>
 							</div>
-							<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black'}}>
+							<div className='row bg-color-faded title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black'}}>
 								Previously Played
 							</div>
 							<div className='row' style={{height:'43%', overflow:'auto'}}>
@@ -952,7 +952,7 @@ class SessionScreen extends React.Component {
 	        			</div>
 	        			<div className='row' style={{height:'78%'}}>
 		        			{this.renderSuggestionButton()}
-		        			<div className='row bg-color-contrasted' style={{height:'calc(100% - 40px)',width:'100%',marginLeft:'0px',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
+		        			<div className='row bg-color-faded' style={{height:'calc(100% - 40px)',width:'100%',marginLeft:'0px',overflow:'scroll',overflowX:'hidden',border: '3px solid black'}}>
 		        				
 		        				<ChatFeed chatLog={this.state.chatLog} user={this.state.user}  />
 		        			</div>
@@ -964,13 +964,13 @@ class SessionScreen extends React.Component {
 	        			</div>
 	        		</div>
 	        		<div className='col-sm-4' style={{height:'100%'}}>
-						<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black'}}>
+						<div className='row bg-color-faded title session-title-text' style={{color:'white', height:'7%',minHeight:'40px',  border: '3px solid black'}}>
 							Up Next
 						</div>
 						<div className='row' style={{height:'43%'}}>
 							<QueueComponent Queue={this.state.futureQueue} fetchVideoById={this.props.fetchVideoById}/>
 						</div>
-						<div className='row bg-color-contrasted title session-title-text' style={{color:'white', height:'7%',minHeight:'40px', border: '3px solid black'}}>
+						<div className='row bg-color-faded title session-title-text' style={{color:'white', height:'7%',minHeight:'40px', border: '3px solid black'}}>
 							Previously Played
 						</div>
 						<div className='row' style={{height:'43%'}}>
