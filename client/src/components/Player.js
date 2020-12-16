@@ -232,7 +232,6 @@ class Player extends React.Component {
     handlePreviousSong = () => {
         this.handleEmitPlayerState("player", "prev_song")
         var hasPrev = this.props.queue.previousSong()
-        console.log(hasPrev);
         if (hasPrev) {
             var currentSong = this.props.queue.getCurrentSong()
             this.props.playerAPI.loadVideoById(currentSong._id)
@@ -257,7 +256,6 @@ class Player extends React.Component {
             if (currentSong) {
                 this.props.playerAPI.initIFrameAPI(currentSong._id)
                 if (this.props.shouldStartSession()) {
-                    console.log("creating a new session");
                     this.handleCreateSession()
                 }
                 else {
@@ -272,7 +270,6 @@ class Player extends React.Component {
             if (currentSong) {
                 this.props.playerAPI.playVideo()
                 if (this.props.shouldStartSession()) {
-                    console.log("creating a new session");
                     this.handleCreateSession()
                 }
                 else {
