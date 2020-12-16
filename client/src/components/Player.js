@@ -244,7 +244,26 @@ class Player extends React.Component {
 
     handleSetPlay = (val) => {
         if (!this.props.playerAPI.isPaused() !== val) {
-            this.handleTogglePlay()
+            var currentSong
+            if (!this.props.playerAPI.isPlayerInit()) { //Initialize on first use
+                currentSong = this.props.queue.getCurrentSong()
+
+                if (currentSong) {
+                    this.props.playerAPI.initIFrameAPI(currentSong._id)
+                }
+                return
+            }
+
+            if (this.state.paused) {
+                currentSong = this.props.queue.getCurrentSong()
+                if (currentSong) {
+                    this.props.playerAPI.playVideo()
+                }
+                return
+            }
+            else {
+                this.props.playerAPI.pauseVideo()
+            }
         }
     }
 
