@@ -29,6 +29,10 @@ class SessionSideList extends React.Component{
         })
     }
 
+    setImage = (image) => {
+        return 'data:' + image.contentType + ';base64,' + btoa(image.data);
+    }
+
     render() {
         if (this.state.loading) {
             return <Spinner/>
@@ -58,7 +62,7 @@ class SessionSideList extends React.Component{
                                 hostId={session.hostId}
                                 hostName={session.hostName}
                                 name={session.name}
-                                image={session.image}
+                                image={session.image && session.image.data ? this.setImage(session.image) : ""}
                                 streams={session.streams}
                                 switchScreen={this.props.switchScreen}
                             /> )

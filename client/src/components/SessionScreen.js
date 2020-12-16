@@ -504,7 +504,8 @@ class SessionScreen extends React.Component {
 	}
 
 	setImage = (image) => {
-		return 'date:' + image.contentType + ';base64,' + btoa(image.data);
+		console.log('Image: ', image.contentType, typeof image.data);
+		return 'data:' + image.contentType + ';base64,' + btoa(image.data);
 	}
 
 	initSession = (session) => {
@@ -866,7 +867,7 @@ class SessionScreen extends React.Component {
         			<div className='col-sm-8' style={{height:'100%'}}>
 	        			<div className='row' style={{height:'22%', border: '3px solid black', borderRadius: '25px'}}>
 	        				<div className='col' style={{maxWidth:'35%', height:'100%', padding:'1em'}}>
-	        					<img src={this.state.sessionImgSrc ? this.state.sessionImgSrc : icon_profile_image} style={{backgroundColor:'white',display: 'block', margin: 'auto', height:'90%', border: '3px solid black'}} alt=""/>
+	        					<img src={this.state.sessionImgSrc ? this.state.sessionImgSrc : icon_profile_image} style={{display: 'block', margin: 'auto', height:'90%', border: '3px solid black'}} alt=""/>
 	        				</div>
 	        				<div className='col' style={{maxWidth:'50%', minWidth:'50%',height:'100%', padding:'1em', color:'white'}}>
 	        					<div className='title session-title-text'>
@@ -928,7 +929,7 @@ class SessionScreen extends React.Component {
         			<div className='col-sm-8' style={{height:'100%'}}>
 	        			<div className='row' style={{height:'22%', border: '3px solid black', borderRadius: '25px'}}>
 	        				<div className='col' style={{maxWidth:'35%', height:'100%', padding:'1em'}}>
-	        					<img src={this.state.sessionImgSrc ? this.state.sessionImgSrc : icon_profile_image} style={{backgroundColor:'white',display: 'block', margin: 'auto', height:'90%', border: '3px solid black'}} alt=""/>
+	        					<img src={this.state.sessionImgSrc ? this.state.sessionImgSrc : icon_profile_image} style={{display: 'block', margin: 'auto', height:'90%', border: '3px solid black'}} alt=""/>
 	        				</div>
 	        				<div className='col' style={{maxWidth:'50%', minWidth:'50%',height:'100%', padding:'1em', color:'white'}}>
 	        					<div className='title session-title-text'>
