@@ -2,6 +2,7 @@ import React from 'react';
 import Spinner from './Spinner';
 import { Link, Route } from 'react-router-dom'
 import { Form, Col, Button } from 'react-bootstrap'
+import { Modal } from 'react-bootstrap'
 
 const _ = require('lodash')
 
@@ -24,7 +25,9 @@ class SettingsScreen extends React.Component{
             changePassword_validated: false,
             changePassword_invalidPassword: false,
             changeBiography_validated: false,
-            character_limit: 250
+            character_limit: 250,
+            changeImageModal: false,
+            uploadedImage: null
     	}
     }
 
@@ -368,6 +371,43 @@ class SettingsScreen extends React.Component{
             </div>
         }
     }
+
+    showChangeImageModal = () => {
+        this.setState({changeImageModal: true});
+    }
+
+    hideChangeImageModal = () => {
+        this.setState({changeImageModal: false});
+    }
+
+    onUploadImage = (file) => {
+        this.setState({uploadedImage: file})
+    }
+
+    onSubmitChangeImage = () => {
+        if (this.state.uploadedImage !== null){
+            this.hideChangeImageModal();
+            new Promise((resolve, reject) => {
+                var reader = new FileReader()
+
+                reader.onload = function() {
+                    resolve(reader.result)
+                }
+                
+                reader.readAsBinaryString(this.state.uploadedImage[0])
+            }).then(binary => {
+                this.props.axiosWrapper.axiosPost('/api/settings/uploadImage', {
+                    image: binary, contentType: this.state.uploadedImage[0].type
+                }, (function(res, data){
+                        if (data.success){
+                            console.log('User image added');
+                            this.props.handleUpdateUser(data.data.user);
+                        }
+                }).bind(this), true)
+            })
+        }
+    }
+
 	render() {
         var component
         if (this.state.loading) {
@@ -376,6 +416,21 @@ class SettingsScreen extends React.Component{
         else {
             component = (
             		<div style={{fontFamily: 'BalsamiqSans', maxWidth:'100%', padding:'1em'}}>
+
+                        <Modal show={this.state.changeImageModal}>
+                            <Modal.Header onHide={this.hideChangeImageModal} closeButton>
+                                <Modal.Title>Upload Profile Image</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <p>Upload Image (PNG, JPG):</p>
+                                <input type='file' accept='image/jpg, image/png' onChange={e => this.onUploadImage(e.target.files)}></input>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={this.hideChangeImageModal}>Close</Button>
+                                <Button variant="primary" onClick={this.onSubmitChangeImage}>OK</Button>
+                            </Modal.Footer>
+					    </Modal>
+
                         <div className='body-text color-contrasted'>SETTINGS</div>
             			<div className='row'>
                             {this.renderCheckbox()}
@@ -413,6 +468,14 @@ class SettingsScreen extends React.Component{
                         </div>
                         <div className='row' style={{position: 'relative', height:'30px', color:'white'}}>
                             <label style={{position:'relative',bottom:'0px', left:'15px'}}>Change the biography that is displayed on your profile.</label>
+                        </div>
+                        <div className='row'>
+                            <div className='col' style={{color:'white'}}>
+                                <button onClick={this.showChangeImageModal}>Change Profile Image</button><br/>
+                            </div>
+                        </div>
+                        <div className='row' style={{position: 'relative', height:'30px', color:'white'}}>
+                            <label style={{position:'relative',bottom:'0px', left:'15px'}}>Change the image that is displayed on your profile.</label>
                         </div>
                         {/* Modal */}
                         <Route path={'/main/changeUsername'} render={() => { 
@@ -630,7 +693,6 @@ class SettingsScreen extends React.Component{
                                 </div>
                             </div>
                         )}}/>
-
             		</div>
             	)
         }

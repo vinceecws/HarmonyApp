@@ -5,28 +5,6 @@ const _ = require('lodash');
 const path = require('path')
 const fs = require('fs')
 
-const multer = require('multer');
-const storage = multer.diskStorage({
-    destination: function(req, file, cb){
-        cb(null, './uploads/');
-    },
-    filename: function(req, file, cb){
-        cb(null, new Date().toISOString + file.originalname);
-    }
-})
-
-const fileFilter = function(req, file, cb){
-    if (file.mimetype === 'image/jpeg' || file.mimetype === 'img/png'){
-        cb(null, true);
-    }
-    else {
-        cb(new Error('Invalid File Type'), false);
-    }
-}
-
-const upload = multer({storage: storage, limits: {fileSize: 1024 * 1024 * 3},
-                        fileFilter: fileFilter});
-
 
 module.exports = function(mainSocket, sessionSocket) {
 
@@ -62,8 +40,42 @@ module.exports = function(mainSocket, sessionSocket) {
                 success: true
             })
         }
-        
+    })
 
+    apiRouter.post('/settings/uploadImage', async (req, res) => {
+        
+        if (req.user == null){
+            return res.status(401).json({
+                error: {
+                    name: "Bad request",
+                    message: "Invalid collectionId"
+                },
+                message: "Invalid collectionId",
+                statusCode: 401,
+                data: {
+                    user: null
+                },
+                success: false
+            })
+        }
+        else {
+            let imageBuffer = Buffer.from(req.body.image);
+            let contentType = req.body.contentType;
+            
+            let updatedUser = await mongooseQuery.updateUser(req.user._id, 
+                {'image.data': imageBuffer, 'image.contentType': contentType}, true);
+            if (updatedUser.image){
+                updatedUser.image.data = updatedUser.image.data.toString();
+            }
+            return res.status(200).json({
+                message: 'Update Successful',
+                data: {
+                    user: stripUser(updatedUser)
+                },
+                statusCode: 200,
+                success: true
+            })
+        }
     })
 
     apiRouter.post('/addSongToFavorites/:songId', async (req, res) => {
@@ -518,7 +530,10 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else {
-            let user = await mongooseQuery.getUser({'_id': req.params.id});
+            let user = await mongooseQuery.getUser({'_id': req.params.id}, true);
+            if (user.image!== undefined){
+                user.image.data = user.image.data.toString();
+            }
             return res.status(200).json({
                 message: "Fetch success",
                 statusCode: 200,
@@ -549,7 +564,11 @@ module.exports = function(mainSocket, sessionSocket) {
         else {
             let user = await mongooseQuery.getUser({'_id': id})
             let sessions = await mongooseQuery.getSession(user.sessions, true)
-            
+            for (let s of sessions){
+                if (s.image){
+                    s.image.data = s.image.data.toString();
+                }
+            }
             return res.status(200).json({
                 message: "Fetch success",
                 statusCode: 200,
@@ -582,7 +601,11 @@ module.exports = function(mainSocket, sessionSocket) {
         else {
             let user = await mongooseQuery.getUser({'_id': req.params.id})
             let playlists = await mongooseQuery.getCollection(user.playlists, true)
-            
+            for (let p of playlists){
+                if (p.image){
+                    p.image.data = p.image.data.toString();
+                }
+            }
             return res.status(200).json({
                 message: "Fetch success",
                 statusCode: 200,
@@ -616,7 +639,11 @@ module.exports = function(mainSocket, sessionSocket) {
         else {
             let user = await mongooseQuery.getUser({'_id': req.params.id})
             let likedCollections = await mongooseQuery.getCollection(user.likedCollections, true)
-            
+            for (let p of likedCollections){
+                if (p.image){
+                    p.image.data = p.image.data.toString();
+                }
+            }
             return res.status(200).json({
                 message: "Fetch success",
                 statusCode: 200,
@@ -1147,8 +1174,11 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else{
-            var session = await mongooseQuery.getSession({'_id': req.params.id});
+            var session = await mongooseQuery.getSession({'_id': req.params.id}, true);
             if(session.id === req.params.id){
+                if (session.image){
+                    session.image.data = session.image.data.toString();
+                }
                 if (req.user){
                     var user = stripUser(req.user)
                     var updatedUser = await mongooseQuery.updateUser(user._id, {
@@ -1449,14 +1479,23 @@ module.exports = function(mainSocket, sessionSocket) {
                 statusCode: 200,
                 data: {
                     sessions: sessionMatches.map(session => {
+                        if (session.image){
+                            session.image.data = session.image.data.toString();
+                        }
                         session.type = "session"
                         return session
                     }), 
                     collections: collectionMatches.map(collection => {
+                        if (collection.image){
+                            collection.image.data = collection.image.data.toString();
+                        }
                         collection.type = "collection"
                         return collection
                     }),
                     users: userMatches.map(user => {
+                        if (user.image){
+                            user.image.data = user.image.data.toString();
+                        }
                         var strippedUser = stripUser(user)
                         strippedUser.type = "user"
                         return strippedUser
@@ -1473,16 +1512,25 @@ module.exports = function(mainSocket, sessionSocket) {
             let filteredUsers = [];
             for (let s of sessionMatches){
                 if (String(s.hostId) !== String(thisUser._id)){
+                    if (s.image){
+                        s.image.data = s.image.data.toString();
+                    }
                     filteredSessions.push(s);
                 }
             }
             for (let c of collectionMatches){
                 if (!(thisUser.playlists.map(e => String(e)).includes(c._id))){
+                    if (c.image){
+                        c.image.data = c.image.data.toString();
+                    }
                     filteredCollections.push(c);
                 }
             }
             for (let u of userMatches){
                 if (String(thisUser._id) !== String(u._id)){
+                    if (u.image){
+                        u.image.data = u.image.data.toString();
+                    }
                     let fetchedUser = stripUser(u)
                     filteredUsers.push(fetchedUser);
                 } 

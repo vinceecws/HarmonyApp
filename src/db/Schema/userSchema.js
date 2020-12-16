@@ -49,6 +49,10 @@ const userSchema = new mongoose.Schema({
     currentSession: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Session"
+    },
+    image: {
+        data: Buffer,
+        contentType: String
     }
 })
 

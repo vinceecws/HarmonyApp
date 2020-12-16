@@ -28,7 +28,6 @@ class CollectionScreen extends React.Component{
             songPlaying: null,
             showUploadImageModal: false,
             uploadedImage: null,
-            imageType: null,
             collectionImageSrc: null
         }
         this.onUploadImage = this.onUploadImage.bind(this);
@@ -367,7 +366,6 @@ class CollectionScreen extends React.Component{
 
     onSubmitUploadImage = () => {
         if (this.state.uploadedImage !== null){
-            this.setState({imageType: this.state.uploadedImage[0].type});
             this.hideUploadImageModal();
             new Promise((resolve, reject) => {
                 var reader = new FileReader()
@@ -397,17 +395,12 @@ class CollectionScreen extends React.Component{
         this.setState({showUploadImageModal: false});
     }
 
-    hexToBase64 = (str) => {
-        return btoa(String.fromCharCode.apply(null, str.replace(/\r|\n/g, "").replace(/([\da-fA-F]{2}) ?/g, "0x$1 ").replace(/ +$/, "").split(" ")));
-    }
-
     setImage = (image) => {
         return 'data:' + image.contentType + ';base64,' + btoa(image.data);
     }
     
 
     getCollectionFavoriteButtonClass = () => {
-
         return this.state.favorited ? "collection-favorite-button-icon-on" : "collection-favorite-button-icon"
     }
 

@@ -26,6 +26,10 @@ const sessionSchema = new mongoose.Schema({
     live: {
         type: Boolean,
         default: false
+    },
+    image: {
+        data: Buffer,
+        contentType: String
     }
 })
 
