@@ -85,7 +85,9 @@ class MainApp extends React.Component {
     getScreenProps = (thisScreen) => {
         return thisScreen === this.state.currentScreen ? this.state.screenProps : null
     }
-    
+
+    /* prompts */
+
     showSessionEndedModal = () => {
         this.props.history.push('/main/sessionExpiredUser');
     }
@@ -261,7 +263,7 @@ class MainApp extends React.Component {
 
                             return(
                             <div id="hostSwitchSessions" className="user-prompt-modal">
-                                <div classname="login-screen-signup-modal-content"  >
+                                <div className="login-screen-signup-modal-content"  >
                                     <div className="modal-dialog">
                                         {/* Modal Content */}
                                         <div className="modal-content bg-color-jet color-accented">
@@ -287,7 +289,7 @@ class MainApp extends React.Component {
 
                             return(
                             <div id="hostLoggingOut" className="user-prompt-modal">
-                                <div classname="login-screen-signup-modal-content"  >
+                                <div className="login-screen-signup-modal-content"  >
                                     <div className="modal-dialog">
                                         {/* Modal Content */}
                                         <div className="modal-content bg-color-jet color-accented">

@@ -58,19 +58,21 @@ class SessionScreen extends React.Component {
             this.setState({
                 user: this.props.user
             })
+            this.hostSwitchingSessions = false;
 		}
 		
 		if (!this.state.loading && !this.state.unloading) {
-			if(this.props.isHostLoggingOut){
-				console.log("ending the session");
-				this.props.disableHostSwitching();
-				this.handleEndSessionLogout();
-				
-				
-			}
+			
 			if (this.props.screenProps) {
 				//If screen is active and new sessionId is passed
 				if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
+					if(this.props.isHostLoggingOut){
+						console.log("ending the session");
+						this.props.disableHostSwitching();
+						this.handleEndSessionLogout();
+						
+						
+					}
 					if((this.isHost() && !this.isNonParticipant()) && prevState.id !== null && this.props.screenProps.sessionId !== null){ //host switching between two live sessions
 						if(!this.props.isHostHopPromptShowing && !this.props.isHostSwitchingSessions && !this.hostSwitchingSessions){
 							console.log("bring up prompt to switch")
@@ -775,6 +777,12 @@ class SessionScreen extends React.Component {
 																																if (data.success) {
 																													                this.props.handleUpdateUser(data.data.user)
 																													                this.props.switchScreen(mainScreens.SESSION, data.data.sessionId)
+																													                if (!this.props.playerAPI.isPlayerInit()) { //Initialize on first use
+																															            this.props.playerAPI.initIFrameAPI(this.props.queue.getCurrentSong()._id)
+																															        }
+																															        else {
+																															            this.playerAPI.loadVideoById(this.props.queue.getCurrentSong()._id)
+																															        }
 																																}
 																															}).bind(this), true)}}>
 										<div className="subtitle color-accented">

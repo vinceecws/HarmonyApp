@@ -29,7 +29,8 @@ class CollectionScreen extends React.Component{
             showUploadImageModal: false,
             uploadedImage: null,
             imageType: null,
-            collectionImageSrc: null
+            collectionImageSrc: null,
+            error: false
         }
         this.onUploadImage = this.onUploadImage.bind(this);
     }
@@ -42,10 +43,15 @@ class CollectionScreen extends React.Component{
         }
         //If screen is now active
         if (!prevProps.visible && this.props.visible) {
-            this.setState({
-                collectionId: this.props.screenProps.collectionId,
-                loading: true
-            }, this.fetchCollection)
+            
+            if(this.props.screenProps.collectionId){
+               this.setState({
+                    collectionId: this.props.screenProps.collectionId,
+                    loading: true
+                }, this.fetchCollection) 
+            }
+            
+            
         }
     }
 
@@ -230,6 +236,7 @@ class CollectionScreen extends React.Component{
                             this.setState({ 
                                 collection: data.data.collection,
                                 loading: false,
+                                error: false,
                                 collectionName: data.data.collection.name,
                                 favorited: this.isCollectionFavorited(data.data.collection),
                                 songList: s,
@@ -238,7 +245,15 @@ class CollectionScreen extends React.Component{
                         })
                     }
                 }
-            }).bind(this), true)
+
+            }).bind(this), true, (function(res, data){
+                console.log("erorr callback")
+                    this.setState({
+                        error:true,
+                        loading:false
+                    })
+            
+            }).bind(this))
         }
     }
 
@@ -421,6 +436,9 @@ class CollectionScreen extends React.Component{
         var component
         if (this.state.loading) {
             component = <Spinner/>
+        }
+        else if(this.state.error && !this.state.loading){
+            component = <div className="color-accented body-text error-404-display">Oops, collection not found</div>
         }
         else {
             component = (
