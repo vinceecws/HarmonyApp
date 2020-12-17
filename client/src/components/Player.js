@@ -272,42 +272,41 @@ class Player extends React.Component {
 
     handleTogglePlay = () => {
         var currentSong
-        if(!this.props.playerAPI.getPlayerBuffering()){
-            if (!this.props.playerAPI.isPlayerInit()) { //Initialize on first use
-                currentSong = this.props.queue.getCurrentSong()
+        if (!this.props.playerAPI.isPlayerInit()) { //Initialize on first use
+            currentSong = this.props.queue.getCurrentSong()
 
-                if (currentSong) {
-                    this.props.playerAPI.initIFrameAPI(currentSong._id)
-                    if (this.props.shouldStartSession()) {
-                        this.handleCreateSession()
-                    }
-                    else {
-                        this.handleEmitPlayerState("player", "play")
-                    }
+            if (currentSong) {
+                this.props.playerAPI.initIFrameAPI(currentSong._id)
+                if (this.props.shouldStartSession()) {
+                    this.handleCreateSession()
                 }
-                return
-            }
-
-            if (this.state.paused) {
-
-                currentSong = this.props.queue.getCurrentSong()
-
-                if (currentSong) {
-                    this.props.playerAPI.playVideo()
-                    if (this.props.shouldStartSession()) {
-                        this.handleCreateSession()
-                    }
-                    else {
-                        this.handleEmitPlayerState("player", "play")
-                    }
+                else {
+                    this.handleEmitPlayerState("player", "play")
                 }
-                return
             }
-            else {
-                this.handleEmitPlayerState("player", "pause")
-                this.props.playerAPI.pauseVideo()
+            return
+        }
+
+        if (this.state.paused) {
+
+            currentSong = this.props.queue.getCurrentSong()
+
+            if (currentSong) {
+                this.props.playerAPI.playVideo()
+                if (this.props.shouldStartSession()) {
+                    this.handleCreateSession()
+                }
+                else {
+                    this.handleEmitPlayerState("player", "play")
+                }
             }
-        }   
+            return
+        }
+        else {
+            this.handleEmitPlayerState("player", "pause")
+            this.props.playerAPI.pauseVideo()
+        }
+         
     }
     handleToggleMute = () => {
         if (this.props.playerAPI.isMuted()) {

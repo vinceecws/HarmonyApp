@@ -29,9 +29,7 @@ class PlayerAPI {
     unsubscribeFromEvent = (event) => {
         this.subscribedEvents[event] = null
     }
-    getPlayerBuffering = () =>{
-        return this._playerBuffering;
-    }
+
     onPlayerReady = (e) => { //Called when initial player is loaded
         this._playerBuffering = false
         this._playerReady = true
@@ -47,6 +45,7 @@ class PlayerAPI {
     }
 
     onPlayerStateChange = (e) => {
+        console.log(e.data);
         if (e.data === window.YT.PlayerState.UNSTARTED || e.data === window.YT.PlayerState.BUFFERING) {
             this._playerBuffering = true
         }
@@ -149,7 +148,7 @@ class PlayerAPI {
         if (!this._playerBuffering && this._playerReady && this.player) {
             this._playerBuffering = true
             this.player.loadVideoById(id)
-            this.player.playVideo()
+            // this.player.playVideo()
         }
         else if (this._playerBuffering) {
             this._bufferQueue.push(this.loadVideoById.bind(this, id, true))
@@ -168,6 +167,7 @@ class PlayerAPI {
 
     pauseVideo = () => {
         if (!this._playerBuffering && this._playerReady && this.player) {
+            this._playerBuffering = true
             this.player.pauseVideo()
         }
         else if (this._playerBuffering) {
