@@ -45,6 +45,7 @@ class PlayerAPI {
     }
 
     onPlayerStateChange = (e) => {
+        console.log(e.data)
         if (e.data === window.YT.PlayerState.UNSTARTED || e.data === window.YT.PlayerState.BUFFERING) {
             this._playerBuffering = true
         }
