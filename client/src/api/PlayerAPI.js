@@ -157,7 +157,7 @@ class PlayerAPI {
 
     playVideo = () => {
         if (!this._playerBuffering && this._playerReady && this.player) {
-            this._playerBuffering = true
+            //this._playerBuffering = true
             this.player.playVideo()
         }
         else if (this._playerBuffering) {
@@ -189,6 +189,7 @@ class PlayerAPI {
             if (!this.isPaused()) {
                 this._playerBuffering = true //YT Player API does not change state if seeking is done during pause
             }
+            //this._playerBuffering = true
             this.player.seekTo(time)
         }
         else if (this._playerBuffering) {
