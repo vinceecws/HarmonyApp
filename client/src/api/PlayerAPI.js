@@ -29,7 +29,9 @@ class PlayerAPI {
     unsubscribeFromEvent = (event) => {
         this.subscribedEvents[event] = null
     }
-
+    getPlayerBuffering = () =>{
+        return this._playerBuffering;
+    }
     onPlayerReady = (e) => { //Called when initial player is loaded
         this._playerBuffering = false
         this._playerReady = true
