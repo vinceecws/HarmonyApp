@@ -167,7 +167,7 @@ class PlayerAPI {
 
     pauseVideo = () => {
         if (!this._playerBuffering && this._playerReady && this.player) {
-            this._playerBuffering = true
+            //this._playerBuffering = true
             this.player.pauseVideo()
         }
         else if (this._playerBuffering) {
