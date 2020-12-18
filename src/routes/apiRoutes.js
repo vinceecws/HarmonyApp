@@ -555,7 +555,7 @@ module.exports = function(mainSocket, sessionSocket) {
     apiRouter.get('/profile/:id/playlists/pageToken=:pageToken', async (req, res) => {
         let id = req.params.id
         let pageToken = req.params.pageToken
-        if (id == null || page <= 0) {
+        if (id == null || pageToken <= 0) {
             return res.status(401).json({
                 error: {
                     name: "Bad request",
@@ -592,7 +592,7 @@ module.exports = function(mainSocket, sessionSocket) {
     apiRouter.get('/profile/:id/likedCollections/pageToken=:pageToken', async (req, res) => {
         let id = req.params.id
         let pageToken = req.params.pageToken
-        if (id == null || page <= 0) {
+        if (id == null || pageToken <= 0) {
             return res.status(401).json({
                 error: {
                     name: "Bad request",
