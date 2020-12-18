@@ -2,6 +2,8 @@ import React from 'react';
 import Spinner from './Spinner';
 import { yin_yang_gradient , icon_like, icon_music_1, plus_button, icon_play_white_1, menu_button_white, icon_sound_mixer_1, icon_list, icon_playlist_2 } from '../graphics';
 import { Modal, Image, Card, Button, Dropdown, DropdownButton, ButtonGroup } from 'react-bootstrap'
+import { ReactComponent as BackArrow } from '../graphics/user_pack/back-arrow-white.svg'
+import { ReactComponent as NextArrow } from '../graphics/user_pack/next-arrow-white.svg'
 import DropdownItem from 'react-bootstrap/esm/DropdownItem'
 import { mainScreens } from '../const'
 
@@ -15,13 +17,17 @@ class ProfileScreen extends React.Component{
 		this.state = {
 			user: this.props.user,
 			loading: true,
-			sessions_loading: true,
 			playlists_loading: true,
 			likedSongs_loading: true,
 			likedCollections_loading: true,
+			playlists_nextPageToken: null,
+			playlists_prevPageToken: null,
+			likedSongs_nextPageToken: null,
+			likedSongs_prevPageToken: null,
+			likedCollections_nextPageToken: null,
+			likedCollections_prevPageToken: null,
 			userId: null,
 			profileUser: null,
-			sessions: [],
 			playlists: [],
 			likedSongs: [],
 			likedCollections: [],
@@ -44,10 +50,15 @@ class ProfileScreen extends React.Component{
 					this.setState({
 						userId: this.state.profileUser._id,
 						loading: true,
-						sessions_loading: true,
 						playlists_loading: true,
 						likedSongs_loading: true,
 						likedCollections_loading: true,
+						playlists_nextPageToken: null,
+						playlists_prevPageToken: null,
+						likedSongs_nextPageToken: null,
+						likedSongs_prevPageToken: null,
+						likedCollections_nextPageToken: null,
+						likedCollections_prevPageToken: null,
 						error: false,
 					}, this.fetchUser)
 				}
@@ -59,10 +70,15 @@ class ProfileScreen extends React.Component{
 			this.setState({
 				userId: this.props.screenProps.userId,
 				loading: true,
-				sessions_loading: true,
 				playlists_loading: true,
 				likedSongs_loading: true,
 				likedCollections_loading: true,
+				playlists_nextPageToken: null,
+				playlists_prevPageToken: null,
+				likedSongs_nextPageToken: null,
+				likedSongs_prevPageToken: null,
+				likedCollections_nextPageToken: null,
+				likedCollections_prevPageToken: null,
 				error: false
 			}, this.fetchUser)
 		}
@@ -85,10 +101,7 @@ class ProfileScreen extends React.Component{
 	}
 
 	handleGoToItem = (obj, e) => {
-        if (obj.type === "session") {
-			this.props.switchScreen(mainScreens.SESSION, obj._id)
-        }
-        else if (obj.type === "collection") {
+	if (obj.type === "collection") {
 			this.props.switchScreen(mainScreens.COLLECTION, obj._id)
         }
 	}
@@ -114,9 +127,6 @@ class ProfileScreen extends React.Component{
                 this.props.sessionClient.emitQueue(this.state.username, this.state.user._id, data)
 			}
 			this.props.playVideo(obj._id)
-        }
-        else if (obj.type === "session") {
-			this.props.switchScreen(mainScreens.SESSION, obj._id)
         }
         else if (obj.type === "collection") {
 			var songList = _.cloneDeep(obj.songList)
@@ -274,9 +284,68 @@ class ProfileScreen extends React.Component{
 		})
 	}
 
+	handleFetchPage = (type, which) => {
+        var pageToken
+        switch (type) {
+            case "likedSongs":
+                pageToken = this.state["likedSongs_" + which + "PageToken"]
+                if (!pageToken) {
+                    return
+				}
+				var firstInd = (8 * (pageToken - 1))
+				var lastInd = firstInd + 8 - 1
+				var newList = this.state.profileUser.likedSongs.slice(firstInd, lastInd + 1)
+				
+				var hasNextPage = (this.state.profileUser.likedSongs.length - (pageToken * 8)) > 0
+				var hasPrevPage = pageToken - 1 >= 1
+
+				var nextPageToken = hasNextPage ? pageToken + 1 : null
+				var prevPageToken = hasPrevPage ? pageToken - 1 : null
+
+                Promise.all(newList.map((songId) => {
+					return this.props.fetchVideoById(songId, true)
+				})).then((likedSongs) => {
+					this.setState({
+						likedSongs: likedSongs,
+						likedSongs_nextPageToken: nextPageToken,
+						likedSongs_prevPageToken: prevPageToken,
+						likedSongs_loading: false
+					})
+				})
+                break
+            case "playlists":
+            case "likedCollections":
+                pageToken = this.state[type + "_" + which + "PageToken"]
+                if (!pageToken) {
+                    return
+                }
+                this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.profileUser._id + '/' + type + '/pageToken=' + pageToken, (function(res, data) {
+                    if (data.success) {
+                        var newRes = _.cloneDeep(this.state.res)
+                        newRes[type] = data.data.items
+    
+                        var newState = {
+                            res: newRes
+                        }
+                        newState[type + "_nextPageToken"] = data.data.nextPageToken
+                        newState[type + "_prevPageToken"] = data.data.prevPageToken
+
+                        this.setState(newState)
+                    }
+                }).bind(this), true)
+                break
+            default:
+                break
+        }
+    }
+
 	getCharLengthClass = () => {
         return this.state.newCollectionName.length === 0 || this.handleValidateNewCollectionName() ? "color-accented body-text" : "color-alert body-text"
-    }
+	}
+	
+	getPageArrowClass = (category, which) => {
+		return this.state[category + "_" + which + "PageToken"] ? "search-screen-results-category-page-arrow" : "search-screen-results-category-page-arrow disabled"
+	}
 
 	fetchUser () {
 		if (this.state.user && (this.state.userId === this.state.user._id)) {
@@ -309,28 +378,14 @@ class ProfileScreen extends React.Component{
 			if (this.state.profileUser.image && this.state.profileUser.image.data){
 				this.setState({profileImageSrc: this.setImage(this.state.profileUser.image)});
 			}
-			if (this.state.profileUser.sessions.length > 0) {
-				this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.profileUser._id + '/sessions', (function(res, data) {
-					if (data.success) {
-						this.setState({
-							sessions: data.data.sessions,
-							sessions_loading: false
-						})
-					}
-				}).bind(this), true)
-			}
-			else if (this.state.sessions_loading) {
-				this.setState({
-					sessions: [],
-					sessions_loading: false
-				})
-			}
 
 			if (this.state.profileUser.playlists.length > 0) {
-				this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.profileUser._id + '/playlists', (function(res, data) {
+				this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.profileUser._id + '/playlists/pageToken=1', (function(res, data) {
 					if (data.success) {
 						this.setState({
-							playlists: data.data.playlists,
+							playlists: data.data.items,
+							playlists_nextPageToken: data.data.nextPageToken,
+							playlists_prevPageToken: data.data.prevPageToken,
 							playlists_loading: false
 						})
 					}
@@ -339,16 +394,29 @@ class ProfileScreen extends React.Component{
 			else if (this.state.playlists_loading) {
 				this.setState({
 					playlists: [],
+					playlists_nextPageToken: null,
+					playlists_prevPageToken: null,
 					playlists_loading: false
 				})
 			}
 
 			if (this.state.profileUser.likedSongs.length > 0) {
-				Promise.all(this.state.profileUser.likedSongs.map((songId) => {
+				var firstInd = 0
+				var lastInd = firstInd + 8 - 1
+				var newList = this.state.profileUser.likedSongs.slice(firstInd, lastInd + 1)
+				
+				var hasNextPage = (this.state.profileUser.likedSongs.length - 8) > 0
+
+				var nextPageToken = hasNextPage ? 2 : null
+				var prevPageToken = null
+
+				Promise.all(newList.map((songId) => {
 					return this.props.fetchVideoById(songId, true)
 				})).then((likedSongs) => {
 					this.setState({
 						likedSongs: likedSongs,
+						likedSongs_nextPageToken: nextPageToken,
+						likedSongs_prevPageToken: prevPageToken,
 						likedSongs_loading: false
 					})
 				})
@@ -356,15 +424,19 @@ class ProfileScreen extends React.Component{
 			else if (this.state.likedSongs_loading) {
 				this.setState({
 					likedSongs: [],
+					likedSongs_nextPageToken: null,
+					likedSongs_prevPageToken: null,
 					likedSongs_loading: false
 				})
 			}
 
 			if (this.state.profileUser.likedCollections.length > 0) {
-				this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.profileUser._id + '/likedCollections', (function(res, data) {
+				this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.profileUser._id + '/likedCollections/pageToken=1', (function(res, data) {
 					if (data.success) {
 						this.setState({
-							likedCollections: data.data.likedCollections,
+							likedCollections: data.data.items,
+							likedCollections_nextPageToken: data.data.nextPageToken,
+							likedCollections_prevPageToken: data.data.prevPageToken,
 							likedCollections_loading: false
 						})
 					}
@@ -373,6 +445,8 @@ class ProfileScreen extends React.Component{
 			else if (this.state.likedCollections_loading) {
 				this.setState({
 					likedCollections: [],
+					likedCollections_nextPageToken: null,
+					likedCollections_prevPageToken: null,
 					likedCollections_loading: false
 				})
 			}
@@ -421,7 +495,6 @@ class ProfileScreen extends React.Component{
 							<div id='profile-screen-biography' className='body-text color-contrasted' rows='5' cols='35'>{this.state.profileUser.biography}</div>
 							<div id='profile-screen-summary' className='row'>
 								<div id='profile-screen-summary-text' className='body-text color-contrasted'>
-									{this.state.sessions.length} Session(s) ⋅  
 									{" " + this.state.playlists.length} Playlist(s) ⋅  
 									{" " + this.state.likedSongs.length} Liked Song(s) ⋅  
 									{" " + this.state.likedCollections.length} Liked Collection(s)
@@ -432,8 +505,7 @@ class ProfileScreen extends React.Component{
 					<div id='profile-screen-bottom-container'>
 					{
 						
-						[this.state.profileUser.sessions,
-						this.state.profileUser.playlists,
+						[this.state.profileUser.playlists,
 						this.state.profileUser.likedSongs,
 						this.state.profileUser.likedCollections
 						].every(arr => arr.length === 0) ?
@@ -459,42 +531,14 @@ class ProfileScreen extends React.Component{
 						} 
 						</div> :
 						<div>
-						{ 
-							this.state.profileUser.sessions && (this.state.profileUser.sessions.length > 0) ?
-							<div>	
-								<div className='row' style={{padding:'1em'}}>
-									<div style={{color: 'white', fontSize:'35px'}}>
-										{this.state.profileUser.username}'s Sessions
-									</div>
-								</div>
-								<div className='row' style={{padding:'1em'}}>
-									<div className='card-deck profile-screen-category-container'>
-										{
-											this.state.sessions_loading ? 
-											<div></div> :
-											this.state.sessions.map((session, session_ind) => 
-												<div key={session_ind} className='card profile-screen-category-item-card'>
-													<img className="card-img-top profile-screen-category-item-card-image" src={session.image} alt=""/>
-													<div className="card-body profile-screen-category-item-card-text-container" style={{textAlign:'center'}}>
-														<h1 className="card-title profile-screen-category-item-card-name ellipsis-multi-line-overflow subtitle color-jet" onClick={this.handleGoToItem.bind(this, session)}>{session.name}</h1>
-														<p className="body-text profile-screen-category-item-card-creator ellipsis-multi-line-overflow body-text color-jet">{session.hostName}</p>
-														<div className="profile-screen-category-item-card-likes">{this.formatCount(session.likes)} <img src={icon_like} className='profile-screen-category-item-card-likes-icon' alt=""/></div>
-														<div className="profile-screen-category-item-card-streams">{session.streams} <img src={session.image ? session.image : icon_sound_mixer_1} className='profile-screen-category-item-card-streams-icon' alt=""/></div>
-													</div>
-												</div>
-												)
-										}
-									</div>
-								</div>
-							</div> :
-							<div></div>
-						}
 						{
 							this.state.profileUser.playlists && (this.state.profileUser.playlists.length > 0 || (this.state.profileUser._id === this.state.user._id)) ?
 							<div>	
 								<div className='row' style={{padding:'1em'}}>
-									<div style={{color: 'white', fontSize:'35px'}}>
-										{this.state.profileUser.username}'s Playlists
+									<div className="search-screen-results-category-header">
+										<div className="search-screen-results-category-name title color-contrasted">{this.state.profileUser.username}'s Playlists</div>
+										<BackArrow className={this.getPageArrowClass("playlists", "prev")} onClick={e => this.handleFetchPage("playlists", "prev")}/>
+										<NextArrow className={this.getPageArrowClass("playlists", "next")} onClick={e => this.handleFetchPage("playlists", "next")}/>
 									</div>
 								</div>
 								<div className='row' style={{padding:'1em'}}>
@@ -574,8 +618,10 @@ class ProfileScreen extends React.Component{
 							this.state.profileUser.likedSongs && (this.state.profileUser.likedSongs.length > 0) ?
 							<div>
 								<div className='row' style={{padding:'1em'}}>
-									<div style={{color: 'white', fontSize:'35px'}}>
-										{this.state.profileUser.username}'s Liked Songs
+									<div className="search-screen-results-category-header">
+										<div className="search-screen-results-category-name title color-contrasted">{this.state.profileUser.username}'s Liked Songs</div>
+										<BackArrow className={this.getPageArrowClass("likedSongs", "prev")} onClick={e => this.handleFetchPage("likedSongs", "prev")}/>
+										<NextArrow className={this.getPageArrowClass("likedSongs", "next")} onClick={e => this.handleFetchPage("likedSongs", "next")}/>
 									</div>
 								</div>
 								<div className='row' style={{padding:'1em'}}>
@@ -664,8 +710,10 @@ class ProfileScreen extends React.Component{
 							this.state.profileUser.likedCollections && (this.state.likedCollections.length > 0) ?
 							<div>
 								<div className='row' style={{padding:'1em'}}>
-									<div style={{color: 'white', fontSize:'35px'}}>
-										{this.state.profileUser.username}'s Liked Collections
+									<div className="search-screen-results-category-header">
+										<div className="search-screen-results-category-name title color-contrasted">{this.state.profileUser.username}'s Liked Collections</div>
+										<BackArrow className={this.getPageArrowClass("likedCollections", "prev")} onClick={e => this.handleFetchPage("likedCollections", "prev")}/>
+										<NextArrow className={this.getPageArrowClass("likedCollections", "next")} onClick={e => this.handleFetchPage("likedCollections", "next")}/>
 									</div>
 								</div>
 								<div className='row' style={{padding:'1em'}}>

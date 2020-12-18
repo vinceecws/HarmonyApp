@@ -403,7 +403,6 @@ class SearchScreen extends React.Component {
             case "session":
             case "collection":
             case "user":
-                console.log(type)
                 pageToken = this.state[type + "_" + which + "PageToken"]
                 if (!pageToken) {
                     return
@@ -416,7 +415,6 @@ class SearchScreen extends React.Component {
                         var newState = {
                             res: newRes
                         }
-                        console.log(newRes)
                         newState[type + "_nextPageToken"] = data.data.nextPageToken
                         newState[type + "_prevPageToken"] = data.data.prevPageToken
 

@@ -1,6 +1,7 @@
 const express = require("express")
 const mongooseQuery = require('../db');
 const stripUser = require('./index').stripUser
+const paginate = require('./index').paginate
 const _ = require('lodash');
 const path = require('path')
 const fs = require('fs')
@@ -551,9 +552,10 @@ module.exports = function(mainSocket, sessionSocket) {
         }
     });
 
-    apiRouter.get('/profile/:id/sessions', async (req, res) => {
-        let id = req.params.id;
-        if (id == null){
+    apiRouter.get('/profile/:id/playlists/pageToken=:pageToken', async (req, res) => {
+        let id = req.params.id
+        let pageToken = req.params.pageToken
+        if (id == null || page <= 0) {
             return res.status(401).json({
                 error: {
                     name: "Bad request",
@@ -562,63 +564,35 @@ module.exports = function(mainSocket, sessionSocket) {
                 message: "Invalid query",
                 statusCode: 401,
                 data: {
-                    sessions: null
+                    playlists: null
                 },
                 success: false
             })
         }
         else {
             let user = await mongooseQuery.getUser({'_id': id})
-            let sessions = await mongooseQuery.getSession(user.sessions, true)
+            let pagination = paginate(user.playlists, pageToken, 8)
+            let playlists = await mongooseQuery.getCollection(pagination.list, true)
             return res.status(200).json({
                 message: "Fetch success",
                 statusCode: 200,
                 data: {
-                    sessions: sessions.map(session => {
-                        session.type = "session"
-                        return session
-                    })
-                },
-                success: true
-            })
-        }
-    });
-
-    apiRouter.get('/profile/:id/playlists', async (req, res) => {
-        if (req.params.id == null){
-            return res.status(401).json({
-                error: {
-                    name: "Bad request",
-                    message: "Invalid query"
-                },
-                message: "Invalid query",
-                statusCode: 401,
-                data: {
-                    playlists: null
-                },
-                success: false
-            })
-        }
-        else {
-            let user = await mongooseQuery.getUser({'_id': req.params.id})
-            let playlists = await mongooseQuery.getCollection(user.playlists, true)
-            return res.status(200).json({
-                message: "Fetch success",
-                statusCode: 200,
-                data: {
-                    playlists: playlists.map(playlist => {
+                    items: playlists.map(playlist => {
                         playlist.type = "collection"
                         return playlist
-                    })
+                    }),
+                    nextPageToken: pagination.nextPageToken,
+                    prevPageToken: pagination.prevPageToken
                 },
                 success: true
             })
         }
     });
 
-    apiRouter.get('/profile/:id/likedCollections', async (req, res) => {
-        let id = req.params.id;
-        if (id == null){
+    apiRouter.get('/profile/:id/likedCollections/pageToken=:pageToken', async (req, res) => {
+        let id = req.params.id
+        let pageToken = req.params.pageToken
+        if (id == null || page <= 0) {
             return res.status(401).json({
                 error: {
                     name: "Bad request",
@@ -633,16 +607,19 @@ module.exports = function(mainSocket, sessionSocket) {
             })
         }
         else {
-            let user = await mongooseQuery.getUser({'_id': req.params.id})
-            let likedCollections = await mongooseQuery.getCollection(user.likedCollections, true)
+            let user = await mongooseQuery.getUser({'_id': id})
+            let pagination = paginate(user.likedCollections, pageToken, 8)
+            let likedCollections = await mongooseQuery.getCollection(pagination.list, true)
             return res.status(200).json({
                 message: "Fetch success",
                 statusCode: 200,
                 data: {
-                    likedCollections: likedCollections.map(collection => {
+                    items: likedCollections.map(collection => {
                         collection.type = "collection"
                         return collection
-                    })
+                    }),
+                    nextPageToken: pagination.nextPageToken,
+                    prevPageToken: pagination.prevPageToken
                 },
                 success: true
             })
@@ -766,12 +743,12 @@ module.exports = function(mainSocket, sessionSocket) {
             if (elements.length >= 4) { //Include only if there's enough to show
                 suggestions.push({
                     categoryName: "Listen Again",
-                    suggestions: elements
+                    suggestions: elements.slice(0, 10)
                 })
             }
         }
 
-        elements = await mongooseQuery.getTopCollections(max=15, lean=true)
+        elements = await mongooseQuery.getTopCollections(max=10, lean=true)
 
         elements = elements.map(collection => {
             collection.type = "collection"
