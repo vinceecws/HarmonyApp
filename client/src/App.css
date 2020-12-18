@@ -1337,6 +1337,8 @@ body, html {
 
 .search-screen-results-category-list-item-img {
   background-color: gray;
+  height: 123px;
+  min-height: 123px;
 }
 
 .search-screen-results-category-list-item-img-overlay-trigger {
