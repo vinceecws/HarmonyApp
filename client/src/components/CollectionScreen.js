@@ -79,8 +79,6 @@ class CollectionScreen extends React.Component{
             this.props.axiosWrapper.axiosPost('/api/collection/updateCollection/'+ this.state.collectionId,
             {likes: numLikes}, (function(res, data){
                 if (data.success){
-                    console.log('Updated collection');
-
                     //update user
                     this.props.axiosWrapper.axiosPost('/api/collection/updateUser/' + this.props.user._id,
                     {likedCollections: favoritedCollections}, (function(res, data){
@@ -311,7 +309,6 @@ class CollectionScreen extends React.Component{
 
     //reorder songlist (persistant)
     handleOnDragEnd = (result) =>{
-        console.log(result);
         if (result.destination !== null && result.source !== null){
             //update frontend
             /*

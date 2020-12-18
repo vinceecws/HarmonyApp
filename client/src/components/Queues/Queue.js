@@ -256,6 +256,7 @@ class Queue {
     }
 
     addSongToFutureQueue = (song) => {
+        console.log(song);
         if (this._currentSong == null) {
             this._currentSong = song
             this.onChange.currentSongChange.forEach(handler => handler.call(this.getCurrentSong()))

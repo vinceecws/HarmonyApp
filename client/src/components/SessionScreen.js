@@ -74,7 +74,7 @@ class SessionScreen extends React.Component {
 						
 				}
 				if (this.props.screenProps.sessionId && (prevState.id !== this.props.screenProps.sessionId)) {
-					
+					console.log(this.props.queue.getFutureQueue());
 
 					if((this.isHost() && !this.isNonParticipant()) && prevState.id !== null && this.props.screenProps.sessionId !== null){ //host switching between two live sessions
 						if(!this.props.isHostSwitchingSessions && !this.hostSwitchingSessions){
@@ -517,6 +517,7 @@ class SessionScreen extends React.Component {
 	}
 
 	initSession = (session) => {
+
 		if (session) {
 			if (this.shouldEmitActions()) {
             	this.setState({
@@ -582,6 +583,8 @@ class SessionScreen extends React.Component {
 
 	initSessionClient = () => {
 		this.props.queue.clearPastQueue()
+		console.log(this.state.futureQueue);
+		console.log(this.props.queue);
 		this.props.sessionClient.joinSession(this.state.id)
 
 		if (this.shouldEmitActions()) {
