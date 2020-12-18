@@ -56,7 +56,7 @@ export const icon_play_white_and_black_1 = require('./music_player_pack/052-play
 export const icon_up_arrow = require('./music_player_pack/TriangleArrow-Up.svg')
 export const icon_down_arrow = require('./music_player_pack/TriangleArrow-Down.svg')
 
-/* user_pack imports*/
+/* user_pack exports*/
 
 export const icon_profile_image = require('./user_pack/001-profile image.svg')
 export const icon_calendar = require('./user_pack/002-calendar.svg')
@@ -68,6 +68,10 @@ export const menu_button = require('./user_pack/menu-button.svg')
 export const menu_button_white = require('./user_pack/menu-button-white.svg')
 export const plus_button = require('./user_pack/plus-button.svg')
 export const plus_button_white = require('./user_pack/plus-button-white.svg')
+export const next_arrow = require('./user_pack/next-arrow.svg')
+export const next_arrow_white = require('./user_pack/next-arrow-white.svg')
+export const back_arrow = require('./user_pack/back-arrow.svg')
+export const back_arrow_white = require('./user_pack/back-arrow-white.svg')
 
 export const yin_yang_color_harmony = require('./yin-yang-color-harmony.svg')
 export const yin_yang_fill_color_harmony = require('./yin-yang-fill-color-harmony.svg')

@@ -122,6 +122,10 @@
   display: none !important;
 }
 
+.disabled {
+  fill: gray !important;
+}
+
 .collapsed {
   visibility: collapse;
   display: none !important;
@@ -1259,11 +1263,32 @@ body, html {
   padding: 10px;
 }
 
+.search-screen-results-category-header {
+  display: flex;
+  align-items: center;
+}
+
 .search-screen-results-category-name {
   padding: 10px 5px 0px 25px;
   font-size: 30px;
   border-bottom: 1px solid #303030;
   margin-bottom: 15px;
+  width: 93%;
+}
+
+.search-screen-results-category-page-arrow {
+  height: 20px;
+  width: 20px;
+  flex: 1;
+  fill: whitesmoke;
+}
+
+.search-screen-results-category-page-arrow.disabled:hover {
+  height: 20px;
+}
+
+.search-screen-results-category-page-arrow:hover {
+  height: 22px;
 }
 
 .search-screen-results-category-list {

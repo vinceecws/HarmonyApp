@@ -148,7 +148,6 @@ class PlayerAPI {
         if (!this._playerBuffering && this._playerReady && this.player) {
             this._playerBuffering = true
             this.player.loadVideoById(id)
-            this.player.playVideo()
         }
         else if (this._playerBuffering) {
             this._bufferQueue.push(this.loadVideoById.bind(this, id, true))
@@ -157,7 +156,6 @@ class PlayerAPI {
 
     playVideo = () => {
         if (!this._playerBuffering && this._playerReady && this.player) {
-            this._playerBuffering = true
             this.player.playVideo()
         }
         else if (this._playerBuffering) {

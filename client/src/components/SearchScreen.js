@@ -2,6 +2,8 @@ import React from 'react'
 import Spinner from './Spinner';
 import { ListGroup, Image, Button, CardDeck, Card, InputGroup, FormControl, Dropdown, DropdownButton, ButtonGroup, Modal } from 'react-bootstrap'
 import { delete_cross_white, delete_button_white, icon_play_white_1, menu_button_white, icon_music_1, icon_sound_mixer_1, icon_playlist_2, icon_profile_image } from '../graphics'
+import { ReactComponent as BackArrow } from '../graphics/user_pack/back-arrow-white.svg'
+import { ReactComponent as NextArrow } from '../graphics/user_pack/next-arrow-white.svg'
 import SuggestionsAPI from '../api/SuggestionsAPI'
 import DropdownItem from 'react-bootstrap/esm/DropdownItem';
 import { mainScreens } from '../const'
@@ -26,7 +28,15 @@ class SearchScreen extends React.Component {
             showDropdown: false,
             showCreateCollectionModal: false,
             history_loading: true,
-            playlists_loading: true
+            playlists_loading: true,
+            song_nextPageToken: null,
+            song_prevPageToken: null,
+            collection_nextPageToken: null,
+            collection_prevPageToken: null,
+            session_nextPageToken: null,
+            session_prevPageToken: null,
+            user_nextPageToken: null,
+            user_prevPageToken: null
         }
     }
 
@@ -303,13 +313,20 @@ class SearchScreen extends React.Component {
             query: "",
             suggestions: [],
             res: {},
+            song_nextPageToken: null,
+            song_prevPageToken: null,
+            collection_nextPageToken: null,
+            collection_prevPageToken: null,
+            session_nextPageToken: null,
+            session_prevPageToken: null,
+            user_nextPageToken: null,
+            user_prevPageToken: null
         })
     }
 
     handleSearchQueryChange = (e) => {
         this.setState({
             query: e.target.value,
-            res: {}
         })
         this.suggestions.query(e.target.value, this.handleUpdateSuggestions)
     }
@@ -365,6 +382,32 @@ class SearchScreen extends React.Component {
         }).bind(this), true)
     }
 
+    handleFetchPage = (type, which) => {
+        var pageToken
+        switch (type) {
+            case "song":
+                pageToken = this.state["song_" + which + "PageToken"]
+                if (!pageToken) {
+                    return
+                }
+                
+                this.props.queryVideos(this.state.query, pageToken).then(res => {
+                    var newRes = _.cloneDeep(this.state.res)
+                    console.log(res.res)
+                    console.log(newRes.song)
+                    newRes.song = res.res
+                    this.setState({
+                        song_nextPageToken: res.nextPageToken,
+                        song_prevPageToken: res.prevPageToken,
+                        res: newRes
+                    })
+                })
+                break
+            default:
+                break
+        }
+    }
+
     fetchPlaylists = () => {
         this.props.axiosWrapper.axiosGet('/api/search', (function(res, data) {
             if (data.success) {
@@ -398,17 +441,19 @@ class SearchScreen extends React.Component {
         if (query.trim() !== "") {
             this.props.queryVideos(query).then(res => {
                 var newRes = _.cloneDeep(this.state.res)
-                newRes.songs = res
+                newRes.song = res.res
                 this.setState({
+                    song_nextPageToken: res.nextPageToken,
+                    song_prevPageToken: res.prevPageToken,
                     res: newRes
                 })
             })
             this.props.axiosWrapper.axiosGet('/api/search/query=' + query, (function(res, data) {
                 if (data.success) {
                     var newRes = _.cloneDeep(this.state.res)
-                    newRes.sessions = data.data.sessions
-                    newRes.collections = data.data.collections
-                    newRes.users = data.data.users
+                    newRes.session = data.data.sessions
+                    newRes.collection = data.data.collections
+                    newRes.user = data.data.users
                     this.setState({
                         res: newRes
                     })
@@ -465,7 +510,13 @@ class SearchScreen extends React.Component {
         return this.isSearchBoxEmpty() ? "search-screen-results collapsed" : "search-screen-results visible"
     }
 
+    getPageArrowClass = (category, which) => {
+        return this.state[category + "_" + which + "PageToken"] ? "search-screen-results-category-page-arrow" : "search-screen-results-category-page-arrow disabled"
+    }
+
     render() {
+        console.log(this.state.song_nextPageToken)
+        console.log(this.state.song_prevPageToken)
         var component
         if (this.state.playlists_loading || this.state.history_loading) {
             component = <Spinner/>
@@ -553,7 +604,11 @@ class SearchScreen extends React.Component {
                     <div className={this.getResultsClass()}>
                         {Object.keys(this.state.res).map((category, cat_ind) => this.state.res[category] !== undefined && this.state.res[category].length > 0 ?
                             <div className="search-screen-results-category-container" key={cat_ind}>
-                                <div className="search-screen-results-category-name title color-contrasted">{category.capitalize()}</div>
+                                <div className="search-screen-results-category-header">
+                                    <div className="search-screen-results-category-name title color-contrasted">{category.capitalize() + "s"}</div>
+                                    <BackArrow className={this.getPageArrowClass(category, "prev")} onClick={e => this.handleFetchPage(category, "prev")}/>
+                                    <NextArrow className={this.getPageArrowClass(category, "next")} onClick={e => this.handleFetchPage(category, "next")}/>
+                                </div>
                                 <CardDeck className="search-screen-results-category-list">
                                     {
                                         this.state.res[category].map((obj, item_ind) => 

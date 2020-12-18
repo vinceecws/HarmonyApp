@@ -288,7 +288,9 @@ class Player extends React.Component {
         }
 
         if (this.state.paused) {
+
             currentSong = this.props.queue.getCurrentSong()
+
             if (currentSong) {
                 this.props.playerAPI.playVideo()
                 if (this.props.shouldStartSession()) {
@@ -304,8 +306,8 @@ class Player extends React.Component {
             this.handleEmitPlayerState("player", "pause")
             this.props.playerAPI.pauseVideo()
         }
+         
     }
-
     handleToggleMute = () => {
         if (this.props.playerAPI.isMuted()) {
             this.props.playerAPI.unMute()

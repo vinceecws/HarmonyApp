@@ -95,22 +95,28 @@ class DataAPI {
         }
     }
 
-    queryVideos = (query) => {
+    queryVideos = (query, pageToken) => {
+        console.log(query)
+        console.log(pageToken)
         if (this._dataAPIReady) {
             var res = window.gapi.client.youtube.search.list({
                 part: [
                     "snippet"
                 ],
-                //eventType: "completed",
-                maxResults: 25,
+                maxResults: 15,
                 order: "viewCount",
                 q: query,
+                pageToken: pageToken ? pageToken : "",
                 type: "video",
                 videoCategoryId: "10",
                 videoSyndicated: true,
                 videoEmbeddable: true
             }).then((response) => {
-                return response.result.items.map(res => this.constructVideoResultObj(res))
+                return {
+                    nextPageToken: response.result.nextPageToken ? response.result.nextPageToken : null,
+                    prevPageToken: response.result.prevPageToken ? response.result.prevPageToken : null,
+                    res: response.result.items.map(res => this.constructVideoResultObj(res))
+                }
             }, (err) => {
                 return err
             }, this)
