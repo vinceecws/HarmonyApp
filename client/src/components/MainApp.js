@@ -136,11 +136,12 @@ class MainApp extends React.Component {
         playVideo is used to clear the current queue and playing the
         desired song 
     */
-    playVideo = (id) => {
+    playVideo = (id, callback) => {
 
         this.queue.clearFutureQueue()
         this.fetchVideoById(id, true).then((song) => {
             this.queue.setCurrentSong(song)
+            callback()
         })
         if (!this.playerAPI.isPlayerInit()) { //Initialize on first use
             this.playerAPI.initIFrameAPI(id)

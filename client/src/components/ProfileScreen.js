@@ -139,16 +139,16 @@ class ProfileScreen extends React.Component{
                     }
                     this.props.sessionClient.emitQueue(this.state.username, this.state.user._id, data)
 				}
-				this.props.playVideo(songId)
-
-				Promise.all(songList.map((songId) => {
-					return this.props.fetchVideoById(songId, true)
-				})).then((songs) => {
-					songs.forEach(song => this.handleAddSongToFutureQueue(song))
-				}).then(() => {
-					if (this.props.shouldStartSession()) {
-                        this.handleCreateSession()
-                    }
+				this.props.playVideo(songId, () => {
+					Promise.all(songList.map((songId) => {
+						return this.props.fetchVideoById(songId, true)
+					})).then((songs) => {
+						songs.forEach(song => this.handleAddSongToFutureQueue(song))
+					}).then(() => {
+						if (this.props.shouldStartSession()) {
+							this.handleCreateSession()
+						}
+					})
 				})
             }
         }

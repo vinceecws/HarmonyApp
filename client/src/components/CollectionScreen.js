@@ -287,16 +287,15 @@ class CollectionScreen extends React.Component{
             this.props.sessionClient.emitQueue(this.state.username, this.state.user._id, data)
         }
 
-        this.props.playVideo(song._id)
-
-        for (let i = index + 1; i < this.state.songList.length; i++) {
-            this.handleAddSongToFutureQueue(this.state.songList[i])
-        }
-        console.log(this.props.shouldStartSession())
-        if (this.props.shouldStartSession()){
-            console.log('Create session Called');
-            this.createSession()
-        }
+        this.props.playVideo(song._id, () => {
+            for (let i = index + 1; i < this.state.songList.length; i++) {
+                this.handleAddSongToFutureQueue(this.state.songList[i])
+            }
+    
+            if (this.props.shouldStartSession()){
+                this.createSession()
+            }
+        })
     }
 
     createSession = () => {
