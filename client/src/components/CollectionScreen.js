@@ -218,7 +218,6 @@ class CollectionScreen extends React.Component{
     }
 
     getSongDuration(duration){
-        console.log(duration);
         return moment.duration(duration).minutes() + ":" + String(moment.duration(duration).seconds()).padStart(2, '0');
         
     }

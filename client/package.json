@@ -12,6 +12,7 @@
     "jquery": "^3.5.1",
     "load-script2": "^2.0.6",
     "lodash": "^4.17.20",
+    "moment": "^2.29.1",
     "popper.js": "^1.16.1",
     "react": "^16.14.0",
     "react-beautiful-dnd": "^13.0.0",
