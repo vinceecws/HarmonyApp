@@ -1226,6 +1226,10 @@ body, html {
 .search-screen-history-item-display-image {
   height: 60px;
   width: 60px;
+  min-height: 60px;
+  min-width: 60px;
+  max-height: 60px;
+  max-width: 60px;
 }
 
 .search-screen-history-item-display-container {

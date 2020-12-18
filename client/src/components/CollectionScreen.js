@@ -6,6 +6,7 @@ import { ReactComponent as DeleteButton } from '../graphics/user_pack/delete-but
 import { Image, Button, Dropdown, ButtonGroup, Modal } from 'react-bootstrap';
 import { Droppable, DragDropContext, Draggable } from 'react-beautiful-dnd'
 import { mainScreens } from '../const'
+import moment from 'moment';
 
 const _ = require('lodash');
 
@@ -217,7 +218,8 @@ class CollectionScreen extends React.Component{
     }
 
     getSongDuration(duration){
-        return duration[2] + ':' + duration[4] + duration[5];
+        return moment.duration(duration).minutes() + ":" + String(moment.duration(duration).seconds()).padStart(2, '0');
+        
     }
 
     getDateAdded(date){
