@@ -390,11 +390,8 @@ class SearchScreen extends React.Component {
                 if (!pageToken) {
                     return
                 }
-                
                 this.props.queryVideos(this.state.query, pageToken).then(res => {
                     var newRes = _.cloneDeep(this.state.res)
-                    console.log(res.res)
-                    console.log(newRes.song)
                     newRes.song = res.res
                     this.setState({
                         song_nextPageToken: res.nextPageToken,
@@ -515,8 +512,6 @@ class SearchScreen extends React.Component {
     }
 
     render() {
-        console.log(this.state.song_nextPageToken)
-        console.log(this.state.song_prevPageToken)
         var component
         if (this.state.playlists_loading || this.state.history_loading) {
             component = <Spinner/>

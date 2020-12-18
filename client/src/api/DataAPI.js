@@ -96,8 +96,6 @@ class DataAPI {
     }
 
     queryVideos = (query, pageToken) => {
-        console.log(query)
-        console.log(pageToken)
         if (this._dataAPIReady) {
             var res = window.gapi.client.youtube.search.list({
                 part: [

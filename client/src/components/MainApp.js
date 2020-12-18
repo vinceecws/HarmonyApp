@@ -154,8 +154,8 @@ class MainApp extends React.Component {
         DataAPI methods
     */
 
-    queryVideos = (query) => {
-        return this.dataAPI.queryVideos(query)
+    queryVideos = (query, pageToken) => {
+        return this.dataAPI.queryVideos(query, pageToken)
     }
     
     fetchVideoById = (id, snippet=false) => {
