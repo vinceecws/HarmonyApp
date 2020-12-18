@@ -451,7 +451,7 @@ class CollectionScreen extends React.Component{
 						</Modal.Header>
 						<Modal.Body>
 							<p>Upload Image (PNG, JPG):</p>
-							<input type='file' accept='image/jpg, image/png' onChange={e => this.onUploadImage(e.target.files)}></input>
+							<input type='file' accept='image/jpg, image/png' onChange={e => this.onUploadImage(e.target.files)} style={{overflow: 'hidden'}}></input>
 						</Modal.Body>
 						<Modal.Footer>
 							<Button variant="secondary" onClick={this.hideUploadImageModal}>Close</Button>
@@ -469,7 +469,7 @@ class CollectionScreen extends React.Component{
                         {/* Collection Info */}
                         <div className='col' style={{marginRight: '30%', minWidth: '35%'}}>
                             <div className='row'>
-                                <h2 className='collection-page-text'>
+                                <h2 className='collection-page-text' style={{marginTop: '5%'}}>
                                     {this.state.collection.name}
                                 </h2>
                             </div>
@@ -480,7 +480,7 @@ class CollectionScreen extends React.Component{
                             </div>
                             <div className='row'>
                                 {/* Remember to add these attributes to collection objects*/}
-                                <p className='collection-page-text'>
+                                <p className='collection-page-text' style={{marginBottom: '0'}}>
                                     {this.state.collection.ownerName} - {this.state.collection.likes} likes - {this.state.collection.songList.length} songs 
                                 </p>
                             </div>

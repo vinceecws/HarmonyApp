@@ -421,7 +421,7 @@ class SettingsScreen extends React.Component{
                             </Modal.Header>
                             <Modal.Body>
                                 <p>Upload Image (PNG, JPG):</p>
-                                <input type='file' accept='image/jpg, image/png' onChange={e => this.onUploadImage(e.target.files)}></input>
+                                <input type='file' accept='image/jpg, image/png' onChange={e => this.onUploadImage(e.target.files)} style={{overflow: 'hidden'}}></input>
                             </Modal.Body>
                             <Modal.Footer>
                                 <Button variant="secondary" onClick={this.hideChangeImageModal}>Close</Button>
