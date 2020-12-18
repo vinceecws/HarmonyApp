@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const songSchema = require('./songSchema.js')
+const paginator = require('./plugin.js').paginationPlugin
 
 const collectionSchema = new mongoose.Schema ({
     name: {
@@ -29,6 +29,10 @@ const collectionSchema = new mongoose.Schema ({
         data: String,
         contentType: String
     }
+})
+
+collectionSchema.plugin(paginator, {
+    limit: 10
 })
 
 collectionSchema.post('findOneAndRemove', function (next) {

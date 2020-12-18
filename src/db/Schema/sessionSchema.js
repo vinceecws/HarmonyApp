@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const paginator = require('./plugin.js').paginationPlugin
 
 const sessionSchema = new mongoose.Schema({
     hostId: {
@@ -31,6 +32,10 @@ const sessionSchema = new mongoose.Schema({
         data: String,
         contentType: String
     }
+})
+
+sessionSchema.plugin(paginator, {
+    limit: 10
 })
 
 module.exports = sessionSchema

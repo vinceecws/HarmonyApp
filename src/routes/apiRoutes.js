@@ -1476,81 +1476,88 @@ module.exports = function(mainSocket, sessionSocket) {
         }
     })
 
-    apiRouter.get('/search/query=:search', async (req, res) => {
-        let sessionMatches = await mongooseQuery.getSessionsFromQuery(req.params.search, true, true)
+    apiRouter.get('/search/query=:query', async (req, res) => {
+        let sessionMatches = await mongooseQuery.getSessionsFromQuery(req.params.query, true)
                                         .catch(err => res.sendStatus(404));
-                                        
-        let collectionMatches = await mongooseQuery.getCollectionsFromQuery(req.params.search, true)
-                                        .catch(err => res.sendStatus(404));	
-                                        
-        let userMatches = await mongooseQuery.getUsersFromQuery(req.params.search, true)
+        let collectionMatches = await mongooseQuery.getCollectionsFromQuery(req.params.query)
+                                        .catch(err => res.sendStatus(404));	 
+        let userMatches = await mongooseQuery.getUsersFromQuery(req.params.query)
                                         .catch(err => res.sendStatus(404));
-
-        if (!req.user){
-            return res.status(200).json({
-                message: "Query successful",
-                statusCode: 200,
-                data: {
-                    sessions: sessionMatches.map(session => {
+        return res.status(200).json({
+            message: "Query successful",
+            statusCode: 200,
+            data: {
+                session: {
+                    items: sessionMatches.result.map(session => {
                         session.type = "session"
                         return session
-                    }), 
-                    collections: collectionMatches.map(collection => {
+                    }),
+                    nextPageToken: sessionMatches.nextPageToken,
+                    prevPageToken: sessionMatches.prevPageToken
+                }, 
+                collection: {
+                    items: collectionMatches.result.map(collection => {
                         collection.type = "collection"
                         return collection
                     }),
-                    users: userMatches.map(user => {
+                    nextPageToken: collectionMatches.nextPageToken,
+                    prevPageToken: collectionMatches.prevPageToken
+                },
+                user: {
+                    items: userMatches.result.map(user => {
                         var strippedUser = stripUser(user)
                         strippedUser.type = "user"
                         return strippedUser
-                    })
-                },
-                success: true
-            })
-        }
-        else {
-            let thisUser = await mongooseQuery.getUser({'_id': req.user._id})
-                                .catch(err => {console.log('User not found')});
-            let filteredSessions = [];
-            let filteredCollections = [];
-            let filteredUsers = [];
-            for (let s of sessionMatches){
-                if (String(s.hostId) !== String(thisUser._id)){
-                    filteredSessions.push(s);
-                }
-            }
-            for (let c of collectionMatches){
-                if (!(thisUser.playlists.map(e => String(e)).includes(c._id))){
-                    filteredCollections.push(c);
-                }
-            }
-            for (let u of userMatches){
-                if (String(thisUser._id) !== String(u._id)){
-                    let fetchedUser = stripUser(u)
-                    filteredUsers.push(fetchedUser);
-                } 
-            }
-
-            return res.status(200).json({
-                message: "Query successful",
-                statusCode: 200,
-                data: {
-                    sessions: filteredSessions.map(session => {
-                        session.type = "session"
-                        return session
-                    }), 
-                    collections: filteredCollections.map(collection => {
-                        collection.type = "collection"
-                        return collection
                     }),
-                    users: filteredUsers.map(user => {
-                        user.type = "user"
-                        return user
-                    })
-                },
-                success: true
-            })
-        }				
+                    nextPageToken: userMatches.nextPageToken,
+                    prevPageToken: userMatches.prevPageToken
+                }
+            },
+            success: true
+        })
+    });
+
+    apiRouter.get('/search/pageQuery=:query&category=:category&:pageToken=:pageToken', async (req, res) => {
+        let matches
+        let pageToken = parseInt(req.params.pageToken)
+        let query = req.params.query
+        let category = req.params.category
+
+        switch (category) {
+            case "session":
+                matches = await mongooseQuery.getSessionsFromQuery(query, true, pageToken)
+                    .catch(err => res.sendStatus(404));
+                break
+            case "collection":
+                matches = await mongooseQuery.getCollectionsFromQuery(query, pageToken)
+                    .catch(err => res.sendStatus(404));	
+                break
+            case "user":
+                matches = await mongooseQuery.getUsersFromQuery(query, pageToken)
+                    .catch(err => res.sendStatus(404));
+                break
+            default:
+                return res.status(400).json({
+                    message: "Invalid category",
+                    statusCode: 400,
+                    data: null,
+                    success: false
+                })
+        }
+
+        return res.status(200).json({
+            message: "Query successful",
+            statusCode: 200,
+            data: {
+                items: matches.result.map(item => {
+                    item.type = category
+                    return item
+                }),
+                nextPageToken: matches.nextPageToken,
+                prevPageToken: matches.prevPageToken
+            },
+            success: true
+        })	
     });
 
     return apiRouter

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
+const paginator = require('./plugin.js').paginationPlugin
 
 const userSchema = new mongoose.Schema({
     local: {
@@ -54,6 +55,10 @@ const userSchema = new mongoose.Schema({
         data: String,
         contentType: String
     }
+})
+
+userSchema.plugin(paginator, {
+    limit: 10
 })
 
 userSchema.methods.authenticateLocal = function(username, password) {

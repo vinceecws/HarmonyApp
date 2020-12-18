@@ -400,6 +400,30 @@ class SearchScreen extends React.Component {
                     })
                 })
                 break
+            case "session":
+            case "collection":
+            case "user":
+                console.log(type)
+                pageToken = this.state[type + "_" + which + "PageToken"]
+                if (!pageToken) {
+                    return
+                }
+                this.props.axiosWrapper.axiosGet('/api/search/pageQuery=' + this.state.query + '&category=' + type + '&pageToken=' + pageToken, (function(res, data) {
+                    if (data.success) {
+                        var newRes = _.cloneDeep(this.state.res)
+                        newRes[type] = data.data.items
+    
+                        var newState = {
+                            res: newRes
+                        }
+                        console.log(newRes)
+                        newState[type + "_nextPageToken"] = data.data.nextPageToken
+                        newState[type + "_prevPageToken"] = data.data.prevPageToken
+
+                        this.setState(newState)
+                    }
+                }).bind(this), true)
+                break
             default:
                 break
         }
@@ -448,11 +472,18 @@ class SearchScreen extends React.Component {
             this.props.axiosWrapper.axiosGet('/api/search/query=' + query, (function(res, data) {
                 if (data.success) {
                     var newRes = _.cloneDeep(this.state.res)
-                    newRes.session = data.data.sessions
-                    newRes.collection = data.data.collections
-                    newRes.user = data.data.users
+                    newRes.session = data.data.session.items
+                    newRes.collection = data.data.collection.items
+                    newRes.user = data.data.user.items
+
                     this.setState({
-                        res: newRes
+                        res: newRes,
+                        session_nextPageToken: data.data.session.nextPageToken,
+                        session_prevPageToken: data.data.session.prevPageToken,
+                        collection_nextPageToken: data.data.collection.nextPageToken,
+                        collection_prevPageToken: data.data.collection.prevPageToken,
+                        user_nextPageToken: data.data.user.nextPageToken,
+                        user_prevPageToken: data.data.user.prevPageToken
                     })
                 }
             }).bind(this), true)

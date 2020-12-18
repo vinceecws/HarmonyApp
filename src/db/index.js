@@ -3,7 +3,6 @@ const mongoose = require('mongoose')
 
 const userSchema = require('./Schema/userSchema.js')
 const collectionSchema = require('./Schema/collectionSchema.js')
-const songSchema = require('./Schema/songSchema.js')
 const sessionSchema = require('./Schema/sessionSchema.js')
 
 const User = mongoose.model('user', userSchema, 'user')
@@ -315,65 +314,55 @@ exports.deleteSession = async function(sessionObject){
 }
 
 
-exports.getCollectionsFromQuery = async function(query, lean=false){
+exports.getCollectionsFromQuery = async function(query, page=1, limit=10){
+    let paginateParams = {
+        limit: limit,
+        page: page
+    }
+
     let collections = await connection.then(async () => {
-        if (lean) {
-            return await Collection.find({'name': {'$regex': query, '$options': 'i'}}).lean()
-        }
-        else {
-            return await Collection.find({'name': {'$regex': query, '$options': 'i'}})
-        }
+        
+        return await Collection.find({'name': {'$regex': query, '$options': 'i'}}).paginate(paginateParams)
+
     }).catch(err => console.log(err));
     return collections;
 }
 
-exports.getUsersFromQuery = async function(query, lean=false){
+exports.getUsersFromQuery = async function(query, page=1, limit=10){
+    let paginateParams = {
+        limit: limit,
+        page: page
+    }
+
     let users = await connection.then(async () => {
-        if (lean) {
-            return await User.find({'local.username': {'$regex': query, '$options': 'i'}}).lean()
-        }
-        else {
-            return await User.find({'local.username': {'$regex': query, '$options': 'i'}})
-        }
+
+        return await User.find({'local.username': {'$regex': query, '$options': 'i'}}).paginate(paginateParams)
+
     }).catch(err => console.log(err));
     return users;
 }
 
-exports.getSessionsFromQuery = async function(query, live=false, lean=false){
+exports.getSessionsFromQuery = async function(query, live=false, page=1, limit=10){
+    let paginateParams = {
+        limit: limit,
+        page: page
+    }
+
     let sessions = await connection.then(async () => {
-        if (lean) {
-            if (live) {
-                return await Session.find({'$and': [
-                    {'$or':[
-                        {name: {'$regex': query, '$options': 'i'}},
-                        {hostName: {'$regex': query, '$options': 'i'}}]
-                    },
-                    {live: true}
-                ]}).lean()
-            }
-            else {
-                return await Session.find({'$or': [
+        if (live) {
+            return await Session.find({'$and': [
+                {'$or':[
                     {name: {'$regex': query, '$options': 'i'}},
-                    {hostName: {'$regex': query, '$options': 'i'}}
-                ]}).lean()
-            }
+                    {hostName: {'$regex': query, '$options': 'i'}}]
+                },
+                {live: true}
+            ]}).paginate(paginateParams)
         }
         else {
-            if (live) {
-                return await Session.find({'$and': [
-                    {'$or':[
-                        {name: {'$regex': query, '$options': 'i'}},
-                        {hostName: {'$regex': query, '$options': 'i'}}]
-                    },
-                    {live: true}
-                ]})
-            }
-            else {
-                return await Session.find({'$or': [
-                    {name: {'$regex': query, '$options': 'i'}},
-                    {hostName: {'$regex': query, '$options': 'i'}}
-                ]})
-            }
+            return await Session.find({'$or': [
+                {name: {'$regex': query, '$options': 'i'}},
+                {hostName: {'$regex': query, '$options': 'i'}}
+            ]}).paginate(paginateParams)
         }
     }).catch(error => {return error});
     return sessions;

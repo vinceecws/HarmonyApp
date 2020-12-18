@@ -101,7 +101,7 @@ class DataAPI {
                 part: [
                     "snippet"
                 ],
-                maxResults: 15,
+                maxResults: 10,
                 order: "viewCount",
                 q: query,
                 pageToken: pageToken ? pageToken : "",
