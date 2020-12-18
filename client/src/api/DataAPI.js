@@ -48,7 +48,7 @@ class DataAPI {
                     image_maxres: obj.snippet.thumbnails.maxres ? obj.snippet.thumbnails.maxres.url : null,
                     image_med: obj.snippet.thumbnails.medium ? obj.snippet.thumbnails.medium.url : null,
                     image_std: obj.snippet.thumbnails.standard ? obj.snippet.thumbnails.standard.url: null,
-                    duration: obj.contentDetails.duration
+                    duration: Date.parse(obj.contentDetails.duration)
                 }))
             }, (err) => {
                 return err
@@ -78,7 +78,7 @@ class DataAPI {
                         image_maxres: obj.snippet.thumbnails.maxres ? obj.snippet.thumbnails.maxres.url : null,
                         image_med: obj.snippet.thumbnails.medium ? obj.snippet.thumbnails.medium.url : null,
                         image_std: obj.snippet.thumbnails.standard ? obj.snippet.thumbnails.standard.url: null,
-                        duration: obj.contentDetails.duration
+                        duration: Date.parse(obj.contentDetails.duration)
                     }
                 } 
                 else {
