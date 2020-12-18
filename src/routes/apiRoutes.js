@@ -1465,7 +1465,8 @@ module.exports = function(mainSocket, sessionSocket) {
             statusCode: 200,
             data: {
                 session: {
-                    items: sessionMatches.result.map(session => {
+                    items: sessionMatches.result.map(obj => {
+                        var session = obj.toObject()
                         session.type = "session"
                         return session
                     }),
@@ -1473,7 +1474,8 @@ module.exports = function(mainSocket, sessionSocket) {
                     prevPageToken: sessionMatches.prevPageToken
                 }, 
                 collection: {
-                    items: collectionMatches.result.map(collection => {
+                    items: collectionMatches.result.map(obj => {
+                        var collection = obj.toObject()
                         collection.type = "collection"
                         return collection
                     }),
@@ -1481,8 +1483,8 @@ module.exports = function(mainSocket, sessionSocket) {
                     prevPageToken: collectionMatches.prevPageToken
                 },
                 user: {
-                    items: userMatches.result.map(user => {
-                        var strippedUser = stripUser(user)
+                    items: userMatches.result.map(obj => {
+                        var strippedUser = stripUser(obj.toObject())
                         strippedUser.type = "user"
                         return strippedUser
                     }),
@@ -1526,7 +1528,8 @@ module.exports = function(mainSocket, sessionSocket) {
             message: "Query successful",
             statusCode: 200,
             data: {
-                items: matches.result.map(item => {
+                items: matches.result.map(obj => {
+                    var item = obj.toObject()
                     item.type = category
                     return item
                 }),

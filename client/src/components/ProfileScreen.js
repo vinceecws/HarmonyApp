@@ -321,12 +321,8 @@ class ProfileScreen extends React.Component{
                 }
                 this.props.axiosWrapper.axiosGet('/api/profile/' + this.state.profileUser._id + '/' + type + '/pageToken=' + pageToken, (function(res, data) {
                     if (data.success) {
-                        var newRes = _.cloneDeep(this.state.res)
-                        newRes[type] = data.data.items
-    
-                        var newState = {
-                            res: newRes
-                        }
+						var newState = {}
+						newState[type] = data.data.items
                         newState[type + "_nextPageToken"] = data.data.nextPageToken
                         newState[type + "_prevPageToken"] = data.data.prevPageToken
 
