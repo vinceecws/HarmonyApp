@@ -1,6 +1,6 @@
 import React from 'react';
 import Spinner from './Spinner';
-import { yin_yang_gradient , icon_like, icon_music_1, plus_button, icon_play_white_1, menu_button_white, icon_sound_mixer_1, icon_list, icon_playlist_2 } from '../graphics';
+import { yin_yang_gradient , icon_like, icon_music_1, plus_button, icon_play_white_1, menu_button_white, icon_list, icon_playlist_2 } from '../graphics';
 import { Modal, Image, Card, Button, Dropdown, DropdownButton, ButtonGroup } from 'react-bootstrap'
 import { ReactComponent as BackArrow } from '../graphics/user_pack/back-arrow-white.svg'
 import { ReactComponent as NextArrow } from '../graphics/user_pack/next-arrow-white.svg'
@@ -66,7 +66,7 @@ class ProfileScreen extends React.Component{
 		}
 
 		//If screen is now active
-        if (!prevProps.visible && this.props.visible || (this.props.screenProps && this.props.screenProps.userId !== prevProps?.screenProps.userId)) {
+        if ((!prevProps.visible && this.props.visible) || (this.props.screenProps && (this.props.screenProps.userId !== prevProps?.screenProps.userId))) {
 			this.setState({
 				userId: this.props.screenProps.userId,
 				loading: true,
