@@ -141,7 +141,10 @@ class MainApp extends React.Component {
         this.queue.clearFutureQueue()
         this.fetchVideoById(id, true).then((song) => {
             this.queue.setCurrentSong(song)
-            callback()
+            if(callback){
+                callback()
+            }
+            
         })
         if (!this.playerAPI.isPlayerInit()) { //Initialize on first use
             this.playerAPI.initIFrameAPI(id)
