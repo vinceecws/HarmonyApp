@@ -895,7 +895,7 @@ class SessionScreen extends React.Component {
 	        				</div>
 	        				<div className='col' style={{maxWidth:'15%', textAlign: 'center',height:'90%', minWidth:'5%',color:'white',padding:'.1em',  float:'right', top:'10%'}}>
 	        					<div className='row' style={{height:'30%', display:'block', textAlign:'center'}}>{this.showLiveIcon()}</div>
-	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center',top: '6px',position: 'relative'}}>{this.formatTime()}</div>
+	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center',top: '6px',position: 'relative'}}></div>
 	        					{this.renderEndButton()}
 	        				</div>
 	        			</div>
@@ -905,8 +905,8 @@ class SessionScreen extends React.Component {
 								<ChatFeed chatLog={this.state.chatLog} user={this.state.user}  />
 							</div>
 							<div className='row' style={{height:'40px',width:'100%',marginLeft:'0px',border: '3px solid black',backgroundColor:'white'}}>
-								<input disabled={this.isNonParticipant() || this.isGuest() || this.state.role === sessionRoles.USER_PRIVATE_HOST} type='text' name='MessageSender' placeholder={this.isGuest() ? 'Login or sign-up to join the chat' : 'Send your message here...'} onChange={this.handleTextChange} onKeyPress={this.handleChatKeyPress} value={this.state.messageText} style={{width:'95%', display:'block'}}/>
-								<div style={{width:'5%', display:'block', textAlign:'center', marginTop:'5px'}}>{this.state.messageText.length}/250</div>
+								<input autocomplete="off" disabled={this.isNonParticipant() || this.isGuest() || this.state.role === sessionRoles.USER_PRIVATE_HOST} type='text' name='MessageSender' placeholder={this.isGuest() ? 'Login or sign-up to join the chat' : 'Send your message here...'} onChange={this.handleTextChange} onKeyPress={this.handleChatKeyPress} value={this.state.messageText} style={{width: '-webkit-fill-available', display:'block', paddingRight: '80px'}}/>
+								<div style={{width: '65px', display:'block', textAlign:'center', marginTop:'5px', right:'10px', position:'absolute'}}>{this.state.messageText.length}/250</div>
 							</div>
 	        			</div>
 	        		</div>
@@ -958,7 +958,7 @@ class SessionScreen extends React.Component {
 	        				</div>
 	        				<div className='col' style={{maxWidth:'15%', textAlign: 'center',height:'90%', minWidth:'5%',color:'white',padding:'.1em',  float:'right', top:'10%'}}>
 	        					<div className='row' style={{height:'30%', display:'block', textAlign:'center'}}>{this.showLiveIcon()}</div>
-	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center',top: '6px',position: 'relative'}}>{this.formatTime()}</div>
+	        					<div className='row'style={{height:'30%',  display:'block', textAlign:'center',top: '6px',position: 'relative'}}></div>
 	        					<div className='row'style={{height:'40%',  display:'block', textAlign:'center'}}><Button  className="bg-color-harmony" variant="primary" style={{width:'60px', height:'45px' ,fontSize:'.65rem'}} onClick={this.handleLeaveSession}>Leave</Button></div>
 	        				</div>
 	        			</div>
