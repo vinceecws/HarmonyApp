@@ -1,6 +1,7 @@
 ### Part of college is cramming in 10-hours of studying in 6-hours, night before the test. Streaming lo-fi study music on YouTube with a bunch of other people is an essential part to that.
-> Like that
-> ![alt text](https://github.com/[username]/[reponame]/blob/[branch]/image.jpg?raw=true)
+
+### Like that
+<img width="1440" alt="lofi" src="https://user-images.githubusercontent.com/19466657/117068750-ad582000-acf9-11eb-8460-445e87699110.png">
 
 ### Harmony aims to bring that experience to a proper music-streaming platform, so that you can share that with your friends.
 
